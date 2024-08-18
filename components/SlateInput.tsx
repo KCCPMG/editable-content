@@ -23,8 +23,19 @@ export default function SlateInput() {
 
   return (
     // Add the editable component inside the context.
-    <Slate editor={editor} initialValue={initialValue}>
-      <Editable />
+    <Slate 
+      editor={editor} 
+      initialValue={initialValue}
+    >
+      <Editable 
+        onKeyDown={(e) => {
+          console.log(e.key);
+          if (e.key === '&') {
+            e.preventDefault();
+            editor.insertText('and');
+          }
+        }}
+      />
     </Slate>
   )
 }
