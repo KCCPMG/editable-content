@@ -14,23 +14,34 @@ const initialValue = [
   },
 ]
 
+// Define a React component renderer for our code blocks.
+const CodeElement = props => {
+  return (
+    <pre {...props.attributes}>
+      <code>{props.children}</code>
+    </pre>
+  )
+}
 
+const DefaultElement = props => {
+  return <p {...props.attributes}>{props.children}</p>
+}
 
-export default function SlateCustomElements(props: {ooga: string}) {
+export default function SlateCustomFormatting() {
 
 
   const [editor] = useState(() => withReact(createEditor()))
 
   // Define a rendering function based on the element passed to `props`. We use
   // `useCallback` here to memoize the function for subsequent renders.
-  const renderElement = useCallback(() => {
+  const renderElement = useCallback(props => {
     switch (props.element.type) {
       case 'code':
         return <CodeElement {...props} />
       default:
         return <DefaultElement {...props} />
     }
-  }, [props])
+  }, [])
 
   return (
     // Add the editable component inside the context.
@@ -59,17 +70,4 @@ export default function SlateCustomElements(props: {ooga: string}) {
       />
     </Slate>
   )
-}
-
-// Define a React component renderer for our code blocks.
-const CodeElement = (props: any) => {
-  return (
-    <pre {...props.attributes}>
-      <code>{props.children}</code>
-    </pre>
-  )
-}
-
-const DefaultElement = props => {
-  return <p {...props.attributes}>{props.children}</p>
 }
