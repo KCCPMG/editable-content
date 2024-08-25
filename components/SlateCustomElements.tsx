@@ -16,7 +16,7 @@ const initialValue = [
 
 
 
-export default function SlateCustomElements(props: {ooga: string}) {
+export default function SlateCustomElements(props) {
 
 
   const [editor] = useState(() => withReact(createEditor()))
@@ -24,7 +24,7 @@ export default function SlateCustomElements(props: {ooga: string}) {
   // Define a rendering function based on the element passed to `props`. We use
   // `useCallback` here to memoize the function for subsequent renders.
   const renderElement = useCallback(() => {
-    switch (props.element.type) {
+    switch (props.element?.type) {
       case 'code':
         return <CodeElement {...props} />
       default:
