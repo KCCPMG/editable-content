@@ -10,14 +10,13 @@ import theme from "@/theme";
 export default function Home() {
   return (
     <main>
-      {/* <SlateInput />
-      <SlateCustomElements />
-      <SlateCustomFormatting />
-      <h1>Editable Div</h1>
-      <EditableDiv /> */}
-      <ReactDynamicTextarea />
+      {/* <SlateInput /> */}
+      {/* <SlateCustomElements /> */}
+      {/* <SlateCustomFormatting /> */}
+      <EditableDiv />
+      {/* <ReactDynamicTextarea /> */}
       <ThemeProvider theme={theme}>
-        <MuiRte />
+        {/* <MuiRte /> */}
       </ThemeProvider>
     </main>
   );

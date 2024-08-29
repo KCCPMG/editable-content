@@ -1,5 +1,5 @@
 "use client";
-import { SyntheticEvent, useState } from "react";
+import { useState } from "react";
 
 export default function EditableDiv() {
 
@@ -10,15 +10,27 @@ export default function EditableDiv() {
   }
 
   return (
-    <div 
-      contentEditable 
-      onInput={(e: SyntheticEvent) => {
-        console.log(e);
-        console.log(e.target.innerText);
-        // updateText(e.target.innerText);
-      }}
-    >
-      {text}
+    <div style={{
+      width: 500,
+      margin: "auto",
+      marginTop: 60
+    }}>
+      <h1>Editable Div</h1>
+      <div
+        contentEditable
+        style={{
+          border: "1px solid black",
+        }}
+        onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+
+          console.log(e);
+          console.log(e.target.innerText);
+          // const target = e.target as {innerText: string};
+          // updateText(e.target.innerText);
+        }}
+      >
+        {/* {text} */}
+      </div>
     </div>
   )
 }

@@ -28,19 +28,20 @@ export default function MuiRte() {
         label="MUIRichTextEditor"
         controls={["title", "my-block", "my-chip", "my-style"]}
         customControls={[
-          {
-            name: "my-block",
-            icon: <TableChartIcon />,
-            type: "block",
-            blockWrapper: <MyBlock />
-          },
+          // {
+          //   name: "my-block",
+          //   icon: <TableChartIcon />,
+          //   type: "block",
+          //   blockWrapper: MyBlock
+          // },
           {
             name: "my-chip",
             icon: <TableViewIcon />,
             type: "inline",
             inlineStyle: {
+              borderStyle: "solid",
               borderWidth: "1px", 
-              borderColor: "primary",
+              borderColor: theme.palette.primary.main
             }
             // blockWrapper: <MyChip />
           },
