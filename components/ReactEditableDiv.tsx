@@ -8,7 +8,7 @@ type ReactEditableDivProps = {
 
 export function ReactEditableDiv({initialContent}: ReactEditableDivProps) {
 
-  const [content, setContent] = useState<Array<ReactElement<typeof ReactParagraph>>>(
+  const [paragraphs, setParagraphs] = useState<Array<ReactElement<typeof ReactParagraph>>>(
     typeof initialContent === "string" ? 
     [<ReactParagraph initialContent={initialContent} />] :
     initialContent
@@ -18,12 +18,13 @@ export function ReactEditableDiv({initialContent}: ReactEditableDivProps) {
   return (
     <div 
       style={{
-        width: "80%",
+        width: "100%",
+        height: "150px",
         margin: "auto",
         border: "2px solid black",
       }}
     >
-      {content}
+      {paragraphs.map(p => p)}
     </div>
   )
 
@@ -46,7 +47,13 @@ export function ReactParagraph({initialContent} : ReactParagraphProps) {
 
 
   return (
-    <p>{content}</p>
+    <p
+      style={{
+        margin: "0"
+      }}
+    >
+      {content}
+    </p>
   )
 }
 
