@@ -5,9 +5,36 @@ export default function ContentEditableExperiment() {
 
   const myRef = useRef<null | HTMLDivElement>(null);
 
+  function handleBold() {
+    console.log("Bold");
+    console.log(window.getSelection());
+
+
+    const selection = window.getSelection();
+    
+    // Check if the selection is within the specific div
+    if (myRef.current && selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        if (myRef.current.contains(range.startContainer) || myRef.current.contains(range.endContainer)) {
+            // Get the selected text
+            const selectedText = selection.toString();
+
+        } 
+    }
+  }
+
+  function handleItalics() {
+    console.log("Italics");
+    console.log(window.getSelection());
+  }
+
   return (
     <>
       <h1>Texteditable Experiment</h1>
+      <div>
+        <button onClick={handleBold}><strong>B</strong></button>
+        <button onClick={handleItalics}><i>I</i></button>
+      </div>
       <div
         ref={myRef}
         style={{
@@ -42,6 +69,7 @@ export default function ContentEditableExperiment() {
       >
 
       </div>
+      <p>This text should not change</p>
     </>
   )
 }
