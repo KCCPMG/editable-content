@@ -18,6 +18,7 @@ export default function ContentEditableExperiment() {
         if (myRef.current.contains(range.startContainer) || myRef.current.contains(range.endContainer)) {
             // Get the selected text
             const selectedText = selection.toString();
+            range.surroundContents(document.createElement('strong'));
 
         } 
     }
@@ -26,6 +27,19 @@ export default function ContentEditableExperiment() {
   function handleItalics() {
     console.log("Italics");
     console.log(window.getSelection());
+
+    const selection = window.getSelection();
+    
+    // Check if the selection is within the specific div
+    if (myRef.current && selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      if (myRef.current.contains(range.startContainer) || myRef.current.contains(range.endContainer)) {
+          // Get the selected text
+          const selectedText = selection.toString();
+          range.surroundContents(document.createElement('i'));
+
+      } 
+    }
   }
 
   return (
