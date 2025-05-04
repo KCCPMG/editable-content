@@ -48,7 +48,7 @@ export default function ContentEditableExperiment() {
       if (gotSelection && myRef.current && selectionIsDescendentOfNode(gotSelection, myRef.current)) {
         // console.log(e);
         setSelection(window.getSelection());
-      }
+      } else setSelection(null);
 
     })
   }, [])
@@ -177,17 +177,14 @@ export default function ContentEditableExperiment() {
       <EditTextButtonRow contentRef={myRef} >
         <EditTextButton
           dataKey="strong"
-          query="strong"
-          // wrapper={document.createElement("strong")}
-          // wrapper={strongWrapper}
+          wrapperElement="strong"
           selection={selection}
         >
           <strong>B</strong>
         </EditTextButton>
         <EditTextButton
           dataKey="italics"
-          query="i"
-          // wrapper={document.createElement("i")}
+          wrapperElement="i"
           selection={selection}
         >
           <i>I</i>

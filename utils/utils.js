@@ -186,12 +186,12 @@ function alternateAlternateBisect(boundingElement) {
     if (focusNode)
         splitNode(focusNode, focusOffset);
 }
-function wrapInElement(element) {
-    var selection = window.getSelection();
+function wrapInElement(selection, element) {
     if (!selection)
         return;
     var range = selection.getRangeAt(0);
     var contents = range.extractContents();
+    console.log(element);
     element.append(contents);
     range.insertNode(element);
 }
