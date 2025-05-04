@@ -1,11 +1,87 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.bisect = bisect;
 exports.wrapInElement = wrapInElement;
 exports.promoteChildrenOfNode = promoteChildrenOfNode;
 exports.unwrapChildrenFrom = unwrapChildrenFrom;
 exports.nodeIsDescendentOf = nodeIsDescendentOf;
 exports.selectionIsDescendentOf = selectionIsDescendentOf;
 exports.selectionIsDescendentOfNode = selectionIsDescendentOfNode;
+function alternateBisect() {
+    // incomplete, experiment
+    var _a;
+    var selection = window.getSelection();
+    var thisRange = ((_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.getRangeAt(0)) || null;
+    if (!thisRange || !selection) {
+        console.log("no range and/or no selection");
+        return;
+    }
+    var anchorNode = selection.anchorNode, anchorOffset = selection.anchorOffset, focusNode = selection.focusNode, focusOffset = selection.focusOffset;
+    console.log({ anchorNode: anchorNode, anchorOffset: anchorOffset, focusNode: focusNode, focusOffset: focusOffset });
+}
+function bisect(myRef) {
+    // incomplete, experiment
+    console.log(window.getSelection());
+    var selection = window.getSelection();
+    function nearestElementAncestor(node) {
+        if (node instanceof Element)
+            return node;
+        else
+            return nearestElementAncestor((node === null || node === void 0 ? void 0 : node.parentNode) || null);
+    }
+    function getPreRange(range) {
+        var startOffset = range.startOffset, endOffset = range.endOffset, startContainer = range.startContainer, endContainer = range.endContainer;
+        var preRange = new Range();
+        preRange.setStart(nearestElementAncestor(startContainer), 0);
+        preRange.setEnd(startContainer, startOffset);
+        return preRange;
+        // if (preRange.startContainer instanceof Element) {
+        //   return preRange;
+        // } else {
+        //   if (startContainer.parentNode) {
+        //     preRange.setStart(startContainer.parentNode, 0)
+        //     return getPreRange(preRange);
+        //   } else return null;
+        // }
+    }
+    function getPostRange(range) {
+        var _a;
+        var startOffset = range.startOffset, endOffset = range.endOffset, startContainer = range.startContainer, endContainer = range.endContainer;
+        var postRange = new Range();
+        var safeAncestor = nearestElementAncestor(endContainer);
+        postRange.setStart(endContainer, endOffset);
+        console.log(postRange, safeAncestor, (_a = safeAncestor === null || safeAncestor === void 0 ? void 0 : safeAncestor.textContent) === null || _a === void 0 ? void 0 : _a.length);
+        if (safeAncestor) {
+            postRange.setEnd(safeAncestor, 1);
+        }
+        return postRange;
+    }
+    if (myRef.current && selection && selection.rangeCount > 0) {
+        var range = selection.getRangeAt(0);
+        var startOffset = range.startOffset, endOffset = range.endOffset, startContainer = range.startContainer, endContainer = range.endContainer;
+        console.log("range", range);
+        var preRange = getPreRange(range);
+        var postRange = getPostRange(range);
+        console.log({ preRange: preRange, postRange: postRange });
+        var preRangeSpan = document.createElement("span");
+        var preRangeContents = preRange.extractContents();
+        preRangeSpan.append(preRangeContents);
+        preRange.startContainer.appendChild(preRangeSpan);
+        // preRange.startContainer.appendChild(preRangeContents);
+        var postRangeSpan = document.createElement("span");
+        var postRangeContents = postRange.extractContents();
+        postRangeSpan.append(postRangeContents);
+        postRange.startContainer.appendChild(postRangeSpan);
+        // postRange.startContainer.appendChild(postRangeContents);
+        // Try to prepend and append new spans, preRange from start of text to cursor, postRange from cursor to end of text
+        // range.extractContents() into each span 
+        // consider writing promoteToSibling, demoteToChild functions
+        // const postRange = new Range();
+        // postRange.setStart(startContainer, startOffset);
+        // postRange.setEnd(startContainer, 0);
+        // console.log({postRange});
+    }
+}
 function getRangeUpTo(node, offset) {
     var range = new Range();
     range.setStartBefore(node);
@@ -83,7 +159,7 @@ function sortNodes(nodeA, nodeAOffset, nodeB, nodeBOffset) {
         return returnObj;
     }
 }
-function bisect(boundingElement) {
+function alternateAlternateBisect(boundingElement) {
     var selection = window.getSelection();
     if (!selection)
         return;
@@ -291,18 +367,21 @@ function nodeIsDescendentOfNode(node, ancestorNode) {
     while (parentNode) {
         if (parentNode === ancestorNode)
             return true;
-        parentNode = node.parentNode;
+        parentNode = parentNode.parentNode;
     }
     return false;
 }
 function selectionIsDescendentOfNode(selection, ancestorNode) {
-    console.log(Boolean(selection.anchorNode), Boolean(selection.focusNode), !!selection.anchorNode && nodeIsDescendentOfNode(selection.anchorNode, ancestorNode), !!selection.focusNode && nodeIsDescendentOfNode(selection.focusNode, ancestorNode));
-    // return (
-    //   selection.anchorNode &&
-    //   selection.focusNode &&
-    //   nodeIsDescendentOfNode(selection.anchorNode, ancestorNode) &&
-    //   nodeIsDescendentOfNode(selection.focusNode, ancestorNode) 
+    // console.log(    
+    //   Boolean(selection.anchorNode),
+    //   Boolean(selection.focusNode),
+    //   !!selection.anchorNode && nodeIsDescendentOfNode(selection.anchorNode, ancestorNode),
+    //   !!selection.focusNode && nodeIsDescendentOfNode(selection.focusNode, ancestorNode) 
     // )
+    return (selection.anchorNode &&
+        selection.focusNode &&
+        nodeIsDescendentOfNode(selection.anchorNode, ancestorNode) &&
+        nodeIsDescendentOfNode(selection.focusNode, ancestorNode));
 }
 function getAllTextNodes(nodes) {
     var textNodes = [];

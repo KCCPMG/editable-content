@@ -2,6 +2,9 @@
 import React, { ReactElement, useRef, useState, useEffect, forwardRef } from "react";
 import { createRoot } from 'react-dom/client';
 import { wrapInElement, unwrapChildrenFrom, selectionIsDescendentOf, selectionIsDescendentOfNode } from '@/utils/utils';
+import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
+import EditTextButtonRow from "./ContentEditableExperimentComponents/EditTextButtonRow";
+import WackyLink from "./ContentEditableExperimentComponents/WackyLink";
 
 
 function handleItalics(ref: React.MutableRefObject<HTMLDivElement | null>) {
@@ -31,22 +34,30 @@ export default function ContentEditableExperiment() {
 
 
   useEffect(() => {
-    console.log("myRef.current", myRef.current);
+    // console.log("myRef.current", myRef.current);
     document.addEventListener('selectionchange', function(e) {
 
       const gotSelection = window.getSelection();
 
-      console.log(Boolean(gotSelection), Boolean(myRef.current), gotSelection && myRef.current && selectionIsDescendentOfNode(gotSelection, myRef.current))
+      // console.log(
+      //   Boolean(gotSelection), 
+      //   Boolean(myRef.current), 
+      //   gotSelection && myRef.current && selectionIsDescendentOfNode(gotSelection, myRef.current)
+      // );
 
-
-
-      if (gotSelection && myRef.current && selectionIsDescendentOf(gotSelection, "", myRef.current)) {
-        console.log(e);
+      if (gotSelection && myRef.current && selectionIsDescendentOfNode(gotSelection, myRef.current)) {
+        // console.log(e);
         setSelection(window.getSelection());
       }
 
     })
   }, [])
+
+
+  // useEffect(() => {
+  //   setMyRefContent(myRef.current?.innerHTML)
+  // }, [myRef.current?.innerHTML])
+
 
   function handleBold() {
     console.log("Bold");
@@ -57,16 +68,15 @@ export default function ContentEditableExperiment() {
     
     // Check if the selection is within the specific div
     if (myRef.current && selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        if (myRef.current.contains(range.startContainer) || myRef.current.contains(range.endContainer)) {
-            // Get the selected text
-            const selectedText = selection.toString();
-            range.surroundContents(document.createElement('strong'));
+      const range = selection.getRangeAt(0);
+      if (myRef.current.contains(range.startContainer) || myRef.current.contains(range.endContainer)) {
+        // Get the selected text
+        const selectedText = selection.toString();
+        range.surroundContents(document.createElement('strong'));
 
-        } 
+      } 
     }
   }
-
 
 
   function handleWackyLink() {
@@ -154,130 +164,30 @@ export default function ContentEditableExperiment() {
 
 
 
-
-  function alternateBisect() {
-
-
-    const selection = window.getSelection()
-
-    const thisRange = window.getSelection()?.getRangeAt(0) || null;
-
-    if (!thisRange || !selection) {
-      console.log("oopsie poopsie");
-      return;
-    }
-
-    const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
-
-    console.log({ anchorNode, anchorOffset, focusNode, focusOffset })
-
-
-  }
-
-
-  function bisect() {
-
-    console.log(window.getSelection());
-
-    const selection = window.getSelection();
-
-    function nearestElementAncestor(node: Node | null) {
-      if (node instanceof Element) return node;
-      else return nearestElementAncestor(node?.parentNode || null)
-    }
-
-    function getPreRange(range: Range) {
-      const { startOffset, endOffset, startContainer, endContainer } = range;
-
-      const preRange = new Range();
-      preRange.setStart(nearestElementAncestor(startContainer), 0);
-      preRange.setEnd(startContainer, startOffset);
-
-      return preRange;
-      // if (preRange.startContainer instanceof Element) {
-      //   return preRange;
-      // } else {
-      //   if (startContainer.parentNode) {
-      //     preRange.setStart(startContainer.parentNode, 0)
-      //     return getPreRange(preRange);
-      //   } else return null;
-      // }
-    }
-
-    function getPostRange(range: Range) {
-      const { startOffset, endOffset, startContainer, endContainer } = range;
-
-      const postRange = new Range();
-      const safeAncestor = nearestElementAncestor(endContainer);
-      postRange.setStart(endContainer, endOffset);
-      console.log(postRange, safeAncestor, safeAncestor?.textContent?.length)
-      if (safeAncestor) {
-        postRange.setEnd(safeAncestor, 1);
-      }
-
-      return postRange;
-    }
-
-    if (myRef.current && selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      const { startOffset, endOffset, startContainer, endContainer } = range;
-      
-      console.log("range", range);
-
-      const preRange = getPreRange(range);
-      const postRange = getPostRange(range);
-      console.log({preRange, postRange});
-
-      const preRangeSpan = document.createElement("span");
-      const preRangeContents = preRange.extractContents();
-      preRangeSpan.append(preRangeContents);
-      preRange.startContainer.appendChild(preRangeSpan);
-      // preRange.startContainer.appendChild(preRangeContents);
-
-      const postRangeSpan = document.createElement("span");
-      const postRangeContents = postRange.extractContents();
-      postRangeSpan.append(postRangeContents);
-      postRange.startContainer.appendChild(postRangeSpan);
-      // postRange.startContainer.appendChild(postRangeContents);
-
-      // Try to prepend and append new spans, preRange from start of text to cursor, postRange from cursor to end of text
-
-      // range.extractContents() into each span 
-
-      // consider writing promoteToSibling, demoteToChild functions
-
-      // const postRange = new Range();
-      // postRange.setStart(startContainer, startOffset);
-      // postRange.setEnd(startContainer, 0);
-      // console.log({postRange});
-    }
-  }
-
-  useEffect(() => {
-    setMyRefContent(myRef.current?.innerHTML)
-  }, [myRef.current?.innerHTML])
-
   return (
     <>
       <h1>Texteditable Experiment</h1>
       <div>
-        <button onClick={handleBold}><strong>B</strong></button>
+        {/* <button onClick={handleBold}><strong>B</strong></button>
         <button onClick={()=> handleItalics(myRef)}><i>I</i></button>
         <button onClick={handleWackyLink}><i>WL</i></button>
         <button onClick={insertTextInto}>Insert Goofy Text</button>
-        <button onClick={alternateBisect}>Bisect</button>
+        <button onClick={alternateBisect}>Bisect</button> */}
       </div>
       <EditTextButtonRow contentRef={myRef} >
         <EditTextButton
+          dataKey="strong"
           query="strong"
-          wrapper={document.createElement("strong")}
+          // wrapper={document.createElement("strong")}
+          // wrapper={strongWrapper}
           selection={selection}
         >
           <strong>B</strong>
         </EditTextButton>
         <EditTextButton
+          dataKey="italics"
           query="i"
-          wrapper={document.createElement("i")}
+          // wrapper={document.createElement("i")}
           selection={selection}
         >
           <i>I</i>
@@ -293,14 +203,16 @@ export default function ContentEditableExperiment() {
           border: "2px solid black",
         }}
         
-        onSelect={(e) => {
-          // console.log(window.getSelection()?.toString())
-          setSelection(window.getSelection())
-        }}
+        // onSelect={(e) => {
+        //   // console.log(window.getSelection()?.toString())
+        //   setSelection(window.getSelection())
+        // }}
         
-        onBlur={(e) => {
-          setSelection(null);
-        }}
+        // onBlur={(e) => {
+        //   setSelection(null);
+        // }}
+
+
         // onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
         //   if (e.key === 'Tab') {
         //     e.preventDefault();
@@ -326,7 +238,7 @@ export default function ContentEditableExperiment() {
         // onInputCapture={(e) => console.log("input capture", {text: myRef.current?.innerText})}
 
       >
-        A B C D E F G
+        
         {/* <WackyLink initialText="Wacky Link Text" /> */}
       </div>
       <div>
@@ -342,25 +254,7 @@ export default function ContentEditableExperiment() {
 }
 
 
-type WackyLinkProps = {
-  initialText: String
-}
 
-
-function WackyLink({initialText}: WackyLinkProps) {
-  return (
-    <div 
-      contentEditable
-      
-      style={{
-        backgroundColor: "red",
-        display: "inline-block"
-      }}
-    >
-      {initialText}
-    </div>
-  )
-}
 
 
 
@@ -376,57 +270,5 @@ function WackyLink({initialText}: WackyLinkProps) {
     //   );
     // });
     
-type EditTextButtonProps = {
-  children: React.ReactNode,
-  selection: Selection | null,
-  contentRef?: React.MutableRefObject<HTMLDivElement | null>,
-  query: string,
-  wrapper: Element
-}
 
 
-function EditTextButton({children, selection, contentRef, query, wrapper}: EditTextButtonProps) {
-
-  function handleClick() {
-    console.log(contentRef?.current?.innerHTML);
-  }
-
-  function getSelectionIsDescendentOf(): boolean {
-    if (!selection || !contentRef || !contentRef.current) return false;
-    else return selectionIsDescendentOf(selection, query, contentRef.current);
-  }
-
-  return (
-    <>
-      <button onClick={handleClick}>
-        {children}
-      </button>
-      <p>
-        Is Descendent Of: {String(getSelectionIsDescendentOf())}, Selection Covered By: {String(true)}
-      </p>
-    </>
-  )
-}
-
-
-type EditTextButtonRowProps = {
-  contentRef: React.MutableRefObject<HTMLDivElement | null>,
-  // children: ReactElement<EditTextButtonProps> | ReactElement<EditTextButtonProps>[]
-  children: ReactElement<EditTextButtonProps>[]
-}
-
-export function EditTextButtonRow({contentRef, children}: EditTextButtonRowProps): React.ReactElement {
-
-  return (
-    <div>
-      {children.map(
-        (child) => {
-          if (child.type === EditTextButton) return (
-            <EditTextButton {...child.props} contentRef={contentRef} />
-          );
-          else return null;
-        }
-      )}
-    </div>
-  )
-}
