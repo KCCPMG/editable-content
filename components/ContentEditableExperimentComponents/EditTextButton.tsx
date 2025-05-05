@@ -45,6 +45,12 @@ export default function EditTextButton({dataKey, children, selection, contentRef
       }
       wrapInElement(selection, wrapper);
 
+      if (wrapper.childNodes.length === 0) {
+        const textNode = document.createTextNode("\u00A0");
+        wrapper.append(textNode);
+      }
+      selection.setBaseAndExtent(wrapper, 0, wrapper, wrapper.childNodes.length);
+
     }
 
     // TODO: selection not descendent of wrapper, selection covered
@@ -54,6 +60,8 @@ export default function EditTextButton({dataKey, children, selection, contentRef
 
 
     // TODO: Restore selection
+    console.log(window.getSelection());
+    !!selection && !!selection.anchorNode && !!selection.focusNode &&  selection.setBaseAndExtent(selection.anchorNode, selection.anchorOffset, selection.focusNode, selection.focusOffset);
   }
 
 
