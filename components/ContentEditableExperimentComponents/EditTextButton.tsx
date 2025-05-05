@@ -1,22 +1,28 @@
 import { selectionIsDescendentOf, wrapInElement } from "@/utils/utils";
 import { useState, useEffect } from "react";
-import { ListItemButton } from "@mui/material";
+import { Button, ListItemButton } from "@mui/material";
+import { ButtonOwnProps } from "@mui/material";
+import { SelectionTransforms } from "slate/dist/interfaces/transforms/selection";
+
 
 export type EditTextButtonProps = {
   dataKey: string
   children: React.ReactNode,
   selection: Selection | null,
-  contentRef?: React.MutableRefObject<HTMLDivElement | null>,
   wrapperElement: string,
+  defaultColor?: ButtonOwnProps['color'],
+  selectedColor?: ButtonOwnProps['color'],
+  contentRef?: React.MutableRefObject<HTMLDivElement | null>,
   wrapperClassList?: Array<string>,
   wrapperId?: string
 
 }
 
 
-export default function EditTextButton({dataKey, children, selection, contentRef, wrapperElement, wrapperClassList, wrapperId}: EditTextButtonProps) {
+export default function EditTextButton({dataKey, children, selection, wrapperElement, defaultColor, selectedColor, contentRef, wrapperClassList, wrapperId}: EditTextButtonProps) {
 
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = useState("");
+  const [currentColor, setCurrentColor] = useState<ButtonOwnProps['color']>(defaultColor || "primary")
 
   useEffect(() => {
     
@@ -25,6 +31,11 @@ export default function EditTextButton({dataKey, children, selection, contentRef
     setQuery(wrapperElement + classList + id);
 
   }, [wrapperElement, wrapperClassList, wrapperId])
+
+  useEffect(() => {
+    console.log("selection listener useEffect");
+    getSelectionIsDescendentOf() ? setCurrentColor(selectedColor) : setCurrentColor(defaultColor)
+  }, [selection?.anchorNode, selection?.focusNode, selection?.anchorOffset, selection?.focusOffset])
   
   
   function handleClick() {
@@ -78,12 +89,19 @@ export default function EditTextButton({dataKey, children, selection, contentRef
 
   return (
     <>
-      <ListItemButton onClick={handleClick}>
+      {/* <ListItemButton onClick={handleClick} selected>
         {children}
-      </ListItemButton>
-      <p>
+      </ListItemButton> */}
+      <Button 
+        variant="outlined"
+        color={currentColor}
+        onClick={handleClick}
+      >
+        {children}
+      </Button>
+      {/* <p>
         Is Descendent Of: {String(getSelectionIsDescendentOf())}, Selection Covered By: {String(true)}
-      </p>
+      </p> */}
     </>
   )
 }
