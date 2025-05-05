@@ -1,5 +1,6 @@
 import { selectionIsDescendentOf, wrapInElement } from "@/utils/utils";
 import { useState, useEffect } from "react";
+import { ListItemButton } from "@mui/material";
 
 export type EditTextButtonProps = {
   dataKey: string
@@ -28,11 +29,11 @@ export default function EditTextButton({dataKey, children, selection, contentRef
   
   function handleClick() {
     // selection not descendent of wrapper, selection not covered
+    console.log(`click from EditTextButton ${dataKey}`)
     
     // TODO: purge any contents within of wrapper
     
-    console.log(`click from EditTextButton ${dataKey}`)
-    // console.log(contentRef?.current?.innerHTML);
+    
     if (!getSelectionIsDescendentOf() && !!selection) {
       const wrapper = document.createElement(wrapperElement);
       if (wrapperClassList) {
@@ -60,8 +61,8 @@ export default function EditTextButton({dataKey, children, selection, contentRef
 
 
     // TODO: Restore selection
-    console.log(window.getSelection());
-    !!selection && !!selection.anchorNode && !!selection.focusNode &&  selection.setBaseAndExtent(selection.anchorNode, selection.anchorOffset, selection.focusNode, selection.focusOffset);
+    // console.log(window.getSelection());
+    // !!selection && !!selection.anchorNode && !!selection.focusNode &&  selection.setBaseAndExtent(selection.anchorNode, selection.anchorOffset, selection.focusNode, selection.focusOffset);
   }
 
 
@@ -77,9 +78,9 @@ export default function EditTextButton({dataKey, children, selection, contentRef
 
   return (
     <>
-      <button onClick={handleClick}>
+      <ListItemButton onClick={handleClick}>
         {children}
-      </button>
+      </ListItemButton>
       <p>
         Is Descendent Of: {String(getSelectionIsDescendentOf())}, Selection Covered By: {String(true)}
       </p>
