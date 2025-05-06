@@ -2,6 +2,7 @@
 import React, { ReactElement, useRef, useState, useEffect, forwardRef } from "react";
 import { createRoot } from 'react-dom/client';
 import { wrapInElement, unwrapChildrenFrom, selectionIsDescendentOf, selectionIsDescendentOfNode } from '@/utils/utils';
+import { EditableContentProps, EditTextButtonProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import EditTextButtonRow from "./ContentEditableExperimentComponents/EditTextButtonRow";
 import WackyLink from "./ContentEditableExperimentComponents/WackyLink";
@@ -26,30 +27,53 @@ function handleItalics(ref: React.MutableRefObject<HTMLDivElement | null>) {
 }
 
 
-export default function ContentEditableExperiment() {
 
-  const myRef = useRef<null | HTMLDivElement>(null);
-  const [myRefCurrent, setMyRefContent] = useState(myRef?.current?.innerHTML || undefined)
-  const [selection, setSelection] = useState<Selection | null>(null)
+
+
+export default function EditableContent({initialHTML, editTextButtons}: EditableContentProps) {
+
+  const contentRef = useRef<null | HTMLDivElement>(null);
+  const [contentRefCurrent, setContentRefContent] = useState(contentRef?.current?.innerHTML || undefined)
+  const [selectionAnchorNode, setSelectionAnchorNode] = useState<Node | null>(null)
+  const [selectionAnchorOffset, setSelectionAnchorOffset] = useState<Number | null>(null)
+  const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
+  const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null)
+  const [selectionToString, setSelectionToString] = useState<string>("")
 
 
   useEffect(() => {
     // console.log("myRef.current", myRef.current);
+
+    if (contentRef.current && initialHTML) {
+      contentRef.current.innerHTML = initialHTML;
+    }
+
+
     document.addEventListener('selectionchange', function(e) {
 
       const gotSelection = window.getSelection();
 
-      // console.log(
-      //   Boolean(gotSelection), 
-      //   Boolean(myRef.current), 
-      //   gotSelection && myRef.current && selectionIsDescendentOfNode(gotSelection, myRef.current)
-      // );
+      console.log(
+        Boolean(gotSelection), 
+        Boolean(contentRef.current), 
+        gotSelection && contentRef.current && selectionIsDescendentOfNode(gotSelection, contentRef.current)
+      );
 
-      if (gotSelection && myRef.current && selectionIsDescendentOfNode(gotSelection, myRef.current)) {
+      if (gotSelection && contentRef.current && selectionIsDescendentOfNode(gotSelection, contentRef.current)) {
         // console.log(e);
-        setSelection(window.getSelection());
-      } else setSelection(null);
-
+        // setSelection(window.getSelection());
+        setSelectionAnchorNode(gotSelection.anchorNode);
+        setSelectionAnchorOffset(gotSelection.anchorOffset);
+        setSelectionFocusNode(gotSelection.focusNode);
+        setSelectionFocusOffset(gotSelection.focusOffset);
+        setSelectionToString(gotSelection.toString());
+      } else {
+        setSelectionAnchorNode(null);
+        setSelectionAnchorOffset(null);
+        setSelectionFocusNode(null);
+        setSelectionFocusOffset(null);
+        setSelectionToString("");
+      }
     })
   }, [])
 
@@ -67,9 +91,9 @@ export default function ContentEditableExperiment() {
     const selection = window.getSelection();
     
     // Check if the selection is within the specific div
-    if (myRef.current && selection && selection.rangeCount > 0) {
+    if (contentRef.current && selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
-      if (myRef.current.contains(range.startContainer) || myRef.current.contains(range.endContainer)) {
+      if (contentRef.current.contains(range.startContainer) || contentRef.current.contains(range.endContainer)) {
         // Get the selected text
         const selectedText = selection.toString();
         range.surroundContents(document.createElement('strong'));
@@ -78,20 +102,19 @@ export default function ContentEditableExperiment() {
     }
   }
 
-
   function handleWackyLink() {
     console.log("Wacky Link");
     console.log(window.getSelection());
 
     const selection = window.getSelection();
     // Check if the selection is within the specific div
-    if (myRef.current && selection && selection.rangeCount > 0) {
+    if (contentRef.current && selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
-      if (myRef.current.contains(range.startContainer) || myRef.current.contains(range.endContainer)) {
+      if (contentRef.current.contains(range.startContainer) || contentRef.current.contains(range.endContainer)) {
           // Get the selected text
           const selectedText = selection.toString();
           
-          const root = createRoot(myRef.current); 
+          const root = createRoot(contentRef.current); 
           root.render(<WackyLink initialText="YO SOY TAN WACKY" />);
 
       } 
@@ -105,7 +128,7 @@ export default function ContentEditableExperiment() {
     const selection = window.getSelection();
     
 
-    if (myRef.current && selection && selection.rangeCount > 0) {
+    if (contentRef.current && selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       const { startOffset, endOffset } = range;
 
@@ -128,8 +151,8 @@ export default function ContentEditableExperiment() {
         selectionText,
         ancestorPostSelectionText,
         nodeName,
-        myRefCurrent: myRef.current,
-        isDescendent: myRef.current.contains(commonAncestor)
+        myRefCurrent: contentRef.current,
+        isDescendent: contentRef.current.contains(commonAncestor)
       })
 
       // ancestorPreSelectionText  document.createElement(nodeName);
@@ -139,7 +162,7 @@ export default function ContentEditableExperiment() {
 
       const new_selection = window.getSelection();
       new_selection?.removeAllRanges();
-      range.selectNodeContents(myRef.current);
+      range.selectNodeContents(contentRef.current);
       new_selection?.addRange(range);
       
       range.setStartAfter(span);
@@ -162,6 +185,7 @@ export default function ContentEditableExperiment() {
   }
 
 
+  // this has the selection
 
 
   return (
@@ -174,8 +198,8 @@ export default function ContentEditableExperiment() {
         <button onClick={insertTextInto}>Insert Goofy Text</button>
         <button onClick={alternateBisect}>Bisect</button> */}
       </div>
-      <EditTextButtonRow contentRef={myRef} >
-        <EditTextButton
+      <EditTextButtonRow contentRef={contentRef} >
+        {/* <EditTextButton
           dataKey="strong"
           wrapperElement="strong"
           selection={selection}
@@ -188,11 +212,11 @@ export default function ContentEditableExperiment() {
           selection={selection}
         >
           <i>I</i>
-        </EditTextButton>
+        </EditTextButton> */}
       </EditTextButtonRow>
       <div
         contentEditable
-        ref={myRef}
+        ref={contentRef}
         style={{
           width: "100%",
           height: "150px",
@@ -240,7 +264,7 @@ export default function ContentEditableExperiment() {
       </div>
       <div>
         <p>Selection:</p>
-        {selection?.toString()}
+        {selectionToString}
       </div>
       {/* <p>This text should not change</p>
       <div>

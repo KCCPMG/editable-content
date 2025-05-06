@@ -5,7 +5,7 @@ import EditableDiv from "@/components/EditableDiv";
 import ReactDynamicTextarea from "@/components/ReactDynamicTextarea";
 import theme from "@/theme";
 import { ReactEditableDiv } from "@/components/ReactEditableDiv";
-import ContentEditableExperiment from "@/components/ContentEditableExperiment";
+import EditableContent from "@/components/EditableContent";
 
 export default function Home() {
   return (
@@ -22,7 +22,10 @@ export default function Home() {
       {/* <EditableDiv /> */}
       {/* <ReactDynamicTextarea /> */}
       {/* <ReactEditableDiv initialContent="Hello" /> */}
-      <ContentEditableExperiment />
+      <EditableContent 
+        initialHTML="<strong>Test <i>Test</i> Test</strong>"
+        editTextButtons={[]}
+      />
     </main>
   );
 }

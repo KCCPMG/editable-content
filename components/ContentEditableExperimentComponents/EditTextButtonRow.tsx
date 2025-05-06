@@ -4,14 +4,14 @@ import { ReactElement, cloneElement } from "react";
 type EditTextButtonRowProps = {
   contentRef: React.MutableRefObject<HTMLDivElement | null>,
   // children: ReactElement<EditTextButtonProps> | ReactElement<EditTextButtonProps>[]
-  children: ReactElement<EditTextButtonProps>[]
+  children?: ReactElement<EditTextButtonProps>[]
 }
 
 export default function EditTextButtonRow({contentRef, children}: EditTextButtonRowProps): React.ReactElement {
 
   return (
     <div>
-      {children.map(
+      {children?.map(
         (child) => {
           if (child.type === EditTextButton) return (
             cloneElement(child, {

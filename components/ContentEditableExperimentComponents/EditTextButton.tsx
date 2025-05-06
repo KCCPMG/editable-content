@@ -32,10 +32,12 @@ export default function EditTextButton({dataKey, children, selection, wrapperEle
 
   }, [wrapperElement, wrapperClassList, wrapperId])
 
-  useEffect(() => {
-    console.log("selection listener useEffect");
-    getSelectionIsDescendentOf() ? setCurrentColor(selectedColor) : setCurrentColor(defaultColor)
-  }, [selection?.anchorNode, selection?.focusNode, selection?.anchorOffset, selection?.focusOffset])
+  // useEffect(() => {
+  //   console.log("selection listener useEffect");
+  //   getSelectionIsDescendentOf() ? setCurrentColor(selectedColor) : setCurrentColor(defaultColor)
+  // }, [selection?.anchorNode, selection?.focusNode, selection?.anchorOffset, selection?.focusOffset])
+
+  console.log(selection?.toString());
   
   
   function handleClick() {
