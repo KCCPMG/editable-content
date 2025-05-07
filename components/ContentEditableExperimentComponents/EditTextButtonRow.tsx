@@ -1,4 +1,5 @@
-import EditTextButton, { EditTextButtonProps } from "./EditTextButton";
+import EditTextButton from "./EditTextButton";
+import { EditTextButtonProps } from ".";
 import { ReactElement, cloneElement } from "react";
 
 type EditTextButtonRowProps = {

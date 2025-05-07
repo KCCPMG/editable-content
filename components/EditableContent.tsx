@@ -1,7 +1,7 @@
 "use client"
-import React, { ReactElement, useRef, useState, useEffect, forwardRef } from "react";
+import React, { ReactElement, useRef, useState, useEffect, forwardRef, MutableRefObject } from "react";
 import { createRoot } from 'react-dom/client';
-import { wrapInElement, unwrapChildrenFrom, selectionIsDescendentOf, selectionIsDescendentOfNode } from '@/utils/utils';
+import { wrapInElement, unwrapChildrenFrom, selectionIsDescendentOf, selectionIsDescendentOfNode, generateQuery, selectionCoveredBy, createWrapper } from '@/utils/utils';
 import { EditableContentProps, EditTextButtonProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import EditTextButtonRow from "./ContentEditableExperimentComponents/EditTextButtonRow";
@@ -33,7 +33,8 @@ function handleItalics(ref: React.MutableRefObject<HTMLDivElement | null>) {
 export default function EditableContent({initialHTML, editTextButtons}: EditableContentProps) {
 
   const contentRef = useRef<null | HTMLDivElement>(null);
-  const [contentRefCurrent, setContentRefContent] = useState(contentRef?.current?.innerHTML || undefined)
+  const [contentRefState, setContentRefState] = useState<MutableRefObject<null | HTMLDivElement> | null>(null);
+  // const [contentRefCurrent, setContentRefContent] = useState(contentRef?.current?.innerHTML || undefined)
   const [selectionAnchorNode, setSelectionAnchorNode] = useState<Node | null>(null)
   const [selectionAnchorOffset, setSelectionAnchorOffset] = useState<Number | null>(null)
   const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
@@ -42,15 +43,14 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
 
   useEffect(() => {
-    // console.log("myRef.current", myRef.current);
 
     if (contentRef.current && initialHTML) {
+      setContentRefState(contentRef)
       contentRef.current.innerHTML = initialHTML;
     }
 
 
     document.addEventListener('selectionchange', function(e) {
-
       const gotSelection = window.getSelection();
 
       console.log(
@@ -60,8 +60,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       );
 
       if (gotSelection && contentRef.current && selectionIsDescendentOfNode(gotSelection, contentRef.current)) {
-        // console.log(e);
-        // setSelection(window.getSelection());
         setSelectionAnchorNode(gotSelection.anchorNode);
         setSelectionAnchorOffset(gotSelection.anchorOffset);
         setSelectionFocusNode(gotSelection.focusNode);
@@ -76,11 +74,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       }
     })
   }, [])
-
-
-  // useEffect(() => {
-  //   setMyRefContent(myRef.current?.innerHTML)
-  // }, [myRef.current?.innerHTML])
 
 
   function handleBold() {
@@ -185,8 +178,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   }
 
 
-  // this has the selection
-
 
   return (
     <>
@@ -198,7 +189,36 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
         <button onClick={insertTextInto}>Insert Goofy Text</button>
         <button onClick={alternateBisect}>Bisect</button> */}
       </div>
-      <EditTextButtonRow contentRef={contentRef} >
+      <div>
+        {
+          
+          contentRef.current ? editTextButtons.map(etb => {
+            console.log("should re-render button");
+            const query = generateQuery(etb.wrapperArgs);
+            const selection = window.getSelection();
+            const selected = selection ? selectionCoveredBy(selection, query, contentRef.current!): false; // typescript not deeply analyzng callback, prior check of contentRef.current is sufficient
+
+            console.log(JSON.stringify({selected, selection, query}));
+
+            return (
+              <EditTextButton
+                {...etb}
+                onClick={
+                  selected ? 
+                    () => {console.log("unimplemented")} :
+                    () => {
+                      const wrapper = createWrapper(etb.wrapperArgs, document);
+                      const selection = window.getSelection();
+                      if (selection) wrapInElement(selection, wrapper);
+                    }
+                }
+                selected={selected}
+
+              />
+            )
+          }): [] 
+        }
+
         {/* <EditTextButton
           dataKey="strong"
           wrapperElement="strong"
@@ -213,7 +233,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
         >
           <i>I</i>
         </EditTextButton> */}
-      </EditTextButtonRow>
+      </div>
       <div
         contentEditable
         ref={contentRef}

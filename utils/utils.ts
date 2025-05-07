@@ -1,5 +1,6 @@
 import { Children, ElementType } from "react";
 import { node, nodes } from "slate";
+import { WrapperArgs } from "@/components/ContentEditableExperimentComponents";
 
 
 function alternateBisect() {
@@ -466,10 +467,10 @@ function getAllTextNodes(nodes: Array<Node>): Array<Node> {
 }
 
 
-function getSelectionChildNodes(limitingContainer: Node): Array<Node> {
-  const selection = window.getSelection();
-  if (!selection) return [];
+function getSelectionChildNodes(selection: Selection, limitingContainer: Node): Array<Node> {
+  if (!selection || !selection.anchorNode || !selection.focusNode) return [];
   
+  // console.log(selection);
   const { startContainer, endContainer } = selection.getRangeAt(0);
   const tw = document.createTreeWalker(limitingContainer);
 
@@ -503,11 +504,34 @@ function getSelectionChildNodes(limitingContainer: Node): Array<Node> {
 }
 
 
-function selectionCoveredBy(query: string, limitingContainer: Node) {
-  const nodes = getSelectionChildNodes(limitingContainer);
+export function selectionCoveredBy(selection: Selection, query: string, limitingContainer: Node) {
+  const nodes = getSelectionChildNodes(selection, limitingContainer);
   const textNodes = nodes
   .filter(n => n.nodeType === 3)
   .filter(n => n.textContent && n.textContent.length > 0); 
   return textNodes.every(tn => nodeIsDescendentOf(tn, query, limitingContainer));
 
+}
+
+
+export function generateQuery({element, classList, id}: WrapperArgs): string {
+  const classListString = classList ? classList.map(c => "."+c).join("") : "";
+  const idString = id ? "#"+id : "";
+
+  return element + classListString + idString;
+}
+
+
+export function createWrapper({element, classList, id}: WrapperArgs, document: Document): HTMLElement {
+
+  const wrapper = document.createElement(element);
+  if (classList) {
+    classList.forEach(cl => {
+      wrapper.classList.add(cl);
+    });
+  }
+  if (id) {
+    wrapper.setAttribute('id', id);
+  }
+  return wrapper;
 }
