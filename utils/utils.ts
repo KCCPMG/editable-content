@@ -242,7 +242,7 @@ export function wrapInElement(selection: Selection, element: Element) {
 }
 
 
-function unwrapFromElement(contents: DocumentFragment, elementName: string) {
+export function unwrapFromElement(contents: DocumentFragment, elementName: string) {
   // const selection = window.getSelection();
   // if (!selection) return;
   // const range = selection.getRangeAt(0);
@@ -257,6 +257,51 @@ function unwrapFromElement(contents: DocumentFragment, elementName: string) {
     }
   }
   return contents;
+}
+
+
+export function unwrapSelectionFromQuery(selection: Selection, query: string, limitingContainer: Node): void {
+  if (!selection || !selection.anchorNode || !selection.focusNode) return;
+
+  const preAncestorNode = getAncestorNode(selection.anchorNode, query, limitingContainer);
+
+  if (!preAncestorNode) return;
+
+  const preRange = new Range();
+  preRange.setStartBefore(preAncestorNode);
+  preRange.setEnd(selection.anchorNode, selection.anchorOffset);
+  const preRangeContents = preRange.extractContents();
+  for (let cn of Array.from(preRangeContents.childNodes)) {
+    preRange.insertNode(cn);
+  }
+
+  const postAncestorNode = getAncestorNode(selection.focusNode, query, limitingContainer);
+
+  if (!postAncestorNode) return;
+
+  const postRange = new Range();
+  postRange.setEndAfter(postAncestorNode);
+  postRange.setStart(selection.focusNode, selection.focusOffset);
+  const postRangeContents = postRange.extractContents();
+  for (let cn of Array.from(postRangeContents.childNodes)) {
+    postRange.insertNode(cn);
+  }
+
+  // will preAncestorNode and postAncestorNode necessarily be the same?
+  // I still need to promote the actual selection out of the wrapper
+
+  const selectionAncestorNode = getAncestorNode(selection.focusNode, query, limitingContainer);
+  // if (!selectionAncestorNode) return;
+  // const selectionAncestorRange = new Range();
+  // selectionAncestorRange.setStartBefore(selectionAncestorNode);
+  // selectionAncestorRange.setEndAfter(selectionAncestorNode);
+  // const selectionAncestorContents = selectionAncestorRange.extractContents();
+  // for (let cn of Array.from(selection.getRangeAt(0).extractContents))
+  if (!selectionAncestorNode) return;
+  promoteChildrenOfNode(selectionAncestorNode);
+
+
+  return;
 }
 
 
@@ -334,12 +379,13 @@ export function promoteChildrenOfNode(node: Node): void {
     for (let child of Array.from(node.childNodes)) {
       node.parentNode.insertBefore(child, node);
     }
+    node.parentNode.removeChild(node);
   }
 }
 
-export function unwrapChildrenFrom(query: string) {
-  const selection = window.getSelection();
-  if (!selection) return;
+export function unwrapChildrenFrom(selection: Selection, query: string) {
+  if (!selection || !selection.anchorNode || !selection.focusNode) return;
+  
   const range = selection.getRangeAt(0);
   const fragment = range.extractContents();
   // const childNodes = Array.from(fragment.childNodes);
@@ -376,6 +422,20 @@ export function nodeIsDescendentOf(node: Node, query: string, limitingContainer:
   return false;
 }
 
+
+export function getAncestorNode(node: Node, query: string, limitingContainer: Node): Node | null {
+  let parentNode = node.parentNode;
+  while (parentNode) {
+    if (parentNode === limitingContainer) break;
+    if (parentNode instanceof Element && parentNode.matches(query)) {
+      return parentNode;
+    } else {
+      parentNode = parentNode.parentNode;
+    }
+  }
+  return null;
+
+}
 
 
 export function selectionIsDescendentOf(selection: Selection, query: string, limitingContainer: Node): boolean {
@@ -535,3 +595,29 @@ export function createWrapper({element, classList, id}: WrapperArgs, document: D
   }
   return wrapper;
 }
+
+
+
+
+
+// asgdhfjgkfdhfdgrsefgrhsdjfdgkfdjfhdgr() {
+//   const preRange = new Range()
+//   const selectedRange = selection.getRangeAt(0);
+//   const parent = selectedRange.startContainer.parentNode
+//   preRange.setStart(parent, 0);
+//   preRange.setEnd(selectedRange.startContainer, selectedRange.startOffset)
+//   extracted = preRange.extractContents();
+//   for (let cn of Array.from(extracted.childNodes)) {
+//     grandparentNode.insertBefore(cn, parent);
+//   }
+// }
+
+
+// const selection = window.getSelection();
+// const preRange = new Range();
+// preRange.setStartBefore(selection.anchorNode.parentNode);
+// preRange.setEnd(selection?.anchorNode, selection.anchorOffset);
+// const contents = preRange.extractContents();
+// for (let cn of contents.childNodes) {
+//   preRange.insertNode(cn);
+// }
