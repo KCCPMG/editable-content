@@ -1,11 +1,9 @@
 "use client"
 import React, { ReactElement, useRef, useState, useEffect, forwardRef, MutableRefObject } from "react";
-import { createRoot } from 'react-dom/client';
-import { wrapInElement, unwrapChildrenFrom, selectionIsDescendentOf, selectionIsDescendentOfNode, generateQuery, selectionCoveredBy, createWrapper } from '@/utils/utils';
+import { wrapInElement, unwrapChildrenFrom, selectionIsDescendentOf, selectionIsDescendentOfNode, generateQuery, selectionCoveredBy, createWrapper, unwrapSelectionFromQuery } from '@/utils/utils';
 import { EditableContentProps, EditTextButtonProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import EditTextButtonRow from "./ContentEditableExperimentComponents/EditTextButtonRow";
-import WackyLink from "./ContentEditableExperimentComponents/WackyLink";
 
 
 function handleItalics(ref: React.MutableRefObject<HTMLDivElement | null>) {
@@ -34,7 +32,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefState, setContentRefState] = useState<MutableRefObject<null | HTMLDivElement> | null>(null);
-  // const [contentRefCurrent, setContentRefContent] = useState(contentRef?.current?.innerHTML || undefined)
   const [selectionAnchorNode, setSelectionAnchorNode] = useState<Node | null>(null)
   const [selectionAnchorOffset, setSelectionAnchorOffset] = useState<Number | null>(null)
   const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
@@ -76,106 +73,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   }, [])
 
 
-  function handleBold() {
-    console.log("Bold");
-    console.log(window.getSelection());
 
-
-    const selection = window.getSelection();
-    
-    // Check if the selection is within the specific div
-    if (contentRef.current && selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      if (contentRef.current.contains(range.startContainer) || contentRef.current.contains(range.endContainer)) {
-        // Get the selected text
-        const selectedText = selection.toString();
-        range.surroundContents(document.createElement('strong'));
-
-      } 
-    }
-  }
-
-  function handleWackyLink() {
-    console.log("Wacky Link");
-    console.log(window.getSelection());
-
-    const selection = window.getSelection();
-    // Check if the selection is within the specific div
-    if (contentRef.current && selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      if (contentRef.current.contains(range.startContainer) || contentRef.current.contains(range.endContainer)) {
-          // Get the selected text
-          const selectedText = selection.toString();
-          
-          const root = createRoot(contentRef.current); 
-          root.render(<WackyLink initialText="YO SOY TAN WACKY" />);
-
-      } 
-    }
-
-  }
-
-  function insertTextInto() {
-    console.log(window.getSelection());
-
-    const selection = window.getSelection();
-    
-
-    if (contentRef.current && selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      const { startOffset, endOffset } = range;
-
-      const commonAncestor = range.commonAncestorContainer;
-      // edit ^ to make sure that we are getting an element besides "#text", potentially make this recursive
-      // to handle bisecting nested elements all the way up to the ref
-
-
-
-      const ancestorPreSelectionText = commonAncestor.textContent?.slice(0, startOffset) || "";
-      const selectionText = commonAncestor.textContent?.slice(startOffset, endOffset) || "";
-      const ancestorPostSelectionText = commonAncestor.textContent?.slice(endOffset) || "";
-
-      const nodeName = commonAncestor.nodeName
-
-      console.log({
-        range,
-        commonAncestor,
-        ancestorPreSelectionText,
-        selectionText,
-        ancestorPostSelectionText,
-        nodeName,
-        myRefCurrent: contentRef.current,
-        isDescendent: contentRef.current.contains(commonAncestor)
-      })
-
-      // ancestorPreSelectionText  document.createElement(nodeName);
-      const span = document.createElement("span")
-      span.innerText = "Split here";
-      range.insertNode(span);
-
-      const new_selection = window.getSelection();
-      new_selection?.removeAllRanges();
-      range.selectNodeContents(contentRef.current);
-      new_selection?.addRange(range);
-      
-      range.setStartAfter(span);
-      range.collapse(true);
-
-      // range.collapse(false);
-      // range.selectNodeContents(myRef.current)
-      // selection.addRange(range)
-
-      // if (window.getSelection) {
-      //   var sel = window.getSelection();
-      //   sel.removeAllRanges();
-      //   range.selectNodeContents(myRef.current);
-      //   sel.addRange(range);
-      //   range.collapse(false);
-      // }
-
-
-    }
-  }
 
 
 
@@ -183,32 +81,28 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     <>
       <h1>Texteditable Experiment</h1>
       <div>
-        {/* <button onClick={handleBold}><strong>B</strong></button>
-        <button onClick={()=> handleItalics(myRef)}><i>I</i></button>
-        <button onClick={handleWackyLink}><i>WL</i></button>
-        <button onClick={insertTextInto}>Insert Goofy Text</button>
-        <button onClick={alternateBisect}>Bisect</button> */}
-      </div>
-      <div>
         {
           
           contentRef.current ? editTextButtons.map(etb => {
             console.log("should re-render button");
             const query = generateQuery(etb.wrapperArgs);
             const selection = window.getSelection();
-            const selected = selection ? selectionCoveredBy(selection, query, contentRef.current!): false; // typescript not deeply analyzng callback, prior check of contentRef.current is sufficient
+            const selected = selection ? selectionCoveredBy(selection, query, contentRef.current!): false; // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
 
             console.log(JSON.stringify({selected, selection, query}));
 
-            return (
+            return ( 
               <EditTextButton
                 {...etb}
+                key={etb.dataKey}
                 onClick={
                   selected ? 
-                    () => {console.log("unimplemented")} :
+                    () => {
+                      if (selection) unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+                    } :
                     () => {
                       const wrapper = createWrapper(etb.wrapperArgs, document);
-                      const selection = window.getSelection();
+                      
                       if (selection) wrapInElement(selection, wrapper);
                     }
                 }

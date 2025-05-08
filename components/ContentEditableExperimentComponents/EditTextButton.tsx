@@ -7,7 +7,7 @@ import { EditTextButtonProps, WrapperArgs } from ".";
 
 
 
-export default function EditTextButton({dataKey, child, defaultColor, selectedColor, contentRef, onClick, 
+export default function EditTextButton({dataKey, child, defaultColor, selectedColor, contentRef, onClick, selected,
   wrapperArgs : {element, classList, id}}: EditTextButtonProps
 ) {
 
@@ -95,7 +95,7 @@ export default function EditTextButton({dataKey, child, defaultColor, selectedCo
   return (
     <Button 
       variant="outlined"
-      color={currentColor}
+      color={selected ? (selectedColor || "secondary") : (defaultColor || "primary") }
       onClick={onClick}
     >
       {child}
