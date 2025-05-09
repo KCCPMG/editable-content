@@ -6,27 +6,6 @@ import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton
 import EditTextButtonRow from "./ContentEditableExperimentComponents/EditTextButtonRow";
 
 
-function handleItalics(ref: React.MutableRefObject<HTMLDivElement | null>) {
-  console.log("Italics");
-  console.log(window.getSelection());
-
-  const selection = window.getSelection();
-  
-  // Check if the selection is within the specific div
-  if (ref.current && selection && selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0);
-    if (ref.current.contains(range.startContainer) || ref.current.contains(range.endContainer)) {
-        // Get the selected text
-        const selectedText = selection.toString();
-        range.surroundContents(document.createElement('i'));
-
-    } 
-  }
-}
-
-
-
-
 
 export default function EditableContent({initialHTML, editTextButtons}: EditableContentProps) {
 
@@ -73,10 +52,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   }, [])
 
 
-
-
-
-
   return (
     <>
       <h1>Texteditable Experiment</h1>
@@ -112,21 +87,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             )
           }): [] 
         }
-
-        {/* <EditTextButton
-          dataKey="strong"
-          wrapperElement="strong"
-          selection={selection}
-        >
-          <strong>B</strong>
-        </EditTextButton>
-        <EditTextButton
-          dataKey="italics"
-          wrapperElement="i"
-          selection={selection}
-        >
-          <i>I</i>
-        </EditTextButton> */}
       </div>
       <div
         contentEditable
@@ -137,73 +97,13 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
           margin: "auto",
           border: "2px solid black",
         }}
-        
-        // onSelect={(e) => {
-        //   // console.log(window.getSelection()?.toString())
-        //   setSelection(window.getSelection())
-        // }}
-        
-        // onBlur={(e) => {
-        //   setSelection(null);
-        // }}
-
-
-        // onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
-        //   if (e.key === 'Tab') {
-        //     e.preventDefault();
-        //     console.log("tab!");
-        //     console.log({e});
-        //     console.log({myRef});
-        //     if (myRef.current) {
-        //       console.log({selection: window.getSelection()});
-        //       myRef.current!.textContent += "tab"
-        //     }
-            
-        //   }
-        //   console.log("key down", {text: myRef.current?.innerText})
-        //   console.log(myRef.current)
-          
-        // }}
-        // onKeyDownCapture={(e) => console.log("key down capture", {text: myRef.current?.innerText})}
-        // onKeyUp={(e) => console.log("key up", {text: myRef.current?.innerText})}
-        // onKeyUpCapture={(e) => console.log("key up capture", {text: myRef.current?.innerText})}
-        // onChange={(e) => console.log("keydown", {text: myRef.current?.innerText})}
-        // onChangeCapture={(e) => console.log("keydown", {text: myRef.current?.innerText})}
-        // onInput={(e) => console.log("input", {text: myRef.current?.innerText})}
-        // onInputCapture={(e) => console.log("input capture", {text: myRef.current?.innerText})}
-
       >
-        
-        {/* <WackyLink initialText="Wacky Link Text" /> */}
+      
       </div>
       <div>
         <p>Selection:</p>
         {selectionToString}
       </div>
-      {/* <p>This text should not change</p>
-      <div>
-        {JSON.stringify(myRefCurrent)}
-      </div> */}
     </>
   )
 }
-
-
-
-
-
-
-
-
-// const AllowedChild = forwardRef((props: AllowedChildProps, ref: Ref<HTMLDivElement>) => {
-  //   return (
-    //     <div ref={ref}> {/* Attach the forwarded ref to the desired DOM element */}
-    //       Allowed Child: {props.name}
-    //       {props.parentProp && <p>Parent Prop: {props.parentProp}</p>}
-    //       {props.children && <div>{props.children}</div>}
-    //     </div>
-    //   );
-    // });
-    
-
-
