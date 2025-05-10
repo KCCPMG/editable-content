@@ -4,6 +4,18 @@ import { WrapperArgs } from "@/components/ContentEditableExperimentComponents";
 
 
 
+export function setSelection(startContainer: Node, startOffset: number, endContainer: Node, endOffset: number) {
+  const range = new Range();
+  range.setStart(startContainer, startOffset);
+  range.setEnd(endContainer, endOffset);
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);      
+
+  return selection;
+}
+
+
 export function wrapInElement(selection: Selection, element: Element) {
   if (!selection) return;
   const range = selection.getRangeAt(0);
@@ -75,7 +87,6 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
 
   return;
 }
-
 
 
 export function removeElementsByName(nodes: Array<ChildNode>, elementName: string): Array<ChildNode> {
@@ -204,6 +215,7 @@ export function selectionIsDescendentOf(selection: Selection, query: string, lim
 
   return false;
 }
+
 
 function nodeIsDescendentOfNode(node: Node, ancestorNode: Node) {
   let parentNode = node.parentNode;
