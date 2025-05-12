@@ -122,5 +122,21 @@ describe("test wrapInElement", function() {
 
   })
 
+  test("wrap text in element", function(){
+    const italics = document.querySelector("i#italics-2");
+    expect(italics).not.toBeNull();
+    const italicsText = italics!.childNodes[0];
+    const selection = setSelection(italicsText!, 7, italicsText!, 18);
+    expect(selection).not.toBeNull();
+
+    const underlineElement = document.createElement('u');
+    wrapInElement(selection!, underlineElement);
+
+    expect(underlineElement.parentNode).toBe(italics);
+    expect(underlineElement.textContent).toEqual(selection!.toString());
+    expect(italics!.childNodes.length).toBe(3);
+    expect(italics!.childNodes[1]).toBe(underlineElement);
+
+  })
 
 })
