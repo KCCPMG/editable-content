@@ -20,7 +20,6 @@ export function wrapInElement(selection: Selection, element: Element) {
   if (!selection) return;
   const range = selection.getRangeAt(0);
   const contents = range.extractContents();
-  console.log(element);
   element.append(contents);
   range.insertNode(element);
 }

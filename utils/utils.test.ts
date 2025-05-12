@@ -4,7 +4,9 @@
 
 
 import {describe, expect, jest, test, beforeAll} from '@jest/globals';
-import { setSelection } from './utils';
+import { setSelection, wrapInElement } from './utils';
+import { SelectionTransforms } from 'slate/dist/interfaces/transforms/selection';
+import { beforeEach } from 'node:test';
 
 
 const startingHTML = 
@@ -28,7 +30,6 @@ const startingHTML =
 
 describe("basic test", () => {
   test("basic test", () => {
-    console.log("ahhhhh");
     expect(2).toBe(2);
   })
 
@@ -61,21 +62,14 @@ describe("test setSelection", function() {
     const italics = document.querySelector("i#italics-2");
     expect(italics).not.toBeNull();
     const italicsText = italics!.childNodes[0];
-    console.log(italicsText.textContent);
-    console.log(italicsText.nodeName);
-    console.log(italicsText.nodeType);
     const selection = setSelection(italicsText!, 7, italicsText!, 18);
 
     const range = new Range();
     range.setStart(italicsText, 7);
     range.setEnd(italicsText, 18);
-    console.log(range.toString());
     
     range.setStart(italicsText, 0);
     range.setEnd(italicsText, 7);
-    console.log(range.toString());
-    
-    console.log(italics?.childNodes.length);
 
     expect(selection).not.toBeNull();
     expect(selection!.anchorNode?.nodeName).toBe("#text");
@@ -90,13 +84,37 @@ describe("test setSelection", function() {
 
 describe("test wrapInElement", function() {
 
+  beforeEach(function() {
+    document.body.innerHTML = startingHTML;
+  })
+
   test("wrap element in element", function() {
-    const italics = document.querySelector("i");
+    const italics = document.querySelector("i#italics-1");
     const anchor = document.createElement("a");
+    const italicsTextContent = italics?.textContent;
     
     expect(italics).not.toBeNull();
-    // const endContainerOffset = Array.from(italics?.parentNode?.childNodes).findIndex(n => n ===italics);
-    // setSelection(italics, 0, italics?.parentNode, endContainerOffset)
+    expect(italics?.parentNode).not.toBeNull();
+
+    const parentNode = italics!.parentNode;
+    const allSiblings = Array.from(parentNode!.childNodes);
+
+    const startContainerOffset = allSiblings.findIndex(n => n ===italics);
+    const endContainerOffset = startContainerOffset + 1;
+    const selection = setSelection(parentNode!, startContainerOffset, parentNode!, endContainerOffset);
+    expect(selection).not.toBeNull();
+    expect(selection!.anchorNode).toBe(selection!.focusNode)
+    expect(selection).not.toBeNull();
+
+    const selectionTextContent = selection!.toString();
+    expect(selectionTextContent).toBe(italicsTextContent);
+
+    wrapInElement(selection!, anchor);
+    const reestablishedItalics = document.querySelector("i#italics-1");
+    expect(reestablishedItalics!.parentNode).toBe(anchor);
+    // make sure italics textContent is unchanged
+    expect(italics!.textContent).toBe(italicsTextContent);
+    expect(anchor.textContent).toBe(italicsTextContent);
 
 
 
