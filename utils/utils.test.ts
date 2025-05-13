@@ -143,11 +143,17 @@ describe("test wrapInElement", function() {
 
 describe("test deleteEmptyElementsByQuery", function() {
 
-  test("delete empty elements, leave valid elements", function() {
-    document.body.innerHTML = "<div><i></i><strong><i></i></strong><strong><i>Valid Text</i></strong></div>";
+  test("delete empty elements, leave valid elements 1", function() {
+    document.body.innerHTML = "<div><strong></strong><i></i><i><strong></strong></i><strong><i></i></strong><strong><i>Valid Text</i></strong></div>";
     deleteEmptyElementsByQuery("i", document.querySelector("div")!);
-    expect(document.body.innerHTML).toBe("<div><strong></strong><strong><i>Valid Text</i></strong></div>")
+    expect(document.body.innerHTML).toBe("<div><strong></strong><i><strong></strong></i><strong></strong><strong><i>Valid Text</i></strong></div>")
+  })
 
+
+  test("delete empty elements, leave valid elements 2", function() {
+    document.body.innerHTML = "<div><strong></strong><i></i><i><strong></strong></i><strong><i></i></strong><strong><i>Valid Text</i></strong></div>";
+    deleteEmptyElementsByQuery("strong", document.querySelector("div")!);
+    expect(document.body.innerHTML).toBe("<div><i></i><i></i><strong><i></i></strong><strong><i>Valid Text</i></strong></div>");
   })
 
 })
@@ -189,7 +195,7 @@ describe("test unwrapSelectionFromQuery", function() {
     expect(selection!.anchorNode).toBe(selection!.focusNode);
     expect(selection!.anchorNode).toBe(document.querySelector("#strong-2"));
 
-    expect(document.querySelectorAll("i#italics-2").length).toBe(2);
+    expect(document.querySelectorAll("i#italics-2").length).toBe(0);
   })
 
   test("promote text in italics out of strong", function() {
@@ -220,15 +226,16 @@ describe("test unwrapSelectionFromQuery", function() {
         Orphan Text
         <strong id="strong-2">
           Strong Text
+          <i id="italics-2"></i>
         </strong>
         <i id="italics-2">
           Strong and Italics Text
         </i>
         <strong id="strong-2">
+          <i id="italics-2"></i>
           More Strong Text
         </strong>
-      </div>
-      `.replaceAll(/\n +/g, ''));
+      </div>`.replaceAll(/\n */g, ''));
 
     // const range = selection!.getRangeAt(0);
     // expect(range).not.toBeNull();
