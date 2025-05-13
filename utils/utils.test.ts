@@ -4,7 +4,7 @@
 
 
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { setSelection, wrapInElement, unwrapSelectionFromQuery } from './utils';
+import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery } from './utils';
 
 
 const startingHTML = 
@@ -19,8 +19,8 @@ const startingHTML =
     </i>
     More Strong Text
   </strong>
-</div>
-`.replaceAll(/\n +/g, ''); // avoid empty text nodes from human-readable version above
+</div>`
+.replaceAll(/\n */g, ''); // avoid empty text nodes from human-readable version above
 
 
 let testNumber = 0;
@@ -141,6 +141,18 @@ describe("test wrapInElement", function() {
 });
 
 
+describe("test deleteEmptyElementsByQuery", function() {
+
+  test("delete empty elements, leave valid elements", function() {
+    document.body.innerHTML = "<div><i></i><strong><i></i></strong><strong><i>Valid Text</i></strong></div>";
+    deleteEmptyElementsByQuery("i", document.querySelector("div")!);
+    expect(document.body.innerHTML).toBe("<div><strong></strong><strong><i>Valid Text</i></strong></div>")
+
+  })
+
+})
+
+
 describe("test unwrapSelectionFromQuery", function() {
 
   beforeEach(() => {
@@ -178,6 +190,54 @@ describe("test unwrapSelectionFromQuery", function() {
     expect(selection!.anchorNode).toBe(document.querySelector("#strong-2"));
 
     expect(document.querySelectorAll("i#italics-2").length).toBe(2);
+  })
+
+  test("promote text in italics out of strong", function() {
+    const italics = document.querySelector("i#italics-2");
+    const italicsTextContent = italics?.textContent;
+    expect(italics).not.toBeNull();
+    expect(italics?.parentNode).not.toBeNull();
+    const parentNode = italics!.parentNode;
+
+    expect(italics!.childNodes.length).toBe(1);
+    const italicsTextNode = italics!.childNodes[0];
+
+    expect(italicsTextContent).toEqual(italicsTextNode!.textContent);
+
+    const selection = setSelection(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
+
+    expect(selection).not.toBeNull();
+
+    const limitingContainer = document.querySelector("div")
+
+    expect(limitingContainer).not.toBeNull();
+    unwrapSelectionFromQuery(selection!, "strong", limitingContainer!);
+
+    expect(document.body.innerHTML).toBe(
+      `<div>
+        <strong id="strong-1">Strong Text</strong>
+        <i id="italics-1">Italics Test</i>
+        Orphan Text
+        <strong id="strong-2">
+          Strong Text
+        </strong>
+        <i id="italics-2">
+          Strong and Italics Text
+        </i>
+        <strong id="strong-2">
+          More Strong Text
+        </strong>
+      </div>
+      `.replaceAll(/\n +/g, ''));
+
+    // const range = selection!.getRangeAt(0);
+    // expect(range).not.toBeNull();
+
+    // expect(selection!.anchorNode).toBe(selection!.focusNode);
+    // expect(selection!.anchorNode).toBe(italics);
+
+    // expect(document.querySelectorAll("i#italics-2").length).toBe(3);
+
   })
 
 });

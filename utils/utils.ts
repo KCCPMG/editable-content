@@ -25,7 +25,21 @@ export function wrapInElement(selection: Selection, element: Element) {
 }
 
 
-export function unwrapSelectionFromQuery(selection: Selection, query: string, limitingContainer: Node): void {
+export function deleteEmptyElementsByQuery(query: string, limitingContainer: Element) {
+  const elements = Array.from(limitingContainer.querySelectorAll(query));
+
+  elements.forEach(elem => {
+    if ((elem.textContent) === "" && Array.from(elem.childNodes).every(cn => !(cn instanceof Element))) {
+      elem.remove();
+    }
+  })
+
+  return;
+
+}
+
+
+export function unwrapSelectionFromQuery(selection: Selection, query: string, limitingContainer: Element): void {
   if (!selection || !selection.anchorNode || !selection.focusNode) return;
 
   const preAncestorNode = getAncestorNode(selection.anchorNode, query, limitingContainer);
@@ -65,6 +79,7 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
   if (!selectionAncestorNode) return;
   promoteChildrenOfNode(selectionAncestorNode);
 
+  deleteEmptyElementsByQuery(query, limitingContainer);
 
   return;
 }
