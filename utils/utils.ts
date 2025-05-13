@@ -1,5 +1,3 @@
-import { Children, ElementType } from "react";
-import { node, nodes } from "slate";
 import { WrapperArgs } from "@/components/ContentEditableExperimentComponents";
 
 
@@ -86,7 +84,7 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
 
 
 
-export function promoteChildrenOfNode(node: Node): void {
+function promoteChildrenOfNode(node: Node): void {
   if (node.parentNode) {
     for (let child of Array.from(node.childNodes)) {
       node.parentNode.insertBefore(child, node);
@@ -111,7 +109,7 @@ export function nodeIsDescendentOf(node: Node, query: string, limitingContainer:
 }
 
 
-export function getAncestorNode(node: Node, query: string, limitingContainer: Node): Node | null {
+function getAncestorNode(node: Node, query: string, limitingContainer: Node): Node | null {
   let parentNode = node.parentNode;
   while (parentNode) {
     if (parentNode === limitingContainer) break;
@@ -125,45 +123,6 @@ export function getAncestorNode(node: Node, query: string, limitingContainer: No
 
 }
 
-
-export function selectionIsDescendentOf(selection: Selection, query: string, limitingContainer: Node): boolean {
-  if (!selection) return false;
-  const range = selection?.getRangeAt(0)
-
-  const filteredFocusNodeAncestors = [];
-  let parentNode = selection.focusNode?.parentNode;
-
-  while (parentNode) {
-    if (parentNode === limitingContainer) break;
-    if (parentNode instanceof Element) {
-      if (parentNode.matches(query)) filteredFocusNodeAncestors.push(parentNode);
-    }
-    parentNode = parentNode.parentNode;
-  }
-
-  const filteredAnchorNodeAncestors = [];
-  parentNode = selection.anchorNode?.parentNode;
-
-  while (parentNode) {
-    if (parentNode === limitingContainer) break;
-    if (parentNode instanceof Element) {
-      if (parentNode.matches(query)) filteredAnchorNodeAncestors.push(parentNode);
-    }
-    parentNode = parentNode.parentNode;
-  }
-
-  if (filteredFocusNodeAncestors.length === 0 || filteredAnchorNodeAncestors.length === 0) {
-    return false;
-  } else {
-    for (let ffna of filteredAnchorNodeAncestors) {
-      for (let fana of filteredAnchorNodeAncestors) {
-        if (ffna === fana) return true;
-      }
-    }
-  }
-
-  return false;
-}
 
 
 function nodeIsDescendentOfNode(node: Node, ancestorNode: Node) {

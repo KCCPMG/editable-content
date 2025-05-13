@@ -77,6 +77,19 @@ export function bisect(myRef: React.MutableRefObject<HTMLDivElement | null>) {
   }
 }
 
+export function nodeIsDescendentOf(node: Node, query: string, limitingContainer: Node) {
+  let parentNode = node.parentNode;
+  while (parentNode) {
+    if (parentNode === limitingContainer) break;
+    if (parentNode instanceof Element && parentNode.matches(query)) {
+      return true;
+    } else {
+      parentNode = parentNode.parentNode;
+    }
+  }
+  return false;
+}
+
 function getRangeUpTo(node: Node, offset: number): Range {
   const range = new Range();
   range.setStartBefore(node);
@@ -114,9 +127,49 @@ function splitNode(node: Node, offset: number) {
       focusNode: postText
     }
   } 
-
-
 }
+
+
+
+function selectionIsDescendentOf(selection: Selection, query: string, limitingContainer: Node): boolean {
+  if (!selection) return false;
+  const range = selection?.getRangeAt(0)
+
+  const filteredFocusNodeAncestors = [];
+  let parentNode = selection.focusNode?.parentNode;
+
+  while (parentNode) {
+    if (parentNode === limitingContainer) break;
+    if (parentNode instanceof Element) {
+      if (parentNode.matches(query)) filteredFocusNodeAncestors.push(parentNode);
+    }
+    parentNode = parentNode.parentNode;
+  }
+
+  const filteredAnchorNodeAncestors = [];
+  parentNode = selection.anchorNode?.parentNode;
+
+  while (parentNode) {
+    if (parentNode === limitingContainer) break;
+    if (parentNode instanceof Element) {
+      if (parentNode.matches(query)) filteredAnchorNodeAncestors.push(parentNode);
+    }
+    parentNode = parentNode.parentNode;
+  }
+
+  if (filteredFocusNodeAncestors.length === 0 || filteredAnchorNodeAncestors.length === 0) {
+    return false;
+  } else {
+    for (let ffna of filteredAnchorNodeAncestors) {
+      for (let fana of filteredAnchorNodeAncestors) {
+        if (ffna === fana) return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 
 function alternateBisect() {
   // incomplete, experiment
