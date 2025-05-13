@@ -85,28 +85,6 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
 }
 
 
-export function removeElementsByName(nodes: Array<ChildNode>, elementName: string): Array<ChildNode> {
-  for (let node of nodes) {
-    console.log(node);
-    if (!(node.parentNode)) return nodes;
-    if (node.nodeName === elementName) {
-      for (let childNode of removeElementsByName(Array.from(node.childNodes), elementName)) {
-        node.parentNode.insertBefore(childNode, node);
-      }
-      node.parentNode.removeChild(node);
-    } else {
-      const newChildren = removeElementsByName(Array.from(node.childNodes), elementName);
-      for (let child of Array.from(node.childNodes)) {
-        node.removeChild(child);
-      }
-      for (let child of newChildren) {
-        node.appendChild(child);
-      }
-    }
-  }
-  return nodes;
-}
-
 
 export function promoteChildrenOfNode(node: Node): void {
   if (node.parentNode) {
@@ -117,31 +95,6 @@ export function promoteChildrenOfNode(node: Node): void {
   }
 }
 
-
-export function unwrapChildrenFrom(selection: Selection, query: string) {
-  if (!selection || !selection.anchorNode || !selection.focusNode) return;
-  
-  const range = selection.getRangeAt(0);
-  const fragment = range.extractContents();
-  // const childNodes = Array.from(fragment.childNodes);
-  // for (let childNode of childNodes) {
-  //   const queryResults = childNode.querySelectorAll(query);
-
-  // }
-  // range.ins
-  const queryResults = Array.from(fragment.querySelectorAll(query));
-  for (let result of queryResults) {
-    const childNodes = Array.from(result.childNodes);
-    for (let child of childNodes) {
-      result.parentNode?.insertBefore(child, result);
-    }
-    result.parentNode?.removeChild(result);
-  }
-  range.insertNode(fragment);
-  selection.removeAllRanges();
-  selection.addRange(range);
-  console.log(range);
-}
 
 
 export function nodeIsDescendentOf(node: Node, query: string, limitingContainer: Node) {

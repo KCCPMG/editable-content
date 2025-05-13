@@ -4,7 +4,7 @@
 
 
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery } from './utils';
+import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf } from './utils';
 
 
 const startingHTML = 
@@ -236,15 +236,32 @@ describe("test unwrapSelectionFromQuery", function() {
           More Strong Text
         </strong>
       </div>`.replaceAll(/\n */g, ''));
-
-    // const range = selection!.getRangeAt(0);
-    // expect(range).not.toBeNull();
-
-    // expect(selection!.anchorNode).toBe(selection!.focusNode);
-    // expect(selection!.anchorNode).toBe(italics);
-
-    // expect(document.querySelectorAll("i#italics-2").length).toBe(3);
-
   })
 
 });
+
+describe("test nodeIsDescendentOf", function() {
+
+  beforeEach(() => {
+    testNumber++;
+    document.body.innerHTML = startingHTML;
+  })
+
+  test("test ancestors of italics-2", function() {
+    const italics = document.querySelector("i#italics-2");
+    const limitingContainer = document.querySelector("div");
+
+    expect(italics).not.toBeNull();
+    expect(limitingContainer).not.toBeNull();
+
+    expect(nodeIsDescendentOf(italics!, "strong#strong-2", limitingContainer!)).toBe(true);
+    expect(nodeIsDescendentOf(italics!, "strong", limitingContainer!)).toBe(true);
+    
+    expect(nodeIsDescendentOf(italics!, "div", limitingContainer!)).toBe(false);
+    expect(nodeIsDescendentOf(italics!, "i#italics-1", limitingContainer!)).toBe(false);
+    expect(nodeIsDescendentOf(italics!, "i", limitingContainer!)).toBe(false);
+    expect(nodeIsDescendentOf(italics!, "strong#strong-1", limitingContainer!)).toBe(false);
+    expect(nodeIsDescendentOf(italics!, "a", limitingContainer!)).toBe(false);
+
+  })
+})
