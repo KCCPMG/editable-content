@@ -25,24 +25,6 @@ export function wrapInElement(selection: Selection, element: Element) {
 }
 
 
-export function unwrapFromElement(contents: DocumentFragment, elementName: string) {
-  // const selection = window.getSelection();
-  // if (!selection) return;
-  // const range = selection.getRangeAt(0);
-  // const contents = range.extractContents();
-
-  for (let childNode of Array.from(contents.childNodes)) {
-    if (childNode.nodeName === elementName) {
-      // childNode.extractContents ???? 
-      for (let childToPromote of Array.from(childNode.childNodes)) {
-        contents.insertBefore(childToPromote, childNode)
-      }
-    }
-  }
-  return contents;
-}
-
-
 export function unwrapSelectionFromQuery(selection: Selection, query: string, limitingContainer: Node): void {
   if (!selection || !selection.anchorNode || !selection.focusNode) return;
 

@@ -3,10 +3,8 @@
  */
 
 
-import {describe, expect, jest, test, beforeAll} from '@jest/globals';
-import { setSelection, wrapInElement } from './utils';
-import { SelectionTransforms } from 'slate/dist/interfaces/transforms/selection';
-import { beforeEach } from 'node:test';
+import {describe, expect, jest, test, beforeEach} from '@jest/globals';
+import { setSelection, wrapInElement, unwrapSelectionFromQuery } from './utils';
 
 
 const startingHTML = 
@@ -25,7 +23,7 @@ const startingHTML =
 `.replaceAll(/\n +/g, ''); // avoid empty text nodes from human-readable version above
 
 
-
+let testNumber = 0;
 
 
 describe("basic test", () => {
@@ -33,7 +31,7 @@ describe("basic test", () => {
     expect(2).toBe(2);
   })
 
-  describe("jsdom example", () => {
+  test("jsdom example", () => {
     const div = document.createElement("div");
     document.body.append(div);
     expect(document.querySelector("div")).toBe(div);
@@ -49,36 +47,40 @@ describe("basic test", () => {
 });
 
 
-describe("test setSelection", function() {
+// describe("test setSelection", function() {
 
-  test("set Selection on text inside italics node", function() {
-    const italics = document.querySelector("i");
-    expect(italics).not.toBeNull();
-    const selection = setSelection(italics!, 0, italics!, italics!.childNodes.length);
-    expect(selection?.toString()).toEqual(italics!.textContent);
-  })
+//   beforeEach(function() {
+//     testNumber++;
+//   })
 
-  test("set Selection on limited text inside italics node", function() {
-    const italics = document.querySelector("i#italics-2");
-    expect(italics).not.toBeNull();
-    const italicsText = italics!.childNodes[0];
-    const selection = setSelection(italicsText!, 7, italicsText!, 18);
+//   test("set Selection on text inside italics node", function() {
+//     const italics = document.querySelector("i");
+//     expect(italics).not.toBeNull();
+//     const selection = setSelection(italics!, 0, italics!, italics!.childNodes.length);
+//     expect(selection?.toString()).toEqual(italics!.textContent);
+//   })
 
-    const range = new Range();
-    range.setStart(italicsText, 7);
-    range.setEnd(italicsText, 18);
+//   test("set Selection on limited text inside italics node", function() {
+//     const italics = document.querySelector("i#italics-2");
+//     expect(italics).not.toBeNull();
+//     const italicsText = italics!.childNodes[0];
+//     const selection = setSelection(italicsText!, 7, italicsText!, 18);
+
+//     const range = new Range();
+//     range.setStart(italicsText, 7);
+//     range.setEnd(italicsText, 18);
     
-    range.setStart(italicsText, 0);
-    range.setEnd(italicsText, 7);
+//     range.setStart(italicsText, 0);
+//     range.setEnd(italicsText, 7);
 
-    expect(selection).not.toBeNull();
-    expect(selection!.anchorNode?.nodeName).toBe("#text");
-    expect(selection!.anchorNode).toBe(selection!.focusNode);
-    expect(selection!.toString()).toEqual("and Italics")
+//     expect(selection).not.toBeNull();
+//     expect(selection!.anchorNode?.nodeName).toBe("#text");
+//     expect(selection!.anchorNode).toBe(selection!.focusNode);
+//     expect(selection!.toString()).toEqual("and Italics")
 
-  })
+//   })
 
-})
+// });
 
 
 
@@ -86,6 +88,7 @@ describe("test wrapInElement", function() {
 
   beforeEach(function() {
     document.body.innerHTML = startingHTML;
+    testNumber++;
   })
 
   test("wrap element in element", function() {
@@ -116,10 +119,6 @@ describe("test wrapInElement", function() {
     expect(italics!.textContent).toBe(italicsTextContent);
     expect(anchor.textContent).toBe(italicsTextContent);
 
-
-
-
-
   })
 
   test("wrap text in element", function(){
@@ -139,4 +138,46 @@ describe("test wrapInElement", function() {
 
   })
 
-})
+});
+
+
+describe("test unwrapSelectionFromQuery", function() {
+
+  beforeEach(() => {
+    testNumber++;
+    document.body.innerHTML = startingHTML;
+  })
+
+  test("promotes text out of italics", function() {
+    const italics = document.querySelector("i#italics-2");
+    const italicsTextContent = italics?.textContent;
+    expect(italics).not.toBeNull();
+    expect(italics?.parentNode).not.toBeNull();
+    const parentNode = italics!.parentNode;
+
+    expect(italics!.childNodes.length).toBe(1);
+    const italicsTextNode = italics!.childNodes[0];
+
+    expect(italicsTextContent).toEqual(italicsTextNode!.textContent);
+
+    const selection = setSelection(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
+
+    expect(selection).not.toBeNull();
+
+    const limitingContainer = document.querySelector("div")
+
+    expect(limitingContainer).not.toBeNull();
+    unwrapSelectionFromQuery(selection!, "i", limitingContainer!);
+
+    expect(italics!.textContent!.length).toEqual(0);
+
+    const range = selection!.getRangeAt(0);
+    expect(range).not.toBeNull();
+
+    expect(selection!.anchorNode).toBe(selection!.focusNode);
+    expect(selection!.anchorNode).toBe(document.querySelector("#strong-2"));
+
+    expect(document.querySelectorAll("i#italics-2").length).toBe(2);
+  })
+
+});

@@ -318,3 +318,20 @@ function cleanElementTypeFromSelection(elementName: string): void {
 // for (let cn of contents.childNodes) {
 //   preRange.insertNode(cn);
 // }
+
+export function unwrapFromElement(contents: DocumentFragment, elementName: string) {
+  // const selection = window.getSelection();
+  // if (!selection) return;
+  // const range = selection.getRangeAt(0);
+  // const contents = range.extractContents();
+
+  for (let childNode of Array.from(contents.childNodes)) {
+    if (childNode.nodeName === elementName) {
+      // childNode.extractContents ???? 
+      for (let childToPromote of Array.from(childNode.childNodes)) {
+        contents.insertBefore(childToPromote, childNode)
+      }
+    }
+  }
+  return contents;
+}
