@@ -4,7 +4,7 @@
 
 
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf } from './utils';
+import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode } from './utils';
 
 
 const startingHTML = 
@@ -263,5 +263,88 @@ describe("test nodeIsDescendentOf", function() {
     expect(nodeIsDescendentOf(italics!, "strong#strong-1", limitingContainer!)).toBe(false);
     expect(nodeIsDescendentOf(italics!, "a", limitingContainer!)).toBe(false);
 
+  })
+})
+
+
+describe("test selectionIsDescendentOfNode", function() {
+
+  beforeEach(() => {
+    testNumber++;
+    document.body.innerHTML = startingHTML;
+  })
+  
+  test("test selection is descendent of node", function() {
+    const div = document.querySelector("div");
+    const strong = document.querySelector("strong#strong-1");
+    const textNode = strong!.childNodes[0];
+
+    const selection = setSelection(textNode!, 4, textNode!, 8);
+
+    expect(selection).not.toBeNull();
+
+    expect(
+      selectionIsDescendentOfNode(selection!, strong!)
+    ).toBe(true);
+
+    expect(
+      selectionIsDescendentOfNode(selection!, div!)
+    ).toBe(true);
+
+    const badStrong = document.querySelector("strong#strong-2");
+    const badItalics = document.querySelector("i#italics-1");
+
+    expect(
+      selectionIsDescendentOfNode(selection!, badStrong!)
+    ).toBe(false);
+
+    expect(
+      selectionIsDescendentOfNode(selection!, badItalics!)
+    ).toBe(false);
+  })
+
+
+  test("selection is split across nodes", function() {
+    const div = document.querySelector("div");
+    const strong = document.querySelector("strong#strong-1");
+    const strongTextNode = strong!.childNodes[0];
+    const italics = document.querySelector("i#italics-1");
+    const italicsTextNode = italics!.childNodes[0]
+
+    const selection = setSelection(strongTextNode!, 4, italicsTextNode!, 3);
+
+    expect(selection).not.toBeNull();
+
+    expect(
+      selectionIsDescendentOfNode(selection!, strong!)
+    ).toBe(false);
+
+    expect(
+      selectionIsDescendentOfNode(selection!, italics!)
+    ).toBe(false);
+
+    expect(
+      selectionIsDescendentOfNode(selection!, div!)
+    ).toBe(true);
+
+    const badStrong = document.querySelector("strong#strong-2");
+    const badItalics = document.querySelector("i#italics-1");
+
+    expect(
+      selectionIsDescendentOfNode(selection!, badStrong!)
+    ).toBe(false);
+
+    expect(
+      selectionIsDescendentOfNode(selection!, badItalics!)
+    ).toBe(false);
+
+  })
+})
+
+describe("test selectionCoveredBy", function() {
+
+  beforeEach(() => {
+    testNumber++;
+    document.body.innerHTML = startingHTML;
   })
 })

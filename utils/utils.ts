@@ -124,7 +124,6 @@ function getAncestorNode(node: Node, query: string, limitingContainer: Node): No
 }
 
 
-
 function nodeIsDescendentOfNode(node: Node, ancestorNode: Node) {
   let parentNode = node.parentNode;
   while (parentNode) {
@@ -135,18 +134,12 @@ function nodeIsDescendentOfNode(node: Node, ancestorNode: Node) {
 }
 
 
-export function selectionIsDescendentOfNode(selection: Selection, ancestorNode: Node) {
-  // console.log(    
-  //   Boolean(selection.anchorNode),
-  //   Boolean(selection.focusNode),
-  //   !!selection.anchorNode && nodeIsDescendentOfNode(selection.anchorNode, ancestorNode),
-  //   !!selection.focusNode && nodeIsDescendentOfNode(selection.focusNode, ancestorNode) 
-  // )
+export function selectionIsDescendentOfNode(selection: Selection, ancestorElement: Element) {
   return (
     selection.anchorNode &&
     selection.focusNode &&
-    nodeIsDescendentOfNode(selection.anchorNode, ancestorNode) &&
-    nodeIsDescendentOfNode(selection.focusNode, ancestorNode) 
+    nodeIsDescendentOfNode(selection.anchorNode, ancestorElement) &&
+    nodeIsDescendentOfNode(selection.focusNode, ancestorElement) 
   )
 }
 
@@ -188,7 +181,7 @@ function getSelectionChildNodes(selection: Selection, limitingContainer: Node): 
 }
 
 
-export function selectionCoveredBy(selection: Selection, query: string, limitingContainer: Node) {
+export function selectionIsCoveredBy(selection: Selection, query: string, limitingContainer: Node): Boolean {
   const nodes = getSelectionChildNodes(selection, limitingContainer);
   const textNodes = nodes
   .filter(n => n.nodeType === 3)

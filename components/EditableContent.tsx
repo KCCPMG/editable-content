@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect, forwardRef, MutableRefObject } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionCoveredBy, createWrapper, unwrapSelectionFromQuery } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 
@@ -61,7 +61,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             console.log("should re-render button");
             const query = generateQuery(etb.wrapperArgs);
             const selection = window.getSelection();
-            const selected = selection ? selectionCoveredBy(selection, query, contentRef.current!): false; // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+            const selected = selection ? selectionIsCoveredBy(selection, query, contentRef.current!): false; // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
 
             console.log(JSON.stringify({selected, selection, query}));
 
