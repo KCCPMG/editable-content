@@ -391,8 +391,11 @@ describe("test selectionIsCoveredBy", function() {
     expect(selectionIsCoveredBy(selection!, "i#italics-1", limitingContainer!)).toBe(false);
   })
   
+})
 
-  test("selection is covered by with unique DOM", function() {
+describe("test selectionIsCoveredBy - alternate DOM", function() {
+
+  beforeEach(function() {
     document.body.innerHTML = `
     <div>
       <strong>First Strong Text</strong>
@@ -405,8 +408,13 @@ describe("test selectionIsCoveredBy", function() {
       </strong>
       <strong>Fifth Strong Text</strong>
       <i>Italics After Fifth Strong Text</i>
+      <strong>Sixth Strong Text</strong>
     </div>`.replaceAll(/\n */g, '');
+  })
 
+
+
+  test("selection in range of siblings of same type", function() {
     const limitingContainer = document.querySelector("div");
     expect(limitingContainer).not.toBeNull();
 
@@ -426,7 +434,14 @@ describe("test selectionIsCoveredBy", function() {
     expect(selection).not.toBeNull();
 
     expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(true);
-    expect(selectionIsCoveredBy(selection!, "italics", limitingContainer!)).toBe(false);
+    expect(selectionIsCoveredBy(selection!, "italics", limitingContainer!)).toBe(false)
+
+  })
+
+  test("range of siblings contains element children", function() {
+
+    const limitingContainer = document.querySelector("div");
+    expect(limitingContainer).not.toBeNull();
 
     const fourthStrong = document.querySelector("strong:nth-of-type(4)");
     const fifthStrong = document.querySelector("strong:nth-of-type(5)");
@@ -440,10 +455,56 @@ describe("test selectionIsCoveredBy", function() {
     expect(fourthStrongText).not.toBeNull();
     expect(fifthStrongText).not.toBeNull();
 
+    const selection = setSelection(fourthStrongText, 7, fifthStrongText, 4)
+
     expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(true);
     expect(selectionIsCoveredBy(selection!, "italics", limitingContainer!)).toBe(false);
 
-    setSelection(firstStrongText, 3, firstStrongText, 8);
+
+  })
+
+  test("", function() {
+    const limitingContainer = document.querySelector("div");
+    expect(limitingContainer).not.toBeNull();
+
+    const firstStrong = document.querySelector("strong:nth-of-type(1)");
+    const fourthStrong = document.querySelector("strong:nth-of-type(4)");
+    
+    expect(firstStrong).not.toBeNull();
+    expect(fourthStrong).not.toBeNull();
+    
+    const firstStrongText = firstStrong!.childNodes[0];
+    const fourthStrongText = fourthStrong!.childNodes[0];
+
+    expect(firstStrongText).not.toBeNull();
+    expect(fourthStrongText).not.toBeNull();
+
+    const selection = setSelection(firstStrongText, 3, firstStrongText, 8);
     expect(selectionIsCoveredBy(selection!, 'strong', limitingContainer!)).toBe(true);
+
+
+  })
+
+  test("across siblings which are not of same type", function() {
+    const limitingContainer = document.querySelector("div");
+    expect(limitingContainer).not.toBeNull();
+
+    const fourthStrong = document.querySelector("strong:nth-of-type(4)");
+    const sixthStrong = document.querySelector("strong:nth-of-type(6)");
+    
+    expect(fourthStrong).not.toBeNull();
+    expect(sixthStrong).not.toBeNull();
+
+    const fourthStrongText = fourthStrong!.childNodes[0];
+    const sixthStrongText = sixthStrong!.childNodes[0];
+
+    expect(fourthStrongText).not.toBeNull();
+    expect(sixthStrongText).not.toBeNull();
+    expect(sixthStrongText.textContent).toBe("Sixth Strong Text");
+
+    const selection = setSelection(fourthStrongText, 4, sixthStrongText, 10);
+
+    expect(selectionIsCoveredBy(selection!, 'strong', limitingContainer!)).toBe(false);
+    expect(selectionIsCoveredBy(selection!, 'i', limitingContainer!)).toBe(false);
   })
 })
