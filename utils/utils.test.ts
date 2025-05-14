@@ -524,8 +524,26 @@ describe("test generateQuery", function() {
     const strong = document.querySelector(generatedQuery);
     expect(strong).not.toBeNull();
     expect(strong!.textContent).toBe("Strong Text");
-    
   })
+
+  test("generateQuery on #strong-1 with wrong class name", function() {
+    const idealQuery = "strong#strong-1"
+    const generatedQuery = generateQuery({
+      element: "strong",
+      classList: [
+        "fake-class",
+        "bad-class"
+      ],
+      id: "strong-1"
+    });
+    expect(generatedQuery).not.toEqual(idealQuery);
+    expect(generatedQuery).toEqual("strong.fake-class.bad-class#strong-1");
+    
+    const strong = document.querySelector(generatedQuery);
+    expect(strong).toBeNull();
+  })
+
+
 })
 
 
