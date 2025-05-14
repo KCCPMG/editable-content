@@ -1,3 +1,25 @@
+# Outline
+
+The goal of this is to create a rich text editor which will have the following
+
+- a div which is contenteditable
+- a row of buttons which contain the text decoration controls
+
+## Just cursor
+
+- When the cursor is in plain text
+  - None of the buttons appear clicked
+  - Clicking a button will wrap the cursor in the appropriate element
+
+- When the cursor is in decorated text
+  - The button(s) corresponding to that decoration will appear clicked
+  - Clicking a button will break the decoration so that the cursor is in between the decorative tags
+
+## Selection
+
+
+# Next.js Boilerplate
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
