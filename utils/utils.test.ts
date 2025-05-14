@@ -342,7 +342,7 @@ describe("test selectionIsDescendentOfNode", function() {
 })
 
 
-describe("test selectionCoveredBy", function() {
+describe("test selectionIsCoveredBy", function() {
 
   beforeEach(() => {
     testNumber++;
@@ -395,5 +395,43 @@ describe("test selectionCoveredBy", function() {
     expect(selectionIsCoveredBy(selection!, "i#italics-1", limitingContainer!)).toBe(false);
   })
   
+
+  test("selection is covered by with unique DOM", function() {
+    document.body.innerHTML = `
+    <div>
+      <strong>First Strong Text</strong>
+      <strong>Second Strong Text</strong>
+      <strong>Third Strong Text</strong>
+      <strong>
+        Fourth Strong Text 
+        <i>Italics In Fourth Strong Text </i>
+        <u>Underline in Fourth Strong Text </u>
+      </strong>
+      <strong>Fifth Strong Text</strong>
+      <i>Italics After Fifth Strong Text</i>
+    </div>`.replaceAll(/\n */g, '');
+
+    const limitingContainer = document.querySelector("div");
+    expect(limitingContainer).not.toBeNull();
+
+    const firstStrong = document.querySelector("strong:nth-of-type(1)");
+    const thirdStrong = document.querySelector("strong:nth-of-type(3)");
+
+    expect(firstStrong).not.toBeNull();
+    expect(thirdStrong).not.toBeNull();
+
+    const firstStrongText = firstStrong!.childNodes[0];
+    const thirdStrongText = thirdStrong!.childNodes[0];
+
+    expect(firstStrongText).not.toBeNull();
+    expect(thirdStrongText).not.toBeNull();
+
+    const selection = setSelection(firstStrongText, 5, thirdStrongText, 7);
+    expect(selection).not.toBeNull();
+
+    expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(true);
+
+  })
+
 
 })
