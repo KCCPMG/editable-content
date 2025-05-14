@@ -4,7 +4,7 @@
 
 
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode, selectionIsCoveredBy } from './utils';
+import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode, selectionIsCoveredBy, generateQuery } from './utils';
 
 
 const startingHTML = 
@@ -47,40 +47,40 @@ describe("basic test", () => {
 });
 
 
-// describe("test setSelection", function() {
+describe("test setSelection", function() {
 
-//   beforeEach(function() {
-//     testNumber++;
-//   })
+  beforeEach(function() {
+    testNumber++;
+  })
 
-//   test("set Selection on text inside italics node", function() {
-//     const italics = document.querySelector("i");
-//     expect(italics).not.toBeNull();
-//     const selection = setSelection(italics!, 0, italics!, italics!.childNodes.length);
-//     expect(selection?.toString()).toEqual(italics!.textContent);
-//   })
+  test("set Selection on text inside italics node", function() {
+    const italics = document.querySelector("i");
+    expect(italics).not.toBeNull();
+    const selection = setSelection(italics!, 0, italics!, italics!.childNodes.length);
+    expect(selection?.toString()).toEqual(italics!.textContent);
+  })
 
-//   test("set Selection on limited text inside italics node", function() {
-//     const italics = document.querySelector("i#italics-2");
-//     expect(italics).not.toBeNull();
-//     const italicsText = italics!.childNodes[0];
-//     const selection = setSelection(italicsText!, 7, italicsText!, 18);
+  test("set Selection on limited text inside italics node", function() {
+    const italics = document.querySelector("i#italics-2");
+    expect(italics).not.toBeNull();
+    const italicsText = italics!.childNodes[0];
+    const selection = setSelection(italicsText!, 7, italicsText!, 18);
 
-//     const range = new Range();
-//     range.setStart(italicsText, 7);
-//     range.setEnd(italicsText, 18);
+    const range = new Range();
+    range.setStart(italicsText, 7);
+    range.setEnd(italicsText, 18);
     
-//     range.setStart(italicsText, 0);
-//     range.setEnd(italicsText, 7);
+    range.setStart(italicsText, 0);
+    range.setEnd(italicsText, 7);
 
-//     expect(selection).not.toBeNull();
-//     expect(selection!.anchorNode?.nodeName).toBe("#text");
-//     expect(selection!.anchorNode).toBe(selection!.focusNode);
-//     expect(selection!.toString()).toEqual("and Italics")
+    expect(selection).not.toBeNull();
+    expect(selection!.anchorNode?.nodeName).toBe("#text");
+    expect(selection!.anchorNode).toBe(selection!.focusNode);
+    expect(selection!.toString()).toEqual("and Italics")
 
-//   })
+  })
 
-// });
+});
 
 
 
@@ -345,9 +345,8 @@ describe("test selectionIsDescendentOfNode", function() {
 describe("test selectionIsCoveredBy", function() {
 
   beforeEach(() => {
-    testNumber++;
     document.body.innerHTML = startingHTML;
-  })
+  });
   
 
   test("selection is covered by - 1", function() {
@@ -364,9 +363,7 @@ describe("test selectionIsCoveredBy", function() {
     const selection = setSelection(strongText, 5, secondStrongText, 5);
 
     expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(true);
-
     expect(selectionIsCoveredBy(selection!, "strong#strong-2", limitingContainer!)).toBe(true);
-
     expect(selectionIsCoveredBy(selection!, "i", limitingContainer!)).toBe(false);
   })
 
@@ -410,7 +407,7 @@ describe("test selectionIsCoveredBy - alternate DOM", function() {
       <i>Italics After Fifth Strong Text</i>
       <strong>Sixth Strong Text</strong>
     </div>`.replaceAll(/\n */g, '');
-  })
+  });
 
 
 
@@ -507,4 +504,31 @@ describe("test selectionIsCoveredBy - alternate DOM", function() {
     expect(selectionIsCoveredBy(selection!, 'strong', limitingContainer!)).toBe(false);
     expect(selectionIsCoveredBy(selection!, 'i', limitingContainer!)).toBe(false);
   })
+})
+
+
+describe("test generateQuery", function() {
+
+  beforeEach(() => {
+    document.body.innerHTML = startingHTML;
+  });
+
+  test("generateQuery on #strong-1", function() {
+    const idealQuery = "strong#strong-1"
+    const generatedQuery = generateQuery({
+      element: "strong",
+      id: "strong-1"
+    });
+    expect(generatedQuery).toEqual(idealQuery);
+    
+    const strong = document.querySelector(generatedQuery);
+    expect(strong).not.toBeNull();
+    expect(strong!.textContent).toBe("Strong Text");
+    
+  })
+})
+
+
+describe("test createWrapper", function() {
+
 })
