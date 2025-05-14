@@ -4,7 +4,7 @@
 
 
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode } from './utils';
+import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode, selectionIsCoveredBy } from './utils';
 
 
 const startingHTML = 
@@ -341,10 +341,35 @@ describe("test selectionIsDescendentOfNode", function() {
   })
 })
 
+
 describe("test selectionCoveredBy", function() {
 
   beforeEach(() => {
     testNumber++;
     document.body.innerHTML = startingHTML;
   })
+  
+
+  test("selection is covered by", function() {
+    const limitingContainer = document.querySelector("div");
+
+    const strong = document.querySelector("strong#strong-2");
+    const strongText = strong!.childNodes[0];
+    const secondStrongText = strong!.childNodes[2];
+
+    expect(strong).not.toBeNull();
+    expect(strongText).not.toBeNull();
+    expect(secondStrongText).not.toBeNull();
+
+    const selection = setSelection(strongText, 5, secondStrongText, 5);
+
+    expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(true);
+
+    expect(selectionIsCoveredBy(selection!, "strong#strong-2", limitingContainer!)).toBe(true);
+
+    expect(selectionIsCoveredBy(selection!, "i", limitingContainer!)).toBe(false);
+
+  })
+  
+
 })
