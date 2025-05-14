@@ -350,7 +350,7 @@ describe("test selectionCoveredBy", function() {
   })
   
 
-  test("selection is covered by", function() {
+  test("selection is covered by - 1", function() {
     const limitingContainer = document.querySelector("div");
 
     const strong = document.querySelector("strong#strong-2");
@@ -368,7 +368,31 @@ describe("test selectionCoveredBy", function() {
     expect(selectionIsCoveredBy(selection!, "strong#strong-2", limitingContainer!)).toBe(true);
 
     expect(selectionIsCoveredBy(selection!, "i", limitingContainer!)).toBe(false);
+  })
 
+  test("selection is covered by - 2", function() {
+    // not done, just a copy of 1 at this point
+    const limitingContainer = document.querySelector("div");
+
+    const strong = document.querySelector("strong#strong-1");
+    const strongText = strong!.childNodes[0];
+    const italics = document.querySelector("i#italics-1");
+    const italicsText = italics!.childNodes[0];
+
+    expect(strong).not.toBeNull();
+    expect(strongText).not.toBeNull();
+    expect(italics).not.toBeNull();
+    expect(italicsText).not.toBeNull();
+
+    const selection = setSelection(strongText, 5, italicsText, 5);
+
+    expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(false);
+
+    expect(selectionIsCoveredBy(selection!, "i", limitingContainer!)).toBe(false);
+
+    expect(selectionIsCoveredBy(selection!, "strong#strong-1", limitingContainer!)).toBe(false);
+
+    expect(selectionIsCoveredBy(selection!, "i#italics-1", limitingContainer!)).toBe(false);
   })
   
 
