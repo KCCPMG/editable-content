@@ -385,13 +385,9 @@ describe("test selectionIsCoveredBy", function() {
     expect(italicsText).not.toBeNull();
 
     const selection = setSelection(strongText, 5, italicsText, 5);
-
     expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(false);
-
     expect(selectionIsCoveredBy(selection!, "i", limitingContainer!)).toBe(false);
-
     expect(selectionIsCoveredBy(selection!, "strong#strong-1", limitingContainer!)).toBe(false);
-
     expect(selectionIsCoveredBy(selection!, "i#italics-1", limitingContainer!)).toBe(false);
   })
   
@@ -430,8 +426,24 @@ describe("test selectionIsCoveredBy", function() {
     expect(selection).not.toBeNull();
 
     expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(true);
+    expect(selectionIsCoveredBy(selection!, "italics", limitingContainer!)).toBe(false);
 
+    const fourthStrong = document.querySelector("strong:nth-of-type(4)");
+    const fifthStrong = document.querySelector("strong:nth-of-type(5)");
+
+    expect(fourthStrong).not.toBeNull();
+    expect(fifthStrong).not.toBeNull();
+
+    const fourthStrongText = fourthStrong!.childNodes[0];
+    const fifthStrongText = fifthStrong!.childNodes[0];
+
+    expect(fourthStrongText).not.toBeNull();
+    expect(fifthStrongText).not.toBeNull();
+
+    expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(true);
+    expect(selectionIsCoveredBy(selection!, "italics", limitingContainer!)).toBe(false);
+
+    setSelection(firstStrongText, 3, firstStrongText, 8);
+    expect(selectionIsCoveredBy(selection!, 'strong', limitingContainer!)).toBe(true);
   })
-
-
 })
