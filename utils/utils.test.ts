@@ -1,10 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-
-
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode, selectionIsCoveredBy, generateQuery } from './utils';
+import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode, selectionIsCoveredBy, generateQuery, createWrapper } from './utils';
 
 
 const startingHTML = 
@@ -460,26 +458,20 @@ describe("test selectionIsCoveredBy - alternate DOM", function() {
 
   })
 
-  test("", function() {
+  test("range set within element", function() {
     const limitingContainer = document.querySelector("div");
     expect(limitingContainer).not.toBeNull();
 
     const firstStrong = document.querySelector("strong:nth-of-type(1)");
-    const fourthStrong = document.querySelector("strong:nth-of-type(4)");
     
     expect(firstStrong).not.toBeNull();
-    expect(fourthStrong).not.toBeNull();
     
     const firstStrongText = firstStrong!.childNodes[0];
-    const fourthStrongText = fourthStrong!.childNodes[0];
 
     expect(firstStrongText).not.toBeNull();
-    expect(fourthStrongText).not.toBeNull();
 
     const selection = setSelection(firstStrongText, 3, firstStrongText, 8);
     expect(selectionIsCoveredBy(selection!, 'strong', limitingContainer!)).toBe(true);
-
-
   })
 
   test("across siblings which are not of same type", function() {
@@ -549,4 +541,16 @@ describe("test generateQuery", function() {
 
 describe("test createWrapper", function() {
 
+  test("create empty strong element", function() {
+    const wrapper = createWrapper({
+      element: "strong",
+      id: "strong-1"
+    }, document);
+
+    expect(wrapper.classList.length).toBe(0);
+    expect(wrapper instanceof HTMLElement).toBe(true);
+    expect(wrapper.childNodes.length).toBe(0);
+    expect(wrapper.nodeName).toBe("STRONG");
+    expect(wrapper.id).toBe("strong-1");
+  })
 })
