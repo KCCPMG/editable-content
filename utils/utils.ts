@@ -40,25 +40,28 @@ export function deleteEmptyElementsByQuery(query: string, limitingContainer: Ele
 export function unwrapSelectionFromQuery(selection: Selection, query: string, limitingContainer: Element): void {
   if (!selection || !selection.anchorNode || !selection.focusNode) return;
 
-  const preAncestorNode = getAncestorNode(selection.anchorNode, query, limitingContainer);
+
+  const range = selection.getRangeAt(0);
+
+  const preAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer);
 
   if (!preAncestorNode) return;
 
   const preRange = new Range();
   preRange.setStartBefore(preAncestorNode);
-  preRange.setEnd(selection.anchorNode, selection.anchorOffset);
+  preRange.setEnd(range.startContainer, range.startOffset);
   const preRangeContents = preRange.extractContents();
   for (let cn of Array.from(preRangeContents.childNodes)) {
     preRange.insertNode(cn);
   }
 
-  const postAncestorNode = getAncestorNode(selection.focusNode, query, limitingContainer);
+  const postAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
 
   if (!postAncestorNode) return;
 
   const postRange = new Range();
   postRange.setEndAfter(postAncestorNode);
-  postRange.setStart(selection.focusNode, selection.focusOffset);
+  postRange.setStart(range.endContainer, range.endOffset);
   const postRangeContents = postRange.extractContents();
   for (let cn of Array.from(postRangeContents.childNodes)) {
     postRange.insertNode(cn);
@@ -67,7 +70,7 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
   // will preAncestorNode and postAncestorNode necessarily be the same?
   // I still need to promote the actual selection out of the wrapper
 
-  const selectionAncestorNode = getAncestorNode(selection.focusNode, query, limitingContainer);
+  const selectionAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
   // if (!selectionAncestorNode) return;
   // const selectionAncestorRange = new Range();
   // selectionAncestorRange.setStartBefore(selectionAncestorNode);
