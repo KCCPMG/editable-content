@@ -243,8 +243,55 @@ describe("test unwrapSelectionFromQuery", function() {
         </strong>
       </div>`.replaceAll(/\n */g, ''));
   })
-
 });
+
+
+describe("test unwrapSelectionFromQuery - alternateHTML", function() {
+  
+  beforeEach(() => {
+    document.body.innerHTML = alternateHTML;
+  })
+
+  test("unwrapSelectionFromQuery", function() {
+    const limitingContainer = document.querySelector("div");
+    expect(limitingContainer).not.toBeNull();
+
+    const firstStrong = document.querySelector("strong:nth-of-type(1)");
+    const thirdStrong = document.querySelector("strong:nth-of-type(3)");
+
+    expect(firstStrong).not.toBeNull();
+    expect(thirdStrong).not.toBeNull();
+
+    const firstStrongText = firstStrong!.childNodes[0];
+    const thirdStrongText = thirdStrong!.childNodes[0];
+
+    expect(firstStrongText).not.toBeNull();
+    expect(thirdStrongText).not.toBeNull();
+
+    const selection = setSelection(firstStrongText, 5, thirdStrongText, 7);
+    expect(selection).not.toBeNull();
+
+    unwrapSelectionFromQuery(selection!, "strong", limitingContainer!);
+
+    expect(document.body.innerHTML).toBe(`
+    <div>
+      <strong>First</strong> Strong Text
+      Second Strong Text
+      Third S<strong>trong Text</strong>
+      <strong>
+        Fourth Strong Text 
+        <i>Italics In Fourth Strong Text </i>
+        <u>Underline in Fourth Strong Text </u>
+      </strong>
+      <strong>Fifth Strong Text</strong>
+      <i>Italics After Fifth Strong Text</i>
+      <strong>Sixth Strong Text</strong>
+    </div>`.replaceAll(/\n */g, '')
+    )
+  })
+
+})
+
 
 describe("test nodeIsDescendentOf", function() {
 
@@ -394,13 +441,11 @@ describe("test selectionIsCoveredBy", function() {
   
 })
 
-describe("test selectionIsCoveredBy - alternate DOM", function() {
+describe("test selectionIsCoveredBy - alternate HTML", function() {
 
   beforeEach(function() {
     document.body.innerHTML = alternateHTML;
   });
-
-
 
   test("selection in range of siblings of same type", function() {
     const limitingContainer = document.querySelector("div");
@@ -527,8 +572,6 @@ describe("test generateQuery", function() {
     const strong = document.querySelector(generatedQuery);
     expect(strong).toBeNull();
   })
-
-
 })
 
 
