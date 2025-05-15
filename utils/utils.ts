@@ -37,14 +37,21 @@ export function deleteEmptyElementsByQuery(query: string, limitingContainer: Ele
 }
 
 
+/**
+ * Promotes all text in a selection where it is a descendent of an element matching a given query. 
+ * @param selection 
+ * @param query 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function unwrapSelectionFromQuery(selection: Selection, query: string, limitingContainer: Element): void {
   if (!selection || !selection.anchorNode || !selection.focusNode) return;
 
-
+  // Work with range instead of selection for start/end container clarity
   const range = selection.getRangeAt(0);
 
+  // the range must necessarily have both the start and end be within an ancestor node matching the query
   const preAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer);
-
   if (!preAncestorNode) return;
 
   const preRange = new Range();
@@ -87,6 +94,10 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
 
 
 
+/**
+ * Replaces a given node with its contents
+ * @param node 
+ */
 function promoteChildrenOfNode(node: Node): void {
   if (node.parentNode) {
     for (let child of Array.from(node.childNodes)) {
@@ -184,6 +195,14 @@ function getSelectionChildNodes(selection: Selection, limitingContainer: Node): 
 }
 
 
+/**
+ * Checks if all text in selection is covered by one or more elements matching a given query, 
+ * provided all are within a limitingContainer Node
+ * @param selection 
+ * @param query 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function selectionIsCoveredBy(selection: Selection, query: string, limitingContainer: Node): Boolean {
   const nodes = getSelectionChildNodes(selection, limitingContainer);
   const textNodes = nodes
