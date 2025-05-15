@@ -171,25 +171,29 @@ describe("test getSelectionChildNodes", function() {
     document.body.innerHTML = startingHTML;
   })
 
-  test("", function() {
+  test("Check selection across elements", function() {
     const strong = document.querySelector("strong#strong-1");
+
     const limitingContainer = document.querySelector("div") 
-    const orphanTextNode = limitingContainer?.childNodes[3];
+    const orphanTextNode = limitingContainer?.childNodes[2];
 
     expect(strong).not.toBeNull();
     expect(orphanTextNode).not.toBeNull();
+    const strongText = strong!.childNodes[0];
+    expect(strongText).not.toBeNull();
 
     expect(orphanTextNode!.nodeType).toBe(3);
 
-    const selection = setSelection(strong!, 5, orphanTextNode!, 7);
+    const selection = setSelection(strongText!, 5, orphanTextNode!, 7);
 
     const result = getSelectionChildNodes(selection!, limitingContainer!);
 
     expect(result instanceof Array).toBe(true);
-    expect(result.length).toBe(3);
-    expect(result[0].textContent).toBe(" Text")
+    expect(result.length).toBe(4);
+    expect(result[0].textContent).toBe("Strong Text")
     expect(result[1].textContent).toBe("Italics Text")
-    expect(result[2].textContent).toBe("Orphan ")
+    expect(result[2].textContent).toBe("Italics Text")
+    expect(result[3].textContent).toBe("Orphan Text")
 
   })
 
@@ -234,45 +238,45 @@ describe("test unwrapSelectionFromQuery", function() {
     expect(document.querySelectorAll("i#italics-2").length).toBe(0);
   })
 
-  // test("promote text in italics out of strong", function() {
-  //   const italics = document.querySelector("i#italics-2");
-  //   const italicsTextContent = italics?.textContent;
-  //   expect(italics).not.toBeNull();
-  //   expect(italics?.parentNode).not.toBeNull();
-  //   const parentNode = italics!.parentNode;
+  test("promote text in italics out of strong", function() {
+    const italics = document.querySelector("i#italics-2");
+    const italicsTextContent = italics?.textContent;
+    expect(italics).not.toBeNull();
+    expect(italics?.parentNode).not.toBeNull();
+    const parentNode = italics!.parentNode;
 
-  //   expect(italics!.childNodes.length).toBe(1);
-  //   const italicsTextNode = italics!.childNodes[0];
+    expect(italics!.childNodes.length).toBe(1);
+    const italicsTextNode = italics!.childNodes[0];
 
-  //   expect(italicsTextContent).toEqual(italicsTextNode!.textContent);
+    expect(italicsTextContent).toEqual(italicsTextNode!.textContent);
 
-  //   const selection = setSelection(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
+    const selection = setSelection(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
 
-  //   expect(selection).not.toBeNull();
+    expect(selection).not.toBeNull();
 
-  //   const limitingContainer = document.querySelector("div")
+    const limitingContainer = document.querySelector("div")
 
-  //   expect(limitingContainer).not.toBeNull();
-  //   unwrapSelectionFromQuery(selection!, "strong", limitingContainer!);
+    expect(limitingContainer).not.toBeNull();
+    unwrapSelectionFromQuery(selection!, "strong", limitingContainer!);
 
-  //   expect(document.body.innerHTML).toBe(
-  //     `<div>
-  //       <strong id="strong-1">Strong Text</strong>
-  //       <i id="italics-1">Italics Text</i>
-  //       Orphan Text
-  //       <strong id="strong-2">
-  //         Strong Text
-  //         <i id="italics-2"></i>
-  //       </strong>
-  //       <i id="italics-2">
-  //         Strong and Italics Text
-  //       </i>
-  //       <strong id="strong-2">
-  //         <i id="italics-2"></i>
-  //         More Strong Text
-  //       </strong>
-  //     </div>`.replaceAll(/\n */g, ''));
-  // })
+    expect(document.body.innerHTML).toBe(
+      `<div>
+        <strong id="strong-1">Strong Text</strong>
+        <i id="italics-1">Italics Text</i>
+        Orphan Text
+        <strong id="strong-2">
+          Strong Text
+          <i id="italics-2"></i>
+        </strong>
+        <i id="italics-2">
+          Strong and Italics Text
+        </i>
+        <strong id="strong-2">
+          <i id="italics-2"></i>
+          More Strong Text
+        </strong>
+      </div>`.replaceAll(/\n */g, ''));
+  })
 });
 
 
