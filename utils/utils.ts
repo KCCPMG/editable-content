@@ -158,7 +158,7 @@ export function selectionIsDescendentOfNode(selection: Selection, ancestorElemen
 }
 
 
-function getSelectionChildNodes(selection: Selection, limitingContainer: Node): Array<Node> {
+export function getSelectionChildNodes(selection: Selection, limitingContainer: Node): Array<Node> {
   if (!selection || !selection.anchorNode || !selection.focusNode) return [];
   
   // console.log(selection);
