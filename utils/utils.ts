@@ -22,7 +22,13 @@ export function wrapInElement(selection: Selection, element: Element) {
   range.insertNode(element);
 }
 
-
+/**
+ * Delete all elements within a limitingContainer Element if
+ * those elements match a query and have no childNodes
+ * @param query 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function deleteEmptyElementsByQuery(query: string, limitingContainer: Element) {
   const elements = Array.from(limitingContainer.querySelectorAll(query));
 
@@ -74,19 +80,44 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
     postRange.insertNode(cn);
   }
 
+  // find matching ancestor nodes of start and end containers
+  const startContainerAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer);
+  if (startContainerAncestorNode) {
+    promoteChildrenOfNode(startContainerAncestorNode)
+  }
+
+  const endContainerAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
+  if (endContainerAncestorNode) {
+    promoteChildrenOfNode(endContainerAncestorNode)
+  }
+
+
+  // promote children of all query-matching nodes in selection
+  const childNodes = getSelectionChildNodes(selection, limitingContainer);
+  const targetedNodes = childNodes.filter(cn => {
+    return (cn instanceof Element && cn.matches(query));
+  });
+  targetedNodes.forEach(tn => promoteChildrenOfNode(tn));
+
   // will preAncestorNode and postAncestorNode necessarily be the same?
   // I still need to promote the actual selection out of the wrapper
 
-  const selectionAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
+  // const selectionAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
   // if (!selectionAncestorNode) return;
   // const selectionAncestorRange = new Range();
   // selectionAncestorRange.setStartBefore(selectionAncestorNode);
   // selectionAncestorRange.setEndAfter(selectionAncestorNode);
   // const selectionAncestorContents = selectionAncestorRange.extractContents();
   // for (let cn of Array.from(selection.getRangeAt(0).extractContents))
-  if (!selectionAncestorNode) return;
-  promoteChildrenOfNode(selectionAncestorNode);
+  // if (selectionAncestorNode) {
+  //   // 
+  //   promoteChildrenOfNode(selectionAncestorNode);
+  // }
 
+
+
+
+  // finally clean up empty elements of this query
   deleteEmptyElementsByQuery(query, limitingContainer);
 
   return;
@@ -158,6 +189,13 @@ export function selectionIsDescendentOfNode(selection: Selection, ancestorElemen
 }
 
 
+/**
+ * Creates a treewalker to walk a range, returns all nodes;
+ * siblings and children.
+ * @param selection 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function getSelectionChildNodes(selection: Selection, limitingContainer: Node): Array<Node> {
   if (!selection || !selection.anchorNode || !selection.focusNode) return [];
   

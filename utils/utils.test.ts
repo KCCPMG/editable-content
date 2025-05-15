@@ -194,9 +194,7 @@ describe("test getSelectionChildNodes", function() {
     expect(result[1].textContent).toBe("Italics Text")
     expect(result[2].textContent).toBe("Italics Text")
     expect(result[3].textContent).toBe("Orphan Text")
-
   })
-
 })
 
 
