@@ -21,7 +21,21 @@ const startingHTML =
 .replaceAll(/\n */g, ''); // avoid empty text nodes from human-readable version above
 
 
-let testNumber = 0;
+const alternateHTML = `
+<div>
+  <strong>First Strong Text</strong>
+  <strong>Second Strong Text</strong>
+  <strong>Third Strong Text</strong>
+  <strong>
+    Fourth Strong Text 
+    <i>Italics In Fourth Strong Text </i>
+    <u>Underline in Fourth Strong Text </u>
+  </strong>
+  <strong>Fifth Strong Text</strong>
+  <i>Italics After Fifth Strong Text</i>
+  <strong>Sixth Strong Text</strong>
+</div>`.replaceAll(/\n */g, '');
+
 
 
 describe("basic test", () => {
@@ -46,10 +60,6 @@ describe("basic test", () => {
 
 
 describe("test setSelection", function() {
-
-  beforeEach(function() {
-    testNumber++;
-  })
 
   test("set Selection on text inside italics node", function() {
     const italics = document.querySelector("i");
@@ -86,7 +96,6 @@ describe("test wrapInElement", function() {
 
   beforeEach(function() {
     document.body.innerHTML = startingHTML;
-    testNumber++;
   })
 
   test("wrap element in element", function() {
@@ -160,7 +169,6 @@ describe("test deleteEmptyElementsByQuery", function() {
 describe("test unwrapSelectionFromQuery", function() {
 
   beforeEach(() => {
-    testNumber++;
     document.body.innerHTML = startingHTML;
   })
 
@@ -241,7 +249,6 @@ describe("test unwrapSelectionFromQuery", function() {
 describe("test nodeIsDescendentOf", function() {
 
   beforeEach(() => {
-    testNumber++;
     document.body.innerHTML = startingHTML;
   })
 
@@ -268,7 +275,6 @@ describe("test nodeIsDescendentOf", function() {
 describe("test selectionIsDescendentOfNode", function() {
 
   beforeEach(() => {
-    testNumber++;
     document.body.innerHTML = startingHTML;
   })
   
@@ -391,20 +397,7 @@ describe("test selectionIsCoveredBy", function() {
 describe("test selectionIsCoveredBy - alternate DOM", function() {
 
   beforeEach(function() {
-    document.body.innerHTML = `
-    <div>
-      <strong>First Strong Text</strong>
-      <strong>Second Strong Text</strong>
-      <strong>Third Strong Text</strong>
-      <strong>
-        Fourth Strong Text 
-        <i>Italics In Fourth Strong Text </i>
-        <u>Underline in Fourth Strong Text </u>
-      </strong>
-      <strong>Fifth Strong Text</strong>
-      <i>Italics After Fifth Strong Text</i>
-      <strong>Sixth Strong Text</strong>
-    </div>`.replaceAll(/\n */g, '');
+    document.body.innerHTML = alternateHTML;
   });
 
 

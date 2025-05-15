@@ -28,11 +28,11 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     document.addEventListener('selectionchange', function(e) {
       const gotSelection = window.getSelection();
 
-      console.log(
-        Boolean(gotSelection), 
-        Boolean(contentRef.current), 
-        gotSelection && contentRef.current && selectionIsDescendentOfNode(gotSelection, contentRef.current)
-      );
+      console.log({
+        gotSelection : Boolean(gotSelection), 
+        contentRefCurrent: Boolean(contentRef.current), 
+        selectionIsDescendentOfNode: gotSelection && contentRef.current && selectionIsDescendentOfNode(gotSelection, contentRef.current)
+      });
 
       if (gotSelection && contentRef.current && selectionIsDescendentOfNode(gotSelection, contentRef.current)) {
         setSelectionAnchorNode(gotSelection.anchorNode);
