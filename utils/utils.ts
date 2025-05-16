@@ -14,6 +14,38 @@ export function setSelection(startContainer: Node, startOffset: number, endConta
 }
 
 
+function moveSelectionToTextNodes() {
+  const selection = window.getSelection();
+  if (!selection) return selection;
+
+  const range = selection.getRangeAt(0);
+  
+  if (range.startContainer.nodeType !== Node.TEXT_NODE) {
+    const startNode = range.startContainer.childNodes[range.startOffset];
+    const tw = document.createTreeWalker(startNode);
+    while (true) {
+      if (tw.currentNode.nodeType === Node.TEXT_NODE) {
+        range.setStart(tw.currentNode, 0);
+        // break;
+      } else tw.nextNode();
+    }
+  }
+
+  if (range.endContainer.nodeType !== Node.TEXT_NODE) {
+    const endNode = range.endContainer.childNodes[range.endOffset - 1];
+    const tw = document.createTreeWalker(range.endContainer);
+    while (true) {
+      if (tw.currentNode.nodeType === Node.TEXT_NODE) {
+        range.setEnd(tw.currentNode, tw.currentNode.textContent!.length);
+        break;
+      } else tw.previousNode();
+    }
+  }
+
+  return selection;
+}
+
+
 export function wrapInElement(selection: Selection, element: Element): void {
   if (!selection) return;
   const range = selection.getRangeAt(0);
