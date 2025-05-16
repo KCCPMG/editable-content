@@ -14,15 +14,9 @@ export function setSelection(startContainer: Node, startOffset: number, endConta
 }
 
 
-const selection = window.getSelection();
-const range = selection.getRangeAt(0);
-const p = document.querySelector("#content > article > section:nth-child(4) > div > dl > dd:nth-child(4) > p");
-range.setStartBefore(p);
-range.setEndAfter(p);
 
-console.log(range);
 
-function moveSelectionToTextNodes() {
+export function resetSelectionToTextNodes() {
   let selection = window.getSelection();
   if (!selection) return selection;
 
@@ -62,13 +56,15 @@ function moveSelectionToTextNodes() {
   }
 
   selection = window.getSelection();
+  if (!selection) return null;
+  
   selection.removeAllRanges();
   selection.addRange(range);
 
   return selection;
 }
 
-moveSelectionToTextNodes();
+
 
 
 export function wrapInElement(selection: Selection, element: Element): void {
