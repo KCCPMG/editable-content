@@ -14,36 +14,61 @@ export function setSelection(startContainer: Node, startOffset: number, endConta
 }
 
 
+const selection = window.getSelection();
+const range = selection.getRangeAt(0);
+const p = document.querySelector("#content > article > section:nth-child(4) > div > dl > dd:nth-child(4) > p");
+range.setStartBefore(p);
+range.setEndAfter(p);
+
+console.log(range);
+
 function moveSelectionToTextNodes() {
-  const selection = window.getSelection();
+  let selection = window.getSelection();
   if (!selection) return selection;
 
   const range = selection.getRangeAt(0);
+  const originalStartContainer = range.startContainer;
+  console.log(range);
   
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
     const startNode = range.startContainer.childNodes[range.startOffset];
+    console.log({startNode});
     const tw = document.createTreeWalker(startNode);
     while (true) {
+      console.log(tw.currentNode);
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
         range.setStart(tw.currentNode, 0);
-        // break;
+        break;
       } else tw.nextNode();
     }
   }
 
   if (range.endContainer.nodeType !== Node.TEXT_NODE) {
-    const endNode = range.endContainer.childNodes[range.endOffset - 1];
-    const tw = document.createTreeWalker(range.endContainer);
-    while (true) {
-      if (tw.currentNode.nodeType === Node.TEXT_NODE) {
-        range.setEnd(tw.currentNode, tw.currentNode.textContent!.length);
-        break;
-      } else tw.previousNode();
+    let lastTextNode = range.startContainer;
+    const tw = document.createTreeWalker(originalStartContainer);
+    // advance to new start container
+    while (tw.currentNode !== range.startContainer) {
+      tw.nextNode();
     }
+    while (range.isPointInRange(tw.currentNode, 0)) {
+      if (tw.currentNode.nodeType === Node.TEXT_NODE) {
+        lastTextNode = tw.currentNode;
+      }  
+      tw.nextNode();
+      console.log("currentNode:", tw.currentNode);
+      console.log("lastTextNode: ", lastTextNode);
+    }
+    range.setEnd(lastTextNode, lastTextNode.textContent?.length || 0);
   }
+
+  selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
 
   return selection;
 }
+
+moveSelectionToTextNodes();
 
 
 export function wrapInElement(selection: Selection, element: Element): void {
