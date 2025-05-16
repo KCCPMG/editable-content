@@ -451,7 +451,6 @@ describe("test selectionIsCoveredBy", function() {
   })
 
   test("selection is covered by - 2", function() {
-    // not done, just a copy of 1 at this point
     const limitingContainer = document.querySelector("div");
 
     const strong = document.querySelector("strong#strong-1");
