@@ -56,7 +56,7 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
   // Work with range instead of selection for start/end container clarity
   const range = selection.getRangeAt(0);
 
-  // the range must necessarily have both the start and end be within an ancestor node matching the query
+  // the range must necessarily have both the start and end each be within an ancestor node matching the query, which can be a common ancestor node
   const preAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer);
   if (!preAncestorNode) return;
 
@@ -83,13 +83,18 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
   // find matching ancestor nodes of start and end containers
   const startContainerAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer);
   if (startContainerAncestorNode) {
-    promoteChildrenOfNode(startContainerAncestorNode)
+    // promoteChildrenOfNode(startContainerAncestorNode)
+    range.setStartBefore(startContainerAncestorNode);
   }
 
   const endContainerAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
   if (endContainerAncestorNode) {
-    promoteChildrenOfNode(endContainerAncestorNode)
+    // promoteChildrenOfNode(endContainerAncestorNode)
+    range.setEndAfter(endContainerAncestorNode);
   }
+  
+  // need to reset range or tw will fail in getSelectionChildNodes
+
 
 
   // promote children of all query-matching nodes in selection
@@ -200,7 +205,17 @@ export function getSelectionChildNodes(selection: Selection, limitingContainer: 
   if (!selection || !selection.anchorNode || !selection.focusNode) return [];
   
   // console.log(selection);
-  const { startContainer, endContainer } = selection.getRangeAt(0);
+  const { startContainer, startOffset, endContainer, endOffset } = selection.getRangeAt(0);
+
+
+  const startNode = startContainer.hasChildNodes() ?
+    startContainer.childNodes[startOffset] :
+    startContainer 
+
+  const endNode = endContainer.hasChildNodes() ?
+    endContainer.childNodes[endOffset] :
+    endContainer 
+
   const tw = document.createTreeWalker(limitingContainer);
 
   const childNodes = [];
@@ -215,13 +230,15 @@ export function getSelectionChildNodes(selection: Selection, limitingContainer: 
     if (!currentNode) break;
 
     if (!inRange) {
-      if (currentNode == startContainer) inRange = true;
+      if (currentNode == startNode) {
+        inRange = true;
+      }
     }
 
     // not else, can flip switch and then progress
     if (inRange) {
       childNodes.push(currentNode);
-      if (currentNode == endContainer) break;
+      if (currentNode == endNode) break;
     }
 
   }
