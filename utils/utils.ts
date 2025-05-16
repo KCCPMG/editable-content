@@ -90,7 +90,8 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
   const endContainerAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
   if (endContainerAncestorNode) {
     // promoteChildrenOfNode(endContainerAncestorNode)
-    range.setEndAfter(endContainerAncestorNode);
+    // range.setEndAfter(endContainerAncestorNode);
+    range.setEnd(endContainerAncestorNode, 0);
   }
   
   // need to reset range or tw will fail in getSelectionChildNodes
