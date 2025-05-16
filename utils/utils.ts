@@ -14,12 +14,22 @@ export function setSelection(startContainer: Node, startOffset: number, endConta
 }
 
 
-export function wrapInElement(selection: Selection, element: Element) {
+export function wrapInElement(selection: Selection, element: Element): void {
   if (!selection) return;
   const range = selection.getRangeAt(0);
   const contents = range.extractContents();
   element.append(contents);
   range.insertNode(element);
+  
+  // try to reset selection to text nodes
+
+  // get selection child nodes
+
+  // set start to beginning of first text node
+
+  // set end to end of last text node
+  // const childNodes = getSelectionChildNodes(selection);
+
 }
 
 /**
@@ -224,7 +234,7 @@ export function getSelectionChildNodes(selection: Selection, limitingContainer: 
 
   while (true) {
 
-    const currentNode = tw.nextNode();
+    const currentNode = tw.currentNode;
     // if (currentNode) childNodes.push(currentNode);
     // else break;
 
@@ -241,6 +251,8 @@ export function getSelectionChildNodes(selection: Selection, limitingContainer: 
       childNodes.push(currentNode);
       if (currentNode == endNode) break;
     }
+
+    tw.nextNode();
 
   }
   return childNodes;
