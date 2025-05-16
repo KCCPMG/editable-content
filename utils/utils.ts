@@ -16,20 +16,17 @@ export function setSelection(startContainer: Node, startOffset: number, endConta
 
 
 
-export function resetSelectionToTextNodes() {
+export function resetSelectionToTextNodes(): Selection | null {
   let selection = window.getSelection();
   if (!selection) return selection;
 
   const range = selection.getRangeAt(0);
   const originalStartContainer = range.startContainer;
-  console.log(range);
   
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
     const startNode = range.startContainer.childNodes[range.startOffset];
-    console.log({startNode});
     const tw = document.createTreeWalker(startNode);
     while (true) {
-      console.log(tw.currentNode);
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
         range.setStart(tw.currentNode, 0);
         break;
@@ -48,16 +45,14 @@ export function resetSelectionToTextNodes() {
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
         lastTextNode = tw.currentNode;
       }  
-      tw.nextNode();
-      console.log("currentNode:", tw.currentNode);
-      console.log("lastTextNode: ", lastTextNode);
+      if (!tw.nextNode()) break; // advance tw, break loop if null
     }
     range.setEnd(lastTextNode, lastTextNode.textContent?.length || 0);
   }
 
   selection = window.getSelection();
   if (!selection) return null;
-  
+
   selection.removeAllRanges();
   selection.addRange(range);
 

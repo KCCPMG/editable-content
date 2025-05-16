@@ -125,15 +125,17 @@ describe("test setSelection", function() {
 });
 
 
-describe("test moveSelectionToTextNodes", function() {
+describe("test resetSelectionToTextNodes", function() {
 
-  // no need to beforeEach, not manipulating DOM
-  document.body.innerHTML = mdnDocPageHTML;
+  beforeEach(function() {
+    document.body.innerHTML = mdnDocPageHTML;
+  })
+
 
   const idealRangeText = "An integer greater than or equal to zero describing the position inside referenceNode of the point to be checked. If referenceNode is a Node of type Text, Comment, or CDATASection, then offset is the number of characters from the start of referenceNode. For other Node types, offset is the number of child nodes from the start of the referenceNode.";
 
 
-  test("Set selection range to bounding ", function() {
+  test("Set selection range to cover bounding p", function() {
 
     const selection = window.getSelection();
     expect(selection).not.toBeNull();
