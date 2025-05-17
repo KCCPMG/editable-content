@@ -179,6 +179,46 @@ describe("test resetSelectionToTextNodes", function() {
 
   })
 
+  test("set selection to start with covering bounding p, end with text", function() {
+    const selection = window.getSelection();
+    expect(selection).not.toBeNull();
+    const range = selection!.getRangeAt(0);
+    const p = document.querySelector("#content > article > section:nth-child(4) > div > dl > dd:nth-child(4) > p");
+    expect(p).not.toBeNull();
+    range.setStart(p!.childNodes[0], 0);
+    expect(range.startContainer.nodeType).toBe(Node.TEXT_NODE);
+
+    const lastTextNode = p!.childNodes[p!.childNodes.length-1];
+    expect(lastTextNode).not.toBeNull();
+    expect(lastTextNode.nodeType).toBe(Node.TEXT_NODE);
+    range.setEnd(lastTextNode, lastTextNode!.textContent!.length);
+
+    const returnedSelection = resetSelectionToTextNodes();
+
+    expect(range.startContainer.nodeType).toBe(Node.TEXT_NODE);
+    expect(range.endContainer.nodeType).toBe(Node.TEXT_NODE);
+    expect(range.toString()).toEqual(idealRangeText);
+  })
+
+
+  test("set selection to text at both ends", function() {
+    const selection = window.getSelection();
+    expect(selection).not.toBeNull();
+    const range = selection!.getRangeAt(0);
+    const p = document.querySelector("#content > article > section:nth-child(4) > div > dl > dd:nth-child(4) > p");
+    expect(p).not.toBeNull();
+    range.setStart(p!.childNodes[0], 0);
+    const lastTextNode = p!.childNodes[p!.childNodes.length-1];
+    expect(lastTextNode).not.toBeNull();
+    expect(lastTextNode.nodeType).toBe(Node.TEXT_NODE);
+    range.setEnd(lastTextNode, lastTextNode!.textContent!.length);
+
+    const returnedSelection = resetSelectionToTextNodes();
+
+    expect(range.startContainer.nodeType).toBe(Node.TEXT_NODE);
+    expect(range.endContainer.nodeType).toBe(Node.TEXT_NODE);
+    expect(range.toString()).toEqual(idealRangeText);
+  })
 })
 
 

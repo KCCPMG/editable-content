@@ -36,7 +36,6 @@ export function resetSelectionToTextNodes(): Selection | null {
 
   if (range.endContainer.nodeType !== Node.TEXT_NODE) {
 
-
     const commonAncestor = range.commonAncestorContainer;
 
     let lastTextNode = range.startContainer;
@@ -68,20 +67,13 @@ export function resetSelectionToTextNodes(): Selection | null {
 
 export function wrapInElement(selection: Selection, element: Element): void {
   if (!selection) return;
+  resetSelectionToTextNodes();
   const range = selection.getRangeAt(0);
   const contents = range.extractContents();
   element.append(contents);
   range.insertNode(element);
   
-  // try to reset selection to text nodes
-
-  // get selection child nodes
-
-  // set start to beginning of first text node
-
-  // set end to end of last text node
-  // const childNodes = getSelectionChildNodes(selection);
-
+  resetSelectionToTextNodes();
 }
 
 /**
@@ -114,6 +106,8 @@ export function deleteEmptyElementsByQuery(query: string, limitingContainer: Ele
  */
 export function unwrapSelectionFromQuery(selection: Selection, query: string, limitingContainer: Element): void {
   if (!selection || !selection.anchorNode || !selection.focusNode) return;
+
+  resetSelectionToTextNodes();
 
   // Work with range instead of selection for start/end container clarity
   const range = selection.getRangeAt(0);
@@ -187,6 +181,8 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
 
   // finally clean up empty elements of this query
   deleteEmptyElementsByQuery(query, limitingContainer);
+
+  resetSelectionToTextNodes();
 
   return;
 }
