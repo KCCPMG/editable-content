@@ -22,6 +22,10 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     if (contentRef.current && initialHTML) {
       setContentRefState(contentRef)
       contentRef.current.innerHTML = initialHTML;
+
+      contentRef.current.addEventListener("input", function(e) {
+        console.log("content change");
+      })
     }
 
 
