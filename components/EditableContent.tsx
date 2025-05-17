@@ -10,13 +10,9 @@ const contentChange = new CustomEvent("contentChange");
 export default function EditableContent({initialHTML, editTextButtons}: EditableContentProps) {
 
   const contentRef = useRef<null | HTMLDivElement>(null);
-  const [contentRefState, setContentRefState] = useState<MutableRefObject<null | HTMLDivElement> | null>(null);
   const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
-  const [selectionAnchorNode, setSelectionAnchorNode] = useState<Node | null>(null)
-  const [selectionAnchorOffset, setSelectionAnchorOffset] = useState<Number | null>(null)
-  const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
-  const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null)
   const [selectionToString, setSelectionToString] = useState<string>("")
+
 
 
   function updateSelection() {
@@ -29,36 +25,34 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     });
 
     if (gotSelection && contentRef.current && selectionIsDescendentOfNode(gotSelection, contentRef.current)) {
-      setSelectionAnchorNode(gotSelection.anchorNode);
-      setSelectionAnchorOffset(gotSelection.anchorOffset);
-      setSelectionFocusNode(gotSelection.focusNode);
-      setSelectionFocusOffset(gotSelection.focusOffset);
       setSelectionToString(gotSelection.toString());
     } else {
-      setSelectionAnchorNode(null);
-      setSelectionAnchorOffset(null);
-      setSelectionFocusNode(null);
-      setSelectionFocusOffset(null);
       setSelectionToString("");
     }
   }
 
 
+  function updateContent() {
+    setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
+    console.log("content change");
+  }
+
   useEffect(() => {
 
     if (contentRef.current && initialHTML) {
-      setContentRefState(contentRef)
       contentRef.current.innerHTML = initialHTML;
 
       setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
 
-      contentRef.current.addEventListener("contentChange", function(e) {
-        setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
-        console.log("content change");
-      })
+      contentRef.current.addEventListener("contentChange", updateContent)
     }
 
-    document.addEventListener('selectionchange', updateSelection)
+    document.addEventListener('selectionchange', updateSelection);
+
+    return () => {
+      document.removeEventListener('selectionchange', updateSelection);
+      contentRef?.current?.removeEventListener("contentChange", updateContent);
+    }
 
   }, [])
 
