@@ -263,7 +263,12 @@ export function selectionIsDescendentOfNode(selection: Selection, ancestorElemen
  * @returns 
  */
 export function getSelectionChildNodes(selection: Selection, limitingContainer: Node): Array<Node> {
-  if (!selection || !selection.anchorNode || !selection.focusNode) return [];
+  if (!selection || 
+    !selection.anchorNode || 
+    !selection.focusNode ||
+    !(limitingContainer.contains(selection.anchorNode)) ||
+    !(limitingContainer.contains(selection.focusNode))
+  ) return [];
   
   // console.log(selection);
   const { startContainer, startOffset, endContainer, endOffset } = selection.getRangeAt(0);
