@@ -153,6 +153,32 @@ describe("test resetSelectionToTextNodes", function() {
 
   })
 
+
+  test("set selection range to starting with text, ending covering bounding p", function() {
+
+    const selection = window.getSelection();
+    expect(selection).not.toBeNull();
+    const range = selection!.getRangeAt(0);
+    const p = document.querySelector("#content > article > section:nth-child(4) > div > dl > dd:nth-child(4) > p");
+    expect(p).not.toBeNull();
+
+    expect(p!.hasChildNodes()).toBe(true);
+    expect(p!.childNodes[0].nodeType).toBe(Node.TEXT_NODE);
+
+    range.setStart(p!.childNodes[0], 0);
+    console.log([range.startContainer, range.startContainer.textContent]);
+    expect(range.startContainer.nodeType).toBe(Node.TEXT_NODE);
+    range.setEndAfter(p!);
+    console.log([range.endContainer, range.endContainer.textContent]);
+
+    const returnedSelection = resetSelectionToTextNodes();
+
+    expect(range.startContainer.nodeType).toBe(Node.TEXT_NODE);
+    expect(range.endContainer.nodeType).toBe(Node.TEXT_NODE);
+    expect(range.toString()).toEqual(idealRangeText);
+
+  })
+
 })
 
 

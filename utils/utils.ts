@@ -35,8 +35,12 @@ export function resetSelectionToTextNodes(): Selection | null {
   }
 
   if (range.endContainer.nodeType !== Node.TEXT_NODE) {
+
+
+    const commonAncestor = range.commonAncestorContainer;
+
     let lastTextNode = range.startContainer;
-    const tw = document.createTreeWalker(originalStartContainer);
+    const tw = document.createTreeWalker(commonAncestor);
     // advance to new start container
     while (tw.currentNode !== range.startContainer) {
       tw.nextNode();
