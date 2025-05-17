@@ -70,8 +70,10 @@ export function wrapInElement(selection: Selection, element: Element): void {
   resetSelectionToTextNodes();
   const range = selection.getRangeAt(0);
   const contents = range.extractContents();
-  element.append(contents);
-  range.insertNode(element);
+  element.append(contents); 
+  range.insertNode(element); // range is collapsed, this effectively inserts *after*
+  range.setStartBefore(element);
+  range.setEndAfter(element);
   
   resetSelectionToTextNodes();
 }
