@@ -4,12 +4,14 @@ import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsC
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 
+const contentChange = new CustomEvent("contentChange");
 
 
 export default function EditableContent({initialHTML, editTextButtons}: EditableContentProps) {
 
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefState, setContentRefState] = useState<MutableRefObject<null | HTMLDivElement> | null>(null);
+  const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
   const [selectionAnchorNode, setSelectionAnchorNode] = useState<Node | null>(null)
   const [selectionAnchorOffset, setSelectionAnchorOffset] = useState<Number | null>(null)
   const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
@@ -48,13 +50,16 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       setContentRefState(contentRef)
       contentRef.current.innerHTML = initialHTML;
 
-      contentRef.current.addEventListener("input", function(e) {
+      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+
+      contentRef.current.addEventListener("contentChange", function(e) {
+        setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
         console.log("content change");
       })
     }
 
-
     document.addEventListener('selectionchange', updateSelection)
+
   }, [])
 
 
@@ -79,14 +84,18 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                 onClick={
                   selected ? 
                     () => {
-                      if (selection) unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-                      updateSelection();
+                      if (selection) {
+                        unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+                        updateSelection();
+                        contentRef.current?.dispatchEvent(contentChange);
+                      }
                     } :
                     () => {
                       if (selection) {
                         const wrapper = createWrapper(etb.wrapperArgs, document);
                         wrapInElement(selection, wrapper);
                         updateSelection();
+                        contentRef.current?.dispatchEvent(contentChange);
                       } 
 
                     }
@@ -111,8 +120,16 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       
       </div>
       <div>
-        <p>Selection:</p>
-        {selectionToString}
+        <p>
+          <span>Selection: </span>
+          {selectionToString}
+        </p>
+      </div>
+      <div>
+        <p>
+          <span>ContentRef.current Inner HTML: </span>
+          {contentRefCurrentInnerHTML}
+        </p>
       </div>
     </>
   )
