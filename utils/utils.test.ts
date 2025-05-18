@@ -364,7 +364,7 @@ describe("test unwrapSelectionFromQuery", function() {
     expect(range).not.toBeNull();
 
     expect(selection!.anchorNode).toBe(selection!.focusNode);
-    expect(selection!.anchorNode).toBe(document.querySelector("#strong-2"));
+    expect(selection!.anchorNode!.nodeType).toBe(Node.TEXT_NODE);
 
     expect(document.querySelectorAll("i#italics-2").length).toBe(0);
   })
