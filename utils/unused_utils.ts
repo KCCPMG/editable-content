@@ -116,7 +116,7 @@ function splitNode(node: Node, offset: number) {
   const postRange = getRangeAfter(node, offset);
 
   // if node is TEXT_NODE
-  if (node.nodeType === 3) {
+  if (node.nodeType === Node.TEXT_NODE) {
     const preText = document.createTextNode(preRange.toString());
     node.parentNode?.insertBefore(preText, node);
     const postText = document.createTextNode(postRange.toString());

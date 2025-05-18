@@ -315,7 +315,7 @@ describe("test getSelectionChildNodes", function() {
     const strongText = strong!.childNodes[0];
     expect(strongText).not.toBeNull();
 
-    expect(orphanTextNode!.nodeType).toBe(3);
+    expect(orphanTextNode!.nodeType).toBe(Node.TEXT_NODE);
 
     const selection = setSelection(strongText!, 5, orphanTextNode!, 7);
 

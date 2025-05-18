@@ -329,7 +329,7 @@ export function getSelectionChildNodes(selection: Selection, limitingContainer: 
 export function selectionIsCoveredBy(selection: Selection, query: string, limitingContainer: Node): Boolean {
   const nodes = getSelectionChildNodes(selection, limitingContainer);
   const textNodes = nodes
-  .filter(n => n.nodeType === 3)
+  .filter(n => n.nodeType === Node.TEXT_NODE)
   .filter(n => n.textContent && n.textContent.length > 0); 
   return textNodes.every(tn => nodeIsDescendentOf(tn, query, limitingContainer));
 
