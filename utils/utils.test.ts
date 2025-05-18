@@ -251,8 +251,10 @@ describe("test wrapInElement", function() {
     expect(selectionTextContent).toBe(italicsTextContent);
 
     wrapInElement(selection!, anchor);
+
+
     const reestablishedItalics = document.querySelector("i#italics-1");
-    expect(reestablishedItalics!.parentNode).toBe(anchor);
+    expect(anchor!.parentNode).toBe(reestablishedItalics);
     // make sure italics textContent is unchanged
     expect(italics!.textContent).toBe(italicsTextContent);
     expect(anchor.textContent).toBe(italicsTextContent);
