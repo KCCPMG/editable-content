@@ -18,18 +18,20 @@ export default function Home() {
         initialHTML="Plain Text<strong>Strong Text</strong>"
         editTextButtons={[
           {
-            MUIButton: false, 
+            isMUIButton: false, 
             dataKey: "bold",
             child: <FormatBoldIcon/>,
+            variant: "contained",
             wrapperArgs: {
               element: "strong"
             }
 
           },
           {
-            MUIButton: true, 
+            isMUIButton: true, 
             dataKey: "italics",
             child: <FormatItalic/>,
+            variant: "contained",
             wrapperArgs: {
               element: "i"
             }

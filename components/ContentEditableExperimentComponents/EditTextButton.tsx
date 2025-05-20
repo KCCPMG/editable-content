@@ -6,8 +6,8 @@ import { EditTextButtonProps, WrapperArgs } from ".";
 
 
 
-export default function EditTextButton({MUIButton ,dataKey, child, defaultColor, selectedColor, contentRef, onClick, selected,
-  wrapperArgs : {element, classList, id}}: EditTextButtonProps
+export default function EditTextButton({isMUIButton, dataKey, child, defaultColor, selectedColor, contentRef, onClick, selected,
+  wrapperArgs : {element, classList, id}, ...remainderProps}: EditTextButtonProps
 ) {
 
   const [query, setQuery] = useState("");
@@ -92,16 +92,23 @@ export default function EditTextButton({MUIButton ,dataKey, child, defaultColor,
   // }
 
   return (
-    MUIButton ? 
+    isMUIButton ? 
       <Button 
+        // default, can be overidden
         variant="outlined"
         color={selected ? (selectedColor || "secondary") : (defaultColor || "primary") }
+
+        // regular button props
+        {...remainderProps}
+
+        // necessary, declared last to prevent override
         onClick={onClick}
       >
         {child}
       </Button> :
       <button
         onClick={onClick}
+        {...remainderProps}
       >
         {child}
       </button>
