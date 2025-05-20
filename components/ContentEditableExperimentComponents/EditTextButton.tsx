@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@mui/material";
 import { ButtonOwnProps } from "@mui/material";
 import { EditTextButtonProps, WrapperArgs } from ".";
@@ -6,7 +6,7 @@ import { EditTextButtonProps, WrapperArgs } from ".";
 
 
 
-export default function EditTextButton({dataKey, child, defaultColor, selectedColor, contentRef, onClick, selected,
+export default function EditTextButton({MUIButton ,dataKey, child, defaultColor, selectedColor, contentRef, onClick, selected,
   wrapperArgs : {element, classList, id}}: EditTextButtonProps
 ) {
 
@@ -92,13 +92,19 @@ export default function EditTextButton({dataKey, child, defaultColor, selectedCo
   // }
 
   return (
-    <Button 
-      variant="outlined"
-      color={selected ? (selectedColor || "secondary") : (defaultColor || "primary") }
-      onClick={onClick}
-    >
-      {child}
-    </Button>
+    MUIButton ? 
+      <Button 
+        variant="outlined"
+        color={selected ? (selectedColor || "secondary") : (defaultColor || "primary") }
+        onClick={onClick}
+      >
+        {child}
+      </Button> :
+      <button
+        onClick={onClick}
+      >
+        {child}
+      </button>
     // <>
     //   {/* <ListItemButton onClick={handleClick} selected>
     //     {children}
@@ -109,3 +115,58 @@ export default function EditTextButton({dataKey, child, defaultColor, selectedCo
     // </>
   )
 }
+
+
+
+// import ReactDOM
+
+// function blarg(button: HTMLButtonElement) {
+//   console.log(button);
+// }
+
+// blarg(<Button />)
+// blarg(<button></button>)
+// blarg(button)
+// blarg(document.createElement('button'));
+// blarg(ReactDOM.render(<Button />))
+
+
+// function renderButton(): HTMLButtonElement {
+//   return(
+//     <Button>
+//     </Button>
+//   )
+// }
+// blarg(renderButton());
+
+// <Button></Button>
+// Button()
+
+
+
+// type BruttonProps = {
+//   children: Array<React.ReactNode>
+// }
+
+// function Brutton({children}: BruttonProps) {
+
+//   return (
+//     <>
+//       // {children}
+//       {children.map(child => child)}
+//     </>
+//   )
+
+// }
+
+// const x = Button({children: "hello"})
+// const y: React.JSX.Element = React.createElement("button")
+// // const z = React.createElement("button", DefaultCompn
+
+// y.type
+
+// /**
+//  * How can I get the goddamn button part of the button
+//  * MUI button true or false
+//  * How do I tell an MUI Button to render just as a button
+//  */

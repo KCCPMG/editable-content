@@ -3,6 +3,7 @@ import React, { useRef, useState, useEffect, forwardRef, MutableRefObject } from
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
+import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
 
 const contentChange = new CustomEvent("contentChange");
 
@@ -111,7 +112,16 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
           border: "2px solid black",
         }}
       >
-      
+      </div>
+      <div>
+        {contentRef.current && 
+          <ControlTextButton 
+            refDiv={contentRef.current}
+            callback={function(div) {
+              div.innerHTML = "";
+            }}
+          />
+        }
       </div>
       <div>
         <p>

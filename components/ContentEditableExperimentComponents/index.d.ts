@@ -1,6 +1,7 @@
 import { ButtonOwnProps } from "@mui/material";
 
-export type EditableContentButtonProps = {
+export type EditableContentButtonProps = DefaultComponentProps<ExtendButtonBaseTypeMap<ButtonTypeMap<{}, "button">>> & {
+  MUIButton: false,
   dataKey: string
   child: React.ReactNode,
   wrapperArgs: WrapperArgs,
