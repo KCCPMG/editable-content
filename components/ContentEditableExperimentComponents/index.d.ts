@@ -1,7 +1,28 @@
 import { ButtonOwnProps } from "@mui/material";
+import { DefaultComponentProps } from "@mui/material/OverridableComponent";
+import { ExtendButtonBaseTypeMap } from "@mui/material";
+import { ButtonTypeMap } from "@mui/material";
+import { DetailedHTMLProps } from "react";
+import { ButtonHTMLAttributes } from "react";
 
-export type EditableContentButtonProps = DefaultComponentProps<ExtendButtonBaseTypeMap<ButtonTypeMap<{}, "button">>> & {
-  isMUIButton?: Boolean,
+
+
+
+export type MUIButtonEditableContentButtonProps = 
+DefaultComponentProps<ExtendButtonBaseTypeMap<ButtonTypeMap<{}, "button">>> & 
+EditableContentButtonProps & {
+  isMUIButton: true
+}
+
+
+export type HTMLButtonEditableContentButtonProps = 
+DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & 
+EditableContentButtonProps & {
+  isMUIButton: false
+}
+
+
+export type EditableContentButtonProps = {
   dataKey: string
   child: React.ReactNode,
   wrapperArgs: WrapperArgs,
@@ -9,7 +30,8 @@ export type EditableContentButtonProps = DefaultComponentProps<ExtendButtonBaseT
   selectedColor?: ButtonOwnProps['color'],
 }
 
-export type EditTextButtonProps = EditableContentButtonProps & {
+
+export type EditTextButtonProps = (MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProp) & {
   contentRef?: React.MutableRefObject<HTMLDivElement | null>,
   // wrapSelection: () => void,
   selected: Boolean,
@@ -19,11 +41,16 @@ export type EditTextButtonProps = EditableContentButtonProps & {
 
 export type EditableContentProps = {
   initialHTML?: string,
-  editTextButtons: Array<EditableContentButtonProps>
+  // editTextButtons: Array<EditableContentButtonProps>
+  editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>
 }
 
 export type WrapperArgs = {
   element: string,
   classList?: Array<string>,
   id?: string
+}
+
+export type SillyBusinness = FakeFakeFakeType & {
+  whatchutalkinbout: "willis"
 }
