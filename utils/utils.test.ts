@@ -770,4 +770,42 @@ describe("test createWrapper", function() {
     expect(wrapper.classList.contains("strong-wrapper")).toBe(true);
     expect(wrapper.classList.contains("wrapper-strong")).toBe(true);
   })
+
+  test("create strong element with unbreakable attribute", function() {
+    const wrapper = createWrapper({
+      element: "strong",
+      unbreakable: true
+    }, document);
+
+    expect(wrapper instanceof HTMLElement).toBe(true);
+    expect(wrapper.childNodes.length).toBe(0);
+    expect(wrapper.nodeName).toBe("STRONG");
+    expect(wrapper.getAttribute('fake-attribute')).toBeNull();
+    // expect(wrapper.getAttribute('unbreakable')).not.toBeNull();
+    expect(wrapper.getAttribute('unbreakable')).toBe('');
+  })
+
+  test("create strong element with unbreakable and other attributes", function() {
+    const wrapper = createWrapper({
+      element: "strong",
+      unbreakable: true,
+      attributes: {
+        "test-one": "true",
+        "test-two": undefined,
+        "test-three": "testvalue"
+      }
+
+    }, document);
+
+    expect(wrapper instanceof HTMLElement).toBe(true);
+    expect(wrapper.childNodes.length).toBe(0);
+    expect(wrapper.nodeName).toBe("STRONG");
+    expect(wrapper.getAttribute('fake-attribute')).toBeNull();
+    // expect(wrapper.getAttribute('unbreakable')).not.toBeNull();
+    expect(wrapper.getAttribute('unbreakable')).toBe('');
+    expect(wrapper.getAttribute('test-one')).toBe('true');
+    expect(wrapper.getAttribute('test-two')).toBe('');
+    expect(wrapper.getAttribute('test-three')).toBe('testvalue');
+  })
+
 })
