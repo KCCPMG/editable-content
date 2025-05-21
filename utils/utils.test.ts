@@ -753,4 +753,21 @@ describe("test createWrapper", function() {
     expect(wrapper.nodeName).toBe("STRONG");
     expect(wrapper.id).toBe("strong-1");
   })
+
+  test("create strong element with classes", function() {
+    const wrapper = createWrapper({
+      element: "strong",
+      classList: [
+        "strong-wrapper",
+        "wrapper-strong"
+      ]
+    }, document);
+
+    expect(wrapper instanceof HTMLElement).toBe(true);
+    expect(wrapper.childNodes.length).toBe(0);
+    expect(wrapper.nodeName).toBe("STRONG");
+    expect(wrapper.classList.length).toBe(2);
+    expect(wrapper.classList.contains("strong-wrapper")).toBe(true);
+    expect(wrapper.classList.contains("wrapper-strong")).toBe(true);
+  })
 })
