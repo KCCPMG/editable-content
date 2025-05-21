@@ -808,4 +808,21 @@ describe("test createWrapper", function() {
     expect(wrapper.getAttribute('test-three')).toBe('testvalue');
   })
 
+  test("ensure that unbreakable named argument overrides unbreakable in attributes argument", function() {
+    const wrapper = createWrapper({
+      element: "strong",
+      unbreakable: true,
+      attributes: {
+        unbreakable: "test-value-to-be-overidden"
+      }
+    }, document);
+
+    expect(wrapper instanceof HTMLElement).toBe(true);
+    expect(wrapper.childNodes.length).toBe(0);
+    expect(wrapper.nodeName).toBe("STRONG");
+    expect(wrapper.getAttribute('fake-attribute')).toBeNull();
+    // expect(wrapper.getAttribute('unbreakable')).not.toBeNull();
+    expect(wrapper.getAttribute('unbreakable')).toBe('');
+  })
+
 })
