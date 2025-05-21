@@ -4,6 +4,9 @@ import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { FormatItalic } from "@mui/icons-material";
 import EditTextButtonRow from "@/components/ContentEditableExperimentComponents/EditTextButtonRow";
 import { Button } from "@mui/material";
+import { MUIButtonEditableContentButtonProps, HTMLButtonEditableContentButtonProps } from "@/components/ContentEditableExperimentComponents";
+
+
 
 export default function Home() {
   return (
@@ -21,21 +24,34 @@ export default function Home() {
             isMUIButton: false, 
             dataKey: "bold",
             child: <FormatBoldIcon/>,
-            variant: "contained",
+            // variant: "contained",
             wrapperArgs: {
               element: "strong"
-            }
+            },
+            // deselectedVariant: "",
+            // selectedVariant: "outlined"
 
           },
           {
             isMUIButton: true, 
             dataKey: "italics",
             child: <FormatItalic/>,
-            variant: "contained",
+            // variant: "contained",
             wrapperArgs: {
               element: "i"
-            }
-
+            },
+            selectedVariant: "contained",
+            deselectedVariant: "outlined"
+          },
+          {
+            isMUIButton: true, 
+            dataKey: "italics",
+            child: <FormatItalic/>,
+            // variant: "contained",
+            wrapperArgs: {
+              element: "i"
+            },
+            
           },
         ]}
       />

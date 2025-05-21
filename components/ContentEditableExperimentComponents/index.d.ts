@@ -9,9 +9,11 @@ import { ButtonHTMLAttributes } from "react";
 
 
 export type MUIButtonEditableContentButtonProps = 
-DefaultComponentProps<ExtendButtonBaseTypeMap<ButtonTypeMap<{}, "button">>> & 
+Omit<DefaultComponentProps<ExtendButtonBaseTypeMap<ButtonTypeMap<{}, "button">>>, "variant"> & 
 EditableContentButtonProps & {
-  isMUIButton: true
+  isMUIButton: true,
+  deselectedVariant?: string,
+  selectedVariant?: string
 }
 
 
@@ -26,8 +28,8 @@ export type EditableContentButtonProps = {
   dataKey: string
   child: React.ReactNode,
   wrapperArgs: WrapperArgs,
-  defaultColor?: ButtonOwnProps['color'],
-  selectedColor?: ButtonOwnProps['color'],
+  // defaultColor?: ButtonOwnProps['color'],
+  // selectedColor?: ButtonOwnProps['color'],
 }
 
 
@@ -49,8 +51,4 @@ export type WrapperArgs = {
   element: string,
   classList?: Array<string>,
   id?: string
-}
-
-export type SillyBusinness = FakeFakeFakeType & {
-  whatchutalkinbout: "willis"
 }
