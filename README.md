@@ -1,3 +1,25 @@
+# Actual README
+
+How to use:
+
+### EditableContent
+
+EditableContent is the root component from which everything else flows. EditableContent takes two props: 
+
+  - initialHTML: string
+    - This is the initial HTML that will populate the contenteditable div at creation.
+  - editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>
+    - Each object added here will render a MaterialUI Button or an HTML button. If you wish to use an MUI Button, set "isMUIButton" to true. If you set "isMUIButton" to false or do not include it, an HTML button will be rendered. 
+    - Each object has several required properties:
+      - dataKey: string
+        - A unique string which will serve as the key for the renndered button as well as a way of retrieving text which has been put into a wrapper by that button (not yet implemented)
+      - child: ReactNode
+        - A single child which will be rendered as the child of the button. This is usually going to be an icon or a short string demonstrating what clicking the button will do to the selection
+      - wrapperArgs: WrapperArgs
+        - wrapperArgs is an object which must have a specified "element", which is a string corresponding to the type of element being created (i.e. "span", "i", "strong", etc.) A classList or id can also be included but are not necessary
+      - Beyond this, all properties that you pass will be treated as props for an MUI Button (if isMUIButton is true) or an HTML Button, and the TypeScript allowed properties will reflect that decision. The one exception to this is the "variant" prop, which is not accepted, but is replaced with the "selectedVariant" and "deselectedVariant" props.
+
+
 # Outline
 
 The goal of this is to create a rich text editor which will have the following
