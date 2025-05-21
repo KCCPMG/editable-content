@@ -344,7 +344,7 @@ export function generateQuery({element, classList, id}: WrapperArgs): string {
 }
 
 
-export function createWrapper({element, classList, id}: WrapperArgs, document: Document): HTMLElement {
+export function createWrapper({element, classList, id, unbreakable, attributes}: WrapperArgs, document: Document): HTMLElement {
 
   const wrapper = document.createElement(element);
   if (classList) {
@@ -354,6 +354,16 @@ export function createWrapper({element, classList, id}: WrapperArgs, document: D
   }
   if (id) {
     wrapper.setAttribute('id', id);
+  }
+  if (attributes) {
+    for (let [k, v] of Object.entries(attributes)) {
+      if (v) wrapper.setAttribute(k, v);
+      else wrapper.setAttribute(k, '');
+    }
+  }
+  // do this last to override any potential conflict in the attributes
+  if (unbreakable) {
+    wrapper.setAttribute('unbreakable', 'true');
   }
   return wrapper;
 }

@@ -50,5 +50,9 @@ export type EditableContentProps = {
 export type WrapperArgs = {
   element: string,
   classList?: Array<string>,
-  id?: string
+  id?: string,
+  unbreakable?: boolean,
+  attributes?: {
+    [key: string]: string | undefined
+  }
 }
