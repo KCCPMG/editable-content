@@ -339,16 +339,16 @@ export function selectionIsCoveredBy(selection: Selection, query: string, limiti
 export function generateQuery({element, classList, id, unbreakable, attributes}: WrapperArgs): string {
   const classListString = classList ? classList.map(c => "."+c).join("") : "";
   const idString = id ? "#"+id : "";
-  const unbreakableString = unbreakable ? " unbreakable" : "";
+  const unbreakableString = unbreakable ? " [unbreakable]" : "";
   if (attributes) console.log(Object.entries(attributes));
   const attributesString = attributes ? 
-    " [" + Object.entries(attributes)
+    Object.entries(attributes)
       .map(a => {
         const [k, v] = a;
-        if (v) return [k, v].join("=");
-        else return k;
+        if (v) return `[${k}="${v}"]`;
+        else return `[${k}]`;
       })
-      .join(" ") + "]":
+      .join(""):
     "";
 
   return element + classListString + idString + unbreakableString + attributesString;
