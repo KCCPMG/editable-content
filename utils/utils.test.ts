@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { setSelection, wrapInElement, unwrapSelectionFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode, selectionIsCoveredBy, generateQuery, createWrapper, getSelectionChildNodes, resetSelectionToTextNodes } from './utils';
+import { setSelection, wrapInElement, unwrapSelectionFromQuery, unwrapRangeFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode, selectionIsCoveredBy, generateQuery, createWrapper, getSelectionChildNodes, resetSelectionToTextNodes } from './utils';
 
 
 const startingHTML = 
@@ -493,6 +493,89 @@ describe("test unwrapSelectionFromQuery", function() {
       </div>`.replaceAll(/\n */g, ''));
   })
 });
+
+
+describe("test unwrapRangeFromQuery", function() {
+  beforeEach(() => {
+    document.body.innerHTML = startingHTML;
+  })
+
+  test("promotes text out of italics", function() {
+    const italics = document.querySelector("i#italics-2");
+    const italicsTextContent = italics?.textContent;
+    expect(italics).not.toBeNull();
+    expect(italics?.parentNode).not.toBeNull();
+    const parentNode = italics!.parentNode;
+
+    expect(italics!.childNodes.length).toBe(1);
+    const italicsTextNode = italics!.childNodes[0];
+
+    expect(italicsTextContent).toEqual(italicsTextNode!.textContent);
+
+    const selection = setSelection(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
+
+    expect(selection).not.toBeNull();
+
+    const limitingContainer = document.querySelector("div")
+
+    expect(limitingContainer).not.toBeNull();
+    const range = selection!.getRangeAt(0);
+    expect(range).not.toBeNull();
+    unwrapRangeFromQuery(range, "i", limitingContainer!);
+
+    expect(italics!.textContent!.length).toEqual(0);
+
+    // const range = selection!.getRangeAt(0);
+    expect(range).not.toBeNull();
+
+    expect(selection!.anchorNode).toBe(selection!.focusNode);
+    expect(selection!.anchorNode!.nodeType).toBe(Node.TEXT_NODE);
+
+    expect(document.querySelectorAll("i#italics-2").length).toBe(0);
+  })
+
+  test("promote text in italics out of strong", function() {
+    const italics = document.querySelector("i#italics-2");
+    const italicsTextContent = italics?.textContent;
+    expect(italics).not.toBeNull();
+    expect(italics?.parentNode).not.toBeNull();
+    const parentNode = italics!.parentNode;
+
+    expect(italics!.childNodes.length).toBe(1);
+    const italicsTextNode = italics!.childNodes[0];
+
+    expect(italicsTextContent).toEqual(italicsTextNode!.textContent);
+
+    const selection = setSelection(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
+
+    expect(selection).not.toBeNull();
+
+    const limitingContainer = document.querySelector("div")
+
+    expect(limitingContainer).not.toBeNull();
+    const range = selection!.getRangeAt(0);
+    expect(range).not.toBeNull();
+    unwrapRangeFromQuery(range, "strong", limitingContainer!);
+
+    expect(document.body.innerHTML).toBe(
+      `<div>
+        <strong id="strong-1">Strong Text</strong>
+        <i id="italics-1">Italics Text</i>
+        Orphan Text
+        <strong id="strong-2">
+          Strong Text
+          <i id="italics-2"></i>
+        </strong>
+        <i id="italics-2">
+          Strong and Italics Text
+        </i>
+        <strong id="strong-2">
+          <i id="italics-2"></i>
+          More Strong Text
+        </strong>
+      </div>`.replaceAll(/\n */g, ''));
+  })
+})
 
 
 describe("test unwrapSelectionFromQuery - alternateHTML", function() {

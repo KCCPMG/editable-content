@@ -23,10 +23,10 @@ EditableContent is the root component from which everything else flows. Editable
 
 There are elements which you can assign the "unbreakable" attribute to, which generally means that those elements are not to be affected by other selections and deselections but are rather distinct blocks. Here are the basic rules:
 
-  
+
   - If a selection is created which covers all or part of an unbreakable element in addition to other text outside of the unbreakable element, the wrap operation will not affect the unbreakable element or any of its contents
   - If an unbreakable element is created over other elements....
-  - If a selection is 
+  - If a selection is fully inside of an unbreakable element...
 
 
 

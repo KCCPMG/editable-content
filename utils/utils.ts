@@ -63,6 +63,14 @@ export function resetSelectionToTextNodes(): Selection | null {
 }
 
 
+function generateQueryFromElement(element: Element) : string 
+{
+  return element.tagName.toLowerCase() + Array.from(element.attributes).map(attr => {
+    return `[${attr.name}="${attr.value}"]`
+  }).join("");
+
+}
+
 
 
 export function wrapInElement(selection: Selection, element: Element): void {
@@ -91,9 +99,20 @@ export function wrapInElement(selection: Selection, element: Element): void {
   range.setStartBefore(element);
   range.setEndAfter(element);
 
+  // const breakpoints = [];
+
+  const query = generateQueryFromElement(element);
   // promote any unbreakable elements in range
   for (let unbreakable of unbreakables) {
-    promoteChildrenOfNode(unbreakable.parentNode!);
+    const unbreakableRange = new Range();
+    unbreakableRange.setStartBefore(unbreakable);
+    unbreakableRange.setEndAfter(unbreakable);
+    // // unwrapRangeFromQuery(unbreakableRange, query, )
+    // breakpoints.push([unbreakableRange.startContainer, unbreakableRange.startOffset]);
+    // breakpoints.push([unbreakableRange.endContainer, unbreakableRange.endOffset]);
+
+    unwrapRangeFromQuery(unbreakableRange, query, document.body)
+
   }
 
   
