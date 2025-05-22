@@ -37,6 +37,22 @@ const alternateHTML = `
 </div>`.replaceAll(/\n */g, '');
 
 
+const alternateHTMLwithUnbreakable = `
+<div>
+  <strong>First Strong Text</strong>
+  <strong>Second Strong Text</strong>
+  <strong>Third Strong Text</strong>
+  <strong>
+    Fourth Strong Text 
+    <i>Italics In Fourth Strong Text </i>
+    <u>Underline in Fourth Strong Text </u>
+  </strong>
+  <strong unbreakable>Fifth Strong Text - Unbreakable</strong>
+  <i>Italics After Fifth Strong Text</i>
+  <strong>Sixth Strong Text</strong>
+</div>`.replaceAll(/\n */g, '');
+
+
 const mdnDocPageHTML = `
 <div id="root"><ul id="nav-access" class="a11y-nav"><li><a id="skip-main" href="#content">Skip to main content</a></li><li><a id="skip-search" href="#top-nav-search-input">Skip to search</a></li><li><a id="skip-select-language" href="#languages-switcher-button">Skip to select language</a></li></ul><div class="page-wrapper  category-api document-page"><div class="top-banner visible" style="--place-top-background-light: #011a45; --place-top-color-light: #FFFFFF; --place-top-cta-background-light: #FFFFFF; --place-top-cta-color-light: #1a202c; --place-top-background-dark: #011a45; --place-top-color-dark: #FFFFFF; --place-top-cta-background-dark: #FFFFFF; --place-top-cta-color-dark: #1a202c;"><section class="place top container"><p class="pong-box"><a class="pong" data-glean="pong: pong->click top-banner" href="/pong/click?code=aHR0cHM6Ly9zcnYuYnV5c2VsbGFkcy5jb20vYWRzL2NsaWNrL3gvR1RORDQyN1dDQUJENEszTUNBWTRZS1FVQ0VTSUxLN01DQUFJRVozSkNBQkQ1NTNFQzZZREUyM0tDNkJJVEtRWUZUU0k0MjNJRlRCSUVLN0VDVFNEUEs3TEhFWUk1MjNVQ0U3RFAySkVDVE5DWUJaNTJL.U2ZwEUvM%2FWOamrXF9Qb6D%2BPEHJhlMPzrwlCy%2BX%2BxoDo%3D&amp;version=2" target="_blank" rel="sponsored noreferrer"><img src="/pimg/aHR0cHM6Ly9zdGF0aWM0LmJ1eXNlbGxhZHMubmV0L3V1LzIvMTU4NTkwLzE3Mzk5Nzk4NDQtaWstd2hpdGUtbG9nby1wbmcucG5n.Ylrls2jHwyTBsqjxF4XgR4D3m%2BySLpiNw0B8ITl0yps%3D" aria-hidden="false" alt="ImageKit" height="50"><span>Image &amp; Video API: Real-time resizing, overlays, auto optimization, upload, storage &amp; global CDN. Try forever free plan!</span></a><a class="pong-cta" data-glean="pong: pong->click top-banner" href="/pong/click?code=aHR0cHM6Ly9zcnYuYnV5c2VsbGFkcy5jb20vYWRzL2NsaWNrL3gvR1RORDQyN1dDQUJENEszTUNBWTRZS1FVQ0VTSUxLN01DQUFJRVozSkNBQkQ1NTNFQzZZREUyM0tDNkJJVEtRWUZUU0k0MjNJRlRCSUVLN0VDVFNEUEs3TEhFWUk1MjNVQ0U3RFAySkVDVE5DWUJaNTJL.U2ZwEUvM%2FWOamrXF9Qb6D%2BPEHJhlMPzrwlCy%2BX%2BxoDo%3D&amp;version=2" target="_blank" rel="sponsored noreferrer">Create free account</a><a href="/en-US/advertising" class="pong-note" data-glean="pong: pong->about" target="_blank" rel="noreferrer">Ad</a></p><a class="no-pong" data-glean="pong: pong->plus" href="/en-US/plus?ref=nope">Don't want to see ads?</a></section></div><div class="sticky-header-container"><header class="top-navigation 
       
@@ -275,6 +291,56 @@ describe("test wrapInElement", function() {
     expect(underlineElement.textContent).toEqual(selection!.toString());
     expect(italics!.childNodes.length).toBe(3);
     expect(italics!.childNodes[1]).toBe(underlineElement);
+
+  })
+
+
+  test("wraps text in element but leaves unbreakable tag outside", function() {
+    document.body.innerHTML = alternateHTMLwithUnbreakable;
+
+
+
+    const underline = document.querySelector("u");
+    const lastItalics = document.querySelector("div > i");
+    expect(underline).not.toBeNull();
+    expect(lastItalics).not.toBeNull();
+    const underlineText = underline!.childNodes[0];
+    const lastItalicsText = lastItalics!.childNodes[0];
+    expect(underlineText).not.toBeNull();
+    expect(lastItalicsText).not.toBeNull();
+
+    const selection = setSelection(underlineText!, 8, lastItalicsText!, 7);
+    const selectionText = selection!.toString();
+    expect(selectionText).not.toBeNull();
+    // expect(selectionText).toBe("")
+    expect(selectionText).toBe("e in Fourth Strong Text Fifth Strong Text - UnbreakableItalics");
+
+    const anchorElement = document.createElement('a');
+    wrapInElement(selection!, anchorElement);
+
+    expect(document.body.innerHTML).toBe(`
+      <div>
+        <strong>First Strong Text</strong>
+        <strong>Second Strong Text</strong>
+        <strong>Third Strong Text</strong>
+        <strong>
+          Fourth Strong Text 
+          <i>Italics In Fourth Strong Text </i>
+          <u>Underlin</u>
+        </strong>
+        <a>
+          <strong>
+            <u>e in Fourth Strong Text </u>
+          </strong>
+        </a>
+        <strong unbreakable>Fifth Strong Text - Unbreakable</strong>
+        <a>
+          <i>Italics</i>
+        </a>
+        <i> After Fifth Strong Text</i>
+        <strong>Sixth Strong Text</strong>
+      </div>`.replaceAll(/\n */g, ''));
+
 
   })
 
