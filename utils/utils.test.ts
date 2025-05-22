@@ -344,6 +344,24 @@ describe("test wrapInElement", function() {
 
   })
 
+  // `<div>
+  //   <strong>First Strong Text</strong>
+  //   <strong>Second Strong Text</strong>
+  //   <strong>Third Strong Text</strong>
+  //   <strong>
+  //     Fourth Strong Text 
+  //     <i>Italics In Fourth Strong Text </i>
+  //     <u>Underlin</u>
+  //   </strong>
+  //   <strong>
+  //     <u>e in Fourth Strong Text </u>
+  //   </strong>
+  //   <strong unbreakable=\"\">Fifth Strong Text - Unbreakable</strong>
+  //   <i>Italics</i>
+  //   <i> After Fifth Strong Text</i>
+  //   <strong>Sixth Strong Text</strong>
+  // </div>`
+
 });
 
 

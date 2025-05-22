@@ -67,13 +67,35 @@ export function resetSelectionToTextNodes(): Selection | null {
 
 export function wrapInElement(selection: Selection, element: Element): void {
   if (!selection) return;
+
+  const unbreakables: Array<Node> = [];
+
+  // TODO: if start container or end container are in unbreakable elements which are not the same, move selection away
+  
+
   resetSelectionToTextNodes();
   const range = selection.getRangeAt(0);
   const contents = range.extractContents();
+
+  // determine if there are unbreakables in selection
+  for (let cn of Array.from(contents.childNodes)) {
+    if (cn instanceof Element && cn.matches('[unbreakable]')) {
+      unbreakables.push(cn);
+    }
+  }
+
+
+
   element.append(contents); 
   range.insertNode(element); // range is collapsed, this effectively inserts *after*
   range.setStartBefore(element);
   range.setEndAfter(element);
+
+  // promote any unbreakable elements in range
+  for (let unbreakable of unbreakables) {
+    promoteChildrenOfNode(unbreakable.parentNode!);
+  }
+
   
   resetSelectionToTextNodes();
 }
@@ -113,6 +135,10 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
 
   // Work with range instead of selection for start/end container clarity
   const range = selection.getRangeAt(0);
+  return unwrapRangeFromQuery(range, query, limitingContainer);
+}
+
+export function unwrapRangeFromQuery(range: Range, query: string, limitingContainer: Element): void {
 
   // the range must necessarily have both the start and end each be within an ancestor node matching the query, which can be a common ancestor node
   const preAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer);
@@ -157,7 +183,7 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
 
 
   // promote children of all query-matching nodes in selection
-  const childNodes = getSelectionChildNodes(selection, limitingContainer);
+  const childNodes = getRangeChildNodes(range, limitingContainer);
   const targetedNodes = childNodes.filter(cn => {
     return (cn instanceof Element && cn.matches(query));
   });
@@ -271,7 +297,14 @@ export function getSelectionChildNodes(selection: Selection, limitingContainer: 
   ) return [];
   
   // console.log(selection);
-  const { startContainer, startOffset, endContainer, endOffset } = selection.getRangeAt(0);
+  const range = selection.getRangeAt(0);
+  return getRangeChildNodes(range, limitingContainer);
+}
+
+
+function getRangeChildNodes(range: Range, limitingContainer: Node): Array<Node> {
+
+  const { startContainer, startOffset, endContainer, endOffset } = range;
 
 
   const startNode = startContainer.hasChildNodes() ?
