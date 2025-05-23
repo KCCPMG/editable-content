@@ -459,6 +459,8 @@ export function createWrapper({element, classList, id, unbreakable, attributes}:
   // do this last to override any potential conflict in the attributes
   if (unbreakable) {
     wrapper.setAttribute('unbreakable', '');
+  } else {
+    wrapper.removeAttribute('unbreakable');
   }
   return wrapper;
 }
