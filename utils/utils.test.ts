@@ -334,11 +334,9 @@ describe("test wrapInElement", function() {
           <strong>
             <u>e in Fourth Strong Text </u>
           </strong>
-          <strong unbreakable=""></strong>
         </a>
         <strong unbreakable="">Fifth Strong Text - Unbreakable</strong>
         <a>
-          <strong unbreakable=""></strong>
           <i>Italics</i>
         </a>
         <i> After Fifth Strong Text</i>
@@ -485,13 +483,11 @@ describe("test unwrapSelectionFromQuery", function() {
         Orphan Text
         <strong id="strong-2">
           Strong Text
-          <i id="italics-2"></i>
         </strong>
         <i id="italics-2">
           Strong and Italics Text
         </i>
         <strong id="strong-2">
-          <i id="italics-2"></i>
           More Strong Text
         </strong>
       </div>`.replaceAll(/\n */g, ''));
@@ -568,13 +564,11 @@ describe("test unwrapRangeFromQuery", function() {
         Orphan Text
         <strong id="strong-2">
           Strong Text
-          <i id="italics-2"></i>
         </strong>
         <i id="italics-2">
           Strong and Italics Text
         </i>
         <strong id="strong-2">
-          <i id="italics-2"></i>
           More Strong Text
         </strong>
       </div>`.replaceAll(/\n */g, ''));

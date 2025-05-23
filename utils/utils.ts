@@ -146,7 +146,7 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
 
   }
 
-  
+  deleteEmptyElements(limitingContainer);
   resetSelectionToTextNodes();
 }
 
@@ -186,7 +186,6 @@ export function deleteEmptyElements(limitingContainer: Element) {
 
 /**
  * Promotes all text in a selection where it is a descendent of an element matching a given query. 
- * @param selection 
  * @param query 
  * @param limitingContainer 
  * @returns 
@@ -272,7 +271,8 @@ export function unwrapRangeFromQuery(range: Range, query: string, limitingContai
 
 
   // finally clean up empty elements of this query
-  deleteEmptyElementsByQuery(query, limitingContainer);
+  // deleteEmptyElementsByQuery(query, limitingContainer);
+  deleteEmptyElements(limitingContainer);
 
   resetSelectionToTextNodes();
 
