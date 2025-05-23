@@ -159,7 +159,7 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
  */
 export function deleteEmptyElementsByQuery(query: string, limitingContainer: Element) {
   const elements = Array.from(limitingContainer.querySelectorAll(query));
-
+  
   elements.forEach(elem => {
     if ((elem.textContent) === "" && Array.from(elem.childNodes).every(cn => !(cn instanceof Element))) {
       elem.remove();
@@ -168,6 +168,19 @@ export function deleteEmptyElementsByQuery(query: string, limitingContainer: Ele
 
   return;
 
+}
+
+
+/**
+ * Delete all elements within a limitingContainer Element if those
+ * elements have no text
+ * @param limitingContainer 
+ */
+export function deleteEmptyElements(limitingContainer: Element) {
+  const elements = Array.from(limitingContainer.querySelectorAll("*"));
+
+  const emptyElements = elements.filter(e => e.textContent === "");
+  emptyElements.forEach(ee => ee.remove());
 }
 
 
