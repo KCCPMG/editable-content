@@ -45,11 +45,16 @@ export default function Home() {
           },
           {
             isMUIButton: true, 
-            dataKey: "italics",
+            dataKey: "italics-unbreakable",
             child: <FormatItalic/>,
             // variant: "contained",
             wrapperArgs: {
-              element: "i"
+              element: "i",
+              attributes: {
+                testAttribute: "ta",
+                testAttribute2: "ta2"
+              },
+              unbreakable: true
             },
             
           },
