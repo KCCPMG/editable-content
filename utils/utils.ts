@@ -73,7 +73,7 @@ function generateQueryFromElement(element: Element) : string
 
 
 
-export function wrapInElement(selection: Selection, element: Element): void {
+export function wrapInElement(selection: Selection, element: Element, limitingContainer: Element): void {
   if (!selection) return;
 
   const unbreakables: Array<Node> = [];
@@ -105,13 +105,44 @@ export function wrapInElement(selection: Selection, element: Element): void {
   // promote any unbreakable elements in range
   for (let unbreakable of unbreakables) {
     const unbreakableRange = new Range();
-    unbreakableRange.setStartBefore(unbreakable);
-    unbreakableRange.setEndAfter(unbreakable);
+    unbreakableRange.setStart(unbreakable, 0);
+    unbreakableRange.setEnd(unbreakable, unbreakable.childNodes.length);
     // // unwrapRangeFromQuery(unbreakableRange, query, )
     // breakpoints.push([unbreakableRange.startContainer, unbreakableRange.startOffset]);
     // breakpoints.push([unbreakableRange.endContainer, unbreakableRange.endOffset]);
 
-    unwrapRangeFromQuery(unbreakableRange, query, document.body)
+
+    if (unbreakableRange.startContainer.nodeType !== Node.TEXT_NODE) {
+      const startNode = unbreakableRange.startContainer.childNodes[unbreakableRange.startOffset];
+      const tw = document.createTreeWalker(startNode);
+      while (true) {
+        if (tw.currentNode.nodeType === Node.TEXT_NODE) {
+          unbreakableRange.setStart(tw.currentNode, 0);
+          break;
+        } else tw.nextNode();
+      }
+    }
+
+    if (unbreakableRange.endContainer.nodeType !== Node.TEXT_NODE) {
+
+      const commonAncestor = unbreakableRange.commonAncestorContainer;
+
+      let lastTextNode = unbreakableRange.startContainer;
+      const tw = document.createTreeWalker(commonAncestor);
+      // advance to new start container
+      while (tw.currentNode !== unbreakableRange.startContainer) {
+        tw.nextNode();
+      }
+      while (unbreakableRange.isPointInRange(tw.currentNode, 0)) {
+        if (tw.currentNode.nodeType === Node.TEXT_NODE) {
+          lastTextNode = tw.currentNode;
+        }  
+        if (!tw.nextNode()) break; // advance tw, break loop if null
+      }
+      unbreakableRange.setEnd(lastTextNode, lastTextNode.textContent?.length || 0);
+    }
+
+    unwrapRangeFromQuery(unbreakableRange, query, limitingContainer)
 
   }
 
@@ -160,7 +191,8 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
 export function unwrapRangeFromQuery(range: Range, query: string, limitingContainer: Element): void {
 
   // the range must necessarily have both the start and end each be within an ancestor node matching the query, which can be a common ancestor node
-  const preAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer);
+  
+  const preAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer); // assumes startContainer is text node
   if (!preAncestorNode) return;
 
   const preRange = new Range();

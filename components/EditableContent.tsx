@@ -88,7 +88,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                     () => {
                       if (selection) {
                         const wrapper = createWrapper(etb.wrapperArgs, document);
-                        wrapInElement(selection, wrapper);
+                        wrapInElement(selection, wrapper, contentRef.current!);
                         updateSelection();
                         contentRef.current?.dispatchEvent(contentChange);
                       } 

@@ -266,7 +266,7 @@ describe("test wrapInElement", function() {
     const selectionTextContent = selection!.toString();
     expect(selectionTextContent).toBe(italicsTextContent);
 
-    wrapInElement(selection!, anchor);
+    wrapInElement(selection!, anchor, document.body);
 
 
     const reestablishedItalics = document.querySelector("i#italics-1");
@@ -285,7 +285,7 @@ describe("test wrapInElement", function() {
     expect(selection).not.toBeNull();
 
     const underlineElement = document.createElement('u');
-    wrapInElement(selection!, underlineElement);
+    wrapInElement(selection!, underlineElement, document.body);
 
     expect(underlineElement.parentNode).toBe(italics);
     expect(underlineElement.textContent).toEqual(selection!.toString());
@@ -316,7 +316,9 @@ describe("test wrapInElement", function() {
     expect(selectionText).toBe("e in Fourth Strong Text Fifth Strong Text - UnbreakableItalics");
 
     const anchorElement = document.createElement('a');
-    wrapInElement(selection!, anchorElement);
+    const div = document.querySelector("div");
+    expect(div).not.toBeNull();
+    wrapInElement(selection!, anchorElement, div!);
 
     expect(document.body.innerHTML).toBe(`
       <div>
@@ -332,9 +334,11 @@ describe("test wrapInElement", function() {
           <strong>
             <u>e in Fourth Strong Text </u>
           </strong>
+          <strong unbreakable=""></strong>
         </a>
-        <strong unbreakable>Fifth Strong Text - Unbreakable</strong>
+        <strong unbreakable="">Fifth Strong Text - Unbreakable</strong>
         <a>
+          <strong unbreakable=""></strong>
           <i>Italics</i>
         </a>
         <i> After Fifth Strong Text</i>
