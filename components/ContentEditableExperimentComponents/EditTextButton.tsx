@@ -18,7 +18,6 @@ export default function EditTextButton({
   ...remainderProps}: EditTextButtonProps
 ) {
 
-
   return (
     isMUIButton ? 
       <Button 
@@ -28,8 +27,8 @@ export default function EditTextButton({
         // necessary, declared last to prevent override
         onClick={onClick}
         variant={selected ? 
-          (selectedVariant || "outlined") : 
-          (deselectedVariant || "contained")
+          (selectedVariant || "contained") : 
+          (deselectedVariant || "outlined")
         }
       >
         {child}

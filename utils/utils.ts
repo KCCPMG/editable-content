@@ -424,6 +424,50 @@ function getRangeChildNodes(range: Range, limitingContainer: Node): Array<Node> 
  * @returns 
  */
 export function selectionIsCoveredBy(selection: Selection, query: string, limitingContainer: Node): Boolean {
+
+  // if (!selection) return false;
+  // const range = selection.getRangeAt(0) || null;
+  // if(!range) return false;
+
+  // // unbreakable element
+  // if (query.match(/\[unbreakable\]/)) {
+
+  //   // selection is within unbreakable element - true
+  //   const nodes = getSelectionChildNodes(selection, limitingContainer);
+  //   const textNodes = nodes
+  //   .filter(n => n.nodeType === Node.TEXT_NODE)
+  //   .filter(n => n.textContent && n.textContent.length > 0); 
+
+  //   const commonAncestor = range.commonAncestorContainer;
+
+  //   if (commonAncestor instanceof Element && commonAncestor.matches(query) && commonAncestor !== limitingContainer) return true;
+
+  //   if (nodeIsDescendentOf(commonAncestor, query, limitingContainer)) return true;
+
+  //   // if textNodes.every(tn => nodeIsDescendentOf(tn, query, limitingContainer)) {
+
+  //   // }
+    
+    
+    
+  //   // selection covers unbreakable element - false
+    
+    
+    
+  //   // selection des not cover or intersect unbreakable element
+
+
+
+
+  //   // selection intersects unbreakable element
+
+
+  //   //
+
+  // }
+
+
+  // else
   const nodes = getSelectionChildNodes(selection, limitingContainer);
   const textNodes = nodes
   .filter(n => n.nodeType === Node.TEXT_NODE)

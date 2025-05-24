@@ -12,7 +12,11 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
-  const [selectionToString, setSelectionToString] = useState<string>("")
+  const [selectionToString, setSelectionToString] = useState<string>("");
+  const [selectionAnchorNode, setSelectionAnchorNode] = useState<Node | null>(null)
+  const [selectionAnchorOffset, setSelectionAnchorOffset] = useState<Number | null>(null);
+  const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
+  const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null);
 
 
 
@@ -27,6 +31,10 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
     if (gotSelection && contentRef.current && selectionIsDescendentOfNode(gotSelection, contentRef.current)) {
       setSelectionToString(gotSelection.toString());
+      setSelectionAnchorNode(gotSelection.anchorNode);
+      setSelectionAnchorOffset(gotSelection.anchorOffset);
+      setSelectionFocusNode(gotSelection.focusNode);
+      setSelectionFocusOffset(gotSelection.focusOffset);
     } else {
       setSelectionToString("");
     }
@@ -70,12 +78,14 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             const selection = window.getSelection();
             const selected = selection ? selectionIsCoveredBy(selection, query, contentRef.current!): false; // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
 
-            console.log(JSON.stringify({selected, selection, query}));
+            // console.log(JSON.stringify({selected, selection, query}));
 
             return ( 
               <EditTextButton
                 {...etb}
                 key={etb.dataKey}
+
+                // selectionChildNodes
                 onClick={
                   selected ? 
                     () => {
