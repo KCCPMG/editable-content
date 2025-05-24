@@ -17,6 +17,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   const [selectionAnchorOffset, setSelectionAnchorOffset] = useState<Number | null>(null);
   const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
   const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null);
+  const [hasSelection, setHasSelection] = useState<boolean>(false);
 
 
 
@@ -35,8 +36,10 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       setSelectionAnchorOffset(gotSelection.anchorOffset);
       setSelectionFocusNode(gotSelection.focusNode);
       setSelectionFocusOffset(gotSelection.focusOffset);
+      setHasSelection(true);
     } else {
       setSelectionToString("");
+      setHasSelection(false);
     }
   }
 
@@ -84,7 +87,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               <EditTextButton
                 {...etb}
                 key={etb.dataKey}
-
+                disabled={!hasSelection}
                 // selectionChildNodes
                 onClick={
                   selected ? 

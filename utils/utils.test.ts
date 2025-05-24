@@ -915,7 +915,7 @@ describe("test generateQuery", function() {
       }
     });
 
-    expect(generatedQuery).toBe(`strong.fake-class.bad-class#strong-1 [unbreakable][test-attribute="17"][test-attribute-two="test-attribute-two-value"]`)
+    expect(generatedQuery).toBe(`strong.fake-class.bad-class#strong-1[unbreakable][test-attribute="17"][test-attribute-two="test-attribute-two-value"]`)
   })
 
 
