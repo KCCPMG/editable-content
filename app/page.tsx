@@ -1,7 +1,7 @@
 import theme from "@/theme";
 import EditableContent from "@/components/EditableContent";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import { FormatItalic } from "@mui/icons-material";
+import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
 import EditTextButtonRow from "@/components/ContentEditableExperimentComponents/EditTextButtonRow";
 import { Button } from "@mui/material";
 import { MUIButtonEditableContentButtonProps, HTMLButtonEditableContentButtonProps } from "@/components/ContentEditableExperimentComponents";
@@ -21,7 +21,7 @@ export default function Home() {
         initialHTML="Plain Text<strong>Strong Text</strong>"
         editTextButtons={[
           {
-            isMUIButton: false, 
+            isMUIButton: true, 
             dataKey: "bold",
             child: <FormatBoldIcon/>,
             // variant: "contained",
@@ -40,16 +40,16 @@ export default function Home() {
             wrapperArgs: {
               element: "i"
             },
-            selectedVariant: "contained",
-            deselectedVariant: "outlined"
+            // selectedVariant: "contained",
+            // deselectedVariant: "outlined"
           },
           {
             isMUIButton: true, 
-            dataKey: "italics-unbreakable",
-            child: <FormatItalic/>,
+            dataKey: "underlined",
+            child: <FormatUnderlined/>,
             // variant: "contained",
             wrapperArgs: {
-              element: "i",
+              element: "u",
               attributes: {
                 testAttribute: "ta",
                 testAttribute2: "ta2"
