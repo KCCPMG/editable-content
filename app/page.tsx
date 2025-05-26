@@ -18,7 +18,8 @@ export default function Home() {
       }}
     >
       <EditableContent 
-        initialHTML="Plain Text<strong>Strong Text</strong>"
+        // initialHTML="Plain Text<strong>Strong Text</strong>"
+        // initialHTML="a"
         editTextButtons={[
           {
             isMUIButton: true, 
