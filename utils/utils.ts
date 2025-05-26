@@ -99,6 +99,15 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
   range.setStartBefore(element);
   range.setEndAfter(element);
 
+
+  if (range.toString().length === 0) {
+    const textNode = document.createTextNode(" ");
+    element.append(textNode);
+    range.setStart(textNode, 0);
+    range.setEnd(textNode, 1);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
   // const breakpoints = [];
 
   const query = generateQueryFromElement(element);
@@ -197,6 +206,14 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
 
   // Work with range instead of selection for start/end container clarity
   const range = selection.getRangeAt(0);
+  if (range.toString().length === 0) {
+    const textNode = document.createTextNode(" ");
+    range.insertNode(textNode);
+    range.setStart(textNode, 0);
+    range.setEnd(textNode, 1);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
   return unwrapRangeFromQuery(range, query, limitingContainer);
 }
 
@@ -481,7 +498,7 @@ export function generateQuery({element, classList, id, unbreakable, attributes}:
   const classListString = classList ? classList.map(c => "."+c).join("") : "";
   const idString = id ? "#"+id : "";
   const unbreakableString = unbreakable ? "[unbreakable]" : "";
-  if (attributes) console.log(Object.entries(attributes));
+  // if (attributes) console.log(Object.entries(attributes));
   const attributesString = attributes ? 
     Object.entries(attributes)
       .map(a => {
