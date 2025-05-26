@@ -103,28 +103,27 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                 disabled={!hasSelection}
                 // selectionChildNodes
                 onMouseDown={(e: Event) => {e.preventDefault();}}
+                selected={selected}
                 onClick={
-                  selected ? 
-                    (e: Event) => {
-                      e.preventDefault();
-                      if (selection) {
+                  (e: Event) => {
+                    e.preventDefault();
+                    if (selection) {
+
+                      if (selected) {
                         unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
                         updateSelection();
                         contentRef.current?.dispatchEvent(contentChange);
-                      }
-                    } :
-                    (e: Event) => {
-                      e.preventDefault();
-                      if (selection) {
+                      } else {
                         const wrapper = createWrapper(etb.wrapperArgs, document);
                         wrapInElement(selection, wrapper, contentRef.current!);
                         updateSelection();
                         contentRef.current?.dispatchEvent(contentChange);
-                      } 
+                      }
 
                     }
+                    // else null
+                  }
                 }
-                selected={selected}
 
               />
             )
