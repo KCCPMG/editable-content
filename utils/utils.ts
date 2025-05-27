@@ -398,7 +398,7 @@ function getRangeChildNodes(range: Range, limitingContainer: Node): Array<Node> 
 
   const tw = document.createTreeWalker(limitingContainer);
 
-  const childNodes = [];
+  const childNodes:Array<Node> = [];
   let inRange = false;
 
   while (true) {
@@ -421,7 +421,7 @@ function getRangeChildNodes(range: Range, limitingContainer: Node): Array<Node> 
       if (currentNode == endNode) break;
     }
 
-    tw.nextNode();
+    if (!tw.nextNode()) break;
 
   }
   return childNodes;
