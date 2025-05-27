@@ -109,14 +109,35 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                     e.preventDefault();
                     if (selection) {
 
+                      console.log({selection, selected})
+
+                      const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
+
+                      if (
+                        anchorNode == contentRef.current && 
+                        focusNode == contentRef.current &&
+                        anchorOffset == 0 && 
+                        focusOffset == 0
+                      ) {
+                        const thisRange = selection.getRangeAt(0);
+                        
+                        thisRange.insertNode(document.createTextNode(""));
+                        
+                        selection.removeAllRanges();
+                        selection.addRange(thisRange);
+                      }
+
                       if (selected) {
                         unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
                         updateSelection();
                         contentRef.current?.dispatchEvent(contentChange);
                       } else {
                         const wrapper = createWrapper(etb.wrapperArgs, document);
+                        console.log({wrapper, selection});
                         wrapInElement(selection, wrapper, contentRef.current!);
+                        console.log({selection});
                         updateSelection();
+                        console.log({selection});
                         contentRef.current?.dispatchEvent(contentChange);
                       }
 

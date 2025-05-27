@@ -489,6 +489,8 @@ export function selectionIsCoveredBy(selection: Selection, query: string, limiti
   const textNodes = nodes
   .filter(n => n.nodeType === Node.TEXT_NODE)
   .filter(n => n.textContent && n.textContent.length > 0); 
+  // if (textNodes.length===0) return false;
+  // else 
   return textNodes.every(tn => nodeIsDescendentOf(tn, query, limitingContainer));
 
 }
