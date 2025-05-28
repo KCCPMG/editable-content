@@ -55,6 +55,14 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     if (selection && contentRef.current && selection?.anchorNode == contentRef.current && selection?.focusNode == contentRef.current) {
       if (selectionHasTextNodes(selection, contentRef.current)) {
         resetSelectionToTextNodes();
+      } else {
+        const textNode = document.createTextNode('\u200B');
+        contentRef.current.append(textNode);
+        const range = selection.getRangeAt(0);
+        range.setStart(textNode, 0);
+        range.setEnd(textNode, textNode.length);
+        selection.removeAllRanges();
+        selection.addRange(range);
       }
     }
     else {
