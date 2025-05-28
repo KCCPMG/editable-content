@@ -53,7 +53,13 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
    */
   function handleSelectionChange() {
     const selection = window.getSelection();
-    if (selection && contentRef.current && selection?.anchorNode == contentRef.current && selection?.focusNode == contentRef.current) {
+    if (selection && 
+      contentRef.current && 
+      // selection?.anchorNode == contentRef.current && 
+      // selection?.focusNode == contentRef.current
+      selection?.anchorNode?.nodeType !== Node.TEXT_NODE &&
+      selection?.focusNode?.nodeType !== Node.TEXT_NODE
+    ) {
       if (selectionHasTextNodes(selection, contentRef.current)) {
         resetSelectionToTextNodes();
       } else {
