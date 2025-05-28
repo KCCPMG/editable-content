@@ -101,12 +101,13 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
   range.setStartBefore(element);
   range.setEndAfter(element);
 
+  // console.log(range.toString(), range.toString().length)
 
   if (range.toString().length === 0) {
-    const textNode = document.createTextNode(" ");
+    const textNode = document.createTextNode('\u200B');
     element.append(textNode);
     range.setStart(textNode, 0);
-    range.setEnd(textNode, 1);
+    range.setEnd(textNode, textNode.length);
     selection.removeAllRanges();
     selection.addRange(range);
   }
@@ -209,10 +210,10 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
   // Work with range instead of selection for start/end container clarity
   const range = selection.getRangeAt(0);
   if (range.toString().length === 0) {
-    const textNode = document.createTextNode(" ");
+    const textNode = document.createTextNode('\u200B');
     range.insertNode(textNode);
     range.setStart(textNode, 0);
-    range.setEnd(textNode, 1);
+    range.setEnd(textNode, textNode.length);
     selection.removeAllRanges();
     selection.addRange(range);
   }
@@ -489,7 +490,7 @@ export function selectionIsCoveredBy(selection: Selection, query: string, limiti
 
   // else
   const nodes = getSelectionChildNodes(selection, limitingContainer);
-  console.log("getSelectionCoveredBy", {nodes});
+  // console.log("getSelectionCoveredBy", {nodes});
   const textNodes = nodes
   .filter(n => n.nodeType === Node.TEXT_NODE);
 

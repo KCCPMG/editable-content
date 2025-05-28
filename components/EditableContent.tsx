@@ -63,9 +63,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   }
 
   function updateSelection() {
-    console.log("inside of updateSelection")
+    // console.log("inside of updateSelection")
     const gotSelection = window.getSelection();
-    console.log(gotSelection);
+    // console.log(gotSelection);
 
     // console.log({
     //   gotSelection : Boolean(gotSelection), 
@@ -83,7 +83,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
           gotSelection.focusNode === contentRef.current
         ))
     ) {
-      console.log("ok");
+      // console.log("ok");
       // console.log(contentRef.current.childNodes);
       // if (contentRef.current.childNodes.length === 0) {
       //   console.log("repopulate");
@@ -148,7 +148,8 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             }
 
             const selected = selection ? hasSelection && selectionIsCoveredBy(selection, query, contentRef.current!): false; // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-            console.log({selection, query, selected})
+            
+            // console.log({selection, query, selected})
 
             // console.log(JSON.stringify({selected, selection, query}));
 
@@ -167,17 +168,17 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
                       console.log({selection, selected})
 
-
                       if (selected) {
                         unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-                        console.log("calling updateSelection from within selected click handler");
+                        // console.log("calling updateSelection from within selected click handler");
                         // updateSelection();
                         contentRef.current?.dispatchEvent(contentChange);
                       } else {
                         const wrapper = createWrapper(etb.wrapperArgs, document);
-                        console.log({wrapper, selection});
+                        // console.log({wrapper, selection});
                         wrapInElement(selection, wrapper, contentRef.current!);
-                        console.log({selection});
+                        console.log(contentRef.current?.innerHTML);
+                        // console.log({selection});
                         console.log("calling updateSelection from within deselected click handler");
                         // updateSelection();
                         console.log({selection});
