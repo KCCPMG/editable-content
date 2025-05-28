@@ -191,7 +191,9 @@ export function deleteEmptyElementsByQuery(query: string, limitingContainer: Ele
 export function deleteEmptyElements(limitingContainer: Element) {
   const elements = Array.from(limitingContainer.querySelectorAll("*"));
 
-  const emptyElements = elements.filter(e => e.textContent === "");
+  const emptyElements = elements
+  .filter(e => e.tagName !== "BR")
+  .filter(e => e.textContent === "");
   emptyElements.forEach(ee => ee.remove());
 }
 

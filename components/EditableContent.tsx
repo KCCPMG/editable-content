@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
@@ -136,6 +136,12 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               hasSelection && selectionIsCoveredBy(selection, query, contentRef.current!): false; 
               // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
 
+            if (etb.wrapperArgs.unbreakable) {
+              if (selection && contentRef.current) {
+                const childNodes = getSelectionChildNodes(selection, contentRef.current);
+              }
+            }
+
             return ( 
               <EditTextButton
                 {...etb}
@@ -172,6 +178,29 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
           setHasSelection(true);
         }}
         onBlur={() => setHasSelection(false)}
+        onKeyDown={(e) => {
+          if (e.code === "Enter") {
+            e.preventDefault();
+            const selection = window.getSelection(); 
+            if (hasSelection && selection) {
+              const range = selection.getRangeAt(0);
+              const br = document.createElement("br");
+              range.extractContents();
+              // range.setStartAfter(br);
+              // range.setEndAfter(br);
+              // resetSelectionToTextNodes();
+              
+              const textNode = document.createTextNode('\u200B');
+              range.insertNode(textNode);
+              range.insertNode(br);
+              range.setStart(textNode, 0);
+              range.setEnd(textNode, textNode.length);
+              selection.removeAllRanges();
+              selection.addRange(range);
+            }
+
+          }
+        }}
         ref={contentRef}
         style={{
           width: "100%",
