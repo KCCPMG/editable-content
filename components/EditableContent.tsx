@@ -26,15 +26,15 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   }, [hasSelection])
 
   useEffect(() => {
-    if (contentRef.current && initialHTML) {
-        if (initialHTML) {
-          contentRef.current.innerHTML = initialHTML;
-        } else {
-          contentRef.current.innerHTML = "";
-        } 
-        
-        setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
-        contentRef.current.addEventListener("contentChange", updateContent)
+    if (contentRef.current) {
+      if (initialHTML) {
+        contentRef.current.innerHTML = initialHTML;
+      } else {
+        contentRef.current.innerHTML = "";
+      } 
+      
+      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+      contentRef.current.addEventListener("contentChange", updateContent)
     }
 
     document.addEventListener('selectionchange', handleSelectionChange);
@@ -155,7 +155,10 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               }
             }
 
-            const selected = selection ? hasSelection && selectionIsCoveredBy(selection, query, contentRef.current!): false; // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+            const selected = selection ? 
+              hasSelection && selectionIsCoveredBy(selection, query, contentRef.current!): false; 
+              // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+            console.log(etb.dataKey, selected)
             
             // console.log({selection, query, selected})
 
