@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect, forwardRef, MutableRefObject } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
@@ -19,9 +19,47 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null);
   const [hasSelection, setHasSelection] = useState<boolean>(false);
 
+  useEffect(() => {
+    // console.log("hasSelection:", hasSelection);
+    // console.log("hasSelection useEffect, now calling updateSelection", {hasSelection, selection: window.getSelection()})
+    // updateSelection();
+  }, [hasSelection])
+
+  useEffect(() => {
+    if (contentRef.current && initialHTML) {
+        if (initialHTML) {
+          contentRef.current.innerHTML = initialHTML;
+        } else {
+          contentRef.current.innerHTML = "";
+        } 
+        
+        setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+        contentRef.current.addEventListener("contentChange", updateContent)
+    }
+
+    document.addEventListener('selectionchange', handleSelectionChange);
+    // contentRef?.current?.addEventListener('onfocus', () => {setHasSelection(true)})
+    // contentRef?.current?.addEventListener('onblur', () => {setHasSelection(false)})
+
+    return () => {
+      document.removeEventListener('selectionchange', updateSelection);
+      contentRef?.current?.removeEventListener("contentChange", updateContent);
+    }
+
+  }, [])
+
 
   function handleSelectionChange() {
-    updateSelection();
+    // if changes need to be made to selection, make those changes, otherwise update selection pieces of state
+    const selection = window.getSelection();
+    if (selection && contentRef.current && selection?.anchorNode == contentRef.current && selection?.focusNode == contentRef.current) {
+      if (selectionHasTextNodes(selection, contentRef.current)) {
+        resetSelectionToTextNodes();
+      }
+    }
+    else {
+      updateSelection();
+    } 
   }
 
   function updateSelection() {
@@ -77,35 +115,8 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     contentRef.current?.focus();
   }
 
-  useEffect(() => {
 
-    if (contentRef.current && initialHTML) {
-        if (initialHTML) {
-          contentRef.current.innerHTML = initialHTML;
-        } else {
-          contentRef.current.innerHTML = "";
-        } 
-        
-        setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
-        contentRef.current.addEventListener("contentChange", updateContent)
-    }
 
-    document.addEventListener('selectionchange', handleSelectionChange);
-    // contentRef?.current?.addEventListener('onfocus', () => {setHasSelection(true)})
-    // contentRef?.current?.addEventListener('onblur', () => {setHasSelection(false)})
-
-    return () => {
-      document.removeEventListener('selectionchange', updateSelection);
-      contentRef?.current?.removeEventListener("contentChange", updateContent);
-    }
-
-  }, [])
-
-  useEffect(() => {
-    // console.log("hasSelection:", hasSelection);
-    console.log("hasSelection useEffect, now calling updateSelection", {hasSelection, selection: window.getSelection()})
-    updateSelection();
-  }, [hasSelection])
 
 
   return (
@@ -136,7 +147,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               }
             }
 
-            const selected = selection ? selectionIsCoveredBy(selection, query, contentRef.current!): false; // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+            const selected = selection ? hasSelection && selectionIsCoveredBy(selection, query, contentRef.current!): false; // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
             console.log({selection, query, selected})
 
             // console.log(JSON.stringify({selected, selection, query}));

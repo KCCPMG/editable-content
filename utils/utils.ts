@@ -30,7 +30,9 @@ export function resetSelectionToTextNodes(): Selection | null {
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
         range.setStart(tw.currentNode, 0);
         break;
-      } else tw.nextNode();
+      } else {
+        if (!tw.nextNode()) break;
+      }
     }
   }
 
@@ -496,6 +498,12 @@ export function selectionIsCoveredBy(selection: Selection, query: string, limiti
    
   return textNodes.every(tn => nodeIsDescendentOf(tn, query, limitingContainer));
 
+}
+
+
+export function selectionHasTextNodes(selection: Selection, limitingContainer: Element) {
+  const childNodes = getSelectionChildNodes(selection, limitingContainer);
+  return childNodes.some(cn => cn.nodeType === Node.TEXT_NODE);
 }
 
 
