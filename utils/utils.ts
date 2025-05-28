@@ -407,6 +407,7 @@ function getRangeChildNodes(range: Range, limitingContainer: Node): Array<Node> 
     // if (currentNode) childNodes.push(currentNode);
     // else break;
 
+    // console.log(currentNode);
     if (!currentNode) break;
 
     if (!inRange) {
@@ -486,11 +487,13 @@ export function selectionIsCoveredBy(selection: Selection, query: string, limiti
 
   // else
   const nodes = getSelectionChildNodes(selection, limitingContainer);
+  console.log("getSelectionCoveredBy", {nodes});
   const textNodes = nodes
-  .filter(n => n.nodeType === Node.TEXT_NODE)
-  .filter(n => n.textContent && n.textContent.length > 0); 
-  // if (textNodes.length===0) return false;
-  // else 
+  .filter(n => n.nodeType === Node.TEXT_NODE);
+
+  // I don't remember why the below check was in place, but in ruins empty text nodes
+  // .filter(n => n.textContent && n.textContent.length > 0); 
+   
   return textNodes.every(tn => nodeIsDescendentOf(tn, query, limitingContainer));
 
 }

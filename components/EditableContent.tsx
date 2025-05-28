@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect, forwardRef, MutableRefObject } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
@@ -20,8 +20,12 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   const [hasSelection, setHasSelection] = useState<boolean>(false);
 
 
+  function handleSelectionChange() {
+    updateSelection();
+  }
 
   function updateSelection() {
+    console.log("inside of updateSelection")
     const gotSelection = window.getSelection();
     console.log(gotSelection);
 
@@ -31,11 +35,29 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     //   selectionIsDescendentOfNode: gotSelection && contentRef.current && selectionIsDescendentOfNode(gotSelection, contentRef.current)
     // });
 
-    if (gotSelection && 
+    // if selection is within contentRef.current or IS contentRef.current
+    if (
+      gotSelection && 
       contentRef.current && 
-      selectionIsDescendentOfNode(gotSelection, contentRef.current)
-
+      (selectionIsDescendentOfNode(gotSelection, contentRef.current) || 
+        (
+          gotSelection.anchorNode === contentRef.current &&
+          gotSelection.focusNode === contentRef.current
+        ))
     ) {
+      console.log("ok");
+      // console.log(contentRef.current.childNodes);
+      // if (contentRef.current.childNodes.length === 0) {
+      //   console.log("repopulate");
+      //   contentRef.current.append(document.createTextNode(""));
+      // }
+      // if (
+      //   gotSelection.anchorNode?.nodeType !== Node.TEXT_NODE ||
+      //   gotSelection.focusNode?.nodeType !== Node.TEXT_NODE
+      // ) {
+      //   resetSelectionToTextNodes();
+      //   console.log("Reset Selection: ", gotSelection);
+      // }
       setSelectionToString(gotSelection.toString());
       setSelectionAnchorNode(gotSelection.anchorNode);
       setSelectionAnchorOffset(gotSelection.anchorOffset);
@@ -43,6 +65,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       setSelectionFocusOffset(gotSelection.focusOffset);
       // setHasSelection(true);
     } else {
+      console.log("not ok");
       setSelectionToString("");
       // setHasSelection(false);
     }
@@ -67,7 +90,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
         contentRef.current.addEventListener("contentChange", updateContent)
     }
 
-    document.addEventListener('selectionchange', updateSelection);
+    document.addEventListener('selectionchange', handleSelectionChange);
     // contentRef?.current?.addEventListener('onfocus', () => {setHasSelection(true)})
     // contentRef?.current?.addEventListener('onblur', () => {setHasSelection(false)})
 
@@ -79,7 +102,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   }, [])
 
   useEffect(() => {
-    console.log("hasSelection:", hasSelection);
+    // console.log("hasSelection:", hasSelection);
+    console.log("hasSelection useEffect, now calling updateSelection", {hasSelection, selection: window.getSelection()})
+    updateSelection();
   }, [hasSelection])
 
 
@@ -92,7 +117,27 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             // console.log("should re-render button");
             const query = generateQuery(etb.wrapperArgs);
             const selection = window.getSelection();
+
+            if (hasSelection && selection) {
+              const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
+  
+              if (
+                anchorNode == contentRef.current && 
+                focusNode == contentRef.current &&
+                anchorOffset == 0 && 
+                focusOffset == 0
+              ) {
+                const thisRange = selection.getRangeAt(0);
+                
+                thisRange.insertNode(document.createTextNode(""));
+                
+                selection.removeAllRanges();
+                selection.addRange(thisRange);
+              }
+            }
+
             const selected = selection ? selectionIsCoveredBy(selection, query, contentRef.current!): false; // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+            console.log({selection, query, selected})
 
             // console.log(JSON.stringify({selected, selection, query}));
 
@@ -111,32 +156,19 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
                       console.log({selection, selected})
 
-                      const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
-
-                      if (
-                        anchorNode == contentRef.current && 
-                        focusNode == contentRef.current &&
-                        anchorOffset == 0 && 
-                        focusOffset == 0
-                      ) {
-                        const thisRange = selection.getRangeAt(0);
-                        
-                        thisRange.insertNode(document.createTextNode(""));
-                        
-                        selection.removeAllRanges();
-                        selection.addRange(thisRange);
-                      }
 
                       if (selected) {
                         unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-                        updateSelection();
+                        console.log("calling updateSelection from within selected click handler");
+                        // updateSelection();
                         contentRef.current?.dispatchEvent(contentChange);
                       } else {
                         const wrapper = createWrapper(etb.wrapperArgs, document);
                         console.log({wrapper, selection});
                         wrapInElement(selection, wrapper, contentRef.current!);
                         console.log({selection});
-                        updateSelection();
+                        console.log("calling updateSelection from within deselected click handler");
+                        // updateSelection();
                         console.log({selection});
                         contentRef.current?.dispatchEvent(contentChange);
                       }
@@ -153,7 +185,10 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       </div>
       <div
         contentEditable
-        onFocus={() => setHasSelection(true)}
+        onFocus={() => {
+          setHasSelection(true);
+          // updateSelection();
+        }}
         onBlur={() => setHasSelection(false)}
         ref={contentRef}
         style={{
