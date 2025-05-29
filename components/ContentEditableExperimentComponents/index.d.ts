@@ -33,7 +33,7 @@ export type EditableContentButtonProps = {
 }
 
 
-export type EditTextButtonProps = (MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProp) & {
+export type EditTextButtonProps = (MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps) & {
   contentRef?: React.MutableRefObject<HTMLDivElement | null>,
   // wrapSelection: () => void,
   selected: Boolean,

@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, MouseEventHandler } from "react";
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
@@ -147,11 +147,10 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                 {...etb}
                 key={etb.dataKey}
                 disabled={!hasSelection}
-                onMouseDown={(e: Event) => {e.preventDefault();}}
+                onMouseDown={(e) => {e.preventDefault();}}
                 selected={selected}
                 onClick={
-                  (e: Event) => {
-                    e.preventDefault();
+                  () => {
                     if (selection) {
 
                       if (selected) {

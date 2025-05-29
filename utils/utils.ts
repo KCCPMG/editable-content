@@ -554,3 +554,12 @@ export function createWrapper({element, classList, id, unbreakable, attributes}:
   }
   return wrapper;
 }
+
+
+export function selectionContainsOnlyText(selection: Selection, limitingContainer: Node) {
+  const childNodes = getSelectionChildNodes(selection, limitingContainer);
+  return (
+    childNodes.every(cn => cn.nodeType === Node.TEXT_NODE) && 
+    childNodes.every(cn => cn.parentNode === limitingContainer)
+  );
+}
