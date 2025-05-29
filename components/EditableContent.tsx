@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect, MouseEventHandler } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
@@ -136,17 +136,24 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               hasSelection && selectionIsCoveredBy(selection, query, contentRef.current!): false; 
               // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
 
-            if (etb.wrapperArgs.unbreakable) {
-              if (selection && contentRef.current) {
-                const childNodes = getSelectionChildNodes(selection, contentRef.current);
-              }
-            }
+
+            const unbreakableClickableCheck = etb.wrapperArgs.unbreakable ?
+              (
+                !!selection && 
+                !!contentRef.current &&
+                etb.wrapperArgs.unbreakable && 
+                !selectionContainsOnlyText(selection, contentRef.current, query)
+              ) :
+              false
+
+
+            const disabled = !hasSelection || unbreakableClickableCheck
 
             return ( 
               <EditTextButton
                 {...etb}
                 key={etb.dataKey}
-                disabled={!hasSelection}
+                disabled={disabled}
                 onMouseDown={(e) => {e.preventDefault();}}
                 selected={selected}
                 onClick={

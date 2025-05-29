@@ -556,10 +556,24 @@ export function createWrapper({element, classList, id, unbreakable, attributes}:
 }
 
 
-export function selectionContainsOnlyText(selection: Selection, limitingContainer: Node) {
+export function selectionContainsOnlyText(selection: Selection, limitingContainer: Node, query: string) {
   const childNodes = getSelectionChildNodes(selection, limitingContainer);
   return (
     childNodes.every(cn => cn.nodeType === Node.TEXT_NODE) && 
-    childNodes.every(cn => cn.parentNode === limitingContainer)
+    (
+      childNodes.every(cn => (
+        cn.parentNode instanceof Element && 
+        cn.parentNode.matches(query)
+      )) ||
+      childNodes.every(cn => cn.parentNode === limitingContainer)
+    )
   );
+}
+
+
+export function selectionContainsNoUnbreakables(selection: Selection, limitingContainer: Node) {
+  const childNodes = getSelectionChildNodes(selection, limitingContainer);
+  return (
+    childNodes.every(cn => !nodeIsDescendentOf(cn, "[unbreakable]", limitingContainer))
+  )
 }
