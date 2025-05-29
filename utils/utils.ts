@@ -577,3 +577,66 @@ export function selectionContainsNoUnbreakables(selection: Selection, limitingCo
     childNodes.every(cn => !nodeIsDescendentOf(cn, "[unbreakable]", limitingContainer))
   )
 }
+
+export function getButtonStatus(selection: Selection, isUnbreakable: boolean, query: string, limitingContainer: Node) {
+  const status = {
+    enabled: true,
+    selected: false
+  }
+
+  if (!selection) {
+    status.enabled = false;
+    status.selected = false;
+    return status;
+  }
+  
+  const childNodes = getSelectionChildNodes(selection, limitingContainer);
+  const range = selection.getRangeAt(0);
+  const rangeCommonAncestor = range.commonAncestorContainer;
+
+  if (isUnbreakable) {
+    if (selectionContainsOnlyText(selection, limitingContainer, query)) {
+      status.enabled = true;
+      status.selected = false;
+      return status;
+    }
+
+
+    if (childNodes.every(cn => cn.nodeType === Node.TEXT_NODE)) {
+
+      if (childNodes.every(cn => cn.parentNode === limitingContainer)) {
+        status.enabled = true;
+        status.selected = false;
+        return status;
+      } else if (rangeCommonAncestor instanceof Element && rangeCommonAncestor.matches(query)) {
+        status.enabled = true;
+        status.selected = true;
+        return status;
+      } else {
+        status.enabled = false;
+        status.selected = false;
+        return status;
+      }
+    }
+    else {
+      status.enabled = false;
+      status.selected = false;
+      return status;
+    }
+
+  }
+
+  else {
+    if (!selectionContainsNoUnbreakables(selection, limitingContainer)) {
+      status.enabled = false;
+    }
+
+    if (selectionIsCoveredBy(selection, query, limitingContainer)) {
+      status.selected = true;
+    } else status.selected = false;
+  }
+
+
+
+  return status;
+}
