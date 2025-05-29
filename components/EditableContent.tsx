@@ -184,17 +184,16 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             const selection = window.getSelection(); 
             if (hasSelection && selection) {
               const range = selection.getRangeAt(0);
-              const br = document.createElement("br");
               range.extractContents();
-              // range.setStartAfter(br);
-              // range.setEndAfter(br);
-              // resetSelectionToTextNodes();
               
+              const br = document.createElement("br");
               const textNode = document.createTextNode('\u200B');
               range.insertNode(textNode);
               range.insertNode(br);
+              
               range.setStart(textNode, 0);
               range.setEnd(textNode, textNode.length);
+              
               selection.removeAllRanges();
               selection.addRange(range);
             }
