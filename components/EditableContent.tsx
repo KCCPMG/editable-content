@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect, MouseEventHandler } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
@@ -147,7 +147,47 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
                       if (selected) {
                         if (etb.wrapperArgs.unbreakable) {
+                          const range = selection.getRangeAt(0);
+                          const element = getRangeLowestAncestorElement(range);
+                          if (element) {
 
+                            const childNodes = Array.from(element.childNodes);
+
+                            const startNodeIndex = childNodes.findIndex(cn => cn === range.startContainer);
+                            const startNodeOffset = range.startOffset;
+                            const endNodeIndex = childNodes.findIndex(cn => cn === range.endContainer);
+                            const endNodeOffset = range.endOffset;
+
+                            const parentNode = element.parentNode;
+                            console.log({parentNode, childNodes});
+
+                            for (let i=0; i<childNodes.length; i++) {
+                              console.log(i, element, childNodes[i])
+                              parentNode?.insertBefore(childNodes[i], element);
+
+                              if (i === startNodeIndex) {
+                                range.setStart(childNodes[i], startNodeOffset);
+                              }
+
+                              if (i === endNodeIndex) {
+                                range.setEnd(childNodes[i], endNodeOffset);
+                              }
+                            }
+
+                            parentNode?.removeChild(element);
+
+
+
+                            // promoteChildrenOfNode(element);
+                            // if (contentRef.current) {
+                            //   deleteEmptyElements(contentRef.current);
+                            // }
+                            // resetSelectionToTextNodes();
+                          }
+
+                          // const range = new Range();
+                          // range.setStartBefore()
+                          // setSelection()
                         } else {
                           unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
                           contentRef.current?.dispatchEvent(contentChange);

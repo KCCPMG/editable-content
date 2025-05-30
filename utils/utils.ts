@@ -307,7 +307,7 @@ export function unwrapRangeFromQuery(range: Range, query: string, limitingContai
  * Replaces a given node with its contents
  * @param node 
  */
-function promoteChildrenOfNode(node: Node): void {
+export function promoteChildrenOfNode(node: Node): void {
   if (node.parentNode) {
     for (let child of Array.from(node.childNodes)) {
       node.parentNode.insertBefore(child, node);
@@ -345,6 +345,24 @@ function getAncestorNode(node: Node, query: string, limitingContainer: Node): No
   return null;
 
 }
+
+
+export function getRangeLowestAncestorElement(range: Range): Element | null {
+  const commonContainer = range.commonAncestorContainer;
+  return getNodeLowestAncestorElement(commonContainer);
+}
+
+
+function getNodeLowestAncestorElement(node: Node): Element | null {
+  // if (node.nodeType === Node.ELEMENT_NODE) return node;
+  if (node instanceof Element) return node;
+  else {
+    const parentNode = node.parentNode;
+    if (parentNode) return getNodeLowestAncestorElement(parentNode);
+    else return null;
+  }
+}
+
 
 
 function nodeIsDescendentOfNode(node: Node, ancestorNode: Node) {
@@ -598,15 +616,12 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
     return status;   
   }
   const range = selection.getRangeAt(0)
-  const rangeCommonAncestor = range.commonAncestorContainer;
+
+  range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE
+
+  const rangeCommonElementAncestor = getRangeLowestAncestorElement(range);
 
   if (isUnbreakable) {
-    if (selectionContainsOnlyText(selection, limitingContainer, query)) {
-      status.enabled = true;
-      status.selected = false;
-      return status;
-    }
-
 
     if (childNodes.every(cn => cn.nodeType === Node.TEXT_NODE)) {
 
@@ -614,7 +629,7 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
         status.enabled = true;
         status.selected = false;
         return status;
-      } else if (rangeCommonAncestor instanceof Element && rangeCommonAncestor.matches(query)) {
+      } else if (rangeCommonElementAncestor && rangeCommonElementAncestor.matches(query)) {
         status.enabled = true;
         status.selected = true;
         return status;
