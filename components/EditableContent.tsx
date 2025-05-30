@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect, MouseEventHandler } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
@@ -132,28 +132,13 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               }
             }
 
-            const selected = selection ? 
-              hasSelection && selectionIsCoveredBy(selection, query, contentRef.current!): false; 
-              // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-
-
-            const unbreakableClickableCheck = etb.wrapperArgs.unbreakable ?
-              (
-                !!selection && 
-                !!contentRef.current &&
-                etb.wrapperArgs.unbreakable && 
-                !selectionContainsOnlyText(selection, contentRef.current, query)
-              ) :
-              false
-
-
-            const disabled = !hasSelection || unbreakableClickableCheck
+            const {selected, enabled} = getButtonStatus(selection, etb.wrapperArgs.unbreakable, query, contentRef.current)
 
             return ( 
               <EditTextButton
                 {...etb}
                 key={etb.dataKey}
-                disabled={disabled}
+                disabled={!enabled}
                 onMouseDown={(e) => {e.preventDefault();}}
                 selected={selected}
                 onClick={
@@ -161,12 +146,17 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                     if (selection) {
 
                       if (selected) {
-                        unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-                        contentRef.current?.dispatchEvent(contentChange);
+                        if (etb.wrapperArgs.unbreakable) {
+
+                        } else {
+                          unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+                          contentRef.current?.dispatchEvent(contentChange);
+                        }
                       } else {
                         const wrapper = createWrapper(etb.wrapperArgs, document);
                         wrapInElement(selection, wrapper, contentRef.current!);
                         contentRef.current?.dispatchEvent(contentChange);
+                        
                       }
 
                     }

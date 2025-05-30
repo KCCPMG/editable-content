@@ -578,20 +578,26 @@ export function selectionContainsNoUnbreakables(selection: Selection, limitingCo
   )
 }
 
-export function getButtonStatus(selection: Selection, isUnbreakable: boolean, query: string, limitingContainer: Node) {
+export function getButtonStatus(selection: Selection | null, isUnbreakable: boolean | undefined, query: string, limitingContainer: Node | null) {
+
   const status = {
     enabled: true,
     selected: false
   }
 
-  if (!selection) {
+  if (!selection || !limitingContainer) {
     status.enabled = false;
     status.selected = false;
     return status;
   }
   
   const childNodes = getSelectionChildNodes(selection, limitingContainer);
-  const range = selection.getRangeAt(0);
+  if (selection.rangeCount === 0) {
+    status.enabled = false;
+    status.selected = false;
+    return status;   
+  }
+  const range = selection.getRangeAt(0)
   const rangeCommonAncestor = range.commonAncestorContainer;
 
   if (isUnbreakable) {
