@@ -265,6 +265,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
           height: "150px",
           margin: "auto",
           border: "2px solid black",
+          overflowY: "scroll"
         }}
       >
       </div>

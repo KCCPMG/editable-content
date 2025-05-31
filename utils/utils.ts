@@ -383,14 +383,7 @@ export function moveSelectionLeft(selection: Selection, limitingContainer: Eleme
   if (direction === "none") {
     console.log("selection.anchorOffset > 0", selection.anchorOffset > 0)
     if (selection.anchorOffset > 0) {
-      // console.log({anchorNode, anchorOffset, focusNode, focusOffset})
       selection.setBaseAndExtent(anchorNode, anchorOffset-1, anchorNode, anchorOffset-1);
-      // console.log({
-      //   anchorNode: selection.anchorNode, 
-      //   anchorOffset: selection.anchorOffset, 
-      //   focusNode: selection.focusNode, 
-      //   focusOffset: selection.focusOffset
-      // })
       return;
     } 
     else {
@@ -411,33 +404,20 @@ export function moveSelectionLeft(selection: Selection, limitingContainer: Eleme
 
   }
 
-  if (direction === "forward") {
-    if (focusOffset > 0) {
-      console.log(setSelection(anchorNode, anchorOffset, focusNode, focusOffset - 1));
-      console.log({direction, selection});
-      return;
-    }
-  }
 
-  if (direction === "backward") {
+  // currently only being called when selection is cursor, shift key will change this logic
+  // if (direction === "forward") {
+  //   if (focusOffset > 0) {
+  //     console.log(setSelection(anchorNode, anchorOffset, focusNode, focusOffset - 1));
+  //     console.log({direction, selection});
+  //     return;
+  //   }
+  // }
 
-  }
+  // if (direction === "backward") {
 
+  // }
 
-  if (range.startOffset > 0) {
-    range.setStart(range.startContainer, range.startOffset-1);
-    return;
-  }
-
-  // else
-
-  const thisIndex = textNodes.findIndex(tn => tn === range.startContainer);
-  if (thisIndex > 0) {
-    const leftTextNode = textNodes[thisIndex - 1];
-    if (!leftTextNode) return;
-    range.setStart(leftTextNode, leftTextNode.textContent?.length || 0)
-
-  } else return;
 }
 
 
