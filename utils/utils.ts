@@ -363,7 +363,58 @@ function getNodeLowestAncestorElement(node: Node): Element | null {
   }
 }
 
-export function moveRangeLeft(range: Range, limitingContainer: Element) {
+export function moveSelectionLeft(selection: Selection, limitingContainer: Element) {
+
+  const direction = getSelectionDirection(selection);
+  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+  if (selection.rangeCount === 0) return;
+  if (!anchorNode || !anchorOffset || !focusNode || !focusOffset) return;
+  const range = selection.getRangeAt(0);
+
+  const limitingContainerRange = new Range();
+  limitingContainerRange.setStart(limitingContainer, 0);
+  limitingContainerRange.setEnd(limitingContainer, limitingContainer.childNodes.length - 1)
+  const childNodes = getRangeChildNodes(limitingContainerRange, limitingContainer);
+  const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE);
+
+
+  if (direction === "none") {
+    if (selection.anchorOffset > 0) {
+      console.log(direction);
+      console.log({anchorNode, anchorOffset, focusNode, focusOffset})
+      selection.setBaseAndExtent(anchorNode, anchorOffset-1, focusNode, focusOffset-1);
+      console.log({
+        anchorNode: selection.anchorNode, 
+        anchorOffset: selection.anchorOffset, 
+        focusNode: selection.focusNode, 
+        focusOffset: selection.focusOffset
+      })
+      return;
+    }
+    // else
+    const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
+    if (thisIndex > 0) {
+      const leftTextNode = textNodes[thisIndex - 1];
+      if (!leftTextNode) return;
+      console.log(setSelection(anchorNode, anchorOffset, leftTextNode, leftTextNode.textContent?.length || 0));
+      console.log({direction, selection});
+      return;
+    }
+    else return;
+  }
+
+  if (direction === "forward") {
+    if (focusOffset > 0) {
+      console.log(setSelection(anchorNode, anchorOffset, focusNode, focusOffset - 1));
+      console.log({direction, selection});
+      return;
+    }
+  }
+
+  if (direction === "backward") {
+
+  }
+
 
   if (range.startOffset > 0) {
     range.setStart(range.startContainer, range.startOffset-1);
@@ -371,11 +422,6 @@ export function moveRangeLeft(range: Range, limitingContainer: Element) {
   }
 
   // else
-  const limitingContainerRange = new Range();
-  limitingContainerRange.setStart(limitingContainer, 0);
-  limitingContainerRange.setEnd(limitingContainer, limitingContainer.childNodes.length - 1)
-  const childNodes = getRangeChildNodes(limitingContainerRange, limitingContainer);
-  const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE);
 
   const thisIndex = textNodes.findIndex(tn => tn === range.startContainer);
   if (thisIndex > 0) {

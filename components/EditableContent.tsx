@@ -1,9 +1,10 @@
 "use client"
 import React, { useRef, useState, useEffect, MouseEventHandler } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, moveRangeLeft } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelectionLeft } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
+import { DocumentScannerTwoTone } from "@mui/icons-material";
 
 const contentChange = new CustomEvent("contentChange");
 
@@ -227,7 +228,8 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               range.setStart(textNode, 0);
               range.setEnd(textNode, textNode.length);
               
-              
+              selection.removeAllRanges();
+              selection.addRange(range);     
             }
           }
 
@@ -243,16 +245,15 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             range.setStartAfter(spaceNode);
             range.collapse();
             console.log(range);
+            selection.removeAllRanges();
+            selection.addRange(range);
           }
 
-          // if (e.code === "ArrowLeft") {
-          //   e.preventDefault();
-          //   if (selection.direction)
-          //   moveRangeLeft(range, contentRef.current)
-          // }
+          if (e.code === "ArrowLeft") {
+            e.preventDefault();
+            moveSelectionLeft(selection, contentRef.current);
+          }
 
-          selection.removeAllRanges();
-          selection.addRange(range);
           contentRef.current?.dispatchEvent(contentChange);
         }}
         ref={contentRef}
