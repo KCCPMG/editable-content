@@ -217,20 +217,19 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
           if (e.code === "Enter") {
             e.preventDefault();
-            if (hasSelection && selection) {
-              range.extractContents();
-              
-              const br = document.createElement("br");
-              const textNode = document.createTextNode('\u200B');
-              range.insertNode(textNode);
-              range.insertNode(br);
-              
-              range.setStart(textNode, 0);
-              range.setEnd(textNode, textNode.length);
-              
-              selection.removeAllRanges();
-              selection.addRange(range);     
-            }
+            range.extractContents();
+            
+            const br = document.createElement("br");
+            const textNode = document.createTextNode('\u200B');
+            range.insertNode(textNode);
+            range.insertNode(br);
+            
+            range.setStart(textNode, 0);
+            range.setEnd(textNode, textNode.length);
+            
+            selection.removeAllRanges();
+            selection.addRange(range);  
+            contentRef.current?.dispatchEvent(contentChange);   
           }
 
           if (e.code === "Space") { 
@@ -247,6 +246,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             console.log(range);
             selection.removeAllRanges();
             selection.addRange(range);
+            contentRef.current?.dispatchEvent(contentChange);
           }
 
           if (e.code === "ArrowLeft") {
@@ -254,7 +254,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             moveSelectionLeft(selection, contentRef.current);
           }
 
-          contentRef.current?.dispatchEvent(contentChange);
+          
         }}
         ref={contentRef}
         style={{

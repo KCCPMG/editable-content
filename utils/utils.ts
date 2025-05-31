@@ -368,7 +368,7 @@ export function moveSelectionLeft(selection: Selection, limitingContainer: Eleme
   const direction = getSelectionDirection(selection);
   const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
   if (selection.rangeCount === 0) return;
-  if (!anchorNode || !anchorOffset || !focusNode || !focusOffset) return;
+  if (!anchorNode || !focusNode) return;
   const range = selection.getRangeAt(0);
 
   const limitingContainerRange = new Range();
@@ -377,30 +377,38 @@ export function moveSelectionLeft(selection: Selection, limitingContainer: Eleme
   const childNodes = getRangeChildNodes(limitingContainerRange, limitingContainer);
   const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE);
 
+  console.log(direction);
 
+  // range is collapsed
   if (direction === "none") {
+    console.log("selection.anchorOffset > 0", selection.anchorOffset > 0)
     if (selection.anchorOffset > 0) {
-      console.log(direction);
-      console.log({anchorNode, anchorOffset, focusNode, focusOffset})
-      selection.setBaseAndExtent(anchorNode, anchorOffset-1, focusNode, focusOffset-1);
-      console.log({
-        anchorNode: selection.anchorNode, 
-        anchorOffset: selection.anchorOffset, 
-        focusNode: selection.focusNode, 
-        focusOffset: selection.focusOffset
-      })
+      // console.log({anchorNode, anchorOffset, focusNode, focusOffset})
+      selection.setBaseAndExtent(anchorNode, anchorOffset-1, anchorNode, anchorOffset-1);
+      // console.log({
+      //   anchorNode: selection.anchorNode, 
+      //   anchorOffset: selection.anchorOffset, 
+      //   focusNode: selection.focusNode, 
+      //   focusOffset: selection.focusOffset
+      // })
       return;
+    } 
+    else {
+      console.log("starting from 0 point of text node")
+      const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
+      console.log("Text Node: ", textNodes[thisIndex].textContent,thisIndex);
+      if (thisIndex > 0) {
+        const leftTextNode = textNodes[thisIndex - 1];
+        console.log("left text node: ", leftTextNode.textContent)
+        if (!leftTextNode) return;
+        selection.setBaseAndExtent(leftTextNode, leftTextNode.textContent?.length || 0, leftTextNode, leftTextNode.textContent?.length || 0);
+        console.log({direction, selection});
+        return;
+      }
+
+      else return;
     }
-    // else
-    const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
-    if (thisIndex > 0) {
-      const leftTextNode = textNodes[thisIndex - 1];
-      if (!leftTextNode) return;
-      console.log(setSelection(anchorNode, anchorOffset, leftTextNode, leftTextNode.textContent?.length || 0));
-      console.log({direction, selection});
-      return;
-    }
-    else return;
+
   }
 
   if (direction === "forward") {
