@@ -363,6 +363,45 @@ function getNodeLowestAncestorElement(node: Node): Element | null {
   }
 }
 
+export function moveRangeLeft(range: Range, limitingContainer: Element) {
+
+  if (range.startOffset > 0) {
+    range.setStart(range.startContainer, range.startOffset-1);
+    return;
+  }
+
+  // else
+  const limitingContainerRange = new Range();
+  limitingContainerRange.setStart(limitingContainer, 0);
+  limitingContainerRange.setEnd(limitingContainer, limitingContainer.childNodes.length - 1)
+  const childNodes = getRangeChildNodes(limitingContainerRange, limitingContainer);
+  const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE);
+
+  const thisIndex = textNodes.findIndex(tn => tn === range.startContainer);
+  if (thisIndex > 0) {
+    const leftTextNode = textNodes[thisIndex - 1];
+    if (!leftTextNode) return;
+    range.setStart(leftTextNode, leftTextNode.textContent?.length || 0)
+
+  } else return;
+}
+
+
+export function getSelectionDirection(selection: Selection | null) {
+  if (!selection) return "none";
+  if (selection.rangeCount === 0) return "none";
+  
+  const range = selection.getRangeAt(0);
+
+  if (selection.anchorNode === selection.focusNode) {
+    if (selection.anchorOffset === selection.focusOffset) return "none";
+    if (selection.anchorOffset < selection.focusOffset) return "forward"
+    else return "backward"
+  }
+
+  if (range.startContainer === selection.anchorNode) return "forward";
+  if (range.startContainer === selection.focusNode) return "backward";
+}
 
 
 function nodeIsDescendentOfNode(node: Node, ancestorNode: Node) {

@@ -107,6 +107,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   }
 
 
+
   return (
     <>
       <h1>Texteditable Experiment</h1>
@@ -159,7 +160,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                             const endNodeOffset = range.endOffset;
 
                             const parentNode = element.parentNode;
-                            console.log({parentNode, childNodes});
 
                             for (let i=0; i<childNodes.length; i++) {
                               console.log(i, element, childNodes[i])
@@ -175,14 +175,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                             }
 
                             parentNode?.removeChild(element);
-
-
-
-                            // promoteChildrenOfNode(element);
-                            // if (contentRef.current) {
-                            //   deleteEmptyElements(contentRef.current);
-                            // }
-                            // resetSelectionToTextNodes();
+                            contentRef.current?.dispatchEvent(contentChange);
                           }
 
                           // const range = new Range();
