@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect, MouseEventHandler } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, moveRangeLeft } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
@@ -175,7 +175,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                             }
 
                             parentNode?.removeChild(element);
+
                             contentRef.current?.dispatchEvent(contentChange);
+                            resetSelectionToTextNodes();
                           }
 
                           // const range = new Range();
@@ -208,11 +210,13 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
         }}
         onBlur={() => setHasSelection(false)}
         onKeyDown={(e) => {
+          const selection = window.getSelection(); 
+          if (!selection || selection.rangeCount === 0 || !contentRef.current) return;
+          const range = selection.getRangeAt(0);
+
           if (e.code === "Enter") {
             e.preventDefault();
-            const selection = window.getSelection(); 
             if (hasSelection && selection) {
-              const range = selection.getRangeAt(0);
               range.extractContents();
               
               const br = document.createElement("br");
@@ -223,11 +227,33 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               range.setStart(textNode, 0);
               range.setEnd(textNode, textNode.length);
               
-              selection.removeAllRanges();
-              selection.addRange(range);
+              
             }
-
           }
+
+          if (e.code === "Space") { 
+            e.preventDefault();
+            console.log("oh boy a space");
+            // const span = document.createElement("span")
+            const spaceNode = document.createTextNode("\u0020\u200B");
+            // span.append(spaceNode)
+            console.log(spaceNode);
+            range.extractContents();
+            range.insertNode(spaceNode);
+            range.setStartAfter(spaceNode);
+            range.collapse();
+            console.log(range);
+          }
+
+          // if (e.code === "ArrowLeft") {
+          //   e.preventDefault();
+          //   if (selection.direction)
+          //   moveRangeLeft(range, contentRef.current)
+          // }
+
+          selection.removeAllRanges();
+          selection.addRange(range);
+          contentRef.current?.dispatchEvent(contentChange);
         }}
         ref={contentRef}
         style={{
