@@ -379,58 +379,55 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
   const childNodes = getRangeChildNodes(limitingContainerRange, limitingContainer);
   const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE);
 
-  // console.log(direction);
-
   // range is collapsed
   if (direction === "none") {
     if (moveDirection === "left") {
 
-      if (selection.anchorOffset > 0) {
+      if (anchorOffset > 0) {
         selection.setBaseAndExtent(anchorNode, anchorOffset-1, anchorNode, anchorOffset-1);
-        // return;
       } 
       else {
-        // console.log("starting from 0 point of text node")
-        // console.log({textNodes, childNodes});
-        // console.log(selection.anchorNode);
+
         const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
-        // console.log("Text Node: ", textNodes[thisIndex], thisIndex);
-        // console.log("Text Node Text: ", textNodes[thisIndex].textContent);
+
         if (thisIndex > 0) {
           const leftTextNode = textNodes[thisIndex - 1];
-          console.log("left text node: ", leftTextNode.textContent)
           if (!leftTextNode) return;
           selection.setBaseAndExtent(leftTextNode, leftTextNode.textContent?.length || 0, leftTextNode, leftTextNode.textContent?.length || 0);
-          console.log({direction, selection});
           // return;
         }
       }
   
-      // finally
-      console.log("in moveSelectionLeft");
-      console.log(!!selection, !!selection.anchorNode, !!selection.anchorNode?.textContent, !!selection.anchorOffset)
-  
-      console.log("character: ", selection?.anchorNode?.textContent?.[selection?.anchorOffset])
-      console.log("node: ", selection?.anchorNode)
-      console.log("text: ", selection?.anchorNode?.textContent)
-      console.log("offset: ", selection.anchorOffset);
-      console.log("character code: ", selection?.anchorNode?.textContent?.charCodeAt(selection?.anchorOffset));
-  
-      // handle check for zero width space character, recursion
-      if (
-        selection &&
-        selection.anchorNode &&
-        selection.anchorNode.textContent &&
-        (
-          selection?.anchorNode?.textContent[selection.anchorOffset] === "\u200B" ||
-          selection?.anchorNode?.textContent[selection.anchorOffset] === undefined 
-        )
-      ) {
-        console.log("found a zero width space character")
-        moveSelection(selection, limitingContainer, "left");
+
+    } else if (moveDirection === "right") {
+      if (anchorOffset < (anchorNode?.textContent?.length || 0)) {
+        selection.setBaseAndExtent(anchorNode, anchorOffset+1, anchorNode, anchorOffset+1);
       }
-      return;
+      else {
+
+        const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
+
+        if (thisIndex < textNodes.length - 1) {
+          const rightTextNode = textNodes[thisIndex + 1];
+          if (!rightTextNode) return;
+          selection.setBaseAndExtent(rightTextNode, 0, rightTextNode, 0);
+        }
+      }
     }
+
+    // handle check for zero width space character, recursion
+    if (
+      selection &&
+      selection.anchorNode &&
+      selection.anchorNode.textContent &&
+      (
+        selection?.anchorNode?.textContent[selection.anchorOffset] === "\u200B" ||
+        selection?.anchorNode?.textContent[selection.anchorOffset] === undefined 
+      )
+    ) {
+      moveSelection(selection, limitingContainer, moveDirection);
+    }
+    return;
 
   }
 

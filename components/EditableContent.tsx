@@ -264,6 +264,21 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             }
           }
 
+          if (e.code === "ArrowRight") {
+            if (
+              !e.shiftKey &&
+              !e.altKey &&
+              !e.ctrlKey &&
+              !e.metaKey
+            ) {
+              e.preventDefault();
+              // if (range.toString().length > 0) {
+              //   selection.collapseToStart();
+              // }
+              moveSelection(selection, contentRef.current, "right");
+            }
+          }
+
           
         }}
         ref={contentRef}
