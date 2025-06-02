@@ -394,8 +394,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
           const leftTextNode = textNodes[thisIndex - 1];
           if (!leftTextNode) return;
           selection.setBaseAndExtent(leftTextNode, leftTextNode.textContent?.length || 0, leftTextNode, leftTextNode.textContent?.length || 0);
-          // return;
-        }
+        } else return;
       }
   
 
@@ -411,7 +410,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
           const rightTextNode = textNodes[thisIndex + 1];
           if (!rightTextNode) return;
           selection.setBaseAndExtent(rightTextNode, 0, rightTextNode, 0);
-        }
+        } else return;
       }
     }
 
