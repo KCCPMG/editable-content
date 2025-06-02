@@ -372,35 +372,62 @@ export function moveSelectionLeft(selection: Selection, limitingContainer: Eleme
   const range = selection.getRangeAt(0);
 
   const limitingContainerRange = new Range();
-  limitingContainerRange.setStart(limitingContainer, 0);
-  limitingContainerRange.setEnd(limitingContainer, limitingContainer.childNodes.length - 1)
+  // limitingContainerRange.setStart(limitingContainer, 0);
+  // limitingContainerRange.setEnd(limitingContainer, limitingContainer.childNodes.length - 1)
+  limitingContainerRange.setStartBefore(limitingContainer.childNodes[0]);
+  limitingContainerRange.setEndAfter(limitingContainer.childNodes[limitingContainer.childNodes.length-1])
   const childNodes = getRangeChildNodes(limitingContainerRange, limitingContainer);
   const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE);
 
-  console.log(direction);
+  // console.log(direction);
 
   // range is collapsed
   if (direction === "none") {
-    console.log("selection.anchorOffset > 0", selection.anchorOffset > 0)
     if (selection.anchorOffset > 0) {
       selection.setBaseAndExtent(anchorNode, anchorOffset-1, anchorNode, anchorOffset-1);
-      return;
+      // return;
     } 
     else {
       console.log("starting from 0 point of text node")
+      console.log({textNodes, childNodes});
+      console.log(selection.anchorNode);
       const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
-      console.log("Text Node: ", textNodes[thisIndex].textContent,thisIndex);
+      console.log("Text Node: ", textNodes[thisIndex], thisIndex);
+      console.log("Text Node Text: ", textNodes[thisIndex].textContent);
       if (thisIndex > 0) {
         const leftTextNode = textNodes[thisIndex - 1];
         console.log("left text node: ", leftTextNode.textContent)
         if (!leftTextNode) return;
         selection.setBaseAndExtent(leftTextNode, leftTextNode.textContent?.length || 0, leftTextNode, leftTextNode.textContent?.length || 0);
         console.log({direction, selection});
-        return;
+        // return;
       }
-
-      else return;
     }
+
+    // finally
+    console.log("in moveSelectionLeft");
+    console.log(!!selection, !!selection.anchorNode, !!selection.anchorNode?.textContent, !!selection.anchorOffset)
+
+    console.log("character: ", selection?.anchorNode?.textContent?.[selection?.anchorOffset])
+    console.log("node: ", selection?.anchorNode)
+    console.log("text: ", selection?.anchorNode?.textContent)
+    console.log("offset: ", selection.anchorOffset);
+    console.log("character code: ", selection?.anchorNode?.textContent?.charCodeAt(selection?.anchorOffset));
+
+    // handle check for zero width space character, recursion
+    if (
+      selection &&
+      selection.anchorNode &&
+      selection.anchorNode.textContent &&
+      (
+        selection?.anchorNode?.textContent[selection.anchorOffset] === "\u200B" ||
+        selection?.anchorNode?.textContent[selection.anchorOffset] === undefined 
+      )
+    ) {
+      console.log("found a zero width space character")
+      moveSelectionLeft(selection, limitingContainer);
+    }
+    return;
 
   }
 
