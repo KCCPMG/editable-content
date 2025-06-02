@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect, MouseEventHandler } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelectionLeft } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
@@ -260,7 +260,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               // if (range.toString().length > 0) {
               //   selection.collapseToStart();
               // }
-              moveSelectionLeft(selection, contentRef.current);
+              moveSelection(selection, contentRef.current, "left");
             }
           }
 
