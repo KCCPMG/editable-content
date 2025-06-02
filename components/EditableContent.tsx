@@ -250,11 +250,18 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
           }
 
           if (e.code === "ArrowLeft") {
-            e.preventDefault();
-            if (range.toString().length > 0) {
-              selection.collapseToStart();
+            if (
+              !e.shiftKey &&
+              !e.altKey &&
+              !e.ctrlKey &&
+              !e.metaKey
+            ) {
+              e.preventDefault();
+              // if (range.toString().length > 0) {
+              //   selection.collapseToStart();
+              // }
+              moveSelectionLeft(selection, contentRef.current);
             }
-            moveSelectionLeft(selection, contentRef.current);
           }
 
           
