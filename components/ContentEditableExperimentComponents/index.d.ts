@@ -24,13 +24,13 @@ EditableContentButtonProps & {
 }
 
 
-export type EditableContentButtonProps = {
-  dataKey: string
-  child: React.ReactNode,
-  wrapperArgs: WrapperArgs,
-  // defaultColor?: ButtonOwnProps['color'],
-  // selectedColor?: ButtonOwnProps['color'],
-}
+// export type EditableContentButtonProps = {
+//   dataKey: string
+//   child: React.ReactNode,
+//   wrapperArgs: WrapperArgs,
+//   // defaultColor?: ButtonOwnProps['color'],
+//   // selectedColor?: ButtonOwnProps['color'],
+// }
 
 
 export type EditTextButtonProps = (MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps) & {
@@ -39,14 +39,25 @@ export type EditTextButtonProps = (MUIButtonEditableContentButtonProps | HTMLBut
   selected: Boolean,
   onClick: () => void,
   selectedVariant?: OverridableStringUnion<"text" | "contained" | "outlined", ButtonPropsVariantOverrides> | undefined,
-  deselectedVariant?: OverridableStringUnion<"text" | "contained" | "outlined", ButtonPropsVariantOverrides> | undefined
+  deselectedVariant?: OverridableStringUnion<"text" | "contained" | "outlined", ButtonPropsVariantOverrides> | undefined,
+  // selectCallback?: () => void,
+  // deselectCallback?: () => void
+}
+
+
+export type EditableContentEditTextButtonProps = (
+  MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps
+) & {
+  selectCallback?: () => void,
+  deselectCallback?: () => void
 }
 
 
 export type EditableContentProps = {
   initialHTML?: string,
   // editTextButtons: Array<EditableContentButtonProps>
-  editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>
+  // editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>,
+  editTextButtons: Array<EditableContentEditTextButtonProps>
   // editTextButtons: Array<EditTextButtonProps>
 }
 

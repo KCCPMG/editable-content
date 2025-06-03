@@ -141,7 +141,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                 {...etb}
                 key={etb.dataKey}
                 disabled={!enabled}
-                onMouseDown={(e) => {e.preventDefault();}}
+                onMouseDown={(e: Event) => {e.preventDefault();}}
                 selected={selected}
                 onClick={
                   () => {
@@ -184,6 +184,8 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                           // const range = new Range();
                           // range.setStartBefore()
                           // setSelection()
+
+                          if (etb.selectCallback) etb.selectCallback();
                         } else {
                           unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
                           contentRef.current?.dispatchEvent(contentChange);
