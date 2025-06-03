@@ -432,17 +432,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
 
 
   // currently only being called when selection is cursor, shift key will change this logic
-  // if (direction === "forward") {
-  //   if (focusOffset > 0) {
-  //     console.log(setSelection(anchorNode, anchorOffset, focusNode, focusOffset - 1));
-  //     console.log({direction, selection});
-  //     return;
-  //   }
-  // }
-
-  // if (direction === "backward") {
-
-  // }
+  // no implementation yet for uncollapsed selection
 
 }
 

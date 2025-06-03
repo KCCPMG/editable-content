@@ -12,8 +12,8 @@ export type MUIButtonEditableContentButtonProps =
 Omit<DefaultComponentProps<ExtendButtonBaseTypeMap<ButtonTypeMap<{}, "button">>>, "variant"> & 
 EditableContentButtonProps & {
   isMUIButton: true,
-  deselectedVariant?: string,
-  selectedVariant?: string
+  // deselectedVariant?: string,
+  // selectedVariant?: string
 }
 
 
@@ -38,6 +38,8 @@ export type EditTextButtonProps = (MUIButtonEditableContentButtonProps | HTMLBut
   // wrapSelection: () => void,
   selected: Boolean,
   onClick: () => void,
+  selectedVariant?: OverridableStringUnion<"text" | "contained" | "outlined", ButtonPropsVariantOverrides> | undefined,
+  deselectedVariant?: OverridableStringUnion<"text" | "contained" | "outlined", ButtonPropsVariantOverrides> | undefined
 }
 
 
@@ -45,6 +47,7 @@ export type EditableContentProps = {
   initialHTML?: string,
   // editTextButtons: Array<EditableContentButtonProps>
   editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>
+  // editTextButtons: Array<EditTextButtonProps>
 }
 
 export type WrapperArgs = {

@@ -7,8 +7,8 @@ export default function EditTextButton({
   isMUIButton, 
   dataKey, 
   child, 
-  defaultColor, 
-  selectedColor, 
+  // defaultColor, 
+  // selectedColor, 
   contentRef, 
   onClick, 
   selected,
@@ -21,20 +21,20 @@ export default function EditTextButton({
   return (
     isMUIButton ? 
       <Button 
-        // regular button props
-        {...remainderProps}
-        
-        // necessary, declared last to prevent override
         onClick={onClick}
         variant={selected ? 
           (selectedVariant || "contained") : 
           (deselectedVariant || "outlined")
         }
+        // Only pass valid MUI Button props here
+        {...(remainderProps as React.ComponentProps<typeof Button>)}
       >
         {child}
       </Button> :
       <button
         onClick={onClick}
+        id={id}
+        className={classList?.join(" ")}
         {...remainderProps}
       >
         {child}
