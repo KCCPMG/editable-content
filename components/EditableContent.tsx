@@ -147,9 +147,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     contentRef.current?.focus();
   }
 
-  console.log("render");
-
-
   return (
     <>
       <h1>Texteditable Experiment</h1>
@@ -159,7 +156,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             const query = generateQuery(etb.wrapperArgs);
             const selection = window.getSelection();
 
-            const {dataKey, selectCallback, ...otherProps} = etb;
+            const {dataKey, selectCallback, deselectCallback, ...otherProps} = etb;
 
             if (hasSelection && selection) {
               const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
@@ -239,23 +236,17 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                           contentRef.current?.dispatchEvent(contentChange);
                         }
                         
-                        if (etb.deselectCallback) {
-                          console.log("deselect callback")
-                          etb.deselectCallback();
-                        } else {
-                          console.log("no deselect callback")
-                        }
+                        if (deselectCallback) {
+                          deselectCallback();
+                        } 
                       } else {
                         const wrapper = createWrapper(etb.wrapperArgs, document);
                         wrapInElement(selection, wrapper, contentRef.current!);
                         contentRef.current?.dispatchEvent(contentChange);
                         
-                        if (etb.selectCallback) {
-                          console.log("select callback")
-                          etb.selectCallback();
-                        } else {
-                          console.log("no select callback")
-                        }
+                        if (selectCallback) {
+                          selectCallback();
+                        } 
                         
                       }
                       
