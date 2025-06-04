@@ -693,6 +693,7 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
     selected: false
   }
 
+  //might be unnecessary
   if (!limitingContainer || !selection || selection.rangeCount == 0) {
     status.enabled = false;
     status.selected = false;
@@ -714,6 +715,7 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
     return status;
   }
 
+  // might be unneccessary
   if (!(limitingContainer instanceof Element)) {
     status.enabled = false;
     status.selected = false;

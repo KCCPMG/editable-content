@@ -4,35 +4,63 @@ import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
 import { useState } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import { getSelectionDirection } from "@/utils/utils";
 
 
 export default function PageClient() {
 
 
-  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
-  const [dialogText, setDialogText] = useState<string>("Blah blah blah")
+  const [changeTextDialogIsOpen, setChangeTextDialogIsOpen] = useState<boolean>(false)
+  const [changeTextDialogText, setChangeTextDialogText] = useState<string>("Blah blah blah");
+  const [changeTextSelectionDirection, setChangeTextSelectionDirection] = useState<"none" | "forward" | "backward">("none")
+  const [changeTextAnchorNode, setChangeTextAnchorNode] = useState<Node | null>(null);
+  const [changeTextAnchorOffset, setChangeTextAnchorOffset] = useState<number | null>(null);
+  const [changeTextFocusNode, setChangeTextFocusNode] = useState<Node | null>(null);
+  const [changeTextFocusOffset, setChangeTextFocusOffset] = useState<number | null>(null);
+
 
 
   return (
     <>  
       <Dialog
-        open={dialogIsOpen}
-        onClose={() => {setDialogIsOpen(false)}}
+        open={changeTextDialogIsOpen}
+        onClose={() => {setChangeTextDialogIsOpen(false)}}
         // disableRestoreFocus
       >
         <DialogTitle>Test Dialog</DialogTitle>
         <DialogContent>
+          Change the selected text!
           <TextField
             // autoFocus
-            value={dialogText}
-            onChange={(e) => {setDialogText(e.target.value)}}
+            value={changeTextDialogText}
+            onChange={(e) => {setChangeTextDialogText(e.target.value)}}
           />
         </DialogContent>
         <DialogActions>
           <Button
-            // onClick={(e) => {
+            onClick={(e) => {
+              setChangeTextDialogIsOpen(false);
+              const selectionUpdateRange = new Range();
 
-            // }}
+              if (!changeTextAnchorNode || !changeTextFocusNode) return;
+              if (changeTextAnchorOffset === null || changeTextFocusOffset === null) return;
+
+              if (changeTextSelectionDirection === "backward") {
+                selectionUpdateRange.setEnd(changeTextAnchorNode, changeTextAnchorOffset);
+                selectionUpdateRange.setStart(changeTextFocusNode, changeTextFocusOffset);
+              } else {
+                selectionUpdateRange.setStart(changeTextAnchorNode, changeTextAnchorOffset);
+                selectionUpdateRange.setEnd(changeTextFocusNode, changeTextFocusOffset);
+              }
+
+              selectionUpdateRange.extractContents();
+              const newTextNode = document.createTextNode(changeTextDialogText);
+              selectionUpdateRange.insertNode(newTextNode);
+
+              const selection = window.getSelection();
+              selection?.removeAllRanges();
+              selection?.addRange(selectionUpdateRange);
+            }}
           >
             Change Text
           </Button>
@@ -52,8 +80,18 @@ export default function PageClient() {
             element: "strong"
           },
           selectCallback: () => {
-            setDialogText(window.getSelection()?.toString() || "")
-            setDialogIsOpen(true);
+            const selection = window.getSelection();
+            if (!selection) return;
+            const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+            setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
+            setChangeTextDialogText(selection?.toString() || "")
+            setChangeTextDialogIsOpen(true);
+            setChangeTextAnchorNode(anchorNode);
+            setChangeTextAnchorOffset(anchorOffset);
+            setChangeTextFocusNode(focusNode);
+            setChangeTextFocusOffset(focusOffset);
+
+
           }
           // deselectedVariant: "",
           // selectedVariant: "outlined"
