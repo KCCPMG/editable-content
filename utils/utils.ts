@@ -687,16 +687,47 @@ export function selectionContainsNoUnbreakables(selection: Selection, limitingCo
 
 export function getButtonStatus(selection: Selection | null, isUnbreakable: boolean | undefined, query: string, limitingContainer: Node | null) {
 
+  
   const status = {
     enabled: true,
     selected: false
   }
+
+  if (!limitingContainer || !selection || selection.rangeCount == 0) {
+    status.enabled = false;
+    status.selected = false;
+    return status;
+  }
+
+  // console.log(selection.getRangeAt(0).commonAncestorContainer);
+  // console.log(limitingContainer);
+
+  // if (!nodeIsDescendentOfNode(selection.getRangeAt(0).commonAncestorContainer, limitingContainer)) {
+  //   status.enabled = false;
+  //   status.selected = false;
+  //   return status;
+  // }
 
   if (!selection || !limitingContainer) {
     status.enabled = false;
     status.selected = false;
     return status;
   }
+
+  if (!(limitingContainer instanceof Element)) {
+    status.enabled = false;
+    status.selected = false;
+    return status;
+  }
+
+  if (!selectionIsDescendentOfNode(selection, limitingContainer)) {
+    status.enabled = false;
+    status.selected = false;
+    return status;
+  }
+
+  // console.log(selection.toString());
+  // console.log("selectionIsDescendentOfNode(selection, limitingContainer) ", selectionIsDescendentOfNode(selection, limitingContainer))
   
   const childNodes = getSelectionChildNodes(selection, limitingContainer);
   if (selection.rangeCount === 0) {

@@ -3,13 +3,14 @@ import EditableContent from "./EditableContent";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
 import { useState } from "react";
-import { Dialog } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 
 
 export default function PageClient() {
 
 
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
+  const [dialogText, setDialogText] = useState<string>("Blah blah blah")
 
 
   return (
@@ -17,8 +18,26 @@ export default function PageClient() {
       <Dialog
         open={dialogIsOpen}
         onClose={() => {setDialogIsOpen(false)}}
+        // disableRestoreFocus
       >
-        Blahblahblah
+        <DialogTitle>Test Dialog</DialogTitle>
+        <DialogContent>
+          <TextField
+            // autoFocus
+            value={dialogText}
+            onChange={(e) => {setDialogText(e.target.value)}}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            // onClick={(e) => {
+
+            // }}
+          >
+            Change Text
+          </Button>
+        </DialogActions>
+
       </Dialog>
       <EditableContent 
         // initialHTML="Plain Text<strong>Strong Text</strong>"
@@ -33,6 +52,7 @@ export default function PageClient() {
             element: "strong"
           },
           selectCallback: () => {
+            setDialogText(window.getSelection()?.toString() || "")
             setDialogIsOpen(true);
           }
           // deselectedVariant: "",

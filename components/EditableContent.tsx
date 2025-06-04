@@ -39,9 +39,10 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null);
   const [hasSelection, setHasSelection] = useState<boolean>(false);
 
-  // useEffect(() => {
-  //   // placeholder, likely unnecessary
-  // }, [hasSelection])
+  useEffect(() => {
+    // placeholder, likely unnecessary
+    console.log({hasSelection});
+  }, [hasSelection])
 
   useEffect(() => {
     // populate div with html and update state
@@ -55,8 +56,25 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     }
     
     // assign event listeners
-    document.addEventListener('selectionchange', handleSelectionChange);
+    // document.addEventListener('selectionchange', handleSelectionChange);
+    document.addEventListener('selectionchange', (e) => {
+      const selection = window.getSelection();
+      if (!selection || 
+        !contentRef.current ||
+        !selectionIsDescendentOfNode(selection, contentRef.current)
+      ) {
+        console.log("selection not in div")
+        updateSelection();
+      }
+      else {
+        handleSelectionChange();
+      } 
+    })
     contentRef?.current?.addEventListener("contentChange", updateContent)
+    // contentRef?.current?.addEventListener("selectionChange", () => {
+    //   console.log("selection change listener, hasSelection: ", hasSelection)
+    //   handleSelectionChange();
+    // })
 
 
     // teardown
@@ -74,8 +92,8 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   function handleSelectionChange() {
     const selection = window.getSelection();
     // if (!hasSelection) return;
-    console.log("handleSelectionChange")
-    console.log(selection, contentRef.current, hasSelection)
+    // console.log("handleSelectionChange")
+    // console.log(selection, contentRef.current, hasSelection)
     if (selection && 
       contentRef.current && 
       // selection?.anchorNode == contentRef.current && 
@@ -129,6 +147,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     contentRef.current?.focus();
   }
 
+  console.log("render");
 
 
   return (
@@ -158,7 +177,13 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               }
             }
 
-            const {selected, enabled} = getButtonStatus(selection, etb.wrapperArgs.unbreakable, query, contentRef.current)
+            
+            const status = getButtonStatus(selection, etb.wrapperArgs.unbreakable, query, contentRef.current)
+            
+            if (!hasSelection) status.enabled = false;
+
+            const {selected, enabled} = status;
+
 
             return ( 
               <EditTextButton
