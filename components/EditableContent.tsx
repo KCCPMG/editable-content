@@ -7,6 +7,25 @@ import ControlTextButton from "./ContentEditableExperimentComponents/ControlText
 import { DocumentScannerTwoTone } from "@mui/icons-material";
 
 const contentChange = new CustomEvent("contentChange");
+const selectionChange = new CustomEvent("selectionChange");
+
+
+(window as any).wrapInElement = wrapInElement;
+(window as any).selectionIsDescendentOfNode = selectionIsDescendentOfNode;
+(window as any).generateQuery = generateQuery;
+(window as any).selectionIsCoveredBy = selectionIsCoveredBy;
+(window as any).createWrapper = createWrapper;
+(window as any).unwrapSelectionFromQuery = unwrapSelectionFromQuery;
+(window as any).resetSelectionToTextNodes = resetSelectionToTextNodes;
+(window as any).selectionHasTextNodes = selectionHasTextNodes;
+(window as any).getSelectionChildNodes = getSelectionChildNodes;
+(window as any).selectionContainsOnlyText = selectionContainsOnlyText;
+(window as any).getButtonStatus = getButtonStatus;
+(window as any).getRangeLowestAncestorElement = getRangeLowestAncestorElement;
+(window as any).promoteChildrenOfNode = promoteChildrenOfNode;
+(window as any).deleteEmptyElements = deleteEmptyElements;
+(window as any).setSelection = setSelection;
+(window as any).moveSelection = moveSelection;
 
 
 export default function EditableContent({initialHTML, editTextButtons}: EditableContentProps) {
@@ -20,9 +39,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null);
   const [hasSelection, setHasSelection] = useState<boolean>(false);
 
-  useEffect(() => {
-    // placeholder, likely unnecessary
-  }, [hasSelection])
+  // useEffect(() => {
+  //   // placeholder, likely unnecessary
+  // }, [hasSelection])
 
   useEffect(() => {
     // populate div with html and update state
@@ -42,7 +61,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
     // teardown
     return () => {
-      document.removeEventListener('selectionchange', updateSelection);
+      document.removeEventListener('selectionchange', handleSelectionChange);
       contentRef?.current?.removeEventListener("contentChange", updateContent);
     }
 
@@ -54,6 +73,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
    */
   function handleSelectionChange() {
     const selection = window.getSelection();
+    // if (!hasSelection) return;
+    console.log("handleSelectionChange")
+    console.log(selection, contentRef.current, hasSelection)
     if (selection && 
       contentRef.current && 
       // selection?.anchorNode == contentRef.current && 
@@ -227,7 +249,10 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
         onFocus={() => {
           setHasSelection(true);
         }}
-        onBlur={() => setHasSelection(false)}
+        onBlur={() => {
+          console.log("blurring contenteditable")
+          setHasSelection(false)
+        }}
         onKeyDown={(e) => {
           const selection = window.getSelection(); 
           if (!selection || selection.rangeCount === 0 || !contentRef.current) return;
