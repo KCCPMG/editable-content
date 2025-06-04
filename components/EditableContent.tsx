@@ -118,6 +118,8 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             const query = generateQuery(etb.wrapperArgs);
             const selection = window.getSelection();
 
+            const {dataKey, selectCallback, ...otherProps} = etb;
+
             if (hasSelection && selection) {
               const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
   
@@ -138,58 +140,58 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
             return ( 
               <EditTextButton
-                {...etb}
-                key={etb.dataKey}
+                {...otherProps}
+                key={dataKey}
                 disabled={!enabled}
                 onMouseDown={(e: Event) => {e.preventDefault();}}
                 selected={selected}
                 onClick={
                   () => {
                     if (selection) {
-
+                      
                       if (selected) {
                         if (etb.wrapperArgs.unbreakable) {
                           const range = selection.getRangeAt(0);
                           const element = getRangeLowestAncestorElement(range);
                           if (element) {
-
+                            
                             const childNodes = Array.from(element.childNodes);
-
+                            
                             const startNodeIndex = childNodes.findIndex(cn => cn === range.startContainer);
                             const startNodeOffset = range.startOffset;
                             const endNodeIndex = childNodes.findIndex(cn => cn === range.endContainer);
                             const endNodeOffset = range.endOffset;
-
+                            
                             const parentNode = element.parentNode;
-
+                            
                             for (let i=0; i<childNodes.length; i++) {
                               console.log(i, element, childNodes[i])
                               parentNode?.insertBefore(childNodes[i], element);
-
+                              
                               if (i === startNodeIndex) {
                                 range.setStart(childNodes[i], startNodeOffset);
                               }
-
+                              
                               if (i === endNodeIndex) {
                                 range.setEnd(childNodes[i], endNodeOffset);
                               }
                             }
-
+                            
                             parentNode?.removeChild(element);
-
+                            
                             contentRef.current?.dispatchEvent(contentChange);
                             resetSelectionToTextNodes();
                           }
-
+                          
                           // const range = new Range();
                           // range.setStartBefore()
                           // setSelection()
-
+                          
                         } else {
                           unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
                           contentRef.current?.dispatchEvent(contentChange);
                         }
-
+                        
                         if (etb.deselectCallback) {
                           console.log("deselect callback")
                           etb.deselectCallback();
@@ -200,7 +202,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                         const wrapper = createWrapper(etb.wrapperArgs, document);
                         wrapInElement(selection, wrapper, contentRef.current!);
                         contentRef.current?.dispatchEvent(contentChange);
-
+                        
                         if (etb.selectCallback) {
                           console.log("select callback")
                           etb.selectCallback();
@@ -209,11 +211,12 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                         }
                         
                       }
-
+                      
                     }
                     // if no selection, no click handler
                   }
                 }
+                
               />
             )
           })
