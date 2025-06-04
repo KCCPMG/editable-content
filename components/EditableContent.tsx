@@ -4,10 +4,8 @@ import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsC
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
-import { DocumentScannerTwoTone } from "@mui/icons-material";
 
 const contentChange = new CustomEvent("contentChange");
-const selectionChange = new CustomEvent("selectionChange");
 
 
 (window as any).wrapInElement = wrapInElement;
@@ -39,12 +37,14 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null);
   const [hasSelection, setHasSelection] = useState<boolean>(false);
 
-  useEffect(() => {
-    // placeholder, likely unnecessary
-    console.log({hasSelection});
-  }, [hasSelection])
+  // useEffect(() => {
+  //   // placeholder, likely unnecessary
+  //   console.log({hasSelection});
+  // }, [hasSelection])
 
+  // on render
   useEffect(() => {
+
     // populate div with html and update state
     if (contentRef.current) {
       if (initialHTML) {
@@ -56,7 +56,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     }
     
     // assign event listeners
-    // document.addEventListener('selectionchange', handleSelectionChange);
     document.addEventListener('selectionchange', (e) => {
       const selection = window.getSelection();
       if (!selection || 
@@ -70,12 +69,8 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
         handleSelectionChange();
       } 
     })
-    contentRef?.current?.addEventListener("contentChange", updateContent)
-    // contentRef?.current?.addEventListener("selectionChange", () => {
-    //   console.log("selection change listener, hasSelection: ", hasSelection)
-    //   handleSelectionChange();
-    // })
 
+    contentRef?.current?.addEventListener("contentChange", updateContent)
 
     // teardown
     return () => {
@@ -91,13 +86,8 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
    */
   function handleSelectionChange() {
     const selection = window.getSelection();
-    // if (!hasSelection) return;
-    // console.log("handleSelectionChange")
-    // console.log(selection, contentRef.current, hasSelection)
     if (selection && 
       contentRef.current && 
-      // selection?.anchorNode == contentRef.current && 
-      // selection?.focusNode == contentRef.current
       selection?.anchorNode?.nodeType !== Node.TEXT_NODE &&
       selection?.focusNode?.nodeType !== Node.TEXT_NODE
     ) {
@@ -141,7 +131,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     }
   }
 
-
   function updateContent() {
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
     contentRef.current?.focus();
@@ -173,14 +162,14 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                 selection.addRange(thisRange);
               }
             }
-
-            
+    
             const status = getButtonStatus(selection, etb.wrapperArgs.unbreakable, query, contentRef.current)
             
-            if (!hasSelection) status.enabled = false;
-
+            if (!hasSelection) {
+              status.enabled = false;
+              status.selected = false;
+            }
             const {selected, enabled} = status;
-
 
             return ( 
               <EditTextButton
@@ -191,8 +180,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                 selected={selected}
                 onClick={
                   () => {
-                    if (selection) {
-                      
+                    if (selection) {         
                       if (selected) {
                         if (etb.wrapperArgs.unbreakable) {
                           const range = selection.getRangeAt(0);
@@ -226,11 +214,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                             contentRef.current?.dispatchEvent(contentChange);
                             resetSelectionToTextNodes();
                           }
-                          
-                          // const range = new Range();
-                          // range.setStartBefore()
-                          // setSelection()
-                          
+                  
                         } else {
                           unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
                           contentRef.current?.dispatchEvent(contentChange);
@@ -247,14 +231,11 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                         if (selectCallback) {
                           selectCallback();
                         } 
-                        
-                      }
-                      
+                      }                  
                     }
                     // if no selection, no click handler
                   }
                 }
-                
               />
             )
           })
@@ -293,16 +274,11 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
           if (e.code === "Space") { 
             e.preventDefault();
-            console.log("oh boy a space");
-            // const span = document.createElement("span")
             const spaceNode = document.createTextNode("\u0020\u200B");
-            // span.append(spaceNode)
-            console.log(spaceNode);
             range.extractContents();
             range.insertNode(spaceNode);
             range.setStartAfter(spaceNode);
             range.collapse();
-            console.log(range);
             selection.removeAllRanges();
             selection.addRange(range);
             contentRef.current?.dispatchEvent(contentChange);
@@ -316,9 +292,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               !e.metaKey
             ) {
               e.preventDefault();
-              // if (range.toString().length > 0) {
-              //   selection.collapseToStart();
-              // }
               moveSelection(selection, contentRef.current, "left");
             }
           }
@@ -331,14 +304,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               !e.metaKey
             ) {
               e.preventDefault();
-              // if (range.toString().length > 0) {
-              //   selection.collapseToStart();
-              // }
               moveSelection(selection, contentRef.current, "right");
             }
-          }
-
-          
+          }    
         }}
         ref={contentRef}
         style={{
