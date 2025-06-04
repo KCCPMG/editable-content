@@ -185,15 +185,28 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                           // range.setStartBefore()
                           // setSelection()
 
-                          if (etb.selectCallback) etb.selectCallback();
                         } else {
                           unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
                           contentRef.current?.dispatchEvent(contentChange);
+                        }
+
+                        if (etb.deselectCallback) {
+                          console.log("deselect callback")
+                          etb.deselectCallback();
+                        } else {
+                          console.log("no deselect callback")
                         }
                       } else {
                         const wrapper = createWrapper(etb.wrapperArgs, document);
                         wrapInElement(selection, wrapper, contentRef.current!);
                         contentRef.current?.dispatchEvent(contentChange);
+
+                        if (etb.selectCallback) {
+                          console.log("select callback")
+                          etb.selectCallback();
+                        } else {
+                          console.log("no select callback")
+                        }
                         
                       }
 
