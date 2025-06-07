@@ -132,6 +132,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   }
 
   function updateContent() {
+    console.log("updateContent");
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
     contentRef.current?.focus();
   }
@@ -243,6 +244,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       </div>
       <div
         contentEditable
+        onInput={updateContent}
         onFocus={() => {
           setHasSelection(true);
         }}
