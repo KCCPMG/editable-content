@@ -4,6 +4,9 @@ import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsC
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
+import { createRoot, Root } from "react-dom/client";
+import { Button } from "@mui/material";
+import { renderToString } from "react-dom/server";
 
 const contentChange = new CustomEvent("contentChange");
 
@@ -136,6 +139,29 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
     contentRef.current?.focus();
   }
+
+  // createRoot approach - causes browser warning and may not be workable for easy insertion
+  // const rootRef = useRef<null |  Root>(null);
+  // const domNodeRef = useRef<null | HTMLDivElement>(null);
+  // domNodeRef.current = document.createElement('div');
+  // rootRef.current = createRoot(document.createElement('div'));
+  // const sampleComponent = rootRef.current.render(
+  //   <SampleButton />
+  // )
+
+
+  // Alternate approach
+  const SampleButton = function() {
+    return (
+      <Button>
+        Click me and nothing happens
+      </Button>
+    )
+  }
+
+  const sampleButtonHTMLString = renderToString(<SampleButton />);
+  new DOMParser().parseFromString(sampleButtonHTMLString, "text/html").body.children[0]
+
 
   return (
     <>
