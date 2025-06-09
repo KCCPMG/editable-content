@@ -76,7 +76,7 @@ export default function PageClient() {
             dataKey: "bold",
             child: <FormatBoldIcon/>,
             // variant: "contained",
-            wrapperArgs: {
+            wrapperInstructions: {
               element: "strong"
             },
             selectCallback: () => {
@@ -100,7 +100,7 @@ export default function PageClient() {
             dataKey: "italics",
             child: <FormatItalic/>,
             // variant: "contained",
-            wrapperArgs: {
+            wrapperInstructions: {
               element: "i"
             },
             // selectedVariant: "contained",
@@ -111,7 +111,7 @@ export default function PageClient() {
             dataKey: "underlined",
             child: <FormatUnderlined/>,
             // variant: "contained",
-            wrapperArgs: {
+            wrapperInstructions: {
               element: "u",
               attributes: {
                 testAttribute: "ta",

@@ -2,7 +2,7 @@ import { ButtonOwnProps } from "@mui/material";
 import { DefaultComponentProps } from "@mui/material/OverridableComponent";
 import { ExtendButtonBaseTypeMap } from "@mui/material";
 import { ButtonTypeMap } from "@mui/material";
-import { DetailedHTMLProps } from "react";
+import { DetailedHTMLProps, ReactNode } from "react";
 import { ButtonHTMLAttributes } from "react";
 
 
@@ -48,7 +48,8 @@ export type EditTextButtonProps = (MUIButtonEditableContentButtonProps | HTMLBut
 export type EditableContentEditTextButtonProps = (
   MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps
 ) & {
-  wrapperArgs: WrapperArgs, 
+  wrapperInstructions: wrapperArgs | ReactNode,
+  // wrapperArgs: WrapperArgs, 
   selectCallback?: () => void,
   deselectCallback?: () => void
 }

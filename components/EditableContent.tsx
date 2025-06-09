@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef, useState, useEffect, MouseEventHandler } from "react";
+import React, { useRef, useState, useEffect, MouseEventHandler, isValidElement } from "react";
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
@@ -7,6 +7,8 @@ import ControlTextButton from "./ContentEditableExperimentComponents/ControlText
 import { createRoot, Root } from "react-dom/client";
 import { Button } from "@mui/material";
 import { renderToString } from "react-dom/server";
+import { WrapperArgs } from "./ContentEditableExperimentComponents";
+import { ReactNode } from "react";
 
 const contentChange = new CustomEvent("contentChange");
 
@@ -27,6 +29,7 @@ const contentChange = new CustomEvent("contentChange");
 (window as any).deleteEmptyElements = deleteEmptyElements;
 (window as any).setSelection = setSelection;
 (window as any).moveSelection = moveSelection;
+
 
 
 export default function EditableContent({initialHTML, editTextButtons}: EditableContentProps) {
@@ -169,10 +172,17 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       <div>
         {
           editTextButtons.map(etb => {
-            const query = generateQuery(etb.wrapperArgs);
+
+            const {dataKey, selectCallback, deselectCallback, wrapperInstructions, ...otherProps} = etb;
+
+            const wrapperArgs = isValidElement(wrapperInstructions) ?
+              renderToString(wrapperInstructions) : // placeholder
+              wrapperInstructions;
+
+
+            const query = generateQuery(wrapperArgs);
             const selection = window.getSelection();
 
-            const {dataKey, selectCallback, deselectCallback, ...otherProps} = etb;
 
             if (hasSelection && selection) {
               const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
@@ -190,7 +200,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               }
             }
     
-            const status = getButtonStatus(selection, etb.wrapperArgs.unbreakable, query, contentRef.current)
+            const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current)
             
             if (!hasSelection) {
               status.enabled = false;
@@ -201,6 +211,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             return ( 
               <EditTextButton
                 {...otherProps}
+                wrapperArgs
                 key={dataKey}
                 disabled={!enabled}
                 onMouseDown={(e: Event) => {e.preventDefault();}}
@@ -209,7 +220,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                   () => {
                     if (selection) {         
                       if (selected) {
-                        if (etb.wrapperArgs.unbreakable) {
+                        if (wrapperArgs.unbreakable) {
                           const range = selection.getRangeAt(0);
                           const element = getRangeLowestAncestorElement(range);
                           if (element) {
@@ -251,7 +262,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                           deselectCallback();
                         } 
                       } else {
-                        const wrapper = createWrapper(etb.wrapperArgs, document);
+                        const wrapper = createWrapper(wrapperArgs, document);
                         wrapInElement(selection, wrapper, contentRef.current!);
                         contentRef.current?.dispatchEvent(contentChange);
                         
