@@ -156,14 +156,48 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   // Alternate approach
   const SampleButton = function() {
     return (
-      <Button>
-        Click me and nothing happens
+      <Button
+        onClick={(e) => {console.log("clicked")}}
+      >
+        Click me and something happens
       </Button>
     )
   }
 
   const sampleButtonHTMLString = renderToString(<SampleButton />);
-  new DOMParser().parseFromString(sampleButtonHTMLString, "text/html").body.children[0]
+  const sampleButton = new DOMParser().parseFromString(sampleButtonHTMLString, "text/html").body.children[0];
+  console.log({sampleButton});
+
+  function reactNodeToElement(reactNode: ReactNode) {
+    const stringified = renderToString(reactNode);
+    return new DOMParser().parseFromString(sampleButtonHTMLString, "text/html").body.children[0];
+  }
+
+  function elementToWrapperArgs(element: Element): WrapperArgs {
+
+    let mappedAttributes: {[key: string] : string | undefined} = {}
+
+    for (let attr of Array.from(element.attributes)) {
+      const attrName = attr.name;
+      const attrValue = attr.value;
+
+      mappedAttributes[attrName] = mappedAttributes[attrValue]
+    }
+
+    const wrapperArgs = {
+      element: element.tagName,
+      classList: element.className.split(" "),
+      id: element.getAttribute('id') || undefined,
+      attributes: mappedAttributes,
+      eventListeners: getEventListeners(element)      
+
+
+    };
+
+
+
+    return wrapperArgs;
+  }
 
 
   return (
