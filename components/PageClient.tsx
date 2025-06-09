@@ -115,11 +115,28 @@ export default function PageClient() {
               element: "u",
               attributes: {
                 testAttribute: "ta",
-                testAttribute2: "ta2"
+                testAttribute2: "ta2",
+              },
+              eventListeners: {
+                click: function() {
+                  console.log("clicked");
+                }
               },
               unbreakable: true
             }
           },
+          // {
+          //   isMUIButton: true,
+          //   dataKey: "react-button",
+          //   child: "RB",
+          //   wrapperComponent: function() {
+          //     return (
+          //       <Button>
+          //         Click me and nothing happens
+          //       </Button>
+          //     )
+          //   }
+          // }
         ]}
       />
     </>

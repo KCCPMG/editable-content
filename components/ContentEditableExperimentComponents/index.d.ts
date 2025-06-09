@@ -48,6 +48,7 @@ export type EditTextButtonProps = (MUIButtonEditableContentButtonProps | HTMLBut
 export type EditableContentEditTextButtonProps = (
   MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps
 ) & {
+  wrapperArgs: WrapperArgs, 
   selectCallback?: () => void,
   deselectCallback?: () => void
 }
@@ -68,5 +69,8 @@ export type WrapperArgs = {
   unbreakable?: boolean,
   attributes?: {
     [key: string]: string | undefined
+  },
+  eventListeners?: {
+    [key: string]: function
   }
 }

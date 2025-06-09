@@ -1,4 +1,5 @@
 import { WrapperArgs } from "@/components/ContentEditableExperimentComponents";
+import { Key } from "@mui/icons-material";
 
 
 
@@ -636,7 +637,7 @@ export function generateQuery({element, classList, id, unbreakable, attributes}:
 }
 
 
-export function createWrapper({element, classList, id, unbreakable, attributes}: WrapperArgs, document: Document): HTMLElement {
+export function createWrapper({element, classList, id, unbreakable, attributes, eventListeners}: WrapperArgs, document: Document): HTMLElement {
 
   const wrapper = document.createElement(element);
   if (classList) {
@@ -659,6 +660,13 @@ export function createWrapper({element, classList, id, unbreakable, attributes}:
   } else {
     wrapper.removeAttribute('unbreakable');
   }
+
+  if (eventListeners) {
+    for (let [event, callback] of Object.entries(eventListeners)) {
+      wrapper.addEventListener(event, callback);
+    }
+  }
+
   return wrapper;
 }
 
