@@ -2,9 +2,10 @@
 import EditableContent from "./EditableContent";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { getSelectionDirection } from "@/utils/utils";
+import { createPortal } from "react-dom";
 
 
 export default function PageClient() {
@@ -67,6 +68,11 @@ export default function PageClient() {
         </DialogActions>
 
       </Dialog>
+      <h3>
+        <SampleWrapper>
+          Sample Wrapper text
+        </SampleWrapper>
+      </h3>
       <EditableContent 
         // initialHTML="Plain Text<strong>Strong Text</strong>"
         initialHTML='<strong>ahgosdjgodga</strong> ​adsfasdg ​sdg ​dsg ​<i>asgd;a ​sg<strong>asgasdga ​ ​ ​<br>asdg</strong> ​a</i>sdg ​af ​nsdf ​adg ​fdo;jvflbz/xbnb ​ ​askbznbagnnslsnlnslz ​ ​ ​<br>asj<u testattribute="ta" testattribute2="ta2" unbreakable="">dglasgnd</u>iagvaisghoesnfa ​dga ​ ​g ​napgnnasdng ​asdg ​ ​<br>askgnasgnasg ​ahadha<strong>sfgsafhasagdg<i>asdgsdgaa</i>sdgsadgasd</strong>gsag ​a ​sdg ​<strong>a ​gasdg<i> ​</i>asgd ​<br>​</strong>'
@@ -111,6 +117,7 @@ export default function PageClient() {
             dataKey: "underlined",
             child: <FormatUnderlined/>,
             // variant: "contained",
+            contentPortal: true,
             wrapperInstructions: {
               element: "u",
               attributes: {
@@ -125,20 +132,45 @@ export default function PageClient() {
               unbreakable: true
             }
           },
-          // {
-          //   isMUIButton: true,
-          //   dataKey: "react-button",
-          //   child: "RB",
-          //   wrapperComponent: function() {
-          //     return (
-          //       <Button>
-          //         Click me and nothing happens
-          //       </Button>
-          //     )
-          //   }
-          // }
+          {
+            isMUIButton: true,
+            dataKey: "react-button",
+            child: "RB",
+            wrapperInstructions: {
+              element: "div",
+              classList: ["test-div"]
+              // unbreakable: true
+            },
+            selectCallback: function(wrapper: HTMLElement) {
+              const selection = window.getSelection();
+              if (!selection) return;
+              const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+              console.log(wrapper);
+              console.log(document.querySelector("div.test-div"));
+              const portal = createPortal(
+                (
+                  <SampleWrapper>
+                    New SampleWrapper Text
+                  </SampleWrapper>
+                ), document.body
+              );
+              console.log(portal);
+            }
+          }
         ]}
       />
     </>
+  )
+}
+
+
+function SampleWrapper({children}: {children: ReactNode}) {
+  return (
+    <span
+      className="sample-wrapper"
+      onClick={(e) => console.log("clicked")}
+    >
+      {children}
+    </span>
   )
 }

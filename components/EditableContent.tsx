@@ -166,7 +166,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
   const sampleButtonHTMLString = renderToString(<SampleButton />);
   const sampleButton = new DOMParser().parseFromString(sampleButtonHTMLString, "text/html").body.children[0];
-  console.log({sampleButton});
+  // console.log({sampleButton});
 
   function reactNodeToElement(reactNode: ReactNode) {
     const stringified = renderToString(reactNode);
@@ -189,7 +189,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       classList: element.className.split(" "),
       id: element.getAttribute('id') || undefined,
       attributes: mappedAttributes,
-      eventListeners: getEventListeners(element)      
+      // eventListeners: getEventListeners(element)      
 
 
     };
@@ -296,12 +296,15 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                           deselectCallback();
                         } 
                       } else {
+                        if (otherProps.contentPortal) {
+                          console.log("contentPortal")
+                        }
                         const wrapper = createWrapper(wrapperArgs, document);
                         wrapInElement(selection, wrapper, contentRef.current!);
                         contentRef.current?.dispatchEvent(contentChange);
                         
                         if (selectCallback) {
-                          selectCallback();
+                          selectCallback(wrapper);
                         } 
                       }                  
                     }
@@ -320,7 +323,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
           setHasSelection(true);
         }}
         onBlur={() => {
-          console.log("blurring contenteditable")
+          // console.log("blurring contenteditable")
           setHasSelection(false)
         }}
         onKeyDown={(e) => {
