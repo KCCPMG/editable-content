@@ -5,6 +5,7 @@ import EditTextButtonRow from "@/components/ContentEditableExperimentComponents/
 import { Button } from "@mui/material";
 import { MUIButtonEditableContentButtonProps, HTMLButtonEditableContentButtonProps } from "@/components/ContentEditableExperimentComponents";
 import PageClient from "@/components/PageClient";
+import PureReactDiv from "@/components/PureReactDiv";
 
 
 
@@ -18,6 +19,7 @@ export default function Home() {
       }}
     >
       <PageClient />
+      <PureReactDiv />
       {/* <EditableContent>
         <EditTextButtonRow>
           <Button
