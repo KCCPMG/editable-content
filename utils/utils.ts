@@ -86,6 +86,16 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
 
   resetSelectionToTextNodes();
   const range = selection.getRangeAt(0);
+
+  const query = generateQueryFromElement(element);
+
+  const childNodes = getRangeChildNodes(range, limitingContainer);
+  const targetedNodes = childNodes.filter(cn => {
+    return (cn instanceof Element && cn.matches(query));
+  });
+  console.log("in wrapInElement: ", {childNodes, targetedNodes});
+  targetedNodes.forEach(tn => promoteChildrenOfNode(tn));
+
   const contents = range.extractContents();
 
   // determine if there are unbreakables in selection
@@ -94,7 +104,6 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
       unbreakables.push(cn);
     }
   }
-
 
 
   element.append(contents); 
@@ -114,7 +123,6 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
   }
   // const breakpoints = [];
 
-  const query = generateQueryFromElement(element);
   // promote any unbreakable elements in range
   for (let unbreakable of unbreakables) {
     const unbreakableRange = new Range();
@@ -496,7 +504,7 @@ export function getSelectionChildNodes(selection: Selection, limitingContainer: 
 }
 
 
-function getRangeChildNodes(range: Range, limitingContainer: Node): Array<Node> {
+export function getRangeChildNodes(range: Range, limitingContainer: Node): Array<Node> {
 
   const { startContainer, startOffset, endContainer, endOffset } = range;
 

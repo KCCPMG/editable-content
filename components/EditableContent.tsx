@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect, MouseEventHandler, isValidElement } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
@@ -30,6 +30,8 @@ const contentChange = new CustomEvent("contentChange");
 (window as any).deleteEmptyElements = deleteEmptyElements;
 (window as any).setSelection = setSelection;
 (window as any).moveSelection = moveSelection;
+(window as any).getRangeChildNodes = getRangeChildNodes;
+(window as any).limitingContainer = document.querySelector("[contenteditable]");
 
 
 
