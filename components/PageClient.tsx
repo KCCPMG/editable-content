@@ -136,6 +136,7 @@ export default function PageClient() {
             isMUIButton: true,
             dataKey: "react-button",
             child: "RB",
+            contentPortal: true, 
             wrapperInstructions: {
               element: "div",
               classList: ["test-div"]

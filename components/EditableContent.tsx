@@ -9,6 +9,7 @@ import { Button } from "@mui/material";
 import { renderToString } from "react-dom/server";
 import { WrapperArgs } from "./ContentEditableExperimentComponents";
 import { ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 const contentChange = new CustomEvent("contentChange");
 
@@ -42,6 +43,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
   const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null);
   const [hasSelection, setHasSelection] = useState<boolean>(false);
+  const [portals, setPortals] = useState<Array<React.ReactPortal>>([])
 
   // useEffect(() => {
   //   // placeholder, likely unnecessary
@@ -207,7 +209,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
         {
           editTextButtons.map(etb => {
 
-            const {dataKey, selectCallback, deselectCallback, wrapperInstructions, ...otherProps} = etb;
+            const {dataKey, selectCallback, deselectCallback, wrapperInstructions, contentPortal, ...otherProps} = etb;
 
             const wrapperArgs = isValidElement(wrapperInstructions) ?
               renderToString(wrapperInstructions) : // placeholder
@@ -296,16 +298,35 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                           deselectCallback();
                         } 
                       } else {
-                        if (otherProps.contentPortal) {
-                          console.log("contentPortal")
+                        const id = "portal-container-"+String(Math.floor(Math.random() * 1000));
+                        const newDiv = document.createElement("div");
+                        newDiv.setAttribute('id', id);
+                        contentRef?.current?.append(newDiv);
+                        const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
+
+                        if (contentPortal && contentRef.current && contentRef.current && foundNewDiv) {
+                          console.log("contentPortal");
+                          const portal = createPortal(
+                            <Button
+                              onClick={(e) => {
+                                console.log("click Button");
+                                console.log(contentRefCurrentInnerHTML);
+                              }}
+                            >
+                              test button
+                            </Button>, foundNewDiv
+                          )
+                          setPortals([...portals, portal]);
+                          console.log("after createPortal call");
+                        } else {
+                          const wrapper = createWrapper(wrapperArgs, document);
+                          wrapInElement(selection, wrapper, contentRef.current!);
+                          contentRef.current?.dispatchEvent(contentChange);
+                          if (selectCallback) {
+                            selectCallback(wrapper);
+                          } 
                         }
-                        const wrapper = createWrapper(wrapperArgs, document);
-                        wrapInElement(selection, wrapper, contentRef.current!);
-                        contentRef.current?.dispatchEvent(contentChange);
                         
-                        if (selectCallback) {
-                          selectCallback(wrapper);
-                        } 
                       }                  
                     }
                     // if no selection, no click handler
@@ -416,6 +437,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
           {contentRefCurrentInnerHTML}
         </p>
       </div>
+      {portals.map(portal => portal)};
     </>
   )
 }
