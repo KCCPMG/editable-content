@@ -117,7 +117,6 @@ export default function PageClient() {
             dataKey: "underlined",
             child: <FormatUnderlined/>,
             // variant: "contained",
-            contentPortal: true,
             wrapperInstructions: {
               element: "u",
               attributes: {

@@ -298,26 +298,30 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                           deselectCallback();
                         } 
                       } else {
-                        const id = "portal-container-"+String(Math.floor(Math.random() * 1000));
-                        const newDiv = document.createElement("div");
-                        newDiv.setAttribute('id', id);
-                        contentRef?.current?.append(newDiv);
-                        const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
+                        if (contentPortal) {
+                          const id = "portal-container-"+String(Math.floor(Math.random() * 1000));
+                          const newDiv = document.createElement("div");
+                          newDiv.setAttribute('id', id);
+                          contentRef?.current?.append(newDiv);
+                          const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
 
-                        if (contentPortal && contentRef.current && contentRef.current && foundNewDiv) {
-                          console.log("contentPortal");
-                          const portal = createPortal(
-                            <Button
-                              onClick={(e) => {
-                                console.log("click Button");
-                                console.log(contentRefCurrentInnerHTML);
-                              }}
-                            >
-                              test button
-                            </Button>, foundNewDiv
-                          )
-                          setPortals([...portals, portal]);
-                          console.log("after createPortal call");
+                          if (contentRef.current && contentRef.current && foundNewDiv) {
+                            console.log("contentPortal");
+                            const portal = createPortal(
+                              <Button
+                                onClick={(e) => {
+                                  console.log("click Button");
+                                  console.log(contentRefCurrentInnerHTML);
+                                }}
+                              >
+                                test button
+                              </Button>, foundNewDiv
+                            )
+                            setPortals([...portals, portal]);
+                            console.log("after createPortal call");
+                          }
+                        
+                        
                         } else {
                           const wrapper = createWrapper(wrapperArgs, document);
                           wrapInElement(selection, wrapper, contentRef.current!);
