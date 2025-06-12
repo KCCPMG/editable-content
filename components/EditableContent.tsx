@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef, useState, useEffect, MouseEventHandler, isValidElement } from "react";
+import React, { useRef, useState, useEffect, MouseEventHandler, isValidElement, ReactElement } from "react";
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
@@ -204,7 +204,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     return wrapperArgs;
   }
 
-  function createContentPortal() {
+  function createContentPortal(component: ReactElement, children: ReactNode) {
     const uuid = uuidv4();
     const id = "portal-container-"+uuid;
     const newDiv = document.createElement("div");
@@ -216,15 +216,15 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     if (contentRef.current && contentRef.current && foundNewDiv) {
       console.log("contentPortal");
       const portal = createPortal(
-        <Button
-          onClick={(e) => {
-            console.log("click Button");
-            console.log(contentRefCurrentInnerHTML);
-          }}
-        >
-          test button
-        </Button>
-        // <span>In a span</span>
+        // <Button
+          // onClick={(e) => {
+          //   console.log("click Button");
+          //   console.log(contentRefCurrentInnerHTML);
+          // }}
+        // >
+        //   test button
+        // </Button>
+        React.cloneElement(component, {}, children)
         , foundNewDiv
       )
       setPortals([...portals, portal]);
@@ -330,32 +330,11 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                         } 
                       } else {
                         if (contentPortal) {
-                          // const uuid = uuidv4();
-                          // const id = "portal-container-"+uuid;
-                          // const newDiv = document.createElement("div");
-                          // newDiv.setAttribute('id', id);
-                          // newDiv.style.display = "inline";
-                          // contentRef?.current?.append(newDiv);
-                          // const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
-
-                          // if (contentRef.current && contentRef.current && foundNewDiv) {
-                          //   console.log("contentPortal");
-                          //   const portal = createPortal(
-                          //     <Button
-                          //       onClick={(e) => {
-                          //         console.log("click Button");
-                          //         console.log(contentRefCurrentInnerHTML);
-                          //       }}
-                          //     >
-                          //       test button
-                          //     </Button>
-                          //     // <span>In a span</span>
-                          //     , foundNewDiv
-                          //   )
-                          //   setPortals([...portals, portal]);
-                          //   console.log("after createPortal call");
-                          // }
-                          createContentPortal();
+                          createContentPortal(<Button 
+                            onClick={(e) => {
+                              console.log("click Button");
+                            }}
+                          />, "my test button");
                         
                         } else {
                           const wrapper = createWrapper(wrapperArgs, document);
