@@ -10,6 +10,7 @@ import { renderToString } from "react-dom/server";
 import { WrapperArgs } from "./ContentEditableExperimentComponents";
 import { ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { v4 as uuidv4 } from 'uuid';
 
 const contentChange = new CustomEvent("contentChange");
 
@@ -198,13 +199,37 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       id: element.getAttribute('id') || undefined,
       attributes: mappedAttributes,
       // eventListeners: getEventListeners(element)      
-
-
     };
 
-
-
     return wrapperArgs;
+  }
+
+  function createContentPortal() {
+    const uuid = uuidv4();
+    const id = "portal-container-"+uuid;
+    const newDiv = document.createElement("div");
+    newDiv.setAttribute('id', id);
+    newDiv.style.display = "inline";
+    contentRef?.current?.append(newDiv);
+    const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
+    
+    if (contentRef.current && contentRef.current && foundNewDiv) {
+      console.log("contentPortal");
+      const portal = createPortal(
+        <Button
+          onClick={(e) => {
+            console.log("click Button");
+            console.log(contentRefCurrentInnerHTML);
+          }}
+        >
+          test button
+        </Button>
+        // <span>In a span</span>
+        , foundNewDiv
+      )
+      setPortals([...portals, portal]);
+      console.log("after createPortal call");
+    }
   }
 
 
@@ -305,31 +330,32 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                         } 
                       } else {
                         if (contentPortal) {
-                          const id = "portal-container-"+String(Math.floor(Math.random() * 1000));
-                          const newDiv = document.createElement("div");
-                          newDiv.setAttribute('id', id);
-                          newDiv.style.display = "inline";
-                          contentRef?.current?.append(newDiv);
-                          const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
+                          // const uuid = uuidv4();
+                          // const id = "portal-container-"+uuid;
+                          // const newDiv = document.createElement("div");
+                          // newDiv.setAttribute('id', id);
+                          // newDiv.style.display = "inline";
+                          // contentRef?.current?.append(newDiv);
+                          // const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
 
-                          if (contentRef.current && contentRef.current && foundNewDiv) {
-                            console.log("contentPortal");
-                            const portal = createPortal(
-                              <Button
-                                onClick={(e) => {
-                                  console.log("click Button");
-                                  console.log(contentRefCurrentInnerHTML);
-                                }}
-                              >
-                                test button
-                              </Button>
-                              // <span>In a span</span>
-                              , foundNewDiv
-                            )
-                            setPortals([...portals, portal]);
-                            console.log("after createPortal call");
-                          }
-                        
+                          // if (contentRef.current && contentRef.current && foundNewDiv) {
+                          //   console.log("contentPortal");
+                          //   const portal = createPortal(
+                          //     <Button
+                          //       onClick={(e) => {
+                          //         console.log("click Button");
+                          //         console.log(contentRefCurrentInnerHTML);
+                          //       }}
+                          //     >
+                          //       test button
+                          //     </Button>
+                          //     // <span>In a span</span>
+                          //     , foundNewDiv
+                          //   )
+                          //   setPortals([...portals, portal]);
+                          //   console.log("after createPortal call");
+                          // }
+                          createContentPortal();
                         
                         } else {
                           const wrapper = createWrapper(wrapperArgs, document);

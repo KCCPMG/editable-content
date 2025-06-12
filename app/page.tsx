@@ -19,7 +19,7 @@ export default function Home() {
       }}
     >
       <PageClient />
-      <PureReactDiv />
+      {/* <PureReactDiv /> */}
       {/* <EditableContent>
         <EditTextButtonRow>
           <Button
