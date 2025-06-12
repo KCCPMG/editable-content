@@ -5,7 +5,7 @@ import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
 import { ReactNode, useState } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { getSelectionDirection } from "@/utils/utils";
-import { createPortal } from "react-dom";
+import { Box } from "@mui/material";
 
 
 export default function PageClient() {
@@ -75,11 +75,11 @@ export default function PageClient() {
       </h3>
       <EditableContent 
         // initialHTML="Plain Text<strong>Strong Text</strong>"
-        initialHTML='<strong>ahgosdjgodga</strong> ​adsfasdg ​sdg ​dsg ​<i>asgd;a ​sg<strong>asgasdga ​ ​ ​<br>asdg</strong> ​a</i>sdg ​af ​nsdf ​adg ​fdo;jvflbz/xbnb ​ ​askbznbagnnslsnlnslz ​ ​ ​<br>asj<u testattribute="ta" testattribute2="ta2" unbreakable="">dglasgnd</u>iagvaisghoesnfa ​dga ​ ​g ​napgnnasdng ​asdg ​ ​<br>askgnasgnasg ​ahadha<strong>sfgsafhasagdg<i>asdgsdgaa</i>sdgsadgasd</strong>gsag ​a ​sdg ​<strong>a ​gasdg<i> ​</i>asgd ​​</strong>'
+        initialHTML='<strong>Lorem, ipsum</strong> ​dolor ​sit ​ ​<i>amet  ​cons<strong>ectetur adipisicing ​ ​ ​<br>elit.</strong> ​Sunt,</i>repudiandae. ​Lorem, ipsum ​dolor ​sit ​amet ​ ​consectetur ​ ​ ​<br>adipisicing<u testattribute="ta" testattribute2="ta2" unbreakable="">elit.</u>Sunt, ​repudiandae. ​ ​Lorem, ​ipsum ​dolor ​ ​<br>sit amet<strong>consectetur<i>adipisicing</i>elit.</strong> Sunt,  ​repudiandae. ​Lorem, ​<strong>ipsum ​dolor<i> ​</i>sit ​​</strong>'
         editTextButtons={[
           {
             isMUIButton: true,
-            dataKey: "callback-samble",
+            dataKey: "callback-sample",
             child: "CB",
             wrapperInstructions: {
               element: "strong"
@@ -144,26 +144,23 @@ export default function PageClient() {
             dataKey: "react-button",
             child: "RB",
             contentPortal: true, 
-            wrapperInstructions: {
-              element: "div",
-              classList: ["test-div"]
-              // unbreakable: true
-            },
-            selectCallback: function(wrapper: HTMLElement) {
-              const selection = window.getSelection();
-              if (!selection) return;
-              const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
-              console.log(wrapper);
-              console.log(document.querySelector("div.test-div"));
-              const portal = createPortal(
-                (
-                  <SampleWrapper>
-                    New SampleWrapper Text
-                  </SampleWrapper>
-                ), document.body
-              );
-              console.log(portal);
-            }
+            wrapperInstructions: <Box 
+              component="div"
+              data-fuckhead="shit"
+              sx={{
+                display: 'inline',
+                p: 1,
+                m: 1,
+                bgcolor: '#fff',
+                color: 'grey.800',
+                border: '1px solid',
+                borderColor: 'grey.300',
+                borderRadius: 2,
+                fontSize: '0.875rem',
+                fontWeight: '700',
+              }}
+            />
+            
           }
         ]}
       />

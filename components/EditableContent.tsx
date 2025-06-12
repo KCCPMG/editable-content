@@ -179,10 +179,13 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
   function reactNodeToElement(reactNode: ReactNode) {
     const stringified = renderToString(reactNode);
-    return new DOMParser().parseFromString(sampleButtonHTMLString, "text/html").body.children[0];
+    const parsedElement = new DOMParser().parseFromString(stringified, "text/html").body.children[0];
+    return parsedElement;
   }
 
-  function elementToWrapperArgs(element: Element): WrapperArgs {
+  function elementToWrapperArgs(rn: ReactNode): WrapperArgs {
+
+    const element = reactNodeToElement(rn);
 
     let mappedAttributes: {[key: string] : string | undefined} = {}
 
@@ -192,19 +195,21 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
       mappedAttributes[attrName] = mappedAttributes[attrValue]
     }
-
+    
+    // set all react elements to unbreakable, might change this later
     const wrapperArgs = {
       element: element.tagName,
       classList: element.className.split(" "),
       id: element.getAttribute('id') || undefined,
       attributes: mappedAttributes,
+      // unbreakable: true
       // eventListeners: getEventListeners(element)      
     };
 
     return wrapperArgs;
   }
 
-  function createContentPortal(component: ReactElement, children: ReactNode) {
+  function createContentPortal(component: ReactElement) {
     const uuid = uuidv4();
     const id = "portal-container-"+uuid;
     const newDiv = document.createElement("div");
@@ -237,10 +242,14 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
             const {dataKey, selectCallback, deselectCallback, wrapperInstructions, contentPortal, ...otherProps} = etb;
 
+            // if (isValidElement(wrapperInstructions)) wrapperInstructions.unbreakable = true;
+
+            // if React Element, derive wrapper args from Element, else use what's given
             const wrapperArgs = isValidElement(wrapperInstructions) ?
-              renderToString(wrapperInstructions) : // placeholder
+              elementToWrapperArgs(wrapperInstructions) : // placeholder
               wrapperInstructions;
 
+            console.log({dataKey, wrapperInstructions, wrapperArgs})
 
             const query = generateQuery(wrapperArgs);
             const selection = window.getSelection();
@@ -325,11 +334,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                         } 
                       } else {
                         if (contentPortal) {
-                          createContentPortal(<Button 
-                            onClick={(e) => {
-                              console.log("click Button");
-                            }}
-                          />, "my test button");
+                          createContentPortal(wrapperInstructions);
                         
                         } else {
                           const wrapper = createWrapper(wrapperArgs, document);
@@ -352,6 +357,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       </div>
       <div
         contentEditable
+        spellCheck={false}
         onInput={updateContent}
         onFocus={() => {
           setHasSelection(true);
