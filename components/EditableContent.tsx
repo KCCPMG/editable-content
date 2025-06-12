@@ -210,25 +210,20 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     const newDiv = document.createElement("div");
     newDiv.setAttribute('id', id);
     newDiv.style.display = "inline";
-    contentRef?.current?.append(newDiv);
+
+    const selection = window.getSelection();
+    const range = selection?.getRangeAt(0);
+    const text = range?.toString();
+    const contents = range?.extractContents();
+    range?.insertNode(newDiv);
+    
     const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
     
+    // curently only handling range text, not nested elements
     if (contentRef.current && contentRef.current && foundNewDiv) {
-      console.log("contentPortal");
-      const portal = createPortal(
-        // <Button
-          // onClick={(e) => {
-          //   console.log("click Button");
-          //   console.log(contentRefCurrentInnerHTML);
-          // }}
-        // >
-        //   test button
-        // </Button>
-        React.cloneElement(component, {}, children)
-        , foundNewDiv
-      )
+      const clone = React.cloneElement(component, {}, text);
+      const portal = createPortal(clone, foundNewDiv)
       setPortals([...portals, portal]);
-      console.log("after createPortal call");
     }
   }
 
