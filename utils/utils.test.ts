@@ -47,7 +47,7 @@ const alternateHTMLwithUnbreakable = `
     <i>Italics In Fourth Strong Text </i>
     <u>Underline in Fourth Strong Text </u>
   </strong>
-  <strong unbreakable>Fifth Strong Text - Unbreakable</strong>
+  <strong data-unbreakable>Fifth Strong Text - Unbreakable</strong>
   <i>Italics After Fifth Strong Text</i>
   <strong>Sixth Strong Text</strong>
 </div>`.replaceAll(/\n */g, '');
@@ -335,7 +335,7 @@ describe("test wrapInElement", function() {
             <u>e in Fourth Strong Text </u>
           </strong>
         </a>
-        <strong unbreakable="">Fifth Strong Text - Unbreakable</strong>
+        <strong data-unbreakable="">Fifth Strong Text - Unbreakable</strong>
         <a>
           <i>Italics</i>
         </a>
@@ -915,7 +915,7 @@ describe("test generateQuery", function() {
       }
     });
 
-    expect(generatedQuery).toBe(`strong.fake-class.bad-class#strong-1[unbreakable][test-attribute="17"][test-attribute-two="test-attribute-two-value"]`)
+    expect(generatedQuery).toBe(`strong.fake-class.bad-class#strong-1[data-unbreakable][test-attribute="17"][test-attribute-two="test-attribute-two-value"]`)
   })
 
 
@@ -965,7 +965,7 @@ describe("test createWrapper", function() {
     expect(wrapper.nodeName).toBe("STRONG");
     expect(wrapper.getAttribute('fake-attribute')).toBeNull();
     // expect(wrapper.getAttribute('unbreakable')).not.toBeNull();
-    expect(wrapper.getAttribute('unbreakable')).toBe('');
+    expect(wrapper.getAttribute('data-unbreakable')).toBe('');
   })
 
   test("create strong element with unbreakable and other attributes", function() {
@@ -985,7 +985,7 @@ describe("test createWrapper", function() {
     expect(wrapper.nodeName).toBe("STRONG");
     expect(wrapper.getAttribute('fake-attribute')).toBeNull();
     // expect(wrapper.getAttribute('unbreakable')).not.toBeNull();
-    expect(wrapper.getAttribute('unbreakable')).toBe('');
+    expect(wrapper.getAttribute('data-unbreakable')).toBe('');
     expect(wrapper.getAttribute('test-one')).toBe('true');
     expect(wrapper.getAttribute('test-two')).toBe('');
     expect(wrapper.getAttribute('test-three')).toBe('testvalue');
@@ -996,7 +996,7 @@ describe("test createWrapper", function() {
       element: "strong",
       unbreakable: true,
       attributes: {
-        unbreakable: "test-value-to-be-overidden"
+        "data-unbreakable": "test-value-to-be-overidden"
       }
     }, document);
 
@@ -1005,7 +1005,7 @@ describe("test createWrapper", function() {
     expect(wrapper.nodeName).toBe("STRONG");
     expect(wrapper.getAttribute('fake-attribute')).toBeNull();
     // expect(wrapper.getAttribute('unbreakable')).not.toBeNull();
-    expect(wrapper.getAttribute('unbreakable')).toBe('');
+    expect(wrapper.getAttribute('data-unbreakable')).toBe('');
   })
 
 })

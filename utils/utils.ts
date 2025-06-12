@@ -100,7 +100,7 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
 
   // determine if there are unbreakables in selection
   for (let cn of Array.from(contents.childNodes)) {
-    if (cn instanceof Element && cn.matches('[unbreakable]')) {
+    if (cn instanceof Element && cn.matches('[data-unbreakable]')) {
       unbreakables.push(cn);
     }
   }
@@ -629,7 +629,7 @@ export function selectionHasTextNodes(selection: Selection, limitingContainer: E
 export function generateQuery({element, classList, id, unbreakable, attributes}: WrapperArgs): string {
   const classListString = classList ? classList.map(c => "."+c).join("") : "";
   const idString = id ? "#"+id : "";
-  const unbreakableString = unbreakable ? "[unbreakable]" : "";
+  const unbreakableString = unbreakable ? "[data-unbreakable]" : "";
   // if (attributes) console.log(Object.entries(attributes));
   const attributesString = attributes ? 
     Object.entries(attributes)
@@ -664,9 +664,9 @@ export function createWrapper({element, classList, id, unbreakable, attributes, 
   }
   // do this last to override any potential conflict in the attributes
   if (unbreakable) {
-    wrapper.setAttribute('unbreakable', '');
+    wrapper.setAttribute('data-unbreakable', '');
   } else {
-    wrapper.removeAttribute('unbreakable');
+    wrapper.removeAttribute('data-unbreakable');
   }
 
   if (eventListeners) {
@@ -697,7 +697,7 @@ export function selectionContainsOnlyText(selection: Selection, limitingContaine
 export function selectionContainsNoUnbreakables(selection: Selection, limitingContainer: Node) {
   const childNodes = getSelectionChildNodes(selection, limitingContainer);
   return (
-    childNodes.every(cn => !nodeIsDescendentOf(cn, "[unbreakable]", limitingContainer))
+    childNodes.every(cn => !nodeIsDescendentOf(cn, "[data-unbreakable]", limitingContainer))
   )
 }
 
