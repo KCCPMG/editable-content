@@ -90,6 +90,10 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
   }, [])
 
+
+  useEffect(() => {
+    updateContent();
+  }, [portals])
   /**
    * if changes need to be made to selection, make those changes, 
    * otherwise update selection pieces of state
@@ -304,6 +308,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                           const id = "portal-container-"+String(Math.floor(Math.random() * 1000));
                           const newDiv = document.createElement("div");
                           newDiv.setAttribute('id', id);
+                          newDiv.style.display = "inline";
                           contentRef?.current?.append(newDiv);
                           const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
 
@@ -317,7 +322,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                                 }}
                               >
                                 test button
-                              </Button>, foundNewDiv
+                              </Button>
+                              // <span>In a span</span>
+                              , foundNewDiv
                             )
                             setPortals([...portals, portal]);
                             console.log("after createPortal call");
