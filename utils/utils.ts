@@ -1,5 +1,4 @@
 import { WrapperArgs } from "@/components/ContentEditableExperimentComponents";
-import { Key } from "@mui/icons-material";
 
 
 
@@ -754,8 +753,6 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
     return status;   
   }
   const range = selection.getRangeAt(0)
-
-  range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE
 
   const rangeCommonElementAncestor = getRangeLowestAncestorElement(range);
 

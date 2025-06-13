@@ -145,8 +145,8 @@ export default function PageClient() {
             child: "RB",
             contentPortal: true, 
             wrapperInstructions: <Box 
+              data-unbreakable=""
               component="div"
-              data-fuckhead="shit"
               sx={{
                 display: 'inline',
                 p: 1,

@@ -190,21 +190,28 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     let mappedAttributes: {[key: string] : string | undefined} = {}
 
     for (let attr of Array.from(element.attributes)) {
+      if ((attr.name) === 'class') continue;
       const attrName = attr.name;
-      const attrValue = attr.value;
-
-      mappedAttributes[attrName] = mappedAttributes[attrValue]
+      const attrValue = attr.value || '';
+      console.log({attrName, attrValue});
+      mappedAttributes[attrName] = attrValue;
     }
     
+    console.log(mappedAttributes);
+
+    console.log("typeof mappedAttributes['data-unbreakable'] === 'string'", typeof mappedAttributes['data-unbreakable'] === 'string')
+
     // set all react elements to unbreakable, might change this later
     const wrapperArgs = {
       element: element.tagName,
       classList: element.className.split(" "),
       id: element.getAttribute('id') || undefined,
       attributes: mappedAttributes,
-      // unbreakable: true
+      unbreakable: typeof mappedAttributes['data-unbreakable'] === 'string'
       // eventListeners: getEventListeners(element)      
     };
+
+    console.log(wrapperArgs);
 
     return wrapperArgs;
   }
@@ -249,7 +256,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               elementToWrapperArgs(wrapperInstructions) : // placeholder
               wrapperInstructions;
 
-            console.log({dataKey, wrapperInstructions, wrapperArgs})
+            // console.log({dataKey, wrapperInstructions, wrapperArgs})
 
             const query = generateQuery(wrapperArgs);
             const selection = window.getSelection();
@@ -273,6 +280,10 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     
             const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current)
             
+            if (dataKey === "react-button") {
+              console.log({status, selection, unbreakable: wrapperArgs.unbreakable, query, contentRef: contentRef.current});
+            }
+
             if (!hasSelection) {
               status.enabled = false;
               status.selected = false;
