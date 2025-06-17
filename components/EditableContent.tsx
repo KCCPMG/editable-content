@@ -318,69 +318,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                 disabled={!enabled}
                 onMouseDown={(e: Event) => {e.preventDefault();}}
                 selected={selected}
-                // onClick={
-                //   () => {
-                //     if (selection) {         
-                //       if (selected) {
-                //         if (wrapperArgs.unbreakable) {
-                //           const range = selection.getRangeAt(0);
-                //           const element = getRangeLowestAncestorElement(range);
-                //           if (element) {
-                            
-                //             const childNodes = Array.from(element.childNodes);
-                            
-                //             const startNodeIndex = childNodes.findIndex(cn => cn === range.startContainer);
-                //             const startNodeOffset = range.startOffset;
-                //             const endNodeIndex = childNodes.findIndex(cn => cn === range.endContainer);
-                //             const endNodeOffset = range.endOffset;
-                            
-                //             const parentNode = element.parentNode;
-                            
-                //             for (let i=0; i<childNodes.length; i++) {
-                //               console.log(i, element, childNodes[i])
-                //               parentNode?.insertBefore(childNodes[i], element);
-                              
-                //               if (i === startNodeIndex) {
-                //                 range.setStart(childNodes[i], startNodeOffset);
-                //               }
-                              
-                //               if (i === endNodeIndex) {
-                //                 range.setEnd(childNodes[i], endNodeOffset);
-                //               }
-                //             }
-                            
-                //             parentNode?.removeChild(element);
-                            
-                //             contentRef.current?.dispatchEvent(contentChange);
-                //             resetSelectionToTextNodes();
-                //           }
-                  
-                //         } else {
-                //           unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-                //           contentRef.current?.dispatchEvent(contentChange);
-                //         }
-                        
-                //         if (deselectCallback) {
-                //           deselectCallback();
-                //         } 
-                //       } else {
-                //         if (isReactComponent) {
-                //           createContentPortal(wrapperInstructions);
-                        
-                //         } else {
-                //           const wrapper = createWrapper(wrapperArgs, document);
-                //           wrapInElement(selection, wrapper, contentRef.current!);
-                //           contentRef.current?.dispatchEvent(contentChange);
-                //           if (selectCallback) {
-                //             selectCallback(wrapper);
-                //           } 
-                //         }
-                        
-                //       }                  
-                //     }
-                //     // if no selection, no click handler
-                //   }
-                // }
                 onClick={() => handleEditTextButtonClick(selection, wrapperArgs, isReactComponent, selected, query, selectCallback, deselectCallback, wrapperInstructions)}
               />
             )
