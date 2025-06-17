@@ -1,10 +1,9 @@
 "use client"
-import React, { useRef, useState, useEffect, MouseEventHandler, isValidElement, ReactElement } from "react";
+import React, { useRef, useState, useEffect, isValidElement, ReactElement } from "react";
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes } from '@/utils/utils';
 import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
-import { createRoot, Root } from "react-dom/client";
 import { Button } from "@mui/material";
 import { renderToString } from "react-dom/server";
 import { WrapperArgs } from "./ContentEditableExperimentComponents";
@@ -48,10 +47,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   const [hasSelection, setHasSelection] = useState<boolean>(false);
   const [portals, setPortals] = useState<Array<React.ReactPortal>>([])
 
-  // useEffect(() => {
-  //   // placeholder, likely unnecessary
-  //   console.log({hasSelection});
-  // }, [hasSelection])
 
   // on render
   useEffect(() => {
@@ -152,15 +147,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     contentRef.current?.focus();
   }
 
-  // createRoot approach - causes browser warning and may not be workable for easy insertion
-  // const rootRef = useRef<null |  Root>(null);
-  // const domNodeRef = useRef<null | HTMLDivElement>(null);
-  // domNodeRef.current = document.createElement('div');
-  // rootRef.current = createRoot(document.createElement('div'));
-  // const sampleComponent = rootRef.current.render(
-  //   <SampleButton />
-  // )
-
 
   // Alternate approach
   const SampleButton = function() {
@@ -173,9 +159,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     )
   }
 
-  const sampleButtonHTMLString = renderToString(<SampleButton />);
-  const sampleButton = new DOMParser().parseFromString(sampleButtonHTMLString, "text/html").body.children[0];
-  // console.log({sampleButton});
 
   function reactNodeToElement(reactNode: ReactNode) {
     const stringified = renderToString(reactNode);
@@ -197,9 +180,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       mappedAttributes[attrName] = attrValue;
     }
     
-    console.log(mappedAttributes);
-
-    console.log("typeof mappedAttributes['data-unbreakable'] === 'string'", typeof mappedAttributes['data-unbreakable'] === 'string')
 
     // set all react elements to unbreakable, might change this later
     const wrapperArgs = {
@@ -210,8 +190,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       unbreakable: typeof mappedAttributes['data-unbreakable'] === 'string'
       // eventListeners: getEventListeners(element)      
     };
-
-    console.log(wrapperArgs);
 
     return wrapperArgs;
   }
@@ -256,8 +234,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
               elementToWrapperArgs(wrapperInstructions) : // placeholder
               wrapperInstructions;
 
-            // console.log({dataKey, wrapperInstructions, wrapperArgs})
-
             const query = generateQuery(wrapperArgs);
             const selection = window.getSelection();
 
@@ -279,10 +255,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
             }
     
             const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current)
-            
-            if (dataKey === "react-button") {
-              console.log({status, selection, unbreakable: wrapperArgs.unbreakable, query, contentRef: contentRef.current});
-            }
 
             if (!hasSelection) {
               status.enabled = false;
@@ -374,7 +346,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
           setHasSelection(true);
         }}
         onBlur={() => {
-          // console.log("blurring contenteditable")
           setHasSelection(false)
         }}
         onKeyDown={(e) => {
