@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect, isValidElement, ReactElement } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from '@/utils/utils';
 import { EditableContentProps, WrapperInstructions } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
@@ -14,24 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 const contentChange = new CustomEvent("contentChange");
 
 
-(window as any).wrapInElement = wrapInElement;
-(window as any).selectionIsDescendentOfNode = selectionIsDescendentOfNode;
-(window as any).generateQuery = generateQuery;
-(window as any).selectionIsCoveredBy = selectionIsCoveredBy;
-(window as any).createWrapper = createWrapper;
-(window as any).unwrapSelectionFromQuery = unwrapSelectionFromQuery;
-(window as any).resetSelectionToTextNodes = resetSelectionToTextNodes;
-(window as any).selectionHasTextNodes = selectionHasTextNodes;
-(window as any).getSelectionChildNodes = getSelectionChildNodes;
-(window as any).selectionContainsOnlyText = selectionContainsOnlyText;
-(window as any).getButtonStatus = getButtonStatus;
-(window as any).getRangeLowestAncestorElement = getRangeLowestAncestorElement;
-(window as any).promoteChildrenOfNode = promoteChildrenOfNode;
-(window as any).deleteEmptyElements = deleteEmptyElements;
-(window as any).setSelection = setSelection;
-(window as any).moveSelection = moveSelection;
-(window as any).getRangeChildNodes = getRangeChildNodes;
-(window as any).limitingContainer = document.querySelector("[contenteditable]");
+
 
 
 
@@ -77,6 +60,27 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     })
 
     contentRef?.current?.addEventListener("contentChange", updateContent)
+
+    // utilities in window
+    window.wrapInElement = wrapInElement;
+    (window as any).selectionIsDescendentOfNode = selectionIsDescendentOfNode;
+    (window as any).generateQuery = generateQuery;
+    (window as any).selectionIsCoveredBy = selectionIsCoveredBy;
+    (window as any).createWrapper = createWrapper;
+    (window as any).unwrapSelectionFromQuery = unwrapSelectionFromQuery;
+    (window as any).resetSelectionToTextNodes = resetSelectionToTextNodes;
+    (window as any).selectionHasTextNodes = selectionHasTextNodes;
+    (window as any).getSelectionChildNodes = getSelectionChildNodes;
+    (window as any).selectionContainsOnlyText = selectionContainsOnlyText;
+    (window as any).getButtonStatus = getButtonStatus;
+    (window as any).getRangeLowestAncestorElement = getRangeLowestAncestorElement;
+    (window as any).promoteChildrenOfNode = promoteChildrenOfNode;
+    (window as any).deleteEmptyElements = deleteEmptyElements;
+    (window as any).setSelection = setSelection;
+    (window as any).moveSelection = moveSelection;
+    (window as any).getRangeChildNodes = getRangeChildNodes;
+    (window as any).limitingContainer = contentRef.current;
+    (window as any).getAncestorNode = getAncestorNode;
 
     // teardown
     return () => {
@@ -163,7 +167,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       if ((attr.name) === 'class') continue;
       const attrName = attr.name;
       const attrValue = attr.value || '';
-      console.log({attrName, attrValue});
+      // console.log({attrName, attrValue});
       mappedAttributes[attrName] = attrValue;
     }
     

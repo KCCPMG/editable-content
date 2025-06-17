@@ -88,14 +88,12 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
 
   const query = generateQueryFromElement(element);
 
-  const childNodes = getRangeChildNodes(range, limitingContainer);
-  const targetedNodes = childNodes.filter(cn => {
+  const contents = range.extractContents();
+  const childNodes = contents.childNodes
+  const targetedNodes = Array.from(childNodes).filter(cn => {
     return (cn instanceof Element && cn.matches(query));
   });
-  console.log("in wrapInElement: ", {childNodes, targetedNodes});
   targetedNodes.forEach(tn => promoteChildrenOfNode(tn));
-
-  const contents = range.extractContents();
 
   // determine if there are unbreakables in selection
   for (let cn of Array.from(contents.childNodes)) {
@@ -267,8 +265,8 @@ export function unwrapRangeFromQuery(range: Range, query: string, limitingContai
   const endContainerAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
   if (endContainerAncestorNode) {
     // promoteChildrenOfNode(endContainerAncestorNode)
-    // range.setEndAfter(endContainerAncestorNode);
-    range.setEnd(endContainerAncestorNode, 0);
+    range.setEndAfter(endContainerAncestorNode);
+    // range.setEnd(endContainerAncestorNode, 0);
   }
   
   // need to reset range or tw will fail in getSelectionChildNodes
@@ -340,7 +338,7 @@ export function nodeIsDescendentOf(node: Node, query: string, limitingContainer:
 }
 
 
-function getAncestorNode(node: Node, query: string, limitingContainer: Node): Node | null {
+export function getAncestorNode(node: Node, query: string, limitingContainer: Node): Node | null {
   let parentNode = node.parentNode;
   while (parentNode) {
     if (parentNode === limitingContainer) break;
