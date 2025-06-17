@@ -45,10 +45,13 @@ export type EditTextButtonProps = (MUIButtonEditableContentButtonProps | HTMLBut
 }
 
 
+export type WrapperInstructions = WrapperArgs | ReactElement
+
+
 export type EditableContentEditTextButtonProps = (
   MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps
 ) & {
-  wrapperInstructions: wrapperArgs | ReactNode,
+  wrapperInstructions: WrapperInstructions,
   // wrapperArgs: WrapperArgs, 
   selectCallback?: () => void,
   deselectCallback?: () => void

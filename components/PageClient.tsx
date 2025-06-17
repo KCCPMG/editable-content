@@ -143,7 +143,7 @@ export default function PageClient() {
             isMUIButton: true,
             dataKey: "react-button",
             child: "RB",
-            contentPortal: true, 
+            isReactComponent: true, 
             wrapperInstructions: <Box 
               data-unbreakable=""
               component="div"

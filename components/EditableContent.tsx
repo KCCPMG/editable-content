@@ -1,7 +1,7 @@
 "use client"
 import React, { useRef, useState, useEffect, isValidElement, ReactElement } from "react";
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes } from '@/utils/utils';
-import { EditableContentProps } from "./ContentEditableExperimentComponents";
+import { EditableContentProps, WrapperInstructions } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
 import { Button } from "@mui/material";
@@ -86,10 +86,11 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
   }, [])
 
-
+  // on portal change
   useEffect(() => {
     updateContent();
   }, [portals])
+
   /**
    * if changes need to be made to selection, make those changes, 
    * otherwise update selection pieces of state
@@ -142,23 +143,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   }
 
   function updateContent() {
-    console.log("updateContent");
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
     contentRef.current?.focus();
   }
-
-
-  // Alternate approach
-  const SampleButton = function() {
-    return (
-      <Button
-        onClick={(e) => {console.log("clicked")}}
-      >
-        Click me and something happens
-      </Button>
-    )
-  }
-
 
   function reactNodeToElement(reactNode: ReactNode) {
     const stringified = renderToString(reactNode);
@@ -166,7 +153,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     return parsedElement;
   }
 
-  function elementToWrapperArgs(rn: ReactNode): WrapperArgs {
+  function reactNodeToWrapperArgs(rn: ReactNode): WrapperArgs {
 
     const element = reactNodeToElement(rn);
 
@@ -217,6 +204,70 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     }
   }
 
+  function handleEditTextButtonClick(selection: Selection | null, wrapperArgs: WrapperArgs, isReactComponent: boolean, selected: boolean, query: string, selectCallback: (wrapper: HTMLElement) => void, deselectCallback: () => void, wrapperInstructions: WrapperInstructions) {
+    if (selection) {         
+      if (selected) {
+        if (wrapperArgs.unbreakable) {
+          const range = selection.getRangeAt(0);
+          const element = getRangeLowestAncestorElement(range);
+          if (element) {
+            
+            const childNodes = Array.from(element.childNodes);
+            
+            const startNodeIndex = childNodes.findIndex(cn => cn === range.startContainer);
+            const startNodeOffset = range.startOffset;
+            const endNodeIndex = childNodes.findIndex(cn => cn === range.endContainer);
+            const endNodeOffset = range.endOffset;
+            
+            const parentNode = element.parentNode;
+            
+            for (let i=0; i<childNodes.length; i++) {
+              console.log(i, element, childNodes[i])
+              parentNode?.insertBefore(childNodes[i], element);
+              
+              if (i === startNodeIndex) {
+                range.setStart(childNodes[i], startNodeOffset);
+              }
+              
+              if (i === endNodeIndex) {
+                range.setEnd(childNodes[i], endNodeOffset);
+              }
+            }
+            
+            parentNode?.removeChild(element);
+            
+            contentRef.current?.dispatchEvent(contentChange);
+            resetSelectionToTextNodes();
+          }
+  
+        } else {
+          unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+          contentRef.current?.dispatchEvent(contentChange);
+        }
+        
+        if (deselectCallback) {
+          deselectCallback();
+        } 
+      } else {
+        if (isReactComponent) {
+          // if isReactComponent, can assert wrapperInstructions as ReactElement
+          createContentPortal(wrapperInstructions as ReactElement);
+        
+        } else {
+          const wrapper = createWrapper(wrapperArgs, document);
+          wrapInElement(selection, wrapper, contentRef.current!);
+          contentRef.current?.dispatchEvent(contentChange);
+          if (selectCallback) {
+            selectCallback(wrapper);
+          } 
+        }
+        
+      }                  
+    }
+    // if no selection, no click handler
+    
+  }
+
 
   return (
     <>
@@ -225,18 +276,15 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
         {
           editTextButtons.map(etb => {
 
-            const {dataKey, selectCallback, deselectCallback, wrapperInstructions, contentPortal, ...otherProps} = etb;
-
-            // if (isValidElement(wrapperInstructions)) wrapperInstructions.unbreakable = true;
+            const {dataKey, selectCallback, deselectCallback, wrapperInstructions, isReactComponent, ...otherProps} = etb;
 
             // if React Element, derive wrapper args from Element, else use what's given
-            const wrapperArgs = isValidElement(wrapperInstructions) ?
-              elementToWrapperArgs(wrapperInstructions) : // placeholder
+            const wrapperArgs = isReactComponent ?
+              reactNodeToWrapperArgs(wrapperInstructions) : // placeholder
               wrapperInstructions;
 
             const query = generateQuery(wrapperArgs);
             const selection = window.getSelection();
-
 
             if (hasSelection && selection) {
               const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
@@ -270,69 +318,70 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                 disabled={!enabled}
                 onMouseDown={(e: Event) => {e.preventDefault();}}
                 selected={selected}
-                onClick={
-                  () => {
-                    if (selection) {         
-                      if (selected) {
-                        if (wrapperArgs.unbreakable) {
-                          const range = selection.getRangeAt(0);
-                          const element = getRangeLowestAncestorElement(range);
-                          if (element) {
+                // onClick={
+                //   () => {
+                //     if (selection) {         
+                //       if (selected) {
+                //         if (wrapperArgs.unbreakable) {
+                //           const range = selection.getRangeAt(0);
+                //           const element = getRangeLowestAncestorElement(range);
+                //           if (element) {
                             
-                            const childNodes = Array.from(element.childNodes);
+                //             const childNodes = Array.from(element.childNodes);
                             
-                            const startNodeIndex = childNodes.findIndex(cn => cn === range.startContainer);
-                            const startNodeOffset = range.startOffset;
-                            const endNodeIndex = childNodes.findIndex(cn => cn === range.endContainer);
-                            const endNodeOffset = range.endOffset;
+                //             const startNodeIndex = childNodes.findIndex(cn => cn === range.startContainer);
+                //             const startNodeOffset = range.startOffset;
+                //             const endNodeIndex = childNodes.findIndex(cn => cn === range.endContainer);
+                //             const endNodeOffset = range.endOffset;
                             
-                            const parentNode = element.parentNode;
+                //             const parentNode = element.parentNode;
                             
-                            for (let i=0; i<childNodes.length; i++) {
-                              console.log(i, element, childNodes[i])
-                              parentNode?.insertBefore(childNodes[i], element);
+                //             for (let i=0; i<childNodes.length; i++) {
+                //               console.log(i, element, childNodes[i])
+                //               parentNode?.insertBefore(childNodes[i], element);
                               
-                              if (i === startNodeIndex) {
-                                range.setStart(childNodes[i], startNodeOffset);
-                              }
+                //               if (i === startNodeIndex) {
+                //                 range.setStart(childNodes[i], startNodeOffset);
+                //               }
                               
-                              if (i === endNodeIndex) {
-                                range.setEnd(childNodes[i], endNodeOffset);
-                              }
-                            }
+                //               if (i === endNodeIndex) {
+                //                 range.setEnd(childNodes[i], endNodeOffset);
+                //               }
+                //             }
                             
-                            parentNode?.removeChild(element);
+                //             parentNode?.removeChild(element);
                             
-                            contentRef.current?.dispatchEvent(contentChange);
-                            resetSelectionToTextNodes();
-                          }
+                //             contentRef.current?.dispatchEvent(contentChange);
+                //             resetSelectionToTextNodes();
+                //           }
                   
-                        } else {
-                          unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-                          contentRef.current?.dispatchEvent(contentChange);
-                        }
+                //         } else {
+                //           unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+                //           contentRef.current?.dispatchEvent(contentChange);
+                //         }
                         
-                        if (deselectCallback) {
-                          deselectCallback();
-                        } 
-                      } else {
-                        if (contentPortal) {
-                          createContentPortal(wrapperInstructions);
+                //         if (deselectCallback) {
+                //           deselectCallback();
+                //         } 
+                //       } else {
+                //         if (isReactComponent) {
+                //           createContentPortal(wrapperInstructions);
                         
-                        } else {
-                          const wrapper = createWrapper(wrapperArgs, document);
-                          wrapInElement(selection, wrapper, contentRef.current!);
-                          contentRef.current?.dispatchEvent(contentChange);
-                          if (selectCallback) {
-                            selectCallback(wrapper);
-                          } 
-                        }
+                //         } else {
+                //           const wrapper = createWrapper(wrapperArgs, document);
+                //           wrapInElement(selection, wrapper, contentRef.current!);
+                //           contentRef.current?.dispatchEvent(contentChange);
+                //           if (selectCallback) {
+                //             selectCallback(wrapper);
+                //           } 
+                //         }
                         
-                      }                  
-                    }
-                    // if no selection, no click handler
-                  }
-                }
+                //       }                  
+                //     }
+                //     // if no selection, no click handler
+                //   }
+                // }
+                onClick={() => handleEditTextButtonClick(selection, wrapperArgs, isReactComponent, selected, query, selectCallback, deselectCallback, wrapperInstructions)}
               />
             )
           })
@@ -342,12 +391,8 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
         contentEditable
         spellCheck={false}
         onInput={updateContent}
-        onFocus={() => {
-          setHasSelection(true);
-        }}
-        onBlur={() => {
-          setHasSelection(false)
-        }}
+        onFocus={() => { setHasSelection(true) }}
+        onBlur={() => { setHasSelection(false) }}
         onKeyDown={(e) => {
           const selection = window.getSelection(); 
           if (!selection || selection.rangeCount === 0 || !contentRef.current) return;
