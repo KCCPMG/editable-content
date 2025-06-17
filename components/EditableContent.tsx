@@ -43,6 +43,11 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       }   
       setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
     }
+
+
+    // load react portals
+    const reactContainerDivs = Array.from(document.querySelectorAll("div [data-button-key"));
+    reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
     
     // assign event listeners
     document.addEventListener('selectionchange', (e) => {
@@ -185,11 +190,17 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     return wrapperArgs;
   }
 
-  function createContentPortal(component: ReactElement) {
+  /**
+   * Generate a containing div element, append ReactElement to that div, create portal
+   * and add that portal to portals state
+   * @param component 
+   */
+  function createContentPortal(component: ReactElement, buttonKey: string) {
     const uuid = uuidv4();
     const id = "portal-container-"+uuid;
     const newDiv = document.createElement("div");
     newDiv.setAttribute('id', id);
+    newDiv.setAttribute('data-button-key', buttonKey);
     newDiv.style.display = "inline";
 
     const selection = window.getSelection();
@@ -208,7 +219,43 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     }
   }
 
-  function handleEditTextButtonClick(selection: Selection | null, wrapperArgs: WrapperArgs, isReactComponent: boolean, selected: boolean, query: string, selectCallback: (wrapper: HTMLElement) => void, deselectCallback: () => void, wrapperInstructions: WrapperInstructions) {
+  function appendPortalToDiv(containingDiv: HTMLDivElement) {
+    // div with an id, data-button-key attribute indicating which button it was wrapped with
+    // that divs children
+    
+    const key = containingDiv.getAttribute("data-button-key");
+    const uuid = containingDiv.getAttribute('id')?.split("portal-container-")[1];
+
+    if (!uuid || uuid.length === 0) return;
+    if (!key) return;
+
+    const contentRange = new Range();
+    contentRange.setStart(containingDiv, 0);
+    contentRange.setEnd(containingDiv, containingDiv.childNodes.length);
+    
+    const content = contentRange.extractContents();
+
+    // find correct wrapper button
+    const foundButton = editTextButtons.find(etb => etb.dataKey === key);
+    if (!foundButton) return;
+
+    const reactifiedContent = (
+      <>
+        {...Array.from(content.childNodes).map(cn => {
+          if (cn.nodeType === Node.ELEMENT_NODE) return (cn as Element).outerHTML; 
+          else return cn.textContent;
+        })}
+      </>
+    )
+
+    const clone = React.cloneElement(foundButton.wrapperInstructions as ReactElement, {}, reactifiedContent);
+
+    const portal = createPortal(clone, containingDiv);
+    setPortals([...portals, portal]);
+
+  }
+
+  function handleEditTextButtonClick(selection: Selection | null, wrapperArgs: WrapperArgs, isReactComponent: boolean, selected: boolean, query: string, selectCallback: (wrapper: HTMLElement) => void, deselectCallback: () => void, wrapperInstructions: WrapperInstructions, dataKey: string) {
     if (selection) {         
       if (selected) {
         if (wrapperArgs.unbreakable) {
@@ -255,7 +302,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       } else {
         if (isReactComponent) {
           // if isReactComponent, can assert wrapperInstructions as ReactElement
-          createContentPortal(wrapperInstructions as ReactElement);
+          createContentPortal(wrapperInstructions as ReactElement, dataKey);
         
         } else {
           const wrapper = createWrapper(wrapperArgs, document);
@@ -322,7 +369,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
                 disabled={!enabled}
                 onMouseDown={(e: Event) => {e.preventDefault();}}
                 selected={selected}
-                onClick={() => handleEditTextButtonClick(selection, wrapperArgs, isReactComponent, selected, query, selectCallback, deselectCallback, wrapperInstructions)}
+                onClick={() => handleEditTextButtonClick(selection, wrapperArgs, isReactComponent, selected, query, selectCallback, deselectCallback, wrapperInstructions, dataKey)}
               />
             )
           })
