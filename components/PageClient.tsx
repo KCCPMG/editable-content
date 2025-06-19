@@ -7,6 +7,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } 
 import { getSelectionDirection } from "@/utils/utils";
 import { Box } from "@mui/material";
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from '@/utils/utils';
+import StatefulBox from "./TestComponents/StatefulBox";
 
 
 
@@ -169,9 +170,9 @@ export default function PageClient() {
 
       </Dialog>
       <h3>
-        <SampleWrapper>
-          Sample Wrapper text
-        </SampleWrapper>
+        <StatefulBox>
+          StatefulBox
+        </StatefulBox>
       </h3>
       <EditableContent 
         // initialHTML="Plain Text<strong>Strong Text</strong>"
@@ -259,8 +260,14 @@ export default function PageClient() {
                 fontSize: '0.875rem',
                 fontWeight: '700',
               }}
-            />
-            
+            /> 
+          },
+          {
+            isMUIButton: true,
+            dataKey: "stateful-component",
+            child: "SC",
+            isReactComponent: true,
+            wrapperInstructions: <StatefulBox />
           }
         ]}
       />
