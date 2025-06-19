@@ -129,7 +129,47 @@ export default function PageClient() {
       </h3>
       <EditableContent 
         // initialHTML="Plain Text<strong>Strong Text</strong>"
-        initialHTML='<strong>Lorem, ipsum</strong> ​dolor ​sit ​ ​<i>amet  ​cons<strong>ectetur adipisicing ​ ​ ​<br>elit.</strong> ​Sunt,</i>repudiandae. ​Lorem, ipsum ​dolor ​sit ​amet ​ ​consectetur ​ ​ ​<br>adipisicing<u testattribute="ta" testattribute2="ta2" data-unbreakable="">elit.</u>Sunt, ​re<div id="portal-container-2bf69a61-17c5-498f-ad4c-ba9a2b01132d" data-button-key="react-button" style="display: inline;">pudiandae. ​ ​Lorem</div>, ​ipsum ​dolor ​ ​<br>sit amet<strong>consectetur<i>adipisicing</i>elit.</strong> Sunt,  ​repudiandae. ​Lorem, ​<strong>ipsum ​dolor<i> ​</i>sit ​​</strong>'
+        initialHTML={`
+          <strong>Lorem, ipsum</strong>
+            ​dolor ​sit ​ 
+           ​<i>amet  ​cons
+            <strong>
+              ectetur adipisicing ​ ​ ​
+              <br>
+              elit.
+            </strong> ​Sunt,
+          </i>
+          repudiandae. ​Lorem, ipsum ​dolor ​sit ​amet ​ ​consectetur ​ ​ ​
+          <br>
+          adipisicing
+          <u testattribute="ta" testattribute2="ta2" data-unbreakable="">
+            elit.
+          </u>
+          Sunt, ​re
+          <div 
+            id="portal-container-2bf69a61-17c5-498f-ad4c-ba9a2b01132d" 
+            data-button-key="react-button" 
+            style="display: inline;"
+          >
+            pudiandae. ​ ​Lorem
+          </div>
+          , ​ipsum ​dolor ​ ​
+          <br>
+          sit amet
+          <strong>
+            consectetur
+            <i>
+              adipisicing
+            </i>
+            elit.
+          </strong>
+            Sunt,  ​repudiandae. ​Lorem, ​
+          <strong>
+            ipsum ​dolor
+            <i> ​</i>
+            sit ​​
+          </strong>
+        `}
         editTextButtons={[
           {
             isMUIButton: true,
