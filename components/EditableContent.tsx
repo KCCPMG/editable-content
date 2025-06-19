@@ -179,19 +179,30 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     newDiv.style.display = "inline";
 
     const selection = window.getSelection();
-    const range = selection?.getRangeAt(0);
-    const text = range?.toString();
+    if (!selection) return;
+    const range = selection.getRangeAt(0);
+    const text = range.toString() || '\u200B';
     const contents = range?.extractContents();
-    range?.insertNode(newDiv);
+    range.insertNode(newDiv);
     
     const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
+    if (!foundNewDiv) return;
     
     // curently only handling range text, not nested elements
     if (contentRef.current && contentRef.current && foundNewDiv) {
-      const clone = React.cloneElement(component, {}, text);
-      const portal = createPortal(clone, foundNewDiv)
-      setPortals([...portals, portal]);
+      // const clone = React.cloneElement(component, {}, text);
+      // const portal = createPortal(clone, foundNewDiv)
+      // setPortals([...portals, portal]);
+      cloneElementIntoPortal(component, {}, text, foundNewDiv)
     }
+  }
+
+  function cloneElementIntoPortal(component: ReactElement, props: object, text: string, targetDiv: Element) {
+    // const text = range.toString();
+    // range.extractContents();
+    const clone = React.cloneElement(component, props, text);
+    const portal = createPortal(clone, targetDiv);
+    setPortals([...portals, portal]);
   }
 
   function appendPortalToDiv(containingDiv: HTMLDivElement) {
@@ -207,27 +218,30 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     const contentRange = new Range();
     contentRange.setStart(containingDiv, 0);
     contentRange.setEnd(containingDiv, containingDiv.childNodes.length);
-    
+    const text = contentRange.toString();
     const content = contentRange.extractContents();
 
     // find correct wrapper button
     const foundButton = editTextButtons.find(etb => etb.dataKey === key);
     if (!foundButton) return;
 
-    const reactifiedContent = (
-      <>
-        {...Array.from(content.childNodes).map(cn => {
-          if (cn.nodeType === Node.ELEMENT_NODE) return (cn as Element).outerHTML; 
-          else return cn.textContent;
-        })}
-      </>
-    )
+    // const reactifiedContent = (
+    //   <>
+    //     {...Array.from(content.childNodes).map(cn => {
+    //       if (cn.nodeType === Node.ELEMENT_NODE) return (cn as Element).outerHTML; 
+    //       else return cn.textContent;
+    //     })}
+    //   </>
+    // )
 
-    const clone = React.cloneElement(foundButton.wrapperInstructions as ReactElement, {}, reactifiedContent);
+    // console.log({content, reactifiedContent})
 
-    const portal = createPortal(clone, containingDiv);
-    setPortals([...portals, portal]);
+    // const clone = React.cloneElement(foundButton.wrapperInstructions as ReactElement, {}, text);
 
+    // const portal = createPortal(clone, containingDiv);
+    // setPortals([...portals, portal]);
+    const component = foundButton.wrapperInstructions as ReactElement;
+    cloneElementIntoPortal(component, {}, text, containingDiv);
   }
 
   function handleEditTextButtonClick(selection: Selection | null, wrapperArgs: WrapperArgs, isReactComponent: boolean, selected: boolean, query: string, selectCallback: (wrapper: HTMLElement) => void, deselectCallback: () => void, wrapperInstructions: WrapperInstructions, dataKey: string) {
