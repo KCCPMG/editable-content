@@ -2,10 +2,41 @@
 import EditableContent from "./EditableContent";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { getSelectionDirection } from "@/utils/utils";
 import { Box } from "@mui/material";
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from '@/utils/utils';
+
+
+
+declare global {
+  interface Window {
+    wrapInElement?: typeof wrapInElement;
+    selectionIsDescendentOfNode?: typeof selectionIsDescendentOfNode;
+    generateQuery?: typeof generateQuery;
+    selectionIsCoveredBy?: typeof selectionIsCoveredBy;
+    createWrapper?: typeof createWrapper;
+    unwrapSelectionFromQuery?: typeof unwrapSelectionFromQuery;
+    resetSelectionToTextNodes?: typeof resetSelectionToTextNodes;
+    selectionHasTextNodes?: typeof selectionHasTextNodes;
+    getSelectionChildNodes?: typeof getSelectionChildNodes;
+    selectionContainsOnlyText?: typeof selectionContainsOnlyText;
+    getButtonStatus?: typeof getButtonStatus;
+    getRangeLowestAncestorElement?: typeof getRangeLowestAncestorElement;
+    promoteChildrenOfNode?: typeof promoteChildrenOfNode;
+    deleteEmptyElements?: typeof deleteEmptyElements;
+    setSelection?: typeof setSelection;
+    moveSelection?: typeof moveSelection;
+    getRangeChildNodes?: typeof getRangeChildNodes;
+    limitingContainer?: any;
+    getAncestorNode?: typeof getAncestorNode;
+  }
+}
+
+
+
+
 
 
 export default function PageClient() {
@@ -19,6 +50,29 @@ export default function PageClient() {
   const [changeTextFocusNode, setChangeTextFocusNode] = useState<Node | null>(null);
   const [changeTextFocusOffset, setChangeTextFocusOffset] = useState<number | null>(null);
 
+
+  // utilities in window
+  useEffect(function() {
+    window.wrapInElement = wrapInElement;
+    window.selectionIsDescendentOfNode = selectionIsDescendentOfNode;
+    window.generateQuery = generateQuery;
+    window.selectionIsCoveredBy = selectionIsCoveredBy;
+    window.createWrapper = createWrapper;
+    window.unwrapSelectionFromQuery = unwrapSelectionFromQuery;
+    window.resetSelectionToTextNodes = resetSelectionToTextNodes;
+    window.selectionHasTextNodes = selectionHasTextNodes;
+    window.getSelectionChildNodes = getSelectionChildNodes;
+    window.selectionContainsOnlyText = selectionContainsOnlyText;
+    window.getButtonStatus = getButtonStatus;
+    window.getRangeLowestAncestorElement = getRangeLowestAncestorElement;
+    window.promoteChildrenOfNode = promoteChildrenOfNode;
+    window.deleteEmptyElements = deleteEmptyElements;
+    window.setSelection = setSelection;
+    window.moveSelection = moveSelection;
+    window.getRangeChildNodes = getRangeChildNodes;
+    window.limitingContainer = document.querySelector("[contenteditable]")
+    window.getAncestorNode = getAncestorNode;
+  }, [])
 
 
   return (

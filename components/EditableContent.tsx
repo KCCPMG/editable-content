@@ -14,10 +14,6 @@ import { v4 as uuidv4 } from 'uuid';
 const contentChange = new CustomEvent("contentChange");
 
 
-
-
-
-
 export default function EditableContent({initialHTML, editTextButtons}: EditableContentProps) {
 
   const contentRef = useRef<null | HTMLDivElement>(null);
@@ -65,27 +61,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     })
 
     contentRef?.current?.addEventListener("contentChange", updateContent)
-
-    // utilities in window
-    window.wrapInElement = wrapInElement;
-    (window as any).selectionIsDescendentOfNode = selectionIsDescendentOfNode;
-    (window as any).generateQuery = generateQuery;
-    (window as any).selectionIsCoveredBy = selectionIsCoveredBy;
-    (window as any).createWrapper = createWrapper;
-    (window as any).unwrapSelectionFromQuery = unwrapSelectionFromQuery;
-    (window as any).resetSelectionToTextNodes = resetSelectionToTextNodes;
-    (window as any).selectionHasTextNodes = selectionHasTextNodes;
-    (window as any).getSelectionChildNodes = getSelectionChildNodes;
-    (window as any).selectionContainsOnlyText = selectionContainsOnlyText;
-    (window as any).getButtonStatus = getButtonStatus;
-    (window as any).getRangeLowestAncestorElement = getRangeLowestAncestorElement;
-    (window as any).promoteChildrenOfNode = promoteChildrenOfNode;
-    (window as any).deleteEmptyElements = deleteEmptyElements;
-    (window as any).setSelection = setSelection;
-    (window as any).moveSelection = moveSelection;
-    (window as any).getRangeChildNodes = getRangeChildNodes;
-    (window as any).limitingContainer = contentRef.current;
-    (window as any).getAncestorNode = getAncestorNode;
 
     // teardown
     return () => {
