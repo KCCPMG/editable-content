@@ -166,8 +166,22 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   }
 
   /**
-   * Generate a containing div element, append ReactElement to that div, create portal
-   * and add that portal to portals state
+   * Clone react component with child text, 
+   * create portal, add portal to portals
+   * @param component 
+   * @param props 
+   * @param text 
+   * @param targetDiv 
+   */
+  function cloneElementIntoPortal(component: ReactElement, props: object, text: string, targetDiv: Element) {
+    const clone = React.cloneElement(component, props, text);
+    const portal = createPortal(clone, targetDiv);
+    setPortals([...portals, portal]);
+  }
+
+  /**
+   * Generate a containing div element, append ReactElement to that div, 
+   * create portal and add that portal to portals state
    * @param component 
    */
   function createContentPortal(component: ReactElement, buttonKey: string) {
@@ -190,24 +204,19 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     
     // curently only handling range text, not nested elements
     if (contentRef.current && contentRef.current && foundNewDiv) {
-      // const clone = React.cloneElement(component, {}, text);
-      // const portal = createPortal(clone, foundNewDiv)
-      // setPortals([...portals, portal]);
       cloneElementIntoPortal(component, {}, text, foundNewDiv)
     }
   }
 
-  function cloneElementIntoPortal(component: ReactElement, props: object, text: string, targetDiv: Element) {
-    // const text = range.toString();
-    // range.extractContents();
-    const clone = React.cloneElement(component, props, text);
-    const portal = createPortal(clone, targetDiv);
-    setPortals([...portals, portal]);
-  }
-
+  /**
+   * Finds an existing div that should house a React portal,
+   * then finds the correct button by looking in the editTextButtons
+   * prop for the corresponding dataKey, renders the correct component
+   * from that button's wrapperInstructions, creates a portal
+   * and appends that portal to portals
+   * @param containingDiv 
+   */
   function appendPortalToDiv(containingDiv: HTMLDivElement) {
-    // div with an id, data-button-key attribute indicating which button it was wrapped with
-    // that divs children
     
     const key = containingDiv.getAttribute("data-button-key");
     const uuid = containingDiv.getAttribute('id')?.split("portal-container-")[1];
@@ -225,21 +234,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     const foundButton = editTextButtons.find(etb => etb.dataKey === key);
     if (!foundButton) return;
 
-    // const reactifiedContent = (
-    //   <>
-    //     {...Array.from(content.childNodes).map(cn => {
-    //       if (cn.nodeType === Node.ELEMENT_NODE) return (cn as Element).outerHTML; 
-    //       else return cn.textContent;
-    //     })}
-    //   </>
-    // )
-
-    // console.log({content, reactifiedContent})
-
-    // const clone = React.cloneElement(foundButton.wrapperInstructions as ReactElement, {}, text);
-
-    // const portal = createPortal(clone, containingDiv);
-    // setPortals([...portals, portal]);
     const component = foundButton.wrapperInstructions as ReactElement;
     cloneElementIntoPortal(component, {}, text, containingDiv);
   }
