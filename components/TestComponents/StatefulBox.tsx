@@ -22,7 +22,6 @@ export default function StatefulBox({children}: StatefulBoxProps) {
         setClicks(clicks + 1);
       }}
       tabIndex={-1}
-      data-unbreakable=""
       component="div"
       sx={{
         display: 'block',
