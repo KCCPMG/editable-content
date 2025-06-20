@@ -8,6 +8,7 @@ import { getSelectionDirection } from "@/utils/utils";
 import { Box } from "@mui/material";
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from '@/utils/utils';
 import StatefulBox from "./TestComponents/StatefulBox";
+import MultiLevelBox from "./TestComponents/MultilLevelBox";
 
 
 
@@ -268,6 +269,13 @@ export default function PageClient() {
             child: "SC",
             isReactComponent: true,
             wrapperInstructions: <StatefulBox />
+          },
+          {
+            isMUIButton: true,
+            dataKey: "multilevel-component",
+            child: "MLB",
+            isReactComponent: true,
+            wrapperInstructions: <MultiLevelBox />
           }
         ]}
       />
