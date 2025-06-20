@@ -11,6 +11,7 @@ import { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { v4 as uuidv4 } from 'uuid';
 
+const PORTAL_CONTAINER_ID_PREFIX = "portal-container-";
 const contentChange = new CustomEvent("contentChange");
 
 
@@ -173,9 +174,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
    * @param text 
    * @param targetDiv 
    */
-  function cloneElementIntoPortal(component: ReactElement, props: object, text: string, targetDiv: Element) {
+  function cloneElementIntoPortal(component: ReactElement, props: {[key: string] : any}, text: string, targetDiv: Element) {
     const clone = React.cloneElement(component, props, text);
-    const portal = createPortal(clone, targetDiv);
+    const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals([...portals, portal]);
   }
 
@@ -186,7 +187,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
    */
   function createContentPortal(component: ReactElement, buttonKey: string) {
     const uuid = uuidv4();
-    const id = "portal-container-"+uuid;
+    const id = PORTAL_CONTAINER_ID_PREFIX+uuid;
     const newDiv = document.createElement("div");
     newDiv.setAttribute('id', id);
     newDiv.setAttribute('data-button-key', buttonKey);
@@ -204,7 +205,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     
     // curently only handling range text, not nested elements
     if (contentRef.current && contentRef.current && foundNewDiv) {
-      cloneElementIntoPortal(component, {}, text, foundNewDiv)
+      cloneElementIntoPortal(component, {key: uuid}, text, foundNewDiv)
     }
   }
 
@@ -219,7 +220,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   function appendPortalToDiv(containingDiv: HTMLDivElement) {
     
     const key = containingDiv.getAttribute("data-button-key");
-    const uuid = containingDiv.getAttribute('id')?.split("portal-container-")[1];
+    const uuid = containingDiv.getAttribute('id')?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
 
     if (!uuid || uuid.length === 0) return;
     if (!key) return;
@@ -235,7 +236,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     if (!foundButton) return;
 
     const component = foundButton.wrapperInstructions as ReactElement;
-    cloneElementIntoPortal(component, {}, text, containingDiv);
+    cloneElementIntoPortal(component, {key: uuid}, text, containingDiv);
   }
 
   function unwrapUnbreakableElement(selection: Selection) {
@@ -272,10 +273,30 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
   }
 
-  function handleEditTextButtonClick(selection: Selection | null, wrapperArgs: WrapperArgs, isReactComponent: boolean, selected: boolean, query: string, selectCallback: (wrapper: HTMLElement) => void, deselectCallback: () => void, wrapperInstructions: WrapperInstructions, dataKey: string) {
+  function handleEditTextButtonClick(
+    selection: Selection | null, 
+    wrapperArgs: WrapperArgs, 
+    isReactComponent: boolean, 
+    selected: boolean, 
+    query: string, 
+    selectCallback: (wrapper: HTMLElement) => void, 
+    deselectCallback: () => void, 
+    wrapperInstructions: WrapperInstructions, 
+    dataKey: string
+  ) {
     if (selection) {         
       if (selected) {
         if (isReactComponent) {
+          if (!selection.anchorNode || !contentRef.current) return;
+          const targetDiv = getAncestorNode(selection.anchorNode, "div[data-button-key]", contentRef.current);
+
+          if (!targetDiv) return;
+
+          const key = (targetDiv as Element).getAttribute('id')?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
+
+          if (!key || key.length === 0) return;
+
+
           // need to unwrap text normally
           // need to remove portal
           // need to remove containing div
