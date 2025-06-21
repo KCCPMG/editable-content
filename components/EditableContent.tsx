@@ -35,6 +35,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     if (contentRef.current) {
       if (initialHTML) {
         contentRef.current.innerHTML = initialHTML;
+        // load react portals
+        const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key"));
+        reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
       } else {
         contentRef.current.innerHTML = "";
       }   
@@ -42,9 +45,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     }
 
 
-    // load react portals
-    const reactContainerDivs = Array.from(document.querySelectorAll("div [data-button-key"));
-    reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
+
     
     // assign event listeners
     document.addEventListener('selectionchange', (e) => {
@@ -74,6 +75,16 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   // on portal change
   useEffect(() => {
     updateContent();
+    
+    // clean up divs which no longer contain a portal
+    if (!contentRef.current) return;
+    const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
+
+    toDelete.forEach(td => promoteChildrenOfNode(td));
+
+
+
+    // TODO: Delete these once done testing
     (window as any).portals = portals;
     (window as any).setPortals = setPortals;
   }, [portals])
@@ -299,11 +310,11 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       if (selected) {
         if (isReactComponent) {
           if (!selection.anchorNode || !contentRef.current) return;
-          const targetDiv = getAncestorNode(selection.anchorNode, "div[data-button-key]", contentRef.current);
+          const targetDiv = getAncestorNode(selection.anchorNode, "div[data-button-key]", contentRef.current) as Element;
 
           if (!targetDiv) return;
 
-          const key = (targetDiv as Element).getAttribute('id')?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
+          const key = targetDiv.getAttribute('id')?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
 
           if (!key || key.length === 0) return;
 
@@ -315,25 +326,21 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
           if (!targetComponent || !isValidElement(targetComponent)) return;
           
           const children = targetComponent.props.children;
-
-          console.log({children})
-
-
-
           const htmlChildren = (typeof children === "string") ? 
             document.createTextNode(children) :
             reactNodeToElement(children);
-          console.log({htmlChildren});
           targetDiv.appendChild(htmlChildren);
 
-          console.log(targetDiv);
-          // need to unwrap text normally
-          // need to remove portal
-          promoteChildrenOfNode(targetDiv);
-          // removePortal(key);
+          removePortal(key);
 
           // need to remove containing div / unwrap text normally
+          targetDiv.setAttribute('data-mark-for-deletion', '');
+
           // promoteChildrenOfNode(targetDiv);
+
+          if (deselectCallback) { 
+            deselectCallback();
+          }
 
 
         } else if (wrapperArgs.unbreakable) {
