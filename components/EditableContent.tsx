@@ -74,6 +74,8 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   // on portal change
   useEffect(() => {
     updateContent();
+    (window as any).portals = portals;
+    (window as any).setPortals = setPortals;
   }, [portals])
 
   /**
@@ -134,7 +136,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
   function reactNodeToElement(reactNode: ReactNode) {
     const stringified = renderToString(reactNode);
+    console.log({stringified})
     const parsedElement = new DOMParser().parseFromString(stringified, "text/html").body.children[0];
+    console.log({parsedElement})
     return parsedElement;
   }
 
@@ -273,6 +277,13 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
   }
 
+  function removePortal(key: string) {
+    const portalsCopy = [...portals];
+    const targetIndex = portalsCopy.findIndex(p => p.key === key);
+    portalsCopy.splice(targetIndex, 1);
+    setPortals(portalsCopy);
+  }
+
   function handleEditTextButtonClick(
     selection: Selection | null, 
     wrapperArgs: WrapperArgs, 
@@ -296,10 +307,35 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
           if (!key || key.length === 0) return;
 
+          const targetPortal = portals.find(p => p.key === key);
 
+          if (!targetPortal) return;
+
+          const targetComponent = targetPortal.children;
+          if (!targetComponent || !isValidElement(targetComponent)) return;
+          
+          const children = targetComponent.props.children;
+
+          console.log({children})
+
+
+
+          const htmlChildren = (typeof children === "string") ? 
+            document.createTextNode(children) :
+            reactNodeToElement(children);
+          console.log({htmlChildren});
+          targetDiv.appendChild(htmlChildren);
+
+          console.log(targetDiv);
           // need to unwrap text normally
           // need to remove portal
-          // need to remove containing div
+          promoteChildrenOfNode(targetDiv);
+          // removePortal(key);
+
+          // need to remove containing div / unwrap text normally
+          // promoteChildrenOfNode(targetDiv);
+
+
         } else if (wrapperArgs.unbreakable) {
           unwrapUnbreakableElement(selection);
         } else {
