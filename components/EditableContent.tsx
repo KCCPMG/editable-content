@@ -39,7 +39,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
   const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
   const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null);
   const [hasSelection, setHasSelection] = useState<boolean>(false);
-  const [portals, setPortals] = useState<Array<React.ReactPortal>>([])
+  const [portals, setPortals] = useState<Array<React.ReactPortal>>([]);
+  const [portalsState, setPortalsState] = useState<{[key: string]: any}>({});
+  const [mustReportState, setMustReportState] = useState<{[key: string]: any}>({});
 
 
   // on render
@@ -202,6 +204,24 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
    * @param targetDiv 
    */
   function cloneElementIntoPortal(component: ReactElement, props: {[key: string] : any}, text: string, targetDiv: Element) {
+    const id = props["key"] as string;
+
+    // initialize relevant state in EditableContent
+    const newPortalsState = {...portalsState};
+    newPortalsState[id] = {};
+    setPortalsState(newPortalsState);
+
+    const newMustReportState = {...mustReportState};
+    newMustReportState[id] = false;
+    setMustReportState(newMustReportState);
+
+    // define function to pass to stateful component
+    props.reportState = function(stateObj: {[key: string]: any}) {
+      let toSet: {[key: string]: object} = {};
+      toSet[id] = stateObj; 
+      setPortalsState(toSet)
+    }
+    props.mustReportState = mustReportState
     const clone = React.cloneElement(component, props, text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals([...portals, portal]);

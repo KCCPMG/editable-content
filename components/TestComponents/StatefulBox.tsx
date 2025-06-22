@@ -3,15 +3,24 @@ import { Box} from "@mui/material"
 
 
 type StatefulBoxProps = {
-  children?: React.ReactNode
+  children?: React.ReactNode,
+  reportState?: (stateObj: {[key: string]: any} ) => void,
+  mustReportState?: boolean
 }
 
-export default function StatefulBox({children}: StatefulBoxProps) {
+
+export default function StatefulBox(
+  {children, reportState, mustReportState}: StatefulBoxProps) 
+{
   const [clicks, setClicks] = useState<number>(0);
 
   useEffect(() => {
     console.log("clicks: ", clicks);
   }, [clicks])
+
+  useEffect(() => {
+    if (mustReportState && reportState) reportState({clicks})
+  }, [mustReportState])
 
   return (
     <Box
