@@ -13,6 +13,20 @@ import { v4 as uuidv4 } from 'uuid';
 
 const PORTAL_CONTAINER_ID_PREFIX = "portal-container-";
 const contentChange = new CustomEvent("contentChange");
+const reportState = new CustomEvent("reportState");
+
+
+/**
+ * create custom event
+ * fire event on all *portals*
+ * pass function to report state
+ * if I put the event listener on the portal,
+ * I would have to do so dynamically, in its useEffect
+ * I would also have to put the event emitter on the portal
+ * Alternatively, if there is some way I could access
+ * the state directly from the portals?
+ * If components take a prop, reportState: () => void
+ */
 
 
 export default function EditableContent({initialHTML, editTextButtons}: EditableContentProps) {
@@ -43,8 +57,6 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
       }   
       setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
     }
-
-
 
     
     // assign event listeners
