@@ -75,7 +75,7 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
         handleSelectionChange();
       } 
     })
-
+  
     contentRef?.current?.addEventListener("contentChange", updateContent)
 
     // teardown
@@ -195,20 +195,21 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     return wrapperArgs;
   }
 
-  const setIndividualPortalState = useCallback((id: string, obj: {[key: string]: any}) => {
+  function setIndividualPortalState (id: string, obj: {[key: string]: any}) {
     setPortalsState(previousPortalsState => {
       const newPortalsState = {...previousPortalsState};
-      console.log(newPortalsState);
       newPortalsState[id] = obj;
       return {...newPortalsState};
     });
-  }, []);
+  };
 
-  const setIndividualMustReportState = useCallback((id: string, mustReport: boolean) => {
-    const newMustReportState = {...mustReportState};
-    newMustReportState[id] = mustReport;
-    setMustReportState({...newMustReportState});
-  }, []);
+  function setIndividualMustReportState(id: string, mustReport: boolean) {
+    setMustReportState( previousMustReportState => {
+      const newMustReportState = {...previousMustReportState};
+      newMustReportState[id] = mustReport;
+      return {...newMustReportState};
+    })
+  }
 
   /**
    * Clone react component with child text, 
