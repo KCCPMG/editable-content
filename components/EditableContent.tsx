@@ -224,29 +224,13 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
     // initialize relevant state in EditableContent
     setIndividualPortalState(id, {});
-    // const newPortalsState = {...portalsState};
-    // newPortalsState[id] = {};
-    // setPortalsState(newPortalsState);
-
     setIndividualMustReportState(id, false);
-    // const newMustReportState = {...mustReportState};
-    // newMustReportState[id] = false;
-    // setMustReportState(newMustReportState);
 
     // define function to pass to stateful component
     props.reportState = function(stateObj: {[key: string]: any}) {
-
-      // try to refactor this so that the calls to state are not in the
-      // scope of props, but in the scope of EditableContent more narrowly
-
       setIndividualPortalState(id, stateObj);
-      // let toSet: {[key: string]: object} = {};
-      // const newPortalsState = {...portalsState} 
-      // newPortalsState[id] = stateObj; 
-
-      // setPortalsState(newPortalsState)
     }
-    props.mustReportState = mustReportState
+    props.mustReportState = mustReportState;
     const clone = React.cloneElement(component, props, text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals([...portals, portal]);
