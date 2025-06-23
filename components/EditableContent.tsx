@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef, useState, useEffect, isValidElement, ReactElement } from "react";
+import React, { useRef, useState, useEffect, isValidElement, ReactElement, useCallback } from "react";
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from '@/utils/utils';
 import { EditableContentProps, WrapperInstructions } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
@@ -161,9 +161,9 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
 
   function reactNodeToElement(reactNode: ReactNode) {
     const stringified = renderToString(reactNode);
-    console.log({stringified})
+    // console.log({stringified})
     const parsedElement = new DOMParser().parseFromString(stringified, "text/html").body.children[0];
-    console.log({parsedElement})
+    // console.log({parsedElement})
     return parsedElement;
   }
 
@@ -195,6 +195,21 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     return wrapperArgs;
   }
 
+  const setIndividualPortalState = useCallback((id: string, obj: {[key: string]: any}) => {
+    setPortalsState(previousPortalsState => {
+      const newPortalsState = {...previousPortalsState};
+      console.log(newPortalsState);
+      newPortalsState[id] = obj;
+      return {...newPortalsState};
+    });
+  }, []);
+
+  const setIndividualMustReportState = useCallback((id: string, mustReport: boolean) => {
+    const newMustReportState = {...mustReportState};
+    newMustReportState[id] = mustReport;
+    setMustReportState({...newMustReportState});
+  }, []);
+
   /**
    * Clone react component with child text, 
    * create portal, add portal to portals
@@ -207,19 +222,28 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
     const id = props["key"] as string;
 
     // initialize relevant state in EditableContent
-    const newPortalsState = {...portalsState};
-    newPortalsState[id] = {};
-    setPortalsState(newPortalsState);
+    setIndividualPortalState(id, {});
+    // const newPortalsState = {...portalsState};
+    // newPortalsState[id] = {};
+    // setPortalsState(newPortalsState);
 
-    const newMustReportState = {...mustReportState};
-    newMustReportState[id] = false;
-    setMustReportState(newMustReportState);
+    setIndividualMustReportState(id, false);
+    // const newMustReportState = {...mustReportState};
+    // newMustReportState[id] = false;
+    // setMustReportState(newMustReportState);
 
     // define function to pass to stateful component
     props.reportState = function(stateObj: {[key: string]: any}) {
-      let toSet: {[key: string]: object} = {};
-      toSet[id] = stateObj; 
-      setPortalsState(toSet)
+
+      // try to refactor this so that the calls to state are not in the
+      // scope of props, but in the scope of EditableContent more narrowly
+
+      setIndividualPortalState(id, stateObj);
+      // let toSet: {[key: string]: object} = {};
+      // const newPortalsState = {...portalsState} 
+      // newPortalsState[id] = stateObj; 
+
+      // setPortalsState(newPortalsState)
     }
     props.mustReportState = mustReportState
     const clone = React.cloneElement(component, props, text);

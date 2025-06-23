@@ -15,6 +15,7 @@ export default function StatefulBox(
   const [clicks, setClicks] = useState<number>(0);
 
   useEffect(() => {
+    if (reportState) reportState({clicks});
     console.log("clicks: ", clicks);
   }, [clicks])
 
@@ -24,8 +25,8 @@ export default function StatefulBox(
 
   return (
     <Box
-      onFocus={()=>{console.log("focus on SC")}}
-      onBlur={()=>{console.log("focus out SC")}}
+      // onFocus={()=>{console.log("focus on SC")}}
+      // onBlur={()=>{console.log("focus out SC")}}
       onClick={()=>{
         console.log("click SC")
         setClicks(clicks + 1);
