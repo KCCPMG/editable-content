@@ -170,13 +170,7 @@ export default function PageClient() {
         </DialogActions>
 
       </Dialog>
-      <h3>
-        <StatefulBox>
-          StatefulBox
-        </StatefulBox>
-      </h3>
       <EditableContent 
-        // initialHTML="Plain Text<strong>Strong Text</strong>"
         initialHTML={initialHTML}
         editTextButtons={[
           {
@@ -280,17 +274,5 @@ export default function PageClient() {
         ]}
       />
     </>
-  )
-}
-
-
-function SampleWrapper({children}: {children: ReactNode}) {
-  return (
-    <span
-      className="sample-wrapper"
-      onClick={(e) => console.log("clicked")}
-    >
-      {children}
-    </span>
   )
 }
