@@ -42,7 +42,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
   const [portals, setPortals] = useState<Array<React.ReactPortal>>([]);
   const [portalsState, setPortalsState] = useState<{[key: string]: any}>({});
   const [mustReportState, setMustReportState] = useState<{[key: string]: any}>({});
-
+  const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
 
   // on render
   useEffect(() => {
@@ -155,6 +155,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
   }
 
   function updateContent() {
+    if (hasSelection) resetSelectionToTextNodes();
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
     contentRef.current?.focus();
   }
@@ -255,6 +256,8 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     const text = range.toString() || '\u200B';
     const contents = range?.extractContents();
     range.insertNode(newDiv);
+
+    setDivToSetSelectionTo(newDiv);
     
     const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
     if (!foundNewDiv) return;
@@ -396,6 +399,9 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         } 
       } else {
         if (isReactComponent) {
+
+          
+
           // if isReactComponent, can assert wrapperInstructions as ReactElement
           createContentPortal(wrapperInstructions as ReactElement, dataKey);
         
@@ -412,6 +418,16 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     }
     // if no selection, no click handler
     
+  }
+
+
+  // once react component has rendered, set selection to text within
+  if (divToSetSelectionTo) {
+    if (divToSetSelectionTo.childNodes.length > 0) {
+      window.getSelection()?.setBaseAndExtent(divToSetSelectionTo, 0, divToSetSelectionTo, divToSetSelectionTo.childNodes.length);
+      resetSelectionToTextNodes();
+      setDivToSetSelectionTo(null);
+    }
   }
 
 
@@ -542,13 +558,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
           border: "2px solid black",
           overflowY: "scroll"
         }}
-        // divSx ? sx={divSx} : style={{
-        //   width: "100%",
-        //   height: "150px",
-        //   margin: "auto",
-        //   border: "2px solid black",
-        //   overflowY: "scroll"
-        // }}
       >
       </div>
       <div>
