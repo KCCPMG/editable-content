@@ -29,6 +29,21 @@ const reportState = new CustomEvent("reportState");
  */
 
 
+function getLastValidTextNode(textNodeArr: Array<Text>) {
+  for (let i=textNodeArr.length-1; i--; i>=0) {
+    return textNodeArr[i];
+  } 
+  return textNodeArr[0];
+}
+
+function getLastValidCharacterIndex(textNode: Text) {
+  if (!textNode.textContent) return 0;
+  for (let i=textNode.length-1; i--; i>=0) {
+    if (textNode.textContent[i].match("[^\u200B]")) return i;
+  }
+  return 0;
+}
+
 export default function EditableContent({divStyle, buttonRowStyle, initialHTML, editTextButtons}: EditableContentProps) {
 
   const contentRef = useRef<null | HTMLDivElement>(null);
@@ -304,6 +319,21 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     if (element) {
       
       const childNodes = Array.from(element.childNodes);
+
+      // handle break off from end of element
+      if (range.toString().length === 0) {
+        const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
+        
+        const lastTextNode = getLastValidTextNode(textNodes);
+        const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
+
+
+        if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
+          if (!contentRef.current) return;
+          moveSelection(selection, contentRef?.current, "right");
+        }
+
+      }
       
       const startNodeIndex = childNodes.findIndex(cn => cn === range.startContainer);
       const startNodeOffset = range.startOffset;
@@ -399,9 +429,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         } 
       } else {
         if (isReactComponent) {
-
-          
-
           // if isReactComponent, can assert wrapperInstructions as ReactElement
           createContentPortal(wrapperInstructions as ReactElement, dataKey);
         
