@@ -230,7 +230,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     props.reportState = function(stateObj: {[key: string]: any}) {
       setIndividualPortalState(id, stateObj);
     }
-    props.mustReportState = mustReportState;
+    props.mustReportState = mustReportState[id] || false;
     const clone = React.cloneElement(component, props, text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals([...portals, portal]);
