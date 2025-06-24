@@ -172,6 +172,7 @@ export default function PageClient() {
       </Dialog>
       <EditableContent 
         initialHTML={initialHTML}
+        // buttonRowStyle={{width: "70%", margin: "auto"}}
         divStyle={{
           width: "100%",
           height: "250px",

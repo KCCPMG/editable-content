@@ -60,6 +60,7 @@ export type EditableContentEditTextButtonProps = (
 
 
 export type EditableContentProps = {
+  buttonRowStyle?: CSSProperties,
   divStyle?: CSSProperties,
   initialHTML?: string,
   // editTextButtons: Array<EditableContentButtonProps>

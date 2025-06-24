@@ -29,7 +29,7 @@ const reportState = new CustomEvent("reportState");
  */
 
 
-export default function EditableContent({divStyle, initialHTML, editTextButtons}: EditableContentProps) {
+export default function EditableContent({divStyle, buttonRowStyle, initialHTML, editTextButtons}: EditableContentProps) {
 
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
@@ -418,7 +418,7 @@ export default function EditableContent({divStyle, initialHTML, editTextButtons}
   return (
     <>
       <h1>Texteditable Experiment</h1>
-      <div>
+      <div style={buttonRowStyle}>
         {
           editTextButtons.map(etb => {
 
