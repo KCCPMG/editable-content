@@ -1,9 +1,10 @@
-import { ButtonOwnProps } from "@mui/material";
+import { SxProps, ButtonOwnProps } from "@mui/material";
 import { DefaultComponentProps } from "@mui/material/OverridableComponent";
 import { ExtendButtonBaseTypeMap } from "@mui/material";
 import { ButtonTypeMap } from "@mui/material";
-import { DetailedHTMLProps, ReactNode } from "react";
+import { CSSProperties, DetailedHTMLProps, ReactNode } from "react";
 import { ButtonHTMLAttributes } from "react";
+
 
 
 
@@ -59,6 +60,7 @@ export type EditableContentEditTextButtonProps = (
 
 
 export type EditableContentProps = {
+  divStyle?: CSSProperties,
   initialHTML?: string,
   // editTextButtons: Array<EditableContentButtonProps>
   // editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>,

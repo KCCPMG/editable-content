@@ -29,7 +29,7 @@ const reportState = new CustomEvent("reportState");
  */
 
 
-export default function EditableContent({initialHTML, editTextButtons}: EditableContentProps) {
+export default function EditableContent({divStyle, initialHTML, editTextButtons}: EditableContentProps) {
 
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
@@ -535,13 +535,20 @@ export default function EditableContent({initialHTML, editTextButtons}: Editable
           }    
         }}
         ref={contentRef}
-        style={{
+        style={divStyle ? divStyle : {
           width: "100%",
           height: "150px",
           margin: "auto",
           border: "2px solid black",
           overflowY: "scroll"
         }}
+        // divSx ? sx={divSx} : style={{
+        //   width: "100%",
+        //   height: "150px",
+        //   margin: "auto",
+        //   border: "2px solid black",
+        //   overflowY: "scroll"
+        // }}
       >
       </div>
       <div>

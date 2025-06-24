@@ -172,6 +172,13 @@ export default function PageClient() {
       </Dialog>
       <EditableContent 
         initialHTML={initialHTML}
+        divStyle={{
+          width: "100%",
+          height: "250px",
+          margin: "auto",
+          border: "2px solid black",
+          overflowY: "scroll"
+        }}
         editTextButtons={[
           {
             isMUIButton: true,

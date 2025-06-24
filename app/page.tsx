@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <main
       style={{
-        width: 500,
+        width: 900,
         margin: "auto",
         marginTop: 100
       }}
