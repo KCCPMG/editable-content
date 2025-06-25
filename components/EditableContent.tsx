@@ -334,21 +334,29 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
 
     // if selection is still inside of element, - end of text
     if (textNodes.includes(selection.anchorNode as Text)) {
+      console.log("sanity check 1");
       const newRange = new Range();
       newRange.setStartAfter(targetElement);
       newRange.collapse();
-      const newTextNode = document.createTextNode("\u200B")
-      newRange.insertNode(newTextNode)
-      // window.getSelection()?.setBaseAndExtent(newTextNode, 1, newTextNode, 1)
-      moveSelection(selection, contentRef?.current, "right");
+      console.log("sanity check 2");
+      const newTextNode = document.createTextNode("\u200B");
+      newRange.insertNode(newTextNode);
+      console.log(newRange);
+      console.log("sanity check 3");
+
+      window.getSelection()?.setBaseAndExtent(newTextNode, 1, newTextNode, 1);
+      console.log(window.getSelection()?.getRangeAt(0));
+      console.log()
+      // moveSelection(selection, contentRef?.current, "right");
+      console.log("sanity check 4");
     }
     // make sure next text node starts with zero width space
-    else if (selection.anchorNode.textContent.length == 0 ||
+    if (selection.anchorNode.textContent.length == 0 ||
       !selection.anchorNode.textContent[0].match("\u200B")
     ) {
+      console.log("in the text node space catcher");
       selection.anchorNode.nodeValue = "\u200B" + selection.anchorNode.textContent;
       selection.setBaseAndExtent(selection.anchorNode, 1, selection.anchorNode, 1);
-    } else {
     }
     return;
     

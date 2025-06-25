@@ -24,6 +24,7 @@ export function resetSelectionToTextNodes(): Selection | null {
   const originalStartContainer = range.startContainer;
   
   const modifiedRange = resetRangeToTextNodes(range);
+  if (!modifiedRange) return null;
 
   selection = window.getSelection();
   if (!selection) return null;
@@ -39,6 +40,7 @@ export function resetRangeToTextNodes(range: Range) {
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
     const startNode = range.startContainer.childNodes[range.startOffset];
     console.log(startNode);
+    if (!startNode) return null;
     const tw = document.createTreeWalker(startNode);
     while (true) {
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
