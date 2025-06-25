@@ -313,48 +313,57 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     cloneElementIntoPortal(component, {key: uuid}, text, containingDiv);
   }
 
+  function breakElementAtEnd(targetElement: Element, selection: Selection) {
+    const childNodes = Array.from(targetElement.childNodes);
+    const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
+    const range = selection.getRangeAt(0);
+        
+
+    if (!contentRef.current) return;
+    moveSelection(selection, contentRef?.current, "right");
+    // get new selection, make sure it starts with zero width space
+    // if not, add it, put selection after zero width space)
+    if (!selection?.anchorNode?.textContent) return;
+
+    // if selection is still inside of element, - end of text
+    if (textNodes.includes(selection.anchorNode as Text)) {
+      const newRange = new Range();
+      newRange.setStartAfter(targetElement);
+      newRange.collapse();
+      newRange.insertNode(document.createTextNode("\u200B"))
+      moveSelection(selection, contentRef?.current, "right");
+    }
+    // make sure next text node starts with zero width space
+    else if (selection.anchorNode.textContent.length == 0 ||
+      !selection.anchorNode.textContent[0].match("\u200B")
+    ) {
+      selection.anchorNode.nodeValue = "\u200B" + selection.anchorNode.textContent;
+      selection.setBaseAndExtent(selection.anchorNode, 1, selection.anchorNode, 1);
+    }
+    return;
+    
+  }
+
   function unwrapUnbreakableElement(selection: Selection) {
     const range = selection.getRangeAt(0);
     const element = getRangeLowestAncestorElement(range);
     if (element) {
       
       const childNodes = Array.from(element.childNodes);
+      const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
 
       // handle break off from end of element
       if (range.toString().length === 0) {
-        const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
-        
         const lastTextNode = getLastValidTextNode(textNodes);
         const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
-
-
+    
         if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
-          if (!contentRef.current) return;
-          moveSelection(selection, contentRef?.current, "right");
-          // get new selection, make sure it starts with zero width space
-          // if not, add it, put selection after zero width space)
-          if (!selection?.anchorNode?.textContent) return;
-
-          // if selection is still inside of element, - end of text
-          if (textNodes.includes(selection.anchorNode as Text)) {
-            const newRange = new Range();
-            newRange.setStartAfter(element);
-            newRange.collapse();
-            newRange.insertNode(document.createTextNode("\u200B"))
-            moveSelection(selection, contentRef?.current, "right");
-          }
-          // make sure next text node starts with zero width space
-          else if (selection.anchorNode.textContent.length == 0 ||
-            !selection.anchorNode.textContent[0].match("\u200B")
-          ) {
-            selection.anchorNode.nodeValue = "\u200B" + selection.anchorNode.textContent;
-            selection.setBaseAndExtent(selection.anchorNode, 1, selection.anchorNode, 1);
-          }
+          breakElementAtEnd(element, selection);
           return;
         }
-
       }
       
+      // else to either condition above
       const startNodeIndex = childNodes.findIndex(cn => cn === range.startContainer);
       const startNodeOffset = range.startOffset;
       const endNodeIndex = childNodes.findIndex(cn => cn === range.endContainer);
@@ -378,7 +387,42 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       
       contentRef.current?.dispatchEvent(contentChange);
       resetSelectionToTextNodes();
+      return;
+      
+      
     }
+
+  }
+
+  function unwrapReactComponent(selection: Selection) {
+    if (!selection.anchorNode || !contentRef.current) return;
+    const targetDiv = getAncestorNode(selection.anchorNode, "div[data-button-key]", contentRef.current) as Element;
+
+    if (!targetDiv) return;
+
+    const key = targetDiv.getAttribute('id')?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
+
+    if (!key || key.length === 0) return;
+
+    const targetPortal = portals.find(p => p.key === key);
+
+    if (!targetPortal) return;
+
+    const targetComponent = targetPortal.children;
+    if (!targetComponent || !isValidElement(targetComponent)) return;
+    
+    const children = targetComponent.props.children;
+    const htmlChildren = (typeof children === "string") ? 
+      document.createTextNode(children) :
+      reactNodeToElement(children);
+    targetDiv.appendChild(htmlChildren);
+
+    removePortal(key);
+
+    // need to remove containing div / unwrap text normally
+    targetDiv.setAttribute('data-mark-for-deletion', '');
+
+    // promoteChildrenOfNode(targetDiv);
 
   }
 
@@ -403,40 +447,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     if (selection) {         
       if (selected) {
         if (isReactComponent) {
-          if (!selection.anchorNode || !contentRef.current) return;
-          const targetDiv = getAncestorNode(selection.anchorNode, "div[data-button-key]", contentRef.current) as Element;
-
-          if (!targetDiv) return;
-
-          const key = targetDiv.getAttribute('id')?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
-
-          if (!key || key.length === 0) return;
-
-          const targetPortal = portals.find(p => p.key === key);
-
-          if (!targetPortal) return;
-
-          const targetComponent = targetPortal.children;
-          if (!targetComponent || !isValidElement(targetComponent)) return;
-          
-          const children = targetComponent.props.children;
-          const htmlChildren = (typeof children === "string") ? 
-            document.createTextNode(children) :
-            reactNodeToElement(children);
-          targetDiv.appendChild(htmlChildren);
-
-          removePortal(key);
-
-          // need to remove containing div / unwrap text normally
-          targetDiv.setAttribute('data-mark-for-deletion', '');
-
-          // promoteChildrenOfNode(targetDiv);
-
-          if (deselectCallback) { 
-            deselectCallback();
-          }
-
-
+          unwrapReactComponent(selection);
         } else if (wrapperArgs.unbreakable) {
           unwrapUnbreakableElement(selection);
         } else {
