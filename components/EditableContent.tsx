@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect, isValidElement, ReactElement, useCallback } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from '@/utils/utils';
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from '@/utils/utils';
 import { EditableContentProps, WrapperInstructions } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
@@ -345,11 +345,19 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
   }
 
   function unwrapUnbreakableElement(selection: Selection) {
+    if (!contentRef.current) return;
     const range = selection.getRangeAt(0);
     const element = getRangeLowestAncestorElement(range);
     if (element) {
       
-      const childNodes = Array.from(element.childNodes);
+      const elementRange = new Range();
+      elementRange.setStart(element, 0);
+      elementRange.setEnd(element, element.childNodes.length);
+      resetRangeToTextNodes(elementRange);
+      const childNodes = getRangeChildNodes(elementRange, contentRef.current);
+
+      // const childNodes = Array.from(element.childNodes);
+
       const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
 
       // handle break off from end of element
@@ -395,6 +403,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
   }
 
   function unwrapReactComponent(selection: Selection) {
+    const range = selection.getRangeAt(0);
     if (!selection.anchorNode || !contentRef.current) return;
     const targetDiv = getAncestorNode(selection.anchorNode, "div[data-button-key]", contentRef.current) as Element;
 
