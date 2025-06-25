@@ -417,6 +417,31 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
 
     if (!targetPortal) return;
 
+    // const childNodes = Array.from(targetPortal.childNodes);
+
+    if (targetPortal.children && range.toString().length === 0) {
+
+      const childrenRange = new Range();
+      childrenRange.setStart(targetPortal.children[0], 0);
+      childrenRange.setEndAfter(targetPortal.children[targetPortal.children.length]);
+      resetRangeToTextNodes(childrenRange);
+      const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
+      const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
+    
+      // if at end of react component
+      if (range.toString().length === 0) {
+        const lastTextNode = getLastValidTextNode(textNodes);
+        const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
+    
+        if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
+          breakElementAtEnd(element, selection);
+          return;
+        }
+      }
+    }
+
+
+    // else to either condition above
     const targetComponent = targetPortal.children;
     if (!targetComponent || !isValidElement(targetComponent)) return;
     
