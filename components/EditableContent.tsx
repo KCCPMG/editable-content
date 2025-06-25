@@ -331,6 +331,26 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
           if (!contentRef.current) return;
           moveSelection(selection, contentRef?.current, "right");
+          // get new selection, make sure it starts with zero width space
+          // if not, add it, put selection after zero width space)
+          if (!selection?.anchorNode?.textContent) return;
+
+          // if selection is still inside of element, - end of text
+          if (textNodes.includes(selection.anchorNode as Text)) {
+            const newRange = new Range();
+            newRange.setStartAfter(element);
+            newRange.collapse();
+            newRange.insertNode(document.createTextNode("\u200B"))
+            moveSelection(selection, contentRef?.current, "right");
+          }
+          // make sure next text node starts with zero width space
+          else if (selection.anchorNode.textContent.length == 0 ||
+            !selection.anchorNode.textContent[0].match("\u200B")
+          ) {
+            selection.anchorNode.nodeValue = "\u200B" + selection.anchorNode.textContent;
+            selection.setBaseAndExtent(selection.anchorNode, 1, selection.anchorNode, 1);
+          }
+          return;
         }
 
       }

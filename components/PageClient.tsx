@@ -79,11 +79,10 @@ sit amet
   elit.
 </strong>
   Sunt,  ​repudiandae. ​Lorem, ​
-<strong>
+<u testattribute="ta" testattribute2="ta2" data-unbreakable="">
   ipsum ​dolor
-  <i> ​</i>
-  sit ​​
-</strong>`.replaceAll(/\n */g, '');
+  sit
+</u>`.replaceAll(/\n */g, '');
 
 
 
