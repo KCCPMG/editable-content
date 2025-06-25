@@ -110,7 +110,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
 
     toDelete.forEach(td => promoteChildrenOfNode(td));
-
+    resetSelectionToTextNodes();
 
 
     // TODO: Delete these once done testing
@@ -314,13 +314,20 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
   }
 
   function breakElementAtEnd(targetElement: Element, selection: Selection) {
-    const childNodes = Array.from(targetElement.childNodes);
+    if (!contentRef.current) return;
+
+    const childrenRange = new Range();
+
+    childrenRange.setStart(targetElement, 0);
+    childrenRange.setEnd(targetElement, targetElement.childNodes.length)
+
+    resetRangeToTextNodes(childrenRange);
+    const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
     const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
     const range = selection.getRangeAt(0);
-        
 
-    if (!contentRef.current) return;
     moveSelection(selection, contentRef?.current, "right");
+    
     // get new selection, make sure it starts with zero width space
     // if not, add it, put selection after zero width space)
     if (!selection?.anchorNode?.textContent) return;
@@ -330,7 +337,9 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       const newRange = new Range();
       newRange.setStartAfter(targetElement);
       newRange.collapse();
-      newRange.insertNode(document.createTextNode("\u200B"))
+      const newTextNode = document.createTextNode("\u200B")
+      newRange.insertNode(newTextNode)
+      // window.getSelection()?.setBaseAndExtent(newTextNode, 1, newTextNode, 1)
       moveSelection(selection, contentRef?.current, "right");
     }
     // make sure next text node starts with zero width space
@@ -339,6 +348,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     ) {
       selection.anchorNode.nodeValue = "\u200B" + selection.anchorNode.textContent;
       selection.setBaseAndExtent(selection.anchorNode, 1, selection.anchorNode, 1);
+    } else {
     }
     return;
     
@@ -422,22 +432,23 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     if (targetPortal.children && range.toString().length === 0) {
 
       const childrenRange = new Range();
-      childrenRange.setStart(targetPortal.children[0], 0);
-      childrenRange.setEndAfter(targetPortal.children[targetPortal.children.length]);
+
+      childrenRange.setStart(targetDiv, 0);
+      childrenRange.setEnd(targetDiv, targetDiv.childNodes.length)
+
       resetRangeToTextNodes(childrenRange);
       const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
       const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
     
+      const lastTextNode = getLastValidTextNode(textNodes);
+      const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
+      
       // if at end of react component
-      if (range.toString().length === 0) {
-        const lastTextNode = getLastValidTextNode(textNodes);
-        const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
-    
-        if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
-          breakElementAtEnd(element, selection);
-          return;
-        }
+      if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
+        breakElementAtEnd(targetDiv, selection);
+        return;
       }
+      
     }
 
 

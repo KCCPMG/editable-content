@@ -38,6 +38,7 @@ export function resetSelectionToTextNodes(): Selection | null {
 export function resetRangeToTextNodes(range: Range) {
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
     const startNode = range.startContainer.childNodes[range.startOffset];
+    console.log(startNode);
     const tw = document.createTreeWalker(startNode);
     while (true) {
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
