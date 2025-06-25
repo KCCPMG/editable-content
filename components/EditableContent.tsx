@@ -235,18 +235,22 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
    * @param text 
    * @param targetDiv 
    */
-  function cloneElementIntoPortal(component: ReactElement, props: {[key: string] : any}, text: string, targetDiv: Element) {
+  function cloneElementIntoPortal(component: ReactElement, props: {[key: string] : any}, text: string, targetDiv: Element, isStateful: boolean) {
     const id = props["key"] as string;
 
-    // initialize relevant state in EditableContent
-    setIndividualPortalState(id, {});
-    setIndividualMustReportState(id, false);
+    if (isStateful) {
+      
+      // initialize relevant state in EditableContent
+      setIndividualPortalState(id, {});
+      setIndividualMustReportState(id, false);
+  
+      // define function to pass to stateful component
+      props.reportState = function(stateObj: {[key: string]: any}) {
+        setIndividualPortalState(id, stateObj);
+      }
+      props.mustReportState = mustReportState[id] || false;
 
-    // define function to pass to stateful component
-    props.reportState = function(stateObj: {[key: string]: any}) {
-      setIndividualPortalState(id, stateObj);
     }
-    props.mustReportState = mustReportState[id] || false;
     const clone = React.cloneElement(component, props, text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals([...portals, portal]);
@@ -257,7 +261,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
    * create portal and add that portal to portals state
    * @param component 
    */
-  function createContentPortal(component: ReactElement, buttonKey: string) {
+  function createContentPortal(component: ReactElement, buttonKey: string, isStateful: boolean) {
     const uuid = uuidv4();
     const id = PORTAL_CONTAINER_ID_PREFIX+uuid;
     const newDiv = document.createElement("div");
@@ -279,7 +283,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     
     // curently only handling range text, not nested elements
     if (contentRef.current && contentRef.current && foundNewDiv) {
-      cloneElementIntoPortal(component, {key: uuid}, text, foundNewDiv)
+      cloneElementIntoPortal(component, {key: uuid}, text, foundNewDiv, isStateful)
     }
   }
 
@@ -310,7 +314,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     if (!foundButton) return;
 
     const component = foundButton.wrapperInstructions as ReactElement;
-    cloneElementIntoPortal(component, {key: uuid}, text, containingDiv);
+    cloneElementIntoPortal(component, {key: uuid}, text, containingDiv, !!foundButton.isStateful);
   }
 
   function breakElementAtEnd(targetElement: Element, selection: Selection) {
@@ -495,7 +499,8 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     selectCallback: (wrapper: HTMLElement) => void, 
     deselectCallback: () => void, 
     wrapperInstructions: WrapperInstructions, 
-    dataKey: string
+    dataKey: string,
+    isStateful: boolean
   ) {
     if (selection) {         
       if (selected) {
@@ -514,7 +519,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       } else {
         if (isReactComponent) {
           // if isReactComponent, can assert wrapperInstructions as ReactElement
-          createContentPortal(wrapperInstructions as ReactElement, dataKey);
+          createContentPortal(wrapperInstructions as ReactElement, dataKey, isStateful);
         
         } else {
           const wrapper = createWrapper(wrapperArgs, document);
@@ -549,7 +554,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         {
           editTextButtons.map(etb => {
 
-            const {dataKey, selectCallback, deselectCallback, wrapperInstructions, isReactComponent, ...otherProps} = etb;
+            const {dataKey, selectCallback, deselectCallback, wrapperInstructions, isReactComponent, isStateful, ...otherProps} = etb;
 
             // if React Element, derive wrapper args from Element, else use what's given
             const wrapperArgs = isReactComponent ?
@@ -591,7 +596,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
                 disabled={!enabled}
                 onMouseDown={(e: Event) => {e.preventDefault();}}
                 selected={selected}
-                onClick={() => handleEditTextButtonClick(selection, wrapperArgs, isReactComponent, selected, query, selectCallback, deselectCallback, wrapperInstructions, dataKey)}
+                onClick={() => handleEditTextButtonClick(selection, wrapperArgs, isReactComponent, selected, query, selectCallback, deselectCallback, wrapperInstructions, dataKey, isStateful)}
               />
             )
           })

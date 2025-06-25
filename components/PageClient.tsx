@@ -268,6 +268,7 @@ export default function PageClient() {
             dataKey: "stateful-component",
             child: "SC",
             isReactComponent: true,
+            isStateful: true,
             wrapperInstructions: <StatefulBox />
           },
           {
@@ -275,6 +276,7 @@ export default function PageClient() {
             dataKey: "multilevel-component",
             child: "MLB",
             isReactComponent: true,
+            isStateful: false,
             wrapperInstructions: <MultiLevelBox />
           }
         ]}
