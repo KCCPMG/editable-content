@@ -23,6 +23,19 @@ export function resetSelectionToTextNodes(): Selection | null {
   const range = selection.getRangeAt(0);
   const originalStartContainer = range.startContainer;
   
+  const modifiedRange = resetRangeToTextNodes(range);
+
+  selection = window.getSelection();
+  if (!selection) return null;
+
+  selection.removeAllRanges();
+  selection.addRange(modifiedRange);
+
+  return selection;
+}
+
+
+export function resetRangeToTextNodes(range: Range) {
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
     const startNode = range.startContainer.childNodes[range.startOffset];
     const tw = document.createTreeWalker(startNode);
@@ -55,13 +68,7 @@ export function resetSelectionToTextNodes(): Selection | null {
     range.setEnd(lastTextNode, lastTextNode.textContent?.length || 0);
   }
 
-  selection = window.getSelection();
-  if (!selection) return null;
-
-  selection.removeAllRanges();
-  selection.addRange(range);
-
-  return selection;
+  return range;
 }
 
 
@@ -502,6 +509,7 @@ export function getSelectionChildNodes(selection: Selection, limitingContainer: 
 
 
 export function getRangeChildNodes(range: Range, limitingContainer: Node): Array<Node> {
+  // assumes that startNode and endNode are text
 
   const { startContainer, startOffset, endContainer, endOffset } = range;
 
@@ -514,7 +522,11 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
     endContainer.childNodes[endOffset] :
     endContainer 
 
-  const tw = document.createTreeWalker(limitingContainer);
+  const tw = startNode === endNode ? 
+    document.createTreeWalker(startNode) : 
+    document.createTreeWalker(limitingContainer);
+
+  // const tw = document.createTreeWalker(limitingContainer);
 
   const childNodes:Array<Node> = [];
   let inRange = false;
