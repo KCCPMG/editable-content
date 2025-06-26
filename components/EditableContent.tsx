@@ -39,7 +39,7 @@ function getLastValidTextNode(textNodeArr: Array<Text>) {
 function getLastValidCharacterIndex(textNode: Text) {
   if (!textNode.textContent) return 0;
   for (let i=textNode.length-1; i--; i>=0) {
-    if (textNode.textContent[i].match("[^\u200B]")) return i;
+    if (textNode.textContent[i].match("[^\u200B]")) return i+1;
   }
   return 0;
 }
@@ -387,7 +387,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         const lastTextNode = getLastValidTextNode(textNodes);
         const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
     
-        if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
+        if (range.startContainer === lastTextNode && range.startOffset > lastTextIndex) {
           breakElementAtEnd(element, selection);
           return;
         }
@@ -456,7 +456,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
       
       // if at end of react component
-      if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
+      if (range.startContainer === lastTextNode && range.startOffset > lastTextIndex) {
         breakElementAtEnd(targetDiv, selection);
         return;
       }
