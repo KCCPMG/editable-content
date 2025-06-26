@@ -334,7 +334,8 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     
     // get new selection, make sure it starts with zero width space
     // if not, add it, put selection after zero width space)
-    if (!selection?.anchorNode?.textContent) return;
+    // if (!selection?.anchorNode?.textContent) return;
+    if (!(selection?.anchorNode)) return;
 
     // if selection is still inside of element, - end of text
     if (textNodes.includes(selection.anchorNode as Text)) {
@@ -343,7 +344,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       newRange.setStartAfter(targetElement);
       newRange.collapse();
       console.log("sanity check 2");
-      const newTextNode = document.createTextNode("\u200B");
+      const newTextNode = document.createTextNode("\u200B\u200B");
       newRange.insertNode(newTextNode);
       console.log(newRange);
       console.log("sanity check 3");
@@ -355,8 +356,9 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       console.log("sanity check 4");
     }
     // make sure next text node starts with zero width space
-    if (selection.anchorNode.textContent.length == 0 ||
-      !selection.anchorNode.textContent[0].match("\u200B")
+    if (selection.anchorNode.textContent != null && (
+      selection.anchorNode.textContent.length == 0 ||
+      !selection.anchorNode.textContent[0].match("\u200B"))
     ) {
       console.log("in the text node space catcher");
       selection.anchorNode.nodeValue = "\u200B" + selection.anchorNode.textContent;
