@@ -508,22 +508,33 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       if (selected) {
         if (isReactComponent) {
           unwrapReactComponent(selection);
-        } else if (wrapperArgs.unbreakable) {
-          unwrapUnbreakableElement(selection);
-        } else {
-          unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-          contentRef.current?.dispatchEvent(contentChange);
+        } 
+        else if (!isReactComponent) {
+          if (wrapperArgs.unbreakable) {
+            unwrapUnbreakableElement(selection);  
+          }
+          else if (!wrapperArgs.unbreakable) {
+            unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+            contentRef.current?.dispatchEvent(contentChange);
+          } 
+          else {
+            console.log("uncaught secnario in selected and not react component");
+          }
+        }
+        else {
+          console.log("uncaught scenario in handling click on text selected by button")
         }
         
         if (deselectCallback) {
           deselectCallback();
         } 
-      } else {
+      } 
+      else if (!selected) {
         if (isReactComponent) {
           // if isReactComponent, can assert wrapperInstructions as ReactElement
           createContentPortal(wrapperInstructions as ReactElement, dataKey, isStateful);
         
-        } else {
+        } else if (!isReactComponent) {
           const wrapper = createWrapper(wrapperArgs, document);
           wrapInElement(selection, wrapper, contentRef.current!);
           contentRef.current?.dispatchEvent(contentChange);
