@@ -276,12 +276,16 @@ export function unwrapRangeFromQuery(range: Range, query: string, limitingContai
   if (endContainerAncestorNode) {
     // promoteChildrenOfNode(endContainerAncestorNode)
     range.setEndAfter(endContainerAncestorNode);
+    // range.setEnd(endContainerAncestorNode, endContainerAncestorNode.childNodes.length)
     // range.setEnd(endContainerAncestorNode, 0);
   }
   
   // need to reset range or tw will fail in getSelectionChildNodes
 
-
+  // const contents = range.extractContents();
+  // for (let cn of Array.from(contents.childNodes)) {
+  //   range.insertNode(cn);
+  // }
 
   // promote children of all query-matching nodes in selection
   const childNodes = getRangeChildNodes(range, limitingContainer);
@@ -551,8 +555,16 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
 
     // not else, can flip switch and then progress
     if (inRange) {
-      childNodes.push(currentNode);
-      if (currentNode == endNode) break;
+      // childNodes.push(currentNode);
+      // if (currentNode == endNode) break;
+      if (currentNode == endNode) {
+        if (currentNode.nodeType === Node.TEXT_NODE) {
+          childNodes.push(currentNode);
+        } 
+        break;
+      } else {
+        childNodes.push(currentNode);
+      }
     }
 
     if (!tw.nextNode()) break;
