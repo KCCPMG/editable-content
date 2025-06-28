@@ -12,7 +12,7 @@ import { createPortal } from "react-dom";
 import { v4 as uuidv4 } from 'uuid';
 
 const PORTAL_CONTAINER_ID_PREFIX = "portal-container-";
-const contentChange = new CustomEvent("contentChange");
+// const contentChange = new CustomEvent("contentChange");
 const reportState = new CustomEvent("reportState");
 
 
@@ -91,7 +91,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       } 
     })
   
-    contentRef?.current?.addEventListener("contentChange", updateContent)
+    // contentRef?.current?.addEventListener("contentChange", updateContent)
 
     // teardown
     return () => {
@@ -417,7 +417,8 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       
       parentNode?.removeChild(element);
       
-      contentRef.current?.dispatchEvent(contentChange);
+      // contentRef.current?.dispatchEvent(contentChange);
+      updateContent();
       resetSelectionToTextNodes();
       return;
       
@@ -515,7 +516,8 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
           }
           else if (!wrapperArgs.unbreakable) {
             unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-            contentRef.current?.dispatchEvent(contentChange);
+            // contentRef.current?.dispatchEvent(contentChange);
+            updateContent();
           } 
           else {
             console.log("uncaught secnario in selected and not react component");
@@ -537,7 +539,8 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         } else if (!isReactComponent) {
           const wrapper = createWrapper(wrapperArgs, document);
           wrapInElement(selection, wrapper, contentRef.current!);
-          contentRef.current?.dispatchEvent(contentChange);
+          // contentRef.current?.dispatchEvent(contentChange);
+          updateContent();
           if (selectCallback) {
             selectCallback(wrapper);
           } 
@@ -640,7 +643,8 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
             
             selection.removeAllRanges();
             selection.addRange(range);  
-            contentRef.current?.dispatchEvent(contentChange);   
+            // contentRef.current?.dispatchEvent(contentChange);  
+            updateContent(); 
           }
 
           if (e.code === "Space") { 
@@ -648,11 +652,12 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
             const spaceNode = document.createTextNode("\u0020\u200B");
             range.extractContents();
             range.insertNode(spaceNode);
-            range.setStartAfter(spaceNode);
+            range.setStart(spaceNode, 2);
             range.collapse();
             selection.removeAllRanges();
             selection.addRange(range);
-            contentRef.current?.dispatchEvent(contentChange);
+            // contentRef.current?.dispatchEvent(contentChange);
+            updateContent();
           }
 
           if (e.code === "ArrowLeft") {
