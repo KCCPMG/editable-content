@@ -488,8 +488,14 @@ export function selectionIsDescendentOfNode(selection: Selection, ancestorElemen
   return (
     selection.anchorNode &&
     selection.focusNode &&
-    nodeIsDescendentOfNode(selection.anchorNode, ancestorElement) &&
-    nodeIsDescendentOfNode(selection.focusNode, ancestorElement) 
+    (
+      nodeIsDescendentOfNode(selection.anchorNode, ancestorElement) || 
+      selection.anchorNode === ancestorElement
+    ) &&
+    (
+      nodeIsDescendentOfNode(selection.focusNode, ancestorElement) ||
+      selection.focusNode === ancestorElement
+    )
   )
 }
 

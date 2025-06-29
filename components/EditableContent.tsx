@@ -129,14 +129,16 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       selection?.anchorNode?.nodeType !== Node.TEXT_NODE &&
       selection?.focusNode?.nodeType !== Node.TEXT_NODE
     ) {
+      console.log("selectionHasTextNodes", selectionHasTextNodes(selection, contentRef.current));
       if (selectionHasTextNodes(selection, contentRef.current)) {
         resetSelectionToTextNodes();
       } else {
-        const textNode = document.createTextNode('\u200B');
-        contentRef.current.append(textNode);
+        const textNode = document.createTextNode('\u200B\u200B');
+        // contentRef.current.append(textNode);
         const range = selection.getRangeAt(0);
-        range.setStart(textNode, 0);
-        range.setEnd(textNode, textNode.length);
+        range.insertNode(textNode)
+        range.setStart(textNode, 1);
+        range.setEnd(textNode, 1);
         selection.removeAllRanges();
         selection.addRange(range);
       }
@@ -622,7 +624,41 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         contentEditable
         spellCheck={false}
         onInput={updateContent}
-        onFocus={() => { setHasSelection(true) }}
+        onFocus={() => { 
+          console.log("focus");
+          // const selection = window.getSelection();
+          // console.log({selection: JSON.stringify(selection)})
+          // if (
+          //   selection?.anchorNode?.nodeType != Node.TEXT_NODE || 
+          //   selection?.focusNode?.nodeType != Node.TEXT_NODE
+          // ) {
+          //   if (!contentRef.current || !selection) return;
+
+          //   // if textnodes in contentRef.current, resetSelectionToTextNodes
+          //   const divRange = new Range();
+          //   divRange.setStart(contentRef.current, 0);
+          //   divRange.setEnd(contentRef.current, contentRef.current.childNodes.length);
+          //   console.log({divRange})
+          //   const textNodes = getRangeChildNodes(divRange, contentRef.current)
+          //   .filter(n => n.nodeType === Node.TEXT_NODE);
+          //   console.log({textNodes});
+
+          //   if (textNodes.length > 0) {
+          //     resetSelectionToTextNodes();
+          //   }
+
+          //   // if no text nodes in range, create
+          //   else {
+          //     console.log("else");
+          //     const newTextNode = document.createTextNode("\u200B\u200B");
+          //     const range = selection.getRangeAt(0);
+          //     range.insertNode(newTextNode);
+          //     selection.setBaseAndExtent(newTextNode, 1, newTextNode, 1);
+          //     console.log({selection})
+          //   }
+          // } 
+          setHasSelection(true);
+        }}
         onBlur={() => { setHasSelection(false) }}
         onKeyDown={(e) => {
           const selection = window.getSelection(); 
