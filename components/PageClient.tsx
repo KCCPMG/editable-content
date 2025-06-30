@@ -9,7 +9,7 @@ import { Box } from "@mui/material";
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from '@/utils/utils';
 import StatefulBox from "./TestComponents/StatefulBox";
 import MultiLevelBox from "./TestComponents/MultilLevelBox";
-import { EditableContentContextProvider } from "@/context/EditableContentContext";
+import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext";
 
 
 
@@ -283,7 +283,22 @@ export default function PageClient() {
             }
           ]}
         />
+        <ClearButton />
       </EditableContentContextProvider>
     </>
+  )
+}
+
+function ClearButton() {
+  const {setContentRefCurrentInnerHTML} = useEditableContentContext();
+
+  function clear() {
+    setContentRefCurrentInnerHTML("");
+  }
+
+  return (
+    <Button onClick={clear}>
+      Clear
+    </Button>
   )
 }
