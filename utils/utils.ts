@@ -484,6 +484,12 @@ function nodeIsDescendentOfNode(node: Node, ancestorNode: Node) {
 }
 
 
+/**
+ * Returns boolean indicating if selection is within a given element
+ * @param selection 
+ * @param ancestorElement 
+ * @returns 
+ */
 export function selectionIsDescendentOfNode(selection: Selection, ancestorElement: Element) {
   return (
     selection.anchorNode &&
@@ -594,56 +600,9 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
  */
 export function selectionIsCoveredBy(selection: Selection, query: string, limitingContainer: Node): Boolean {
 
-  // if (!selection) return false;
-  // const range = selection.getRangeAt(0) || null;
-  // if(!range) return false;
-
-  // // unbreakable element
-  // if (query.match(/\[unbreakable\]/)) {
-
-  //   // selection is within unbreakable element - true
-  //   const nodes = getSelectionChildNodes(selection, limitingContainer);
-  //   const textNodes = nodes
-  //   .filter(n => n.nodeType === Node.TEXT_NODE)
-  //   .filter(n => n.textContent && n.textContent.length > 0); 
-
-  //   const commonAncestor = range.commonAncestorContainer;
-
-  //   if (commonAncestor instanceof Element && commonAncestor.matches(query) && commonAncestor !== limitingContainer) return true;
-
-  //   if (nodeIsDescendentOf(commonAncestor, query, limitingContainer)) return true;
-
-  //   // if textNodes.every(tn => nodeIsDescendentOf(tn, query, limitingContainer)) {
-
-  //   // }
-    
-    
-    
-  //   // selection covers unbreakable element - false
-    
-    
-    
-  //   // selection des not cover or intersect unbreakable element
-
-
-
-
-  //   // selection intersects unbreakable element
-
-
-  //   //
-
-  // }
-
-
-  // else
   const nodes = getSelectionChildNodes(selection, limitingContainer);
-  // console.log("getSelectionCoveredBy", {nodes});
   const textNodes = nodes
   .filter(n => n.nodeType === Node.TEXT_NODE);
-
-  // I don't remember why the below check was in place, but in ruins empty text nodes
-  // .filter(n => n.textContent && n.textContent.length > 0); 
    
   return textNodes.every(tn => nodeIsDescendentOf(tn, query, limitingContainer));
 
@@ -731,8 +690,8 @@ export function selectionContainsNoUnbreakables(selection: Selection, limitingCo
   )
 }
 
-export function getButtonStatus(selection: Selection | null, isUnbreakable: boolean | undefined, query: string, limitingContainer: Node | null) {
 
+export function getButtonStatus(selection: Selection | null, isUnbreakable: boolean | undefined, query: string, limitingContainer: Node | null) {
   
   const status = {
     enabled: true,
@@ -822,7 +781,6 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
       status.selected = true;
     } else status.selected = false;
   }
-
 
 
   return status;
