@@ -1,3 +1,4 @@
+import { getRangeChildNodes } from "@/utils/utils";
 import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode } from "react";
 
 
@@ -25,7 +26,8 @@ type EditableContentContextType = {
   mustReportState: {[key: string]: boolean},  
   setMustReportState: Dispatch<SetStateAction<{[key: string]: any}>>,
   divToSetSelectionTo: HTMLElement | null, 
-  setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>
+  setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>,
+  getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void,
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -51,6 +53,26 @@ export function EditableContentContextProvider({children}: EditableContentContex
   const [mustReportState, setMustReportState] = useState<{[key: string]: any}>({});
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
 
+  function getDehydratedHTML(callback: (dehydratedHTML: string) => void) {
+
+    const parsedHTMLBody = new DOMParser()
+      .parseFromString(contentRefCurrentInnerHTML, "text/html").body;
+
+    for (let div of Array.from(parsedHTMLBody.querySelectorAll("[id^='portal-container']"))) {
+      const divRange = new Range();
+      divRange.setStart(div, 0);
+      divRange.setEnd(div, div.childNodes.length);
+      const textNodes = getRangeChildNodes(divRange, parsedHTMLBody)
+        .filter(cn => cn.nodeType === Node.TEXT_NODE);
+      
+      divRange.extractContents();
+      textNodes.forEach(tn => divRange.insertNode(tn));
+
+    }
+
+    callback(parsedHTMLBody.innerHTML);
+  }
+
   return (
     <EditableContentContext.Provider value={{
       contentRef,
@@ -75,7 +97,8 @@ export function EditableContentContextProvider({children}: EditableContentContex
       mustReportState, 
       setMustReportState,
       divToSetSelectionTo, 
-      setDivToSetSelectionTo
+      setDivToSetSelectionTo,
+      getDehydratedHTML
     }}
   >
     {children}

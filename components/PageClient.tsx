@@ -284,21 +284,40 @@ export default function PageClient() {
           ]}
         />
         <ClearButton />
+        <GetDehydratedHTMLButton />
       </EditableContentContextProvider>
     </>
   )
 }
 
 function ClearButton() {
-  const {setContentRefCurrentInnerHTML} = useEditableContentContext();
+  const {contentRef, setContentRefCurrentInnerHTML} = useEditableContentContext();
 
   function clear() {
-    setContentRefCurrentInnerHTML("");
+    console.log(contentRef?.current);
+    if (contentRef.current) {
+      contentRef.current.innerHTML = ""; // this does not change the state
+      setContentRefCurrentInnerHTML("");
+    }
   }
 
   return (
     <Button onClick={clear}>
       Clear
+    </Button>
+  )
+}
+
+function GetDehydratedHTMLButton() {
+  const { getDehydratedHTML } = useEditableContentContext();
+
+  function logDehydratedHTML (dehydratedHTML: string) {
+    console.log(dehydratedHTML);
+  }
+
+  return (
+    <Button onClick={() => { getDehydratedHTML(logDehydratedHTML) }}>
+      Log Dehyrated HTML
     </Button>
   )
 }
