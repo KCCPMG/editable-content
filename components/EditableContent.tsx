@@ -10,6 +10,7 @@ import { WrapperArgs } from "./ContentEditableExperimentComponents";
 import { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { v4 as uuidv4 } from 'uuid';
+import { useEditableContentContext } from "@/context/EditableContentContext";
 
 const PORTAL_CONTAINER_ID_PREFIX = "portal-container-";
 // const contentChange = new CustomEvent("contentChange");
@@ -46,18 +47,44 @@ function getLastValidCharacterIndex(textNode: Text) {
 
 export default function EditableContent({divStyle, buttonRowStyle, initialHTML, editTextButtons}: EditableContentProps) {
 
-  const contentRef = useRef<null | HTMLDivElement>(null);
-  const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
-  const [selectionToString, setSelectionToString] = useState<string>("");
-  const [selectionAnchorNode, setSelectionAnchorNode] = useState<Node | null>(null)
-  const [selectionAnchorOffset, setSelectionAnchorOffset] = useState<Number | null>(null);
-  const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
-  const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null);
-  const [hasSelection, setHasSelection] = useState<boolean>(false);
-  const [portals, setPortals] = useState<Array<React.ReactPortal>>([]);
-  const [portalsState, setPortalsState] = useState<{[key: string]: any}>({});
-  const [mustReportState, setMustReportState] = useState<{[key: string]: any}>({});
-  const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
+  // const contentRef = useRef<null | HTMLDivElement>(null);
+  // const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
+  // const [selectionToString, setSelectionToString] = useState<string>("");
+  // const [selectionAnchorNode, setSelectionAnchorNode] = useState<Node | null>(null)
+  // const [selectionAnchorOffset, setSelectionAnchorOffset] = useState<Number | null>(null);
+  // const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
+  // const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null);
+  // const [hasSelection, setHasSelection] = useState<boolean>(false);
+  // const [portals, setPortals] = useState<Array<React.ReactPortal>>([]);
+  // const [portalsState, setPortalsState] = useState<{[key: string]: any}>({});
+  // const [mustReportState, setMustReportState] = useState<{[key: string]: any}>({});
+  // const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
+
+  const {
+    contentRef, 
+    contentRefCurrentInnerHTML, 
+    setContentRefCurrentInnerHTML,
+    selectionToString, 
+    setSelectionToString,
+    selectionAnchorNode, 
+    setSelectionAnchorNode,
+    selectionAnchorOffset, 
+    setSelectionAnchorOffset,
+    selectionFocusNode, 
+    setSelectionFocusNode,
+    selectionFocusOffset, 
+    setSelectionFocusOffset,
+    hasSelection, 
+    setHasSelection,
+    portals, 
+    setPortals,
+    portalsState, 
+    setPortalsState,
+    mustReportState, 
+    setMustReportState,
+    divToSetSelectionTo, 
+    setDivToSetSelectionTo
+  } = useEditableContentContext();
 
   // on render
   useEffect(() => {
