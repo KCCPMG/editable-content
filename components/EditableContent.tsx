@@ -278,11 +278,13 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         setIndividualPortalState(id, stateObj);
       }
       props.mustReportState = mustReportState[id] || false;
-
+      
     }
     const clone = React.cloneElement(component, props, text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
-    setPortals([...portals, portal]);
+    setPortals(previousPortals => {
+      return [...previousPortals, portal]
+    });
   }
 
   /**
@@ -338,10 +340,13 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     const text = contentRange.toString();
     const content = contentRange.extractContents();
 
+    
     // find correct wrapper button
     const foundButton = editTextButtons.find(etb => etb.dataKey === key);
     if (!foundButton) return;
+    
 
+    
     const component = foundButton.wrapperInstructions as ReactElement;
     cloneElementIntoPortal(component, {key: uuid}, text, containingDiv, !!foundButton.isStateful);
   }
