@@ -58,7 +58,7 @@ export function EditableContentContextProvider({children}: EditableContentContex
     const parsedHTMLBody = new DOMParser()
       .parseFromString(contentRefCurrentInnerHTML, "text/html").body;
 
-    for (let div of Array.from(parsedHTMLBody.querySelectorAll("div [data-button-key"))) {
+    for (let div of Array.from(parsedHTMLBody.querySelectorAll("div [data-button-key]"))) {
       const divRange = new Range();
       divRange.setStart(div, 0);
       divRange.setEnd(div, div.childNodes.length);

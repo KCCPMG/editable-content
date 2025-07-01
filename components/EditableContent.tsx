@@ -283,6 +283,10 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     const clone = React.cloneElement(component, props, text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals(previousPortals => {
+      const priorIndex = previousPortals.findIndex( p => p.key === id) // do more here, find the stale portal and remove it if it exists
+      if (priorIndex >= 0) {
+        previousPortals.splice(priorIndex, 1);
+      }
       return [...previousPortals, portal]
     });
   }
