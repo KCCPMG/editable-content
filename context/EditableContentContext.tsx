@@ -58,15 +58,22 @@ export function EditableContentContextProvider({children}: EditableContentContex
     const parsedHTMLBody = new DOMParser()
       .parseFromString(contentRefCurrentInnerHTML, "text/html").body;
 
-    for (let div of Array.from(parsedHTMLBody.querySelectorAll("div [data-button-key]"))) {
+    const divs = Array.from(parsedHTMLBody.querySelectorAll("div[data-button-key]"));
+
+    for (let div of divs) {
       const divRange = new Range();
       divRange.setStart(div, 0);
       divRange.setEnd(div, div.childNodes.length);
+      console.log(divRange.toString())
       const textNodes = getRangeChildNodes(divRange, parsedHTMLBody)
         .filter(cn => cn.nodeType === Node.TEXT_NODE);
       
+
       divRange.extractContents();
-      textNodes.forEach(tn => divRange.insertNode(tn));
+      textNodes.forEach(tn => {
+        console.log(tn);
+        divRange.insertNode(tn)
+      });
 
     }
 

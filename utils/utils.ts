@@ -538,8 +538,9 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
     startContainer 
 
   const endNode = endContainer.hasChildNodes() ?
-    endContainer.childNodes[endOffset] :
+    endContainer.childNodes[endOffset] : // [Math.max(0, endOffset-1)]
     endContainer 
+
 
   const tw = startNode === endNode ? 
     document.createTreeWalker(startNode) : 
@@ -565,7 +566,7 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
       }
     }
 
-    // not else, can flip switch and then progress
+    // not an else statement, can flip inRange switch and then progress
     if (inRange) {
       // childNodes.push(currentNode);
       // if (currentNode == endNode) break;

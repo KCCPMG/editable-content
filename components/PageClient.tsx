@@ -34,6 +34,7 @@ declare global {
     getRangeChildNodes?: typeof getRangeChildNodes;
     limitingContainer?: any;
     getAncestorNode?: typeof getAncestorNode;
+    initialHTML?: string;
   }
 }
 
@@ -60,13 +61,13 @@ Sunt, ​re
   data-button-key="react-button" 
   style="display: inline;"
 >
-  <strong>
+
     pud
-    <i>
+
       iand
-    </i>
+
     a
-  </strong>
+
   e. ​ ​Lorem
 </div>
 , ​ipsum ​dolor ​ ​
@@ -119,6 +120,7 @@ export default function PageClient() {
     window.getRangeChildNodes = getRangeChildNodes;
     window.limitingContainer = document.querySelector("[contenteditable]")
     window.getAncestorNode = getAncestorNode;
+    window.initialHTML = initialHTML;
   }, [])
 
 

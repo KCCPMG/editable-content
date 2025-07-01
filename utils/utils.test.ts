@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { setSelection, wrapInElement, unwrapSelectionFromQuery, unwrapRangeFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode, selectionIsCoveredBy, generateQuery, createWrapper, getSelectionChildNodes, resetSelectionToTextNodes } from './utils';
+import { setSelection, wrapInElement, unwrapSelectionFromQuery, unwrapRangeFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode, selectionIsCoveredBy, generateQuery, createWrapper, getSelectionChildNodes, resetSelectionToTextNodes, getRangeChildNodes } from './utils';
 
 
 const startingHTML = 
@@ -107,6 +107,91 @@ describe("basic test", () => {
   })
 
 });
+
+
+describe("test getRangeChildNodes", function() {
+
+  const htmlAsNode = new DOMParser()
+    .parseFromString(startingHTML, "text/html").body;
+
+  const containingDiv = htmlAsNode.childNodes[0];
+
+  const firstStrong = containingDiv.childNodes[0];
+  const firstStrongText = firstStrong.childNodes[0];
+
+  const firstItalics = containingDiv.childNodes[1];
+  const firstItalicsText = firstItalics.childNodes[0];
+
+  const orphanText = containingDiv.childNodes[2];
+
+  const secondStrong = containingDiv.childNodes[3];
+  const secondStrongFirstText = secondStrong.childNodes[0];
+  const secondStrongFirstItalics = secondStrong.childNodes[1];
+  const secondStrongFirstItalicsText = secondStrongFirstItalics.childNodes[0];
+  const secondStrongSecondText = secondStrong.childNodes[2];
+
+
+
+  test("make sure nodes are what they should be", function() {
+    expect(firstStrong.textContent).toBe("Strong Text");
+    expect(firstStrong.nodeType).toBe(Node.ELEMENT_NODE);
+    expect((firstStrong as Element).tagName).toBe("STRONG");
+
+    expect(firstStrongText.textContent).toBe("Strong Text");
+    expect(firstStrongText.nodeType).toBe(Node.TEXT_NODE);
+
+    expect(firstItalics.textContent).toBe("Italics Text");
+    expect(firstItalics.nodeType).toBe(Node.ELEMENT_NODE);
+    expect((firstItalics as Element).tagName).toBe("I");
+
+    expect(firstItalicsText.textContent).toBe("Italics Text");
+    expect(firstItalicsText.nodeType).toBe(Node.TEXT_NODE);
+
+    expect(orphanText.textContent).toBe("Orphan Text");
+    expect(orphanText.nodeType).toBe(Node.TEXT_NODE);
+
+    expect(secondStrong.textContent).toBe("Strong TextStrong and Italics TextMore Strong Text");
+    expect(secondStrong.nodeType).toBe(Node.ELEMENT_NODE);
+    expect((secondStrong as Element).tagName).toBe("STRONG");
+
+    expect(secondStrongFirstText.textContent).toBe("Strong Text");
+    expect(secondStrongFirstText.nodeType).toBe(Node.TEXT_NODE);
+
+    expect(secondStrongFirstItalics.textContent).toBe("Strong and Italics Text");
+    expect(secondStrongFirstItalics.nodeType).toBe(Node.ELEMENT_NODE);
+    expect((secondStrongFirstItalics as Element).tagName).toBe("I");
+
+    expect(secondStrongFirstItalicsText.textContent).toBe("Strong and Italics Text");
+    expect(secondStrongFirstItalicsText.nodeType).toBe(Node.TEXT_NODE);   
+
+    expect(secondStrongSecondText.textContent).toBe("More Strong Text");
+    expect(secondStrongSecondText.nodeType).toBe(Node.TEXT_NODE);   
+
+
+  }) 
+
+  // test("", function() {
+  //   const strong = htmlAsNode.querySelector("strong");
+  //   const orphanText = 
+  //   const range = new Range();
+  //   range.setStart(, startingHTML);
+  //   range.setEnd();
+  //   const nodes = getRangeChildNodes(range, htmlAsNode);
+  // })
+
+  // test("", function() {
+  //   const range = new Range();
+  //   range.setStart();
+  //   range.setEnd();
+  // })
+
+  // test("", function() {
+  //   const range = new Range();
+  //   range.setStart();
+  //   range.setEnd();
+  // })
+
+})
 
 
 describe("test setSelection", function() {
