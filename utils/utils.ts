@@ -579,23 +579,12 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
         else {
           childNodes.push(currentNode);
 
-          tw.nextNode();
-          let endNode = currentNode;
-          const endNodeTW = document.createTreeWalker(endNode);
-          endNodeTW.nextNode();
           while (true) {
-            childNodes.push(endNodeTW.currentNode);
-            // endNodeTW.nextNode();
-            if (!endNodeTW.nextNode()) break;
+            if (!tw.nextNode()) break;
+            if (!nodeIsDescendentOfNode(tw.currentNode, endNode)) break;
+            // else
+            childNodes.push(tw.currentNode);
           }
-          
-          // let i=0;
-          // while (nodeIsDescendentOfNode(tw.currentNode, endNode) && i<100) {
-          //   i++;
-          //   childNodes.push(tw.currentNode);
-          //   tw.nextNode();
-          // }
-          // console.log(i);
         }
         break;
       } else {
