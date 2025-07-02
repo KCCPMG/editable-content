@@ -39,7 +39,7 @@ export function resetSelectionToTextNodes(): Selection | null {
 export function resetRangeToTextNodes(range: Range) {
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
     const startNode = range.startContainer.childNodes[range.startOffset];
-    console.log(startNode);
+    // console.log(startNode);
     if (!startNode) return null;
     const tw = document.createTreeWalker(startNode);
     while (true) {
@@ -538,7 +538,7 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
     startContainer 
 
   const endNode = endContainer.hasChildNodes() ?
-    endContainer.childNodes[endOffset] : // [Math.max(0, endOffset-1)]
+    endContainer.childNodes[Math.max(0, endOffset-1)] : // [Math.max(0, endOffset-1)]
     endContainer 
 
 
@@ -570,10 +570,33 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
     if (inRange) {
       // childNodes.push(currentNode);
       // if (currentNode == endNode) break;
+
+      // if we're at the end, wrap up
       if (currentNode == endNode) {
         if (currentNode.nodeType === Node.TEXT_NODE) {
           childNodes.push(currentNode);
         } 
+        else {
+          childNodes.push(currentNode);
+
+          tw.nextNode();
+          let endNode = currentNode;
+          const endNodeTW = document.createTreeWalker(endNode);
+          endNodeTW.nextNode();
+          while (true) {
+            childNodes.push(endNodeTW.currentNode);
+            // endNodeTW.nextNode();
+            if (!endNodeTW.nextNode()) break;
+          }
+          
+          // let i=0;
+          // while (nodeIsDescendentOfNode(tw.currentNode, endNode) && i<100) {
+          //   i++;
+          //   childNodes.push(tw.currentNode);
+          //   tw.nextNode();
+          // }
+          // console.log(i);
+        }
         break;
       } else {
         childNodes.push(currentNode);

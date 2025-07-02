@@ -170,26 +170,85 @@ describe("test getRangeChildNodes", function() {
 
   }) 
 
-  // test("", function() {
-  //   const strong = htmlAsNode.querySelector("strong");
-  //   const orphanText = 
-  //   const range = new Range();
-  //   range.setStart(, startingHTML);
-  //   range.setEnd();
-  //   const nodes = getRangeChildNodes(range, htmlAsNode);
-  // })
+  test("get nodes covering text within strongText", function() {
+    const range = new Range();
+    range.setStart(firstStrongText, 0);
+    range.setEnd(firstStrongText, 11);
+    const nodes = getRangeChildNodes(range, htmlAsNode);
+    expect(nodes.length).toBe(1);
+    expect(nodes[0].nodeType).toBe(Node.TEXT_NODE);
+    expect(nodes[0].textContent).toBe("Strong Text");
+  })
 
-  // test("", function() {
-  //   const range = new Range();
-  //   range.setStart();
-  //   range.setEnd();
-  // })
+  test("get nodes covering text across nodes", function() {
+    const range = new Range();
+    range.setStart(firstStrongText, 7);
+    range.setEnd(orphanText, 6);
+    expect(range.toString()).toBe("TextItalics TextOrphan");
+    const nodes = getRangeChildNodes(range, htmlAsNode);
+    expect(nodes[0].nodeType).toBe(Node.TEXT_NODE);
+    expect(nodes[1].nodeType).toBe(Node.ELEMENT_NODE);
+    expect(nodes[2].nodeType).toBe(Node.TEXT_NODE);
+    expect(nodes[3].nodeType).toBe(Node.TEXT_NODE);
+    expect(nodes[0]).toBe(firstStrongText);
+    expect(nodes[1]).toBe(firstItalics);
+    expect(nodes[2]).toBe(firstItalicsText);
+    expect(nodes[3]).toBe(orphanText);
+    expect(nodes.length).toBe(4);
+  })
 
-  // test("", function() {
-  //   const range = new Range();
-  //   range.setStart();
-  //   range.setEnd();
-  // })
+  test("get nodes when range starts in non-text node", function() {
+    const range = new Range();
+    range.setStart(containingDiv, 1);
+    range.setEnd(orphanText, 6);
+    expect(range.toString()).toBe("Italics TextOrphan");
+    const nodes = getRangeChildNodes(range, containingDiv);
+    expect(nodes[0]).toBe(firstItalics);
+    expect(nodes[1]).toBe(firstItalicsText);
+    expect(nodes[2]).toBe(orphanText);
+    expect(nodes.length).toBe(3);
+  })
+
+  test("get nodes when range ends in non-text node", function() {
+    const range = new Range();
+    range.setStart(containingDiv, 1);
+    range.setEnd(containingDiv, 3);
+    expect(range.toString()).toBe("Italics TextOrphan Text");
+    const nodes = getRangeChildNodes(range, containingDiv);
+    expect(nodes[0]).toBe(firstItalics);
+    expect(nodes[1]).toBe(firstItalicsText);
+    expect(nodes[2]).toBe(orphanText);
+    expect(nodes.length).toBe(3);
+  })
+
+  test("get nodes when range ends in non-text node 2", function() {
+    const range = new Range();
+    range.setStart(firstStrongText, 2);
+    range.setEnd(containingDiv, 2);
+    expect(range.toString()).toBe("rong TextItalics Text");
+
+    // const { startContainer, startOffset, endContainer, endOffset } = range;
+
+
+    // const startNode = startContainer.hasChildNodes() ?
+    //   startContainer.childNodes[startOffset] :
+    //   startContainer 
+  
+    // const endNode = endContainer.hasChildNodes() ?
+    //   endContainer.childNodes[Math.max(0, endOffset-1)] : // [Math.max(0, endOffset-1)]
+    //   endContainer 
+
+    // expect(endNode).toBe(firstItalics);
+
+    const nodes = getRangeChildNodes(range, containingDiv);
+    expect(nodes[0]).toBe(firstStrongText);
+    expect(nodes[1]).toBe(firstItalics);
+    expect(nodes[2]).toBe(firstItalicsText);
+    if (nodes.length > 3) {
+      console.log(nodes[3]);
+    }
+    expect(nodes.length).toBe(3);
+  })
 
 })
 
@@ -267,10 +326,10 @@ describe("test resetSelectionToTextNodes", function() {
     expect(p!.childNodes[0].nodeType).toBe(Node.TEXT_NODE);
 
     range.setStart(p!.childNodes[0], 0);
-    console.log([range.startContainer, range.startContainer.textContent]);
+    // console.log([range.startContainer, range.startContainer.textContent]);
     expect(range.startContainer.nodeType).toBe(Node.TEXT_NODE);
     range.setEndAfter(p!);
-    console.log([range.endContainer, range.endContainer.textContent]);
+    // console.log([range.endContainer, range.endContainer.textContent]);
 
     const returnedSelection = resetSelectionToTextNodes();
 
