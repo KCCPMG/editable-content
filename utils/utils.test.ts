@@ -226,27 +226,10 @@ describe("test getRangeChildNodes", function() {
     range.setStart(firstStrongText, 2);
     range.setEnd(containingDiv, 2);
     expect(range.toString()).toBe("rong TextItalics Text");
-
-    // const { startContainer, startOffset, endContainer, endOffset } = range;
-
-
-    // const startNode = startContainer.hasChildNodes() ?
-    //   startContainer.childNodes[startOffset] :
-    //   startContainer 
-  
-    // const endNode = endContainer.hasChildNodes() ?
-    //   endContainer.childNodes[Math.max(0, endOffset-1)] : // [Math.max(0, endOffset-1)]
-    //   endContainer 
-
-    // expect(endNode).toBe(firstItalics);
-
     const nodes = getRangeChildNodes(range, containingDiv);
     expect(nodes[0]).toBe(firstStrongText);
     expect(nodes[1]).toBe(firstItalics);
     expect(nodes[2]).toBe(firstItalicsText);
-    if (nodes.length > 3) {
-      console.log(nodes[3]);
-    }
     expect(nodes.length).toBe(3);
   })
 
