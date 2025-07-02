@@ -5,12 +5,13 @@ import { Box} from "@mui/material"
 type StatefulBoxProps = {
   children?: React.ReactNode,
   reportState?: (stateObj: {[key: string]: any} ) => void,
-  mustReportState?: boolean
+  mustReportState?: boolean,
+  [key: string]: any
 }
 
 
 export default function StatefulBox(
-  {children, reportState, mustReportState}: StatefulBoxProps) 
+  {children, reportState, mustReportState, ...rest}: StatefulBoxProps) 
 {
   const [clicks, setClicks] = useState<number>(0);
 
@@ -45,6 +46,7 @@ export default function StatefulBox(
         fontSize: '0.875rem',
         fontWeight: '700',
       }}
+      {...rest}
     >
       {children}
     </Box>

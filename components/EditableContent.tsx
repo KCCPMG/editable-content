@@ -227,9 +227,12 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       classList: element.className.split(" "),
       id: element.getAttribute('id') || undefined,
       attributes: mappedAttributes,
-      unbreakable: typeof mappedAttributes['data-unbreakable'] === 'string'
+      // unbreakable: typeof mappedAttributes['data-unbreakable'] === 'string'
+      unbreakable: true
       // eventListeners: getEventListeners(element)      
     };
+
+    console.log(rn?.type?.name, wrapperArgs);
 
     return wrapperArgs;
   }
@@ -274,10 +277,11 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       props.mustReportState = mustReportState[id] || false;
       
     }
+    props['data-unbreakable'] = true;
     const clone = React.cloneElement(component, props, text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals(previousPortals => {
-      const priorIndex = previousPortals.findIndex( p => p.key === id) // do more here, find the stale portal and remove it if it exists
+      const priorIndex = previousPortals.findIndex( p => p.key === id )
       if (priorIndex >= 0) {
         previousPortals.splice(priorIndex, 1);
       }
@@ -312,7 +316,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     
     // curently only handling range text, not nested elements
     if (contentRef.current && contentRef.current && foundNewDiv) {
-      cloneElementIntoPortal(component, {key: uuid}, text, foundNewDiv, isStateful)
+      cloneElementIntoPortal(component, {key: uuid}, text, foundNewDiv, !!isStateful)
     }
   }
 
@@ -344,6 +348,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     if (!foundButton) return;
     
     const component = foundButton.wrapperInstructions as ReactElement;
+    console.log(foundButton.wrapperInstructions);
     cloneElementIntoPortal(component, {key: uuid}, text, containingDiv, !!foundButton.isStateful);
   }
 
@@ -563,6 +568,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         if (isReactComponent) {
           // if isReactComponent, can assert wrapperInstructions as ReactElement
           createContentPortal(wrapperInstructions as ReactElement, dataKey, isStateful);
+          // createContentPortal(wrapperArgs, dataKey, isStateful);
         
         } else if (!isReactComponent) {
           const wrapper = createWrapper(wrapperArgs, document);
@@ -603,6 +609,8 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
             const wrapperArgs = isReactComponent ?
               reactNodeToWrapperArgs(wrapperInstructions) : // placeholder
               wrapperInstructions;
+
+            if (etb.dataKey === "underline-color") console.log(wrapperArgs);
 
             const query = generateQuery(wrapperArgs);
             const selection = window.getSelection();
