@@ -2,9 +2,66 @@
 
 How to use:
 
+### EditableContentContextProvider
+
+The EditableContentContextProvider *must* be rendered as an ancestor to the EditableContent component. It does not take any props on its own, but will hold all the relevant state that the EditableContent depends on. All of this can be accessed through the useEditableContentContext hook.
+
+### useEditableContentContext
+
+useEditableContentContext is a simple custom hook which exposes the context at work in the EditableContentContextProvider component, and is the same hook which is used by the EditableContent component itself. The following are the properties which can be extracted from `useEditableContentContext()`
+
+  - contentRef: MutableRefObject<HTMLDivElement | null>
+    - The contentRef is a ref object which in this case is assigned to the contenteditable div at the heart of EditableContent. It is inadvisable to do anything with this, as it may adversely affect the functionality of the component
+  - contentRefCurrentInnerHTML: string
+    - Stringified HTML representing the content of the contenteditable div, and should update on all changes.
+  - setContentRefCurrentInnerHTML: Dispatch<SetStateAction<string>>
+    - The setter for contentRefCurrentInnerHTML and can be accessed directly, but is also called by EditableComponent on normal changes to the content of 
+  - selectionToString: string,
+    - If the window's selection is inside of the contentRef, this is the textContent (no markup) of the selectionn
+  - setSelectionToString: Dispatch<SetStateAction<string>>
+    - The setter for selectionToString, which is called when a selection is made within the contentRef
+  - selectionAnchorNode: Node | null,
+    - When the selection is within the contentRef, this is the selection's anchor node. This is primarily used internally to trigger state updates when the selection changes.
+  - setSelectionAnchorNode: Dispatch<SetStateAction<Node | null>>
+    - Setter for the selection anchor node
+  - selectionAnchorOffset: number | null,
+    - When the selection is within the contentRef, this is the selection's anchor offset. This is primarily used internally to trigger state updates when the selection changes.
+  - setSelectionAnchorOffset: Dispatch<SetStateAction<number | null>>
+    - Setter for the selection anchor offset
+  - selectionFocusNode: Node | null, 
+    - When the selection is within the contentRef, this is the selection's focus node. This is primarily used internally to trigger state updates when the selection changes.
+  - setSelectionFocusNode: Dispatch<SetStateAction<Node | null>>
+    - Setter for the selection focus node
+  - selectionFocusOffset: number | null, 
+    - When the selection is within the contentRef, this is the selection's focus offset. This is primarily used internally to trigger state updates when the selection changes.
+  - setSelectionFocusOffset: Dispatch<SetStateAction<number | null>>
+    - Setter for the selection focus offset
+  - hasSelection: boolean,
+    - A boolean representing if the window's selection is within the contentRef
+  - setHasSelection: Dispatch<SetStateAction<boolean>>
+    - The setter for hasSelection, which is called when the the contentRef's focus and blur events fire
+  - portals: Array<ReactPortal>,
+    - 
+  - setPortals: Dispatch<SetStateAction<Array<ReactPortal>>>
+    -
+  - portalsState: {[key: string]: any},
+    -
+  - setPortalsState: Dispatch<SetStateAction<{[key: string]: any}>>
+    -
+  - mustReportState: {[key: string]: boolean}, 
+    -
+  - setMustReportState: Dispatch<SetStateAction<{[key: string]: any}>>
+    -
+  - divToSetSelectionTo: HTMLElement | null,
+    -
+  - setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>
+    -
+  - getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void
+    -
+
 ### EditableContent
 
-EditableContent is the root component from which everything else flows. EditableContent takes two props: 
+EditableContent is the root component from which everything else flows. EditableContent takes four props: 
 
   - initialHTML: string
     - This is the initial HTML that will populate the contenteditable div at creation.
