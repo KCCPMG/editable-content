@@ -16,23 +16,23 @@ useEditableContentContext is a simple custom hook which exposes the context at w
     - Stringified HTML representing the content of the contenteditable div, and should update on all changes.
   - setContentRefCurrentInnerHTML: Dispatch<SetStateAction<string>>
     - The setter for contentRefCurrentInnerHTML and can be accessed directly, but is also called by EditableComponent on normal changes to the content of 
-  - selectionToString: string,
-    - If the window's selection is inside of the contentRef, this is the textContent (no markup) of the selectionn
+  - selectionToString: string
+    - If the window's selection is inside of the contentRef, this is the textContent (no markup) of the selection
   - setSelectionToString: Dispatch<SetStateAction<string>>
     - The setter for selectionToString, which is called when a selection is made within the contentRef
-  - selectionAnchorNode: Node | null,
+  - selectionAnchorNode: Node | null
     - When the selection is within the contentRef, this is the selection's anchor node. This is primarily used internally to trigger state updates when the selection changes.
   - setSelectionAnchorNode: Dispatch<SetStateAction<Node | null>>
     - Setter for the selection anchor node
-  - selectionAnchorOffset: number | null,
+  - selectionAnchorOffset: number | null
     - When the selection is within the contentRef, this is the selection's anchor offset. This is primarily used internally to trigger state updates when the selection changes.
   - setSelectionAnchorOffset: Dispatch<SetStateAction<number | null>>
     - Setter for the selection anchor offset
-  - selectionFocusNode: Node | null, 
+  - selectionFocusNode: Node | null 
     - When the selection is within the contentRef, this is the selection's focus node. This is primarily used internally to trigger state updates when the selection changes.
   - setSelectionFocusNode: Dispatch<SetStateAction<Node | null>>
     - Setter for the selection focus node
-  - selectionFocusOffset: number | null, 
+  - selectionFocusOffset: number | null
     - When the selection is within the contentRef, this is the selection's focus offset. This is primarily used internally to trigger state updates when the selection changes.
   - setSelectionFocusOffset: Dispatch<SetStateAction<number | null>>
     - Setter for the selection focus offset
@@ -40,24 +40,24 @@ useEditableContentContext is a simple custom hook which exposes the context at w
     - A boolean representing if the window's selection is within the contentRef
   - setHasSelection: Dispatch<SetStateAction<boolean>>
     - The setter for hasSelection, which is called when the the contentRef's focus and blur events fire
-  - portals: Array<ReactPortal>,
-    - 
+  - portals: Array<ReactPortal>
+    - This is the array of ReactPortals which are appended to specific divs in the contentRef. These portals are directly rendered into the contentRef, and each portal has a key which is the unique id of this portal   
   - setPortals: Dispatch<SetStateAction<Array<ReactPortal>>>
-    -
-  - portalsState: {[key: string]: any},
-    -
+    - This is the setter for portals and is called within the EditableContent component
+  - portalsState: {[key: string]: any}
+    - This is an object that represents the individual state of each ReactPortal component rendered into the contentRef. This is a copy of that state, which is to say that it is downstream of those ReactPortals and the ReactPortals do not listen to this object. This is a means of being able to access the state for to perform other operations on or with for other parts in your app. In this object, the key represents the unique id which is assigned to the portal, so that portals and their state can be matched.
   - setPortalsState: Dispatch<SetStateAction<{[key: string]: any}>>
-    -
-  - mustReportState: {[key: string]: boolean}, 
-    -
+    - The setter for portalsState, which is called within EditableContent when ReactPortals are created or destroyed
+  - mustReportState: {[key: string]: boolean} 
+    - deprecated
   - setMustReportState: Dispatch<SetStateAction<{[key: string]: any}>>
-    -
-  - divToSetSelectionTo: HTMLElement | null,
-    -
+    - deprecated
+  - divToSetSelectionTo: HTMLElement | null
+    - This is a div used in the internal logic for creating content portals
   - setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>
-    -
+    - The setter for divToSetSelectionTo, used internally and generally not necessary for you to use.
   - getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void
-    -
+    - This is a helper function which is designed specifically for the developer to call. This prop takes a function that you will define, which will be passed the dehydratedHTML as an argument. The dehydratedHTML is the HTML of the contentRef with all of the ReactPortals removed and only the containing div and the textContent remaining. This is a means of being able to save the content that is created in EditableContent, as the dehydratedHTML can be passed as a prop to EditableContent, and assuming the `editTextButtons` are the same, the same hydrated React will be rendered.  
 
 ### EditableContent
 
