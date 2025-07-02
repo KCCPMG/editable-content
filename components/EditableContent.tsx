@@ -13,7 +13,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { useEditableContentContext } from "@/context/EditableContentContext";
 
 const PORTAL_CONTAINER_ID_PREFIX = "portal-container-";
-// const contentChange = new CustomEvent("contentChange");
 const reportState = new CustomEvent("reportState");
 
 
@@ -88,7 +87,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
 
   // on render
   useEffect(() => {
-
     // populate div with html and update state
     if (contentRef.current) {
       if (initialHTML) {
@@ -101,7 +99,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       }   
       setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
     }
-
     
     // assign event listeners
     document.addEventListener('selectionchange', (e) => {
@@ -117,13 +114,10 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         handleSelectionChange();
       } 
     })
-  
-    // contentRef?.current?.addEventListener("contentChange", updateContent)
 
     // teardown
     return () => {
       document.removeEventListener('selectionchange', handleSelectionChange);
-      contentRef?.current?.removeEventListener("contentChange", updateContent);
     }
 
   }, [])
@@ -349,8 +343,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     const foundButton = editTextButtons.find(etb => etb.dataKey === key);
     if (!foundButton) return;
     
-
-    
     const component = foundButton.wrapperInstructions as ReactElement;
     cloneElementIntoPortal(component, {key: uuid}, text, containingDiv, !!foundButton.isStateful);
   }
@@ -455,7 +447,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       
       parentNode?.removeChild(element);
       
-      // contentRef.current?.dispatchEvent(contentChange);
       updateContent();
       resetSelectionToTextNodes();
       return;
@@ -554,7 +545,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
           }
           else if (!wrapperArgs.unbreakable) {
             unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-            // contentRef.current?.dispatchEvent(contentChange);
             updateContent();
           } 
           else {
@@ -577,7 +567,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         } else if (!isReactComponent) {
           const wrapper = createWrapper(wrapperArgs, document);
           wrapInElement(selection, wrapper, contentRef.current!);
-          // contentRef.current?.dispatchEvent(contentChange);
           updateContent();
           if (selectCallback) {
             selectCallback(wrapper);
@@ -681,7 +670,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
             
             selection.removeAllRanges();
             selection.addRange(range);  
-            // contentRef.current?.dispatchEvent(contentChange);  
             updateContent(); 
           }
 
@@ -694,7 +682,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
             range.collapse();
             selection.removeAllRanges();
             selection.addRange(range);
-            // contentRef.current?.dispatchEvent(contentChange);
             updateContent();
           }
 

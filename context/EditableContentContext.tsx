@@ -53,6 +53,7 @@ export function EditableContentContextProvider({children}: EditableContentContex
   const [mustReportState, setMustReportState] = useState<{[key: string]: any}>({});
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
 
+
   function getDehydratedHTML(callback: (dehydratedHTML: string) => void) {
 
     const parsedHTMLBody = new DOMParser()
@@ -68,13 +69,11 @@ export function EditableContentContextProvider({children}: EditableContentContex
       const textNodes = getRangeChildNodes(divRange, parsedHTMLBody)
         .filter(cn => cn.nodeType === Node.TEXT_NODE);
       
-
       divRange.extractContents();
       textNodes.forEach(tn => {
         console.log(tn);
         divRange.insertNode(tn)
       });
-
     }
 
     callback(parsedHTMLBody.innerHTML);
