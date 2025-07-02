@@ -9,6 +9,7 @@ import { Box } from "@mui/material";
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from '@/utils/utils';
 import StatefulBox from "./TestComponents/StatefulBox";
 import MultiLevelBox from "./TestComponents/MultilLevelBox";
+import UnderlineColor from "./TestComponents/UnderlineColor";
 import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext";
 
 
@@ -282,6 +283,14 @@ export default function PageClient() {
               isReactComponent: true,
               isStateful: false,
               wrapperInstructions: <MultiLevelBox />
+            },
+            {
+              isMUIButton: true,
+              dataKey: "underline-color",
+              child: "UC",
+              isReactComponent: true,
+              isStateful: false,
+              wrapperInstructions: <UnderlineColor color="red" />
             }
           ]}
         />
