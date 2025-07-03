@@ -252,7 +252,6 @@ export default function PageClient() {
               child: "RB",
               isReactComponent: true, 
               wrapperInstructions: <Box 
-                data-unbreakable=""
                 component="div"
                 sx={{
                   display: 'inline',

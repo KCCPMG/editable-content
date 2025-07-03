@@ -85,6 +85,23 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     setDivToSetSelectionTo
   } = useEditableContentContext();
 
+  // make sure all react elements are unbreakable
+  editTextButtons = editTextButtons.map(etb => {
+    if (!etb.isReactComponent) return etb;
+
+    else {
+      const { wrapperInstructions } = etb;
+      const newProps = {...wrapperInstructions.props};
+      newProps['test-prop'] = 'test';
+      newProps['data-unbreakable'] = '';
+      const newWrapperInstructions = React.cloneElement(wrapperInstructions, newProps);
+      return({
+        ...etb,
+        wrapperInstructions: newWrapperInstructions
+      })
+    }
+  })
+
   // on render
   useEffect(() => {
     // populate div with html and update state
@@ -92,7 +109,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       if (initialHTML) {
         contentRef.current.innerHTML = initialHTML;
         // load react portals
-        const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key"));
+        const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
         reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
       } else {
         contentRef.current.innerHTML = "";
@@ -232,7 +249,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       // eventListeners: getEventListeners(element)      
     };
 
-    console.log(rn?.type?.name, wrapperArgs);
+    // console.log(rn?.type?.name, wrapperArgs);
 
     return wrapperArgs;
   }
@@ -277,7 +294,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       props.mustReportState = mustReportState[id] || false;
       
     }
-    props['data-unbreakable'] = true;
+    // props['data-unbreakable'] = true;
     const clone = React.cloneElement(component, props, text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals(previousPortals => {
@@ -605,14 +622,23 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
 
             const {dataKey, selectCallback, deselectCallback, wrapperInstructions, isReactComponent, isStateful, ...otherProps} = etb;
 
+            // if (isReactComponent) {
+            //   wrapperInstructions.props['data-unbreakable'] = '';
+            // }
+
             // if React Element, derive wrapper args from Element, else use what's given
             const wrapperArgs = isReactComponent ?
               reactNodeToWrapperArgs(wrapperInstructions) : // placeholder
+              // reactNodeToWrapperArgs(function() {
+              //   const props = {...wrapperInstructions.props};
+              //   props['data-unbreakable'] = '';
+              //   return React.cloneElement(wrapperInstructions, props);
+              // }()) :
               wrapperInstructions;
 
-            if (etb.dataKey === "underline-color") console.log(wrapperArgs);
-
+            // if (etb.dataKey === "underline-color") console.log(wrapperArgs);
             const query = generateQuery(wrapperArgs);
+            if (etb.isReactComponent) console.log({query});
             const selection = window.getSelection();
 
             if (hasSelection && selection) {
