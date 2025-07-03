@@ -39,7 +39,6 @@ export function resetSelectionToTextNodes(): Selection | null {
 export function resetRangeToTextNodes(range: Range) {
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
     const startNode = range.startContainer.childNodes[range.startOffset];
-    // console.log(startNode);
     if (!startNode) return null;
     const tw = document.createTreeWalker(startNode);
     while (true) {
@@ -112,13 +111,10 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
     }
   }
 
-
   element.append(contents); 
   range.insertNode(element); // range is collapsed, this effectively inserts *after*
   range.setStartBefore(element);
   range.setEndAfter(element);
-
-  // console.log(range.toString(), range.toString().length)
 
   if (range.toString().length === 0) {
     const textNode = document.createTextNode('\u200B');
@@ -128,7 +124,6 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
     selection.removeAllRanges();
     selection.addRange(range);
   }
-  // const breakpoints = [];
 
   // promote any unbreakable elements in range
   for (let unbreakable of unbreakables) {
@@ -521,7 +516,6 @@ export function getSelectionChildNodes(selection: Selection, limitingContainer: 
     !(limitingContainer.contains(selection.focusNode))
   ) return [];
   
-  // console.log(selection);
   const range = selection.getRangeAt(0);
   return getRangeChildNodes(range, limitingContainer);
 }
@@ -557,7 +551,6 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
     // if (currentNode) childNodes.push(currentNode);
     // else break;
 
-    // console.log(currentNode);
     if (!currentNode) break;
 
     if (!inRange) {
@@ -632,7 +625,7 @@ export function generateQuery({element, classList, id, unbreakable, attributes}:
   const classListString = classList ? classList.map(c => "."+c).join("") : "";
   const idString = id ? "#"+id : "";
   const unbreakableString = unbreakable ? "[data-unbreakable]" : "";
-  // if (attributes) console.log(Object.entries(attributes));
+
   const attributesString = attributes ? 
     Object.entries(attributes)
       .map(a => {
@@ -705,8 +698,6 @@ export function selectionContainsNoUnbreakables(selection: Selection, limitingCo
 
 
 export function getButtonStatus(selection: Selection | null, isUnbreakable: boolean | undefined, query: string, limitingContainer: Node | null) {
-  
-  if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 1");
 
   const status = {
     enabled: true,
@@ -720,24 +711,11 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
     return status;
   }
 
-  if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 2");
-
-  // console.log(selection.getRangeAt(0).commonAncestorContainer);
-  // console.log(limitingContainer);
-
-  // if (!nodeIsDescendentOfNode(selection.getRangeAt(0).commonAncestorContainer, limitingContainer)) {
-  //   status.enabled = false;
-  //   status.selected = false;
-  //   return status;
-  // }
-
   if (!selection || !limitingContainer) {
     status.enabled = false;
     status.selected = false;
     return status;
   }
-
-  if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 3");
 
   // might be unneccessary
   if (!(limitingContainer instanceof Element)) {
@@ -746,18 +724,11 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
     return status;
   }
 
-  if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 4");
-
   if (!selectionIsDescendentOfNode(selection, limitingContainer)) {
     status.enabled = false;
     status.selected = false;
     return status;
   }
-
-  if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 5");
-
-  // console.log(selection.toString());
-  // console.log("selectionIsDescendentOfNode(selection, limitingContainer) ", selectionIsDescendentOfNode(selection, limitingContainer))
   
   const childNodes = getSelectionChildNodes(selection, limitingContainer);
   if (selection.rangeCount === 0) {
@@ -771,14 +742,9 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
 
   if (isUnbreakable) {
 
-    if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 6");
     if (childNodes.every(cn => cn.nodeType === Node.TEXT_NODE)) {
 
-      if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 7");
-      
-
       if (childNodes.every(cn => cn.parentNode === limitingContainer)) {
-        if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("scenario 1");
         status.enabled = true;
         status.selected = false;
         return status;
@@ -787,14 +753,11 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
         rangeCommonElementAncestor.matches(query)) ||
         nodeIsDescendentOf(rangeCommonElementAncestor!, query, limitingContainer)
       ) {
-        if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("scenario 2");
         status.enabled = true;
         status.selected = true;
         return status;
       } 
       else {
-        if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("scenario 3");
-        console.log(nodeIsDescendentOf(rangeCommonElementAncestor!, query, limitingContainer))
         status.enabled = false;
         status.selected = false;
         return status;
