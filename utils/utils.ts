@@ -706,6 +706,8 @@ export function selectionContainsNoUnbreakables(selection: Selection, limitingCo
 
 export function getButtonStatus(selection: Selection | null, isUnbreakable: boolean | undefined, query: string, limitingContainer: Node | null) {
   
+  if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 1");
+
   const status = {
     enabled: true,
     selected: false
@@ -717,6 +719,8 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
     status.selected = false;
     return status;
   }
+
+  if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 2");
 
   // console.log(selection.getRangeAt(0).commonAncestorContainer);
   // console.log(limitingContainer);
@@ -733,6 +737,8 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
     return status;
   }
 
+  if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 3");
+
   // might be unneccessary
   if (!(limitingContainer instanceof Element)) {
     status.enabled = false;
@@ -740,11 +746,15 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
     return status;
   }
 
+  if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 4");
+
   if (!selectionIsDescendentOfNode(selection, limitingContainer)) {
     status.enabled = false;
     status.selected = false;
     return status;
   }
+
+  if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 5");
 
   // console.log(selection.toString());
   // console.log("selectionIsDescendentOfNode(selection, limitingContainer) ", selectionIsDescendentOfNode(selection, limitingContainer))
@@ -761,17 +771,30 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
 
   if (isUnbreakable) {
 
+    if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 6");
     if (childNodes.every(cn => cn.nodeType === Node.TEXT_NODE)) {
 
+      if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("sanity check 7");
+      
+
       if (childNodes.every(cn => cn.parentNode === limitingContainer)) {
+        if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("scenario 1");
         status.enabled = true;
         status.selected = false;
         return status;
-      } else if (rangeCommonElementAncestor && rangeCommonElementAncestor.matches(query)) {
+      } 
+      else if (rangeCommonElementAncestor && (
+        rangeCommonElementAncestor.matches(query)) ||
+        nodeIsDescendentOf(rangeCommonElementAncestor!, query, limitingContainer)
+      ) {
+        if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("scenario 2");
         status.enabled = true;
         status.selected = true;
         return status;
-      } else {
+      } 
+      else {
+        if (query === 'DIV.MuiBox-root.css-6n7j50[data-unbreakable][test-prop="test"][data-unbreakable]') console.log("scenario 3");
+        console.log(nodeIsDescendentOf(rangeCommonElementAncestor!, query, limitingContainer))
         status.enabled = false;
         status.selected = false;
         return status;

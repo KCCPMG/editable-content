@@ -658,6 +658,13 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
             }
     
             const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current)
+            if (dataKey === "multilevel-component") console.log({
+              status,
+              selection, 
+              "wrapperArgs.unbreakable": wrapperArgs.unbreakable, 
+              query, 
+              "contentRef.current": contentRef.current
+            })
 
             if (!hasSelection) {
               status.enabled = false;
