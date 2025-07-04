@@ -11,7 +11,6 @@ export default function UnderlineColor({color, children, ...rest} : UnderlineCol
 
   return (
     <u 
-      className="underline-color" 
       style={{textDecorationColor: color}}
       {...rest}
     >

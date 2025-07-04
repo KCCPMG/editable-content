@@ -622,7 +622,7 @@ export function selectionHasTextNodes(selection: Selection, limitingContainer: E
 
 
 export function generateQuery({element, classList, id, unbreakable, attributes}: WrapperArgs): string {
-  const classListString = classList ? classList.map(c => "."+c).join("") : "";
+  const classListString = (classList && classList.length > 0) ? classList.map(c => "."+c).join("") : "";
   const idString = id ? "#"+id : "";
   const unbreakableString = unbreakable ? "[data-unbreakable]" : "";
 

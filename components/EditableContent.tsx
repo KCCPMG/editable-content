@@ -231,6 +231,10 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
 
     for (let attr of Array.from(element.attributes)) {
       if ((attr.name) === 'class') continue;
+      if (attr.name === 'style') {
+        // TODO: make style compatible for wrapperArgs search
+        continue;
+      }
       const attrName = attr.name;
       const attrValue = attr.value || '';
       // console.log({attrName, attrValue});
@@ -241,7 +245,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     // set all react elements to unbreakable, might change this later
     const wrapperArgs = {
       element: element.tagName,
-      classList: element.className.split(" "),
+      classList: element.className ? element.className.split(" ") : [],
       id: element.getAttribute('id') || undefined,
       attributes: mappedAttributes,
       // unbreakable: typeof mappedAttributes['data-unbreakable'] === 'string'
@@ -622,23 +626,12 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
 
             const {dataKey, selectCallback, deselectCallback, wrapperInstructions, isReactComponent, isStateful, ...otherProps} = etb;
 
-            // if (isReactComponent) {
-            //   wrapperInstructions.props['data-unbreakable'] = '';
-            // }
-
             // if React Element, derive wrapper args from Element, else use what's given
             const wrapperArgs = isReactComponent ?
               reactNodeToWrapperArgs(wrapperInstructions) : // placeholder
-              // reactNodeToWrapperArgs(function() {
-              //   const props = {...wrapperInstructions.props};
-              //   props['data-unbreakable'] = '';
-              //   return React.cloneElement(wrapperInstructions, props);
-              // }()) :
               wrapperInstructions;
 
-            // if (etb.dataKey === "underline-color") console.log(wrapperArgs);
             const query = generateQuery(wrapperArgs);
-            if (etb.isReactComponent) console.log({query});
             const selection = window.getSelection();
 
             if (hasSelection && selection) {
@@ -658,13 +651,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
             }
     
             const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current)
-            if (dataKey === "multilevel-component") console.log({
-              status,
-              selection, 
-              "wrapperArgs.unbreakable": wrapperArgs.unbreakable, 
-              query, 
-              "contentRef.current": contentRef.current
-            })
 
             if (!hasSelection) {
               status.enabled = false;
