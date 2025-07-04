@@ -99,6 +99,7 @@ export default function PageClient() {
   const [changeTextFocusNode, setChangeTextFocusNode] = useState<Node | null>(null);
   const [changeTextFocusOffset, setChangeTextFocusOffset] = useState<number | null>(null);
 
+  const [underlineColor, setUnderlineColor] = useState("red");
 
   // utilities in window
   useEffect(function() {
@@ -289,7 +290,7 @@ export default function PageClient() {
               child: "UC",
               isReactComponent: true,
               isStateful: false,
-              wrapperInstructions: <UnderlineColor color="red" />
+              wrapperInstructions: <UnderlineColor color={underlineColor} />
             }
           ]}
         />

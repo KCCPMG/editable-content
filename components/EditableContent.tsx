@@ -92,7 +92,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     else {
       const { wrapperInstructions } = etb;
       const newProps = {...wrapperInstructions.props};
-      newProps['test-prop'] = 'test';
       newProps['data-unbreakable'] = '';
       const newWrapperInstructions = React.cloneElement(wrapperInstructions, newProps);
       return({
