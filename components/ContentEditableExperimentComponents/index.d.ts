@@ -8,7 +8,33 @@ import { ButtonHTMLAttributes } from "react";
 
 
 
+// defined
+export type WrapperArgs = {
+  element: string,
+  classList?: Array<string>,
+  id?: string,
+  unbreakable?: boolean,
+  attributes?: {
+    [key: string]: string | undefined
+  },
+  eventListeners?: {
+    [key: string]: function
+  }
+}
 
+export type WrapperInstructions = WrapperArgs | ReactElement
+
+// defined
+export type EditableContentButtonProps = {
+  dataKey: string
+  child: React.ReactNode,
+  wrapperArgs: WrapperArgs,
+  // defaultColor?: ButtonOwnProps['color'],
+  // selectedColor?: ButtonOwnProps['color'],
+}
+
+
+// defined
 export type MUIButtonEditableContentButtonProps = 
 Omit<DefaultComponentProps<ExtendButtonBaseTypeMap<ButtonTypeMap<{}, "button">>>, "variant"> & 
 EditableContentButtonProps & {
@@ -18,6 +44,7 @@ EditableContentButtonProps & {
 }
 
 
+// defined
 export type HTMLButtonEditableContentButtonProps = 
 DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & 
 EditableContentButtonProps & {
@@ -25,30 +52,50 @@ EditableContentButtonProps & {
 }
 
 
-// export type EditableContentButtonProps = {
-//   dataKey: string
-//   child: React.ReactNode,
-//   wrapperArgs: WrapperArgs,
-//   // defaultColor?: ButtonOwnProps['color'],
-//   // selectedColor?: ButtonOwnProps['color'],
-// }
+export type ReactWrapperInstructions = {
+  isReactComponent: true,
+  component: ReactElement
+}
+
+export type HTMLWrapperInstructions = {
+  isReactComponent?: false,
+  wrapperArgs: WrapperArgs
+}
 
 
-export type EditTextButtonProps = (MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps) & {
+export type EditTextButtonProps = (
+  MUIButtonEditableContentButtonProps | 
+  HTMLButtonEditableContentButtonProps
+) & (
+  ReactWrapperInstructions |
+  HTMLWrapperInstructions
+) & {
   contentRef?: React.MutableRefObject<HTMLDivElement | null>,
   // wrapSelection: () => void,
   selected: Boolean,
   onClick: () => void,
   selectedVariant?: OverridableStringUnion<"text" | "contained" | "outlined", ButtonPropsVariantOverrides> | undefined,
   deselectedVariant?: OverridableStringUnion<"text" | "contained" | "outlined", ButtonPropsVariantOverrides> | undefined,
-  // selectCallback?: () => void,
-  // deselectCallback?: () => void
+  selectCallback?: () => void,
+  deselectCallback?: () => void
 }
 
 
-export type WrapperInstructions = WrapperArgs | ReactElement
+/** 
+ * 
+
+WrapperArgs
+WrapperInstructions
+EditableContentButtonProps
+MUIButtonEditableContentButtonProps / HTMLButtonEditableContentButtonProps
+EditTextButtonProps
 
 
+*/
+
+
+
+// not used
 export type EditableContentEditTextButtonProps = (
   MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps
 ) & {
@@ -65,19 +112,11 @@ export type EditableContentProps = {
   initialHTML?: string,
   // editTextButtons: Array<EditableContentButtonProps>
   // editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>,
-  editTextButtons: Array<EditableContentEditTextButtonProps>
-  // editTextButtons: Array<EditTextButtonProps>
+  // editTextButtons: Array<EditableContentEditTextButtonProps>
+  editTextButtons: Array<EditTextButtonProps>
 }
 
-export type WrapperArgs = {
-  element: string,
-  classList?: Array<string>,
-  id?: string,
-  unbreakable?: boolean,
-  attributes?: {
-    [key: string]: string | undefined
-  },
-  eventListeners?: {
-    [key: string]: function
-  }
-}
+
+
+
+
