@@ -11,6 +11,7 @@ import StatefulBox from "./TestComponents/StatefulBox";
 import MultiLevelBox from "./TestComponents/MultilLevelBox";
 import UnderlineColor from "./TestComponents/UnderlineColor";
 import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext";
+import { HTMLWrapperInstructions, MUIButtonEditableContentButtonProps } from "./ContentEditableExperimentComponents";
 
 
 
@@ -125,6 +126,16 @@ export default function PageClient() {
     window.initialHTML = initialHTML;
   }, [])
 
+  const sampleMUIButtonEditableContentButtonProps: MUIButtonEditableContentButtonProps = {
+    isMUIButton: true
+  };
+  const sampleHTMLWrapperInstructions: HTMLWrapperInstructions = {
+    wrapperArgs: {
+      element: "strong"
+    }
+  }
+  // const dataKey: string = 
+
 
   return (
     <>  
@@ -189,7 +200,7 @@ export default function PageClient() {
               isMUIButton: true,
               dataKey: "callback-sample",
               child: "CB",
-              wrapperInstructions: {
+              wrapperArgs: {
                 element: "strong"
               },
               selectCallback: () => {
@@ -210,7 +221,7 @@ export default function PageClient() {
               dataKey: "bold",
               child: <FormatBoldIcon/>,
               // variant: "contained",
-              wrapperInstructions: {
+              wrapperArgs: {
                 element: "strong"
               }
               // deselectedVariant: "",
@@ -222,7 +233,7 @@ export default function PageClient() {
               dataKey: "italics",
               child: <FormatItalic/>,
               // variant: "contained",
-              wrapperInstructions: {
+              wrapperArgs: {
                 element: "i"
               },
               // selectedVariant: "contained",
@@ -233,7 +244,7 @@ export default function PageClient() {
               dataKey: "underlined",
               child: <FormatUnderlined/>,
               // variant: "contained",
-              wrapperInstructions: {
+              wrapperArgs: {
                 element: "u",
                 attributes: {
                   testAttribute: "ta",
@@ -252,7 +263,7 @@ export default function PageClient() {
               dataKey: "react-button",
               child: "RB",
               isReactComponent: true, 
-              wrapperInstructions: <Box 
+              component: <Box 
                 component="div"
                 sx={{
                   display: 'inline',
@@ -274,7 +285,7 @@ export default function PageClient() {
               child: "SC",
               isReactComponent: true,
               isStateful: true,
-              wrapperInstructions: <StatefulBox />
+              component: <StatefulBox />
             },
             {
               isMUIButton: true,
@@ -282,7 +293,7 @@ export default function PageClient() {
               child: "MLB",
               isReactComponent: true,
               isStateful: false,
-              wrapperInstructions: <MultiLevelBox />
+              component: <MultiLevelBox />
             },
             {
               isMUIButton: true,
@@ -290,7 +301,7 @@ export default function PageClient() {
               child: "UC",
               isReactComponent: true,
               isStateful: false,
-              wrapperInstructions: <UnderlineColor color={underlineColor} />
+              component: <UnderlineColor color={underlineColor} />
             }
           ]}
         />

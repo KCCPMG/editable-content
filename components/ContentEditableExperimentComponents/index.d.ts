@@ -7,7 +7,6 @@ import { ButtonHTMLAttributes } from "react";
 
 
 
-
 // defined
 export type WrapperArgs = {
   element: string,
@@ -24,7 +23,7 @@ export type WrapperArgs = {
 
 export type WrapperInstructions = WrapperArgs | ReactElement
 
-// defined
+// defined - not used
 export type EditableContentButtonProps = {
   dataKey: string
   child: React.ReactNode,
@@ -36,8 +35,8 @@ export type EditableContentButtonProps = {
 
 // defined
 export type MUIButtonEditableContentButtonProps = 
-Omit<DefaultComponentProps<ExtendButtonBaseTypeMap<ButtonTypeMap<{}, "button">>>, "variant"> & 
-EditableContentButtonProps & {
+Omit<DefaultComponentProps<ExtendButtonBaseTypeMap<ButtonTypeMap<{}, "button">>>, "variant"> &
+{
   isMUIButton: true,
   // deselectedVariant?: string,
   // selectedVariant?: string
@@ -47,13 +46,14 @@ EditableContentButtonProps & {
 // defined
 export type HTMLButtonEditableContentButtonProps = 
 DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & 
-EditableContentButtonProps & {
+{
   isMUIButton: false
 }
 
 
 export type ReactWrapperInstructions = {
   isReactComponent: true,
+  isStateful?: boolean,
   component: ReactElement
 }
 
@@ -63,7 +63,7 @@ export type HTMLWrapperInstructions = {
 }
 
 
-export type EditTextButtonProps = (
+export type EditTextButtonObjects = (
   MUIButtonEditableContentButtonProps | 
   HTMLButtonEditableContentButtonProps
 ) & (
@@ -72,8 +72,10 @@ export type EditTextButtonProps = (
 ) & {
   contentRef?: React.MutableRefObject<HTMLDivElement | null>,
   // wrapSelection: () => void,
-  selected: Boolean,
-  onClick: () => void,
+  dataKey: string,
+  child: React.ReactNode,
+  // selected: Boolean,
+  // onClick: () => void,
   selectedVariant?: OverridableStringUnion<"text" | "contained" | "outlined", ButtonPropsVariantOverrides> | undefined,
   deselectedVariant?: OverridableStringUnion<"text" | "contained" | "outlined", ButtonPropsVariantOverrides> | undefined,
   selectCallback?: () => void,
@@ -113,7 +115,7 @@ export type EditableContentProps = {
   // editTextButtons: Array<EditableContentButtonProps>
   // editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>,
   // editTextButtons: Array<EditableContentEditTextButtonProps>
-  editTextButtons: Array<EditTextButtonProps>
+  editTextButtons: Array<EditTextButtonObjects>
 }
 
 
