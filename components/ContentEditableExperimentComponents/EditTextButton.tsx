@@ -2,8 +2,9 @@ import { Button, ButtonOwnProps } from "@mui/material";
 import React from "react";
 import { WrapperArgs } from ".";
 
-
-type EditTextButtonProps = ButtonOwnProps & React.ComponentPropsWithoutRef<'button'> & {
+// "color", even when not named, causes type conflict from WrapperArgs
+type EditTextButtonProps = Omit<ButtonOwnProps, "color"> 
+  & React.ComponentPropsWithoutRef<'button'> & {
   isMUIButton: boolean,
   dataKey: string,
   child: React.ReactNode,
@@ -27,7 +28,7 @@ export default function EditTextButton({
   selectedVariant,
   deselectedVariant,
   wrapperArgs : {element, classList, id}, 
-  ...remainderProps}: EditTextButtonProps
+...remainderProps}: EditTextButtonProps
 ) {
 
   return (
