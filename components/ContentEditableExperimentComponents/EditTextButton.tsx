@@ -1,20 +1,19 @@
-import { Button } from "@mui/material";
+import { Button, ButtonOwnProps } from "@mui/material";
 import React from "react";
 import { WrapperArgs } from ".";
-import { ButtonProps } from "@mui/material";
 
 
-type EditTextButtonProps = {
+type EditTextButtonProps = ButtonOwnProps & React.ComponentPropsWithoutRef<'button'> & {
   isMUIButton: boolean,
   dataKey: string,
   child: React.ReactNode,
-  contentRef: React.MutableRefObject<HTMLDivElement | null>,
+  // contentRef: React.MutableRefObject<HTMLDivElement | null> | undefined,
   selected: Boolean,
   onClick: () => void,
-  selectedVariant?: ButtonProps["variant"],
-  deselectedVariant?: ButtonProps["variant"],
-  selectCallback?: () => void,
-  deselectCallback?: () => void,
+  selectedVariant?: ButtonOwnProps["variant"],
+  deselectedVariant?: ButtonOwnProps["variant"],
+  selectCallback?: ((wrapper: HTMLElement) => void) | undefined,
+  deselectCallback?: () => void | undefined,
   wrapperArgs: WrapperArgs
 };
 
@@ -22,7 +21,7 @@ export default function EditTextButton({
   isMUIButton, 
   dataKey, 
   child, 
-  contentRef, 
+  // contentRef, 
   onClick, 
   selected,
   selectedVariant,

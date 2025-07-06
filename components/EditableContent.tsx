@@ -90,10 +90,10 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     if (!etb.isReactComponent) return etb;
 
     else {
-      const { wrapperInstructions } = etb;
-      const newProps = {...wrapperInstructions.props};
+      const { component } = etb;
+      const newProps = {...component.props};
       newProps['data-unbreakable'] = '';
-      const newWrapperInstructions = React.cloneElement(wrapperInstructions, newProps);
+      const newWrapperInstructions = React.cloneElement(component, newProps);
       return({
         ...etb,
         wrapperInstructions: newWrapperInstructions
@@ -366,9 +366,10 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     // find correct wrapper button
     const foundButton = editTextButtons.find(etb => etb.dataKey === key);
     if (!foundButton) return;
+    if (!foundButton.isReactComponent) return;
     
-    const component = foundButton.wrapperInstructions as ReactElement;
-    console.log(foundButton.wrapperInstructions);
+    const component = foundButton.component;
+    console.log(foundButton.component);
     cloneElementIntoPortal(component, {key: uuid}, text, containingDiv, !!foundButton.isStateful);
   }
 
@@ -553,8 +554,8 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     isReactComponent: boolean, 
     selected: boolean, 
     query: string, 
-    selectCallback: (wrapper: HTMLElement) => void, 
-    deselectCallback: () => void, 
+    selectCallback: ((wrapper: HTMLElement) => void) | undefined, 
+    deselectCallback: (() => void) | undefined, 
     wrapperInstructions: WrapperInstructions, 
     dataKey: string,
     isStateful: boolean
@@ -623,12 +624,12 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         {
           editTextButtons.map(etb => {
 
-            const {dataKey, selectCallback, deselectCallback, wrapperInstructions, isReactComponent, isStateful, ...otherProps} = etb;
+            const {dataKey, selectCallback, deselectCallback, isReactComponent, ...otherProps} = etb;
 
             // if React Element, derive wrapper args from Element, else use what's given
             const wrapperArgs = isReactComponent ?
-              reactNodeToWrapperArgs(wrapperInstructions) : // placeholder
-              wrapperInstructions;
+              reactNodeToWrapperArgs(etb.component) : // placeholder
+              etb.wrapperArgs;
 
             const query = generateQuery(wrapperArgs);
             const selection = window.getSelection();
@@ -649,23 +650,28 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
               }
             }
     
+            
             const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current)
-
+            
             if (!hasSelection) {
               status.enabled = false;
               status.selected = false;
             }
             const {selected, enabled} = status;
 
+            const isStateful = !!isReactComponent && etb.isStateful ? etb.isStateful : false;
+            const component = !!isReactComponent && etb.component ? etb.component : undefined;
+
             return ( 
               <EditTextButton
                 {...otherProps}
-                wrapperArgs
+                wrapperArgs={wrapperArgs}
+                dataKey={dataKey}
                 key={dataKey}
                 disabled={!enabled}
-                onMouseDown={(e: Event) => {e.preventDefault();}}
+                onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => {e.preventDefault();}}
                 selected={selected}
-                onClick={() => handleEditTextButtonClick(selection, wrapperArgs, isReactComponent, selected, query, selectCallback, deselectCallback, wrapperInstructions, dataKey, isStateful)}
+                onClick={() => handleEditTextButtonClick(selection, wrapperArgs, !!isReactComponent, selected, query, selectCallback, deselectCallback, component, dataKey, isStateful)}
               />
             )
           })

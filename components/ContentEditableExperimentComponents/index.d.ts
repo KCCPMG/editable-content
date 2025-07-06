@@ -70,16 +70,16 @@ export type EditTextButtonObjects = (
   ReactWrapperInstructions |
   HTMLWrapperInstructions
 ) & {
-  contentRef?: React.MutableRefObject<HTMLDivElement | null>,
+  // contentRef?: React.MutableRefObject<HTMLDivElement | null> | undefined,
   // wrapSelection: () => void,
   dataKey: string,
   child: React.ReactNode,
   // selected: Boolean,
   // onClick: () => void,
-  selectedVariant?: OverridableStringUnion<"text" | "contained" | "outlined", ButtonPropsVariantOverrides> | undefined,
-  deselectedVariant?: OverridableStringUnion<"text" | "contained" | "outlined", ButtonPropsVariantOverrides> | undefined,
-  selectCallback?: () => void,
-  deselectCallback?: () => void
+  selectedVariant?: ButtonOwnProps["variant"] | undefined,
+  deselectedVariant?: ButtonOwnProps["variant"] | undefined,
+  selectCallback?: ((wrapper: HTMLElement) => void) | undefined,
+  deselectCallback?: (() => void) | undefined
 }
 
 

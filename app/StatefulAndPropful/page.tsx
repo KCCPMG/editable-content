@@ -70,7 +70,7 @@ export default function Page() {
               child: "Stateful And Propful",
               isReactComponent: true,
               isStateful: true,
-              wrapperInstructions: <StatefulAndPropfulBox 
+              component: <StatefulAndPropfulBox 
                 initialClicks={initialClicks}
                 borderC={componentBorderColor} 
               />,
@@ -81,7 +81,7 @@ export default function Page() {
               child: "SC",
               isReactComponent: true,
               isStateful: true,
-              wrapperInstructions: <StatefulBox />
+              component: <StatefulBox />
             },
           ]}
         />
