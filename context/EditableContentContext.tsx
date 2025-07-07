@@ -1,5 +1,6 @@
 import { getRangeChildNodes } from "@/utils/utils";
-import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode } from "react";
+import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, cloneElement } from "react";
+import { createPortal } from "react-dom";
 
 
 // this would be a replacement for EditableContent's state in many cases
@@ -28,6 +29,7 @@ type EditableContentContextType = {
   divToSetSelectionTo: HTMLElement | null, 
   setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>,
   getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void,
+  updatePortalProps: (portalId: string, newProps: {[key: string]: any}) => void,
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -79,6 +81,39 @@ export function EditableContentContextProvider({children}: EditableContentContex
     callback(parsedHTMLBody.innerHTML);
   }
 
+
+
+  function updatePortalProps(portalId: string, newProps: {[key: string]: any}) {
+
+    setPortals(previousPortals => {
+
+      const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
+      if (foundPortalIndex < 0) return previousPortals;
+
+      const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
+      if (!container) return previousPortals;;
+
+      const foundPortal = previousPortals[foundPortalIndex];
+      if (!foundPortal) return previousPortals;;
+
+
+      const props = Object.assign({}, foundPortal.props, newProps);
+      const clone = cloneElement(foundPortal, props, foundPortal.children);
+
+
+      const clonedPortal = createPortal(clone, container, portalId)
+
+      previousPortals.splice(foundPortalIndex, 1)
+
+      return [...previousPortals, clonedPortal];
+
+    })
+
+    return;
+
+  }
+
+
   return (
     <EditableContentContext.Provider value={{
       contentRef,
@@ -104,7 +139,8 @@ export function EditableContentContextProvider({children}: EditableContentContex
       setMustReportState,
       divToSetSelectionTo, 
       setDivToSetSelectionTo,
-      getDehydratedHTML
+      getDehydratedHTML,
+      updatePortalProps
     }}
   >
     {children}

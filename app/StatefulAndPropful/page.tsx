@@ -1,6 +1,6 @@
 "use client"
 import EditableContent from "@/components/EditableContent";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext";
 import StatefulAndPropfulBox from "@/components/TestComponents/StatefulAndPropfulBox";
 import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
@@ -22,16 +22,11 @@ export default function Page() {
   const [changeTextFocusNode, setChangeTextFocusNode] = useState<Node | null>(null);
   const [changeTextFocusOffset, setChangeTextFocusOffset] = useState<number | null>(null);
 
-  const colors = ["red", "blue", "green", "black"];
   const [initialClicks, setInitialClicks] = useState(0);
 
-  const [componentBorderColor, setComponentBorderColor] = useState("red");
 
-  function rotateColor() {
-    let index = colors.findIndex(c => c === componentBorderColor);
-    index++;
-    setComponentBorderColor(colors[index % colors.length])
-  }
+
+  const [componentBorderColor, setComponentBorderColor] = useState("red");
 
   function increaseClicks() {
     setInitialClicks(initialClicks + 1);
@@ -44,15 +39,16 @@ export default function Page() {
       <p>
         There are two values here which are passed as props to every StatefulAndPropfulBox that is rendered here. What I expect to happen is that changing these props at this level (which can be done with the buttons) will not affect existing instances of StatefulAndPropfulBox, but will change the startinng point for new instances which are created. Additionally, clicking on the StatefulAndPropfulBox itself should increase that component's clicks on its own.
       </p>
-      <div>
-        <Button onClick={rotateColor}>
-          Rotate Color from {componentBorderColor}
-        </Button>
-        <Button onClick={increaseClicks}>
-          Increase Clicks from {initialClicks}
-        </Button>
-      </div>
       <EditableContentContextProvider>
+        <div>
+          <IncreaseColorButton 
+            componentBorderColor={componentBorderColor} 
+            setComponentBorderColor={setComponentBorderColor} 
+          />
+          <Button onClick={increaseClicks}>
+            Increase Clicks from {initialClicks}
+          </Button>
+        </div>
         <EditableContent
           initialHTML={`
             Normal Text 
@@ -85,8 +81,40 @@ export default function Page() {
             },
           ]}
         />
-
       </EditableContentContextProvider>
     </>
+  )
+}
+
+
+
+type IncreaseColorButtonProps = {
+  componentBorderColor: string,
+  setComponentBorderColor: Dispatch<SetStateAction<string>>
+}
+
+
+function IncreaseColorButton({componentBorderColor, setComponentBorderColor}: IncreaseColorButtonProps) {
+
+  const { portals, updatePortalProps, contentRef } = useEditableContentContext();
+
+  const colors = ["red", "blue", "green", "black"];
+
+  function rotateColor() {
+    let index = colors.findIndex(c => c === componentBorderColor);
+    index++;
+    setComponentBorderColor(colors[index % colors.length])
+    if (!contentRef.current) return;
+    const divs = Array.from(contentRef.current.querySelectorAll("div[data-button-key='stateful-and-propful"))
+    const keys = divs.map(div => div.getAttribute('id')?.split("portal-container-")[1])
+    keys.forEach(key => {
+      if (key) updatePortalProps(key, {borderC: componentBorderColor});
+    })
+  }
+
+  return (
+    <Button onClick={rotateColor}>
+      Rotate Color from {componentBorderColor}
+    </Button>
   )
 }
