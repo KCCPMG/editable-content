@@ -27,8 +27,9 @@ export default function EditTextButton({
   selected,
   selectedVariant,
   deselectedVariant,
-  wrapperArgs : {element, classList, id}, 
-...remainderProps}: EditTextButtonProps
+  wrapperArgs: {element, classList, id}, 
+  ...remainderProps
+}: EditTextButtonProps
 ) {
 
   return (

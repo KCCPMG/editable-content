@@ -63,7 +63,7 @@ export type HTMLWrapperInstructions = {
 }
 
 
-export type EditTextButtonObjects = (
+export type EditTextButtonObject = (
   MUIButtonEditableContentButtonProps | 
   HTMLButtonEditableContentButtonProps
 ) & (
@@ -115,7 +115,7 @@ export type EditableContentProps = {
   // editTextButtons: Array<EditableContentButtonProps>
   // editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>,
   // editTextButtons: Array<EditableContentEditTextButtonProps>
-  editTextButtons: Array<EditTextButtonObjects>
+  editTextButtons: Array<EditTextButtonObject>
 }
 
 

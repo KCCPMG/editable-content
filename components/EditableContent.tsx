@@ -1,7 +1,7 @@
 "use client"
 import React, { useRef, useState, useEffect, isValidElement, ReactElement, useCallback } from "react";
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from '@/utils/utils';
-import { EditableContentProps, WrapperInstructions } from "./ContentEditableExperimentComponents";
+import { EditableContentProps, EditTextButtonObject, WrapperInstructions } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
 import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
 import { Button } from "@mui/material";
@@ -27,6 +27,7 @@ const reportState = new CustomEvent("reportState");
  * the state directly from the portals?
  * If components take a prop, reportState: () => void
  */
+
 
 
 function getLastValidTextNode(textNodeArr: Array<Text>) {
@@ -155,6 +156,159 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     (window as any).setPortals = setPortals;
   }, [portals])
 
+
+
+  function reactNodeToElement(reactNode: ReactNode) {
+    const stringified = renderToString(reactNode);
+    const parsedElement = new DOMParser().parseFromString(stringified, "text/html").body.children[0];
+    return parsedElement;
+  }
+
+  function reactNodeToWrapperArgs(rn: ReactNode): WrapperArgs {
+
+    const element = reactNodeToElement(rn);
+
+    let mappedAttributes: {[key: string] : string | undefined} = {}
+
+    for (let attr of Array.from(element.attributes)) {
+      if ((attr.name) === 'class') continue;
+      if (attr.name === 'style') {
+        // TODO: make style compatible for wrapperArgs search
+        continue;
+      }
+      const attrName = attr.name;
+      const attrValue = attr.value || '';
+      // console.log({attrName, attrValue});
+      mappedAttributes[attrName] = attrValue;
+    }
+    
+
+    // set all react elements to unbreakable, might change this later
+    const wrapperArgs = {
+      element: element.tagName,
+      classList: element.className ? element.className.split(" ") : [],
+      id: element.getAttribute('id') || undefined,
+      attributes: mappedAttributes,
+      // unbreakable: typeof mappedAttributes['data-unbreakable'] === 'string'
+      unbreakable: true
+      // eventListeners: getEventListeners(element)      
+    };
+
+    // console.log(rn?.type?.name, wrapperArgs);
+
+    return wrapperArgs;
+  }
+
+
+  function reactWrapperToEditTextButton(etb: EditTextButtonObject) {
+    // confirm and coerce this is ReactWrapper type of EditTextButtonObject
+    if (!etb.isReactComponent) return;
+
+    const {isStateful, component, dataKey, selectCallback, deselectCallback, isReactComponent, ...otherProps} = etb;
+
+    const wrapperArgs = reactNodeToWrapperArgs(component);
+
+    const query = generateQuery(wrapperArgs);
+    const selection = window.getSelection();
+    
+    if (hasSelection && selection) {
+      const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
+
+      if (
+        anchorNode == contentRef.current && 
+        focusNode == contentRef.current &&
+        anchorOffset == 0 && 
+        focusOffset == 0
+      ) {
+        const thisRange = selection.getRangeAt(0);
+        thisRange.insertNode(document.createTextNode(""));   
+        selection.removeAllRanges();
+        selection.addRange(thisRange);
+      }
+    }
+
+    const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
+
+    if (!hasSelection) {
+      status.enabled = false;
+      status.selected = false;
+    }
+    const {selected, enabled} = status;
+
+    return ( 
+      <EditTextButton
+        {...otherProps}
+        wrapperArgs={wrapperArgs}
+        dataKey={dataKey}
+        key={dataKey}
+        disabled={!enabled}
+        onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => {e.preventDefault();}}
+        selected={selected}
+        onClick={() => handleEditTextButtonClick(selection, wrapperArgs, !!isReactComponent, selected, query, selectCallback, deselectCallback, component, dataKey, !!isStateful)}
+      />
+    )
+  }
+
+
+
+  function HTMLWrapperInstructionsToEditTextButton(etb: EditTextButtonObject) {
+    // confirm and coerce this is HTMLWrapperInstructions type of EditTextButtonObject
+    if (etb.isReactComponent) return;
+
+    // destructure to extract props
+    const {dataKey, selectCallback, deselectCallback, isReactComponent, wrapperArgs, ...otherProps} = etb;
+
+    const query = generateQuery(wrapperArgs);
+    const selection = window.getSelection();
+
+    if (hasSelection && selection) {
+      const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
+
+      if (
+        anchorNode == contentRef.current && 
+        focusNode == contentRef.current &&
+        anchorOffset == 0 && 
+        focusOffset == 0
+      ) {
+        const thisRange = selection.getRangeAt(0);
+        thisRange.insertNode(document.createTextNode(""));   
+        selection.removeAllRanges();
+        selection.addRange(thisRange);
+      }
+    }
+
+    const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current)
+            
+    if (!hasSelection) {
+      status.enabled = false;
+      status.selected = false;
+    }
+    const {selected, enabled} = status;
+
+    return ( 
+      <EditTextButton
+        {...otherProps}
+        wrapperArgs={wrapperArgs}
+        dataKey={dataKey}
+        key={dataKey}
+        disabled={!enabled}
+        onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => {e.preventDefault();}}
+        selected={selected}
+        onClick={() => handleEditTextButtonClick(selection, wrapperArgs, !!isReactComponent, selected, query, selectCallback, deselectCallback, undefined, dataKey, false)}
+      />
+    )
+
+  }
+
+  function editTextButtonObjectToEditTextButton(etb: EditTextButtonObject) {
+    if (etb.isReactComponent) return reactWrapperToEditTextButton(etb);
+    else return HTMLWrapperInstructionsToEditTextButton(etb);
+  }
+
+
+
+
+
   /**
    * if changes need to be made to selection, make those changes, 
    * otherwise update selection pieces of state
@@ -214,48 +368,9 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     contentRef.current?.focus();
   }
 
-  function reactNodeToElement(reactNode: ReactNode) {
-    const stringified = renderToString(reactNode);
-    // console.log({stringified})
-    const parsedElement = new DOMParser().parseFromString(stringified, "text/html").body.children[0];
-    // console.log({parsedElement})
-    return parsedElement;
-  }
 
-  function reactNodeToWrapperArgs(rn: ReactNode): WrapperArgs {
 
-    const element = reactNodeToElement(rn);
 
-    let mappedAttributes: {[key: string] : string | undefined} = {}
-
-    for (let attr of Array.from(element.attributes)) {
-      if ((attr.name) === 'class') continue;
-      if (attr.name === 'style') {
-        // TODO: make style compatible for wrapperArgs search
-        continue;
-      }
-      const attrName = attr.name;
-      const attrValue = attr.value || '';
-      // console.log({attrName, attrValue});
-      mappedAttributes[attrName] = attrValue;
-    }
-    
-
-    // set all react elements to unbreakable, might change this later
-    const wrapperArgs = {
-      element: element.tagName,
-      classList: element.className ? element.className.split(" ") : [],
-      id: element.getAttribute('id') || undefined,
-      attributes: mappedAttributes,
-      // unbreakable: typeof mappedAttributes['data-unbreakable'] === 'string'
-      unbreakable: true
-      // eventListeners: getEventListeners(element)      
-    };
-
-    // console.log(rn?.type?.name, wrapperArgs);
-
-    return wrapperArgs;
-  }
 
   function setIndividualPortalState (id: string, obj: {[key: string]: any}) {
     setPortalsState(previousPortalsState => {
@@ -624,6 +739,19 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         {
           editTextButtons.map(etb => {
 
+            return editTextButtonObjectToEditTextButton(etb);
+
+            /**
+
+            // cannot extract selectively, assign variables and remove
+            const isStateful = !!etb.isReactComponent && etb.isStateful ? etb.isStateful : false;
+            const component = !!etb.isReactComponent && etb.component ? etb.component : undefined;
+            const attributes = !etb.isReactComponent && etb.wrapperArgs
+
+            if (etb.isReactComponent && etb.isStateful) delete(etb.isStateful);
+            if (etb.isReactComponent && etb.component) delete(etb.component);
+
+            // destructure to extract common props
             const {dataKey, selectCallback, deselectCallback, isReactComponent, ...otherProps} = etb;
 
             // if React Element, derive wrapper args from Element, else use what's given
@@ -659,8 +787,8 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
             }
             const {selected, enabled} = status;
 
-            const isStateful = !!isReactComponent && etb.isStateful ? etb.isStateful : false;
-            const component = !!isReactComponent && etb.component ? etb.component : undefined;
+
+
 
             return ( 
               <EditTextButton
@@ -674,6 +802,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
                 onClick={() => handleEditTextButtonClick(selection, wrapperArgs, !!isReactComponent, selected, query, selectCallback, deselectCallback, component, dataKey, isStateful)}
               />
             )
+            */
           })
         }
       </div>
