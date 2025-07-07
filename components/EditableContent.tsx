@@ -157,6 +157,18 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
   }, [portals])
 
 
+  // on divToSetSelectionTo change
+  useEffect(() => {
+    // once react portal has rendered, set selection to text within, clear divToSetSelectionTo
+    if (divToSetSelectionTo) {
+      if (divToSetSelectionTo.childNodes.length > 0) {
+        window.getSelection()?.setBaseAndExtent(divToSetSelectionTo, 0, divToSetSelectionTo, divToSetSelectionTo.childNodes.length);
+        resetSelectionToTextNodes();
+        setDivToSetSelectionTo(null);
+      }
+    }
+  }, [divToSetSelectionTo])
+
 
   function reactNodeToElement(reactNode: ReactNode) {
     const stringified = renderToString(reactNode);
@@ -484,7 +496,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     if (!foundButton.isReactComponent) return;
     
     const component = foundButton.component;
-    console.log(foundButton.component);
     cloneElementIntoPortal(component, {key: uuid}, text, containingDiv, !!foundButton.isStateful);
   }
 
@@ -722,14 +733,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
   }
 
 
-  // once react component has rendered, set selection to text within
-  if (divToSetSelectionTo) {
-    if (divToSetSelectionTo.childNodes.length > 0) {
-      window.getSelection()?.setBaseAndExtent(divToSetSelectionTo, 0, divToSetSelectionTo, divToSetSelectionTo.childNodes.length);
-      resetSelectionToTextNodes();
-      setDivToSetSelectionTo(null);
-    }
-  }
+
 
 
   return (
@@ -738,71 +742,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       <div style={buttonRowStyle}>
         {
           editTextButtons.map(etb => {
-
             return editTextButtonObjectToEditTextButton(etb);
-
-            /**
-
-            // cannot extract selectively, assign variables and remove
-            const isStateful = !!etb.isReactComponent && etb.isStateful ? etb.isStateful : false;
-            const component = !!etb.isReactComponent && etb.component ? etb.component : undefined;
-            const attributes = !etb.isReactComponent && etb.wrapperArgs
-
-            if (etb.isReactComponent && etb.isStateful) delete(etb.isStateful);
-            if (etb.isReactComponent && etb.component) delete(etb.component);
-
-            // destructure to extract common props
-            const {dataKey, selectCallback, deselectCallback, isReactComponent, ...otherProps} = etb;
-
-            // if React Element, derive wrapper args from Element, else use what's given
-            const wrapperArgs = isReactComponent ?
-              reactNodeToWrapperArgs(etb.component) : // placeholder
-              etb.wrapperArgs;
-
-            const query = generateQuery(wrapperArgs);
-            const selection = window.getSelection();
-
-            if (hasSelection && selection) {
-              const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
-  
-              if (
-                anchorNode == contentRef.current && 
-                focusNode == contentRef.current &&
-                anchorOffset == 0 && 
-                focusOffset == 0
-              ) {
-                const thisRange = selection.getRangeAt(0);
-                thisRange.insertNode(document.createTextNode(""));   
-                selection.removeAllRanges();
-                selection.addRange(thisRange);
-              }
-            }
-    
-            
-            const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current)
-            
-            if (!hasSelection) {
-              status.enabled = false;
-              status.selected = false;
-            }
-            const {selected, enabled} = status;
-
-
-
-
-            return ( 
-              <EditTextButton
-                {...otherProps}
-                wrapperArgs={wrapperArgs}
-                dataKey={dataKey}
-                key={dataKey}
-                disabled={!enabled}
-                onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => {e.preventDefault();}}
-                selected={selected}
-                onClick={() => handleEditTextButtonClick(selection, wrapperArgs, !!isReactComponent, selected, query, selectCallback, deselectCallback, component, dataKey, isStateful)}
-              />
-            )
-            */
           })
         }
       </div>
