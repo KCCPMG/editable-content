@@ -3,36 +3,22 @@ import EditableContent from "@/components/EditableContent";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext";
 import StatefulAndPropfulBox from "@/components/TestComponents/StatefulAndPropfulBox";
-import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
-import UnderlineColor from "@/components/TestComponents/UnderlineColor";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import { Button } from "@mui/material";
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
-import { Box } from "@mui/material";
 
-
+const initialHTML = 
+`
+Normal Text 
+<div 
+  id="portal-container-12345" 
+  data-button-key="stateful-and-propful" 
+>
+  Stateful and Propful Component</div>`.replaceAll(/\n */g, '');
 
 export default function Page() {
 
-  const [changeTextDialogIsOpen, setChangeTextDialogIsOpen] = useState<boolean>(false)
-  const [changeTextDialogText, setChangeTextDialogText] = useState<string>("Blah blah blah");
-  const [changeTextSelectionDirection, setChangeTextSelectionDirection] = useState<"none" | "forward" | "backward">("none")
-  const [changeTextAnchorNode, setChangeTextAnchorNode] = useState<Node | null>(null);
-  const [changeTextAnchorOffset, setChangeTextAnchorOffset] = useState<number | null>(null);
-  const [changeTextFocusNode, setChangeTextFocusNode] = useState<Node | null>(null);
-  const [changeTextFocusOffset, setChangeTextFocusOffset] = useState<number | null>(null);
-
   const [initialClicks, setInitialClicks] = useState(0);
-
-
-
   const [componentBorderColor, setComponentBorderColor] = useState("red");
-
-  function increaseClicks() {
-    setInitialClicks(initialClicks + 1);
-  }
-
 
   return (
     <>
@@ -52,14 +38,7 @@ export default function Page() {
           />
         </div>
         <EditableContent
-          initialHTML={`
-            Normal Text 
-            <div 
-              id="portal-container-12345" 
-              data-button-key="stateful-and-propful" 
-            >
-              Stateful and Propful Component</div>`
-          }
+          initialHTML={initialHTML}
           divStyle={{
             height: "450px",
             padding: "10px"
