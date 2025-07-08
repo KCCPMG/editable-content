@@ -1,5 +1,5 @@
 import { getRangeChildNodes } from "@/utils/utils";
-import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, cloneElement } from "react";
+import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, cloneElement, isValidElement } from "react";
 import { createPortal } from "react-dom";
 
 
@@ -94,16 +94,23 @@ export function EditableContentContextProvider({children}: EditableContentContex
       if (!container) return previousPortals;;
 
       const foundPortal = previousPortals[foundPortalIndex];
-      if (!foundPortal) return previousPortals;;
+      if (!foundPortal) return previousPortals;
 
+      const targetComponent = foundPortal.children;
+      if (!isValidElement(targetComponent)) return previousPortals;
 
-      const props = Object.assign({}, foundPortal.props, newProps);
-      const clone = cloneElement(foundPortal, props, foundPortal.children);
-
-
-      const clonedPortal = createPortal(clone, container, portalId)
-
+      const props = Object.assign({}, targetComponent.props, newProps);
+      const clone = cloneElement(targetComponent, props, targetComponent.props.children);
+      
+      const clonedPortal = createPortal(clone, container, portalId);
+      
+      console.log({clonedPortal, props, clone, foundPortal, previousPortals});
+      
       previousPortals.splice(foundPortalIndex, 1)
+      
+      console.log("sanity check");
+
+      console.log([...previousPortals, clonedPortal]);
 
       return [...previousPortals, clonedPortal];
 

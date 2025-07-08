@@ -1,6 +1,6 @@
 "use client"
 import EditableContent from "@/components/EditableContent";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext";
 import StatefulAndPropfulBox from "@/components/TestComponents/StatefulAndPropfulBox";
 import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
@@ -11,8 +11,9 @@ import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
 import { Box } from "@mui/material";
 
-export default function Page() {
 
+
+export default function Page() {
 
   const [changeTextDialogIsOpen, setChangeTextDialogIsOpen] = useState<boolean>(false)
   const [changeTextDialogText, setChangeTextDialogText] = useState<string>("Blah blah blah");
@@ -100,16 +101,21 @@ function IncreaseColorButton({componentBorderColor, setComponentBorderColor}: In
 
   const colors = ["red", "blue", "green", "black"];
 
-  function rotateColor() {
-    let index = colors.findIndex(c => c === componentBorderColor);
-    index++;
-    setComponentBorderColor(colors[index % colors.length])
+  useEffect(function() {
+    console.log("useEffect");
     if (!contentRef.current) return;
-    const divs = Array.from(contentRef.current.querySelectorAll("div[data-button-key='stateful-and-propful"))
-    const keys = divs.map(div => div.getAttribute('id')?.split("portal-container-")[1])
+    const divs = Array.from(contentRef.current.querySelectorAll("div[data-button-key='stateful-and-propful"));
+    const keys = divs.map(div => div.getAttribute('id')?.split("portal-container-")[1]);
     keys.forEach(key => {
       if (key) updatePortalProps(key, {borderC: componentBorderColor});
     })
+  }, [componentBorderColor])
+
+  function rotateColor() {
+    let index = colors.findIndex(c => c === componentBorderColor);
+    index++;
+    setComponentBorderColor(colors[index % colors.length]);
+    
   }
 
   return (
