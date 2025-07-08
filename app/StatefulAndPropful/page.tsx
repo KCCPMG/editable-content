@@ -46,9 +46,10 @@ export default function Page() {
             componentBorderColor={componentBorderColor} 
             setComponentBorderColor={setComponentBorderColor} 
           />
-          <Button onClick={increaseClicks}>
-            Increase Clicks from {initialClicks}
-          </Button>
+          <IncreaseClicksButton 
+            initialClicks={initialClicks}
+            setInitialClicks={setInitialClicks}
+          />
         </div>
         <EditableContent
           initialHTML={`
@@ -117,10 +118,6 @@ function IncreaseColorButton({componentBorderColor, setComponentBorderColor}: In
     }))
 
     updatePortalProps(updateObj);
-
-    // keys.forEach(key => {
-    //   if (key) updatePortalProps(key, {borderC: componentBorderColor});
-    // })
   }, [componentBorderColor])
 
 
@@ -133,6 +130,41 @@ function IncreaseColorButton({componentBorderColor, setComponentBorderColor}: In
   return (
     <Button onClick={rotateColor}>
       Rotate Color from {componentBorderColor}
+    </Button>
+  )
+}
+
+
+type IncreaseClicksButtonProps = {
+  initialClicks: number,
+  setInitialClicks: Dispatch<SetStateAction<number>>
+}
+
+
+function IncreaseClicksButton({initialClicks, setInitialClicks}: IncreaseClicksButtonProps) {
+
+  const { updatePortalProps, contentRef } = useEditableContentContext();
+
+  useEffect(function() {
+    if (!contentRef.current) return;
+    const divs = Array.from(contentRef.current.querySelectorAll("div[data-button-key='stateful-and-propful"));
+    const keys = divs.map(div => div.getAttribute('id')?.split("portal-container-")[1]);
+
+    const updateObj = Object.assign({}, ...keys.map(key => {
+      if (typeof key != "string") return {}
+      return {[key]: {initialClicks: initialClicks}}
+    }))
+
+    updatePortalProps(updateObj);
+  }, [initialClicks])
+
+  function increaseClicks() {
+    setInitialClicks(initialClicks => (initialClicks + 1));
+  }
+
+  return (
+    <Button onClick={increaseClicks}>
+      Increase Clicks from {initialClicks}
     </Button>
   )
 }

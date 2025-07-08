@@ -92,14 +92,11 @@ export function EditableContentContextProvider({children}: EditableContentContex
   // function updatePortalProps(portalId: string, newProps: {[key: string]: any}) {
   function updatePortalProps(updateObj: UpdatePortalPropsArg) {
 
-
     const portalClones: Array<ReactPortal> = [];
-
     const portalIds = Object.keys(updateObj);
 
-    console.log(portalIds);
 
-    setPortals(previousPortals => {
+    return setPortals(previousPortals => {
 
       portalIds.forEach(portalId => {
         const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
@@ -128,31 +125,6 @@ export function EditableContentContextProvider({children}: EditableContentContex
       ])
 
     })
-
-    // setPortals(previousPortals => {
-
-    //   const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
-    //   if (foundPortalIndex < 0) return previousPortals;
-
-    //   const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
-    //   if (!container) return previousPortals;
-
-    //   const foundPortal = previousPortals[foundPortalIndex];
-    //   if (!foundPortal) return previousPortals;
-
-    //   const targetComponent = foundPortal.children;
-    //   if (!isValidElement(targetComponent)) return previousPortals;
-
-    //   // else proceed
-    //   const props = Object.assign({}, targetComponent.props, newProps);
-    //   const clone = cloneElement(targetComponent, props, targetComponent.props.children);
-    //   const clonedPortal = createPortal(clone, container, portalId);
-
-    //   return [...previousPortals.filter(portal => portal.key != portalId), clonedPortal];
-
-    // })
-
-    return;
 
   }
 
