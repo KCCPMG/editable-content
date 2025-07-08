@@ -95,7 +95,6 @@ export function EditableContentContextProvider({children}: EditableContentContex
     const portalClones: Array<ReactPortal> = [];
     const portalIds = Object.keys(updateObj);
 
-
     return setPortals(previousPortals => {
 
       portalIds.forEach(portalId => {

@@ -58,11 +58,11 @@ export default function Page() {
               id="portal-container-12345" 
               data-button-key="stateful-and-propful" 
             >
-              Stateful and Propful Component
-            </div>`
+              Stateful and Propful Component</div>`
           }
           divStyle={{
             height: "450px",
+            padding: "10px"
           }}
           editTextButtons={[
             {
