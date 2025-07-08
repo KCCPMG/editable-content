@@ -110,9 +110,17 @@ function IncreaseColorButton({componentBorderColor, setComponentBorderColor}: In
     if (!contentRef.current) return;
     const divs = Array.from(contentRef.current.querySelectorAll("div[data-button-key='stateful-and-propful"));
     const keys = divs.map(div => div.getAttribute('id')?.split("portal-container-")[1]);
-    keys.forEach(key => {
-      if (key) updatePortalProps(key, {borderC: componentBorderColor});
-    })
+
+    const updateObj = Object.assign({}, ...keys.map(key => {
+      if (typeof key != "string") return {}
+      return {[key]: {borderC: componentBorderColor}}
+    }))
+
+    updatePortalProps(updateObj);
+
+    // keys.forEach(key => {
+    //   if (key) updatePortalProps(key, {borderC: componentBorderColor});
+    // })
   }, [componentBorderColor])
 
 

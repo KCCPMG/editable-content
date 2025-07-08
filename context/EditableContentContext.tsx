@@ -3,6 +3,11 @@ import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, 
 import { createPortal } from "react-dom";
 
 
+type UpdatePortalPropsArg = {
+  [key: string]: {[key: string]: any}
+}
+
+
 // this would be a replacement for EditableContent's state in many cases
 type EditableContentContextType = {
   contentRef: MutableRefObject<HTMLDivElement | null>,
@@ -29,7 +34,7 @@ type EditableContentContextType = {
   divToSetSelectionTo: HTMLElement | null, 
   setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>,
   getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void,
-  updatePortalProps: (portalId: string, newProps: {[key: string]: any}) => void,
+  updatePortalProps: (updateObj: UpdatePortalPropsArg) => void,
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -83,30 +88,69 @@ export function EditableContentContextProvider({children}: EditableContentContex
 
 
 
-  function updatePortalProps(portalId: string, newProps: {[key: string]: any}) {
+
+  // function updatePortalProps(portalId: string, newProps: {[key: string]: any}) {
+  function updatePortalProps(updateObj: UpdatePortalPropsArg) {
+
+
+    const portalClones: Array<ReactPortal> = [];
+
+    const portalIds = Object.keys(updateObj);
+
+    console.log(portalIds);
 
     setPortals(previousPortals => {
 
-      const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
-      if (foundPortalIndex < 0) return previousPortals;
+      portalIds.forEach(portalId => {
+        const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
+        if (foundPortalIndex < 0) return;
 
-      const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
-      if (!container) return previousPortals;;
+        const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
+        if (!container) return;
+  
+        const foundPortal = previousPortals[foundPortalIndex];
+        if (!foundPortal) return;
 
-      const foundPortal = previousPortals[foundPortalIndex];
-      if (!foundPortal) return previousPortals;
+        const targetComponent = foundPortal.children;
+        if (!isValidElement(targetComponent)) return;
 
-      const targetComponent = foundPortal.children;
-      if (!isValidElement(targetComponent)) return previousPortals;
+        // else proceed
+        const props = Object.assign({}, targetComponent.props, updateObj[portalId]);
+        const clone = cloneElement(targetComponent, props, targetComponent.props.children);
+        const clonedPortal = createPortal(clone, container, portalId);
+        portalClones.push(clonedPortal);
 
-      // else proceed
-      const props = Object.assign({}, targetComponent.props, newProps);
-      const clone = cloneElement(targetComponent, props, targetComponent.props.children);
-      const clonedPortal = createPortal(clone, container, portalId);
+      })
 
-      return [...previousPortals.filter(portal => portal.key != portalId), clonedPortal];
+      return ([
+        ...previousPortals.filter(portal => portal.key===null ||!portalIds.includes(portal.key)),
+        ...(portalClones as Array<ReactPortal>)
+      ])
 
     })
+
+    // setPortals(previousPortals => {
+
+    //   const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
+    //   if (foundPortalIndex < 0) return previousPortals;
+
+    //   const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
+    //   if (!container) return previousPortals;
+
+    //   const foundPortal = previousPortals[foundPortalIndex];
+    //   if (!foundPortal) return previousPortals;
+
+    //   const targetComponent = foundPortal.children;
+    //   if (!isValidElement(targetComponent)) return previousPortals;
+
+    //   // else proceed
+    //   const props = Object.assign({}, targetComponent.props, newProps);
+    //   const clone = cloneElement(targetComponent, props, targetComponent.props.children);
+    //   const clonedPortal = createPortal(clone, container, portalId);
+
+    //   return [...previousPortals.filter(portal => portal.key != portalId), clonedPortal];
+
+    // })
 
     return;
 
