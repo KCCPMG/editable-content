@@ -24,8 +24,16 @@ export default function Page() {
     <>
       <h1>Stateful and Propful Component Example</h1>
       <p>
-        There are two values here which are passed as props to every StatefulAndPropfulBox that is rendered here. What I expect to happen is that changing these props at this level (which can be done with the buttons) will not affect existing instances of StatefulAndPropfulBox, but will change the startinng point for new instances which are created. Additionally, clicking on the StatefulAndPropfulBox itself should increase that component's clicks on its own.
+        There are two values here which are passed as props to every StatefulAndPropfulBox that is rendered here. What I expect to happen is that changing these props at this level (which can be done with the buttons) will have two distinct outcomes: 
       </p>
+      <ul>
+        <li>
+          Clicking the "Rotate Color From..." button should change the props of all "Stateful and Propful" components, as these change a state value upstream which then updates the props of all found portal instances (see the logic in the useEffect hook). Each component's border color should immediately change as the component's background color is the prop passed to it.
+        </li>
+        <li>
+          Clicking the "Increase Clicks From..." button will also change an upstream state value and this should also change the props, of each "Stateful and Propful" component, but the value displayed for the clicks of that component should not change, as the component's click count is determined by its internal state. However, future "Stateful and Propful" components that are created should all start from whatever value is held at the time from "Increase Clicks From..."
+        </li>
+      </ul>
       <EditableContentContextProvider>
         <div>
           <IncreaseColorButton 
