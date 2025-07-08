@@ -31,8 +31,9 @@ const reportState = new CustomEvent("reportState");
 
 
 function getLastValidTextNode(textNodeArr: Array<Text>) {
-  for (let i=textNodeArr.length-1; i--; i>=0) {
-    return textNodeArr[i];
+  for (let i=textNodeArr.length-1; i>=0; i--) {
+    const textNode = textNodeArr[i];
+    if (textNode.textContent?.match("[^\u200B]")) return textNode;
   } 
   return textNodeArr[0];
 }
