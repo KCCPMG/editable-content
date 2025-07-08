@@ -99,20 +99,12 @@ export function EditableContentContextProvider({children}: EditableContentContex
       const targetComponent = foundPortal.children;
       if (!isValidElement(targetComponent)) return previousPortals;
 
+      // else proceed
       const props = Object.assign({}, targetComponent.props, newProps);
       const clone = cloneElement(targetComponent, props, targetComponent.props.children);
-      
       const clonedPortal = createPortal(clone, container, portalId);
-      
-      console.log({clonedPortal, props, clone, foundPortal, previousPortals});
-      
-      previousPortals.splice(foundPortalIndex, 1)
-      
-      console.log("sanity check");
 
-      console.log([...previousPortals, clonedPortal]);
-
-      return [...previousPortals, clonedPortal];
+      return [...previousPortals.filter(portal => portal.key != portalId), clonedPortal];
 
     })
 

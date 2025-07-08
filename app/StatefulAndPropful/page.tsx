@@ -60,6 +60,9 @@ export default function Page() {
               Stateful and Propful Component
             </div>`
           }
+          divStyle={{
+            height: "450px",
+          }}
           editTextButtons={[
             {
               isMUIButton: true,
@@ -80,6 +83,7 @@ export default function Page() {
               isStateful: true,
               component: <StatefulBox />
             },
+
           ]}
         />
       </EditableContentContextProvider>
@@ -97,12 +101,12 @@ type IncreaseColorButtonProps = {
 
 function IncreaseColorButton({componentBorderColor, setComponentBorderColor}: IncreaseColorButtonProps) {
 
-  const { portals, updatePortalProps, contentRef } = useEditableContentContext();
+  const { updatePortalProps, contentRef } = useEditableContentContext();
 
   const colors = ["red", "blue", "green", "black"];
 
+  // on componentBorderColor change, updatePortalProps
   useEffect(function() {
-    console.log("useEffect");
     if (!contentRef.current) return;
     const divs = Array.from(contentRef.current.querySelectorAll("div[data-button-key='stateful-and-propful"));
     const keys = divs.map(div => div.getAttribute('id')?.split("portal-container-")[1]);
@@ -111,11 +115,11 @@ function IncreaseColorButton({componentBorderColor, setComponentBorderColor}: In
     })
   }, [componentBorderColor])
 
+
   function rotateColor() {
     let index = colors.findIndex(c => c === componentBorderColor);
     index++;
     setComponentBorderColor(colors[index % colors.length]);
-    
   }
 
   return (
