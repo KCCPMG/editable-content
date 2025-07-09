@@ -5,6 +5,7 @@ import EditableContent from "@/components/EditableContent";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import PropfulBox from "@/components/TestComponents/PropfulBox";
 import { Container } from "@mui/material";
+import EditTextButton from "@/components/ContentEditableExperimentComponents/EditTextButton";
 
 const initialHTML = `
 Normal Text 
@@ -34,6 +35,14 @@ export default function Content() {
           setComponentBorderColor={setComponentBorderColor} 
         />
       </div>
+      <EditTextButton
+        isMUIButton={true}
+        dataKey="propful-only"
+        isReactComponent={true}
+        isStateful={false}
+      >
+        Propful Box
+      </EditTextButton>
       <EditableContent
         initialHTML={initialHTML}
         divStyle={{
@@ -46,7 +55,7 @@ export default function Content() {
             dataKey: "propful-only",
             child: "Propful Box",
             isReactComponent: true,
-            isStateful: true,
+            isStateful: false,
             component: <PropfulBox 
               clickCount={0}
               borderC={componentBorderColor} 

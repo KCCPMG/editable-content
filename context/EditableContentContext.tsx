@@ -8,6 +8,18 @@ type PortalProps = {
 }
 
 
+type KeyAndWrapperObj = {
+  dataKey: string,
+  wrapper: React.ReactNode,
+}
+
+
+type EditableContentContextProviderProps = {
+  children: ReactNode,
+  keyAndWrapperObjs: Array<KeyAndWrapperObj>
+}
+
+
 // this would be a replacement for EditableContent's state in many cases
 export type EditableContentContextType = {
   contentRef: MutableRefObject<HTMLDivElement | null>,
@@ -35,18 +47,16 @@ export type EditableContentContextType = {
   setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>,
   getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void,
   updatePortalProps: (updateObj: PortalProps) => void,
-  getAllPortalProps: () => PortalProps
+  getAllPortalProps: () => PortalProps,
+  keyAndWrapperObjs: Array<KeyAndWrapperObj>
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
 
 
-type EditableContentContextProviderProps = {
-  children: ReactNode
-}
 
 
-export function EditableContentContextProvider({children}: EditableContentContextProviderProps) {
+export function EditableContentContextProvider({children, keyAndWrapperObjs}: EditableContentContextProviderProps) {
 
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
@@ -177,7 +187,8 @@ export function EditableContentContextProvider({children}: EditableContentContex
       setDivToSetSelectionTo,
       getDehydratedHTML,
       updatePortalProps,
-      getAllPortalProps
+      getAllPortalProps,
+      keyAndWrapperObjs
     }}
   >
     {children}
