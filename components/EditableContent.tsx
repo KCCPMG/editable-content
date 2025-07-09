@@ -3,8 +3,6 @@ import React, { useRef, useState, useEffect, isValidElement, ReactElement, useCa
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from '@/utils/utils';
 import { EditableContentProps, EditTextButtonObject, WrapperInstructions } from "./ContentEditableExperimentComponents";
 import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
-import ControlTextButton from "./ContentEditableExperimentComponents/ControlTextButton";
-import { Button } from "@mui/material";
 import { renderToString } from "react-dom/server";
 import { WrapperArgs } from "./ContentEditableExperimentComponents";
 import { ReactNode } from "react";
@@ -821,17 +819,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
         }}
       >
       </div>
-      <div>
-        {contentRef.current && 
-          <ControlTextButton 
-            refDiv={contentRef.current}
-            callback={function(div) {
-              div.innerHTML = "";
-            }}
-          />
-        }
-      </div>
-      {portals.map(portal => portal)};
+      {portals.map(portal => portal)}
     </>
   )
 }
