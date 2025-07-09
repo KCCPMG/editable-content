@@ -9,7 +9,7 @@ type UpdatePortalPropsArg = {
 
 
 // this would be a replacement for EditableContent's state in many cases
-type EditableContentContextType = {
+export type EditableContentContextType = {
   contentRef: MutableRefObject<HTMLDivElement | null>,
   contentRefCurrentInnerHTML: string,
   setContentRefCurrentInnerHTML: Dispatch<SetStateAction<string>>,

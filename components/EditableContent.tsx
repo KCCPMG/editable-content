@@ -426,7 +426,7 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
       
     }
     // props['data-unbreakable'] = true;
-    const clone = React.cloneElement(component, props, text);
+    const clone = React.cloneElement(component, Object.assign(props, {id}), text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals(previousPortals => {
       const priorIndex = previousPortals.findIndex( p => p.key === id )

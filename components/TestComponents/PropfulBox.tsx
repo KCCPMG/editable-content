@@ -1,25 +1,29 @@
-import { useEditableContentContext } from "@/context/EditableContentContext";
+import { EditableContentContextType, useEditableContentContext } from "@/context/EditableContentContext";
 import { Box } from "@mui/material";
 import { ReactNode } from "react";
 
 
 type PropfulBoxProps = {
+  id?: string, 
   clickCount: number,
   borderC: string,
   children?: ReactNode,
+  context: EditableContentContextType,
   [key: string]: any
 }
 
 
 export default function PropfulBox(
-  {clickCount, borderC, children, ...rest}: PropfulBoxProps) 
+  {id, clickCount, borderC, children, context, ...rest}: PropfulBoxProps) 
 {
 
-  const {updatePortalProps} = useEditableContentContext();
+  // const { updatePortalProps } = useEditableContentContext();
+  const { updatePortalProps } = context;
 
   function increaseClicks() {
-    updatePortalProps({
-      thisId:
+    console.log(`clicked ${id}`)
+    if (id) updatePortalProps({
+      [id]:
         {
           clickCount: clickCount+1
         }
