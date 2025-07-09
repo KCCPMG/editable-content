@@ -3,7 +3,7 @@ import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, 
 import { createPortal } from "react-dom";
 
 
-type UpdatePortalPropsArg = {
+type PortalProps = {
   [key: string]: {[key: string]: any}
 }
 
@@ -34,7 +34,8 @@ export type EditableContentContextType = {
   divToSetSelectionTo: HTMLElement | null, 
   setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>,
   getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void,
-  updatePortalProps: (updateObj: UpdatePortalPropsArg) => void,
+  updatePortalProps: (updateObj: PortalProps) => void,
+  getAllPortalProps: () => PortalProps
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -60,7 +61,12 @@ export function EditableContentContextProvider({children}: EditableContentContex
   const [mustReportState, setMustReportState] = useState<{[key: string]: any}>({});
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
 
-
+  /**
+   * Create DOMParser from current html of contentRef.current, find
+   * divs which house portals, remove all contents of those divs except
+   * text, pass dehydraded html to callback.
+   * @param callback 
+   */
   function getDehydratedHTML(callback: (dehydratedHTML: string) => void) {
 
     const parsedHTMLBody = new DOMParser()
@@ -87,10 +93,13 @@ export function EditableContentContextProvider({children}: EditableContentContex
   }
 
 
-
-
-  // function updatePortalProps(portalId: string, newProps: {[key: string]: any}) {
-  function updatePortalProps(updateObj: UpdatePortalPropsArg) {
+  /** 
+   * Go through the keys of the update object, find the corresponding portal 
+   * in portals, clone portal with new props, filter out original portals and
+   * set setPortals with clones
+   * @param updateObj
+   */
+  function updatePortalProps(updateObj: PortalProps) {
 
     const portalClones: Array<ReactPortal> = [];
     const portalIds = Object.keys(updateObj);
@@ -122,9 +131,22 @@ export function EditableContentContextProvider({children}: EditableContentContex
         ...previousPortals.filter(portal => portal.key===null ||!portalIds.includes(portal.key)),
         ...(portalClones as Array<ReactPortal>)
       ])
-
     })
+  }
 
+
+  /**
+   * Gets current props for all portals in context
+   * @returns PortalProls
+   */
+  function getAllPortalProps(): PortalProps {
+    return Object.assign({}, ...portals.map(portal => {
+      const targetComponent = portal.children;
+      if (!isValidElement(targetComponent)) return null;
+      const key = portal.key;
+      if (!key) return null;
+      return {[key]: targetComponent.props}
+    }));
   }
 
 
@@ -154,7 +176,8 @@ export function EditableContentContextProvider({children}: EditableContentContex
       divToSetSelectionTo, 
       setDivToSetSelectionTo,
       getDehydratedHTML,
-      updatePortalProps
+      updatePortalProps,
+      getAllPortalProps
     }}
   >
     {children}
