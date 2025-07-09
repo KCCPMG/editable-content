@@ -95,9 +95,6 @@ export default function Content() {
           }
         </table>
       </Container>
-      {/* <PropfulBox clickCount={0} borderC="red" context={useEditableContentContext()}>
-        Propful Box
-      </PropfulBox> */}
     </>
   )
 }

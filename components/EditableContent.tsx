@@ -408,26 +408,26 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
    * @param targetDiv 
    */
   function cloneElementIntoPortal(component: ReactElement, props: {[key: string] : any}, text: string, targetDiv: Element, isStateful: boolean) {
-    const id = props["key"] as string;
+    const portalId = props["key"] as string;
 
     if (isStateful) {
       
       // initialize relevant state in EditableContent
-      setIndividualPortalState(id, {});
-      setIndividualMustReportState(id, false);
+      setIndividualPortalState(portalId, {});
+      setIndividualMustReportState(portalId, false);
   
       // define function to pass to stateful component
       props.reportState = function(stateObj: {[key: string]: any}) {
-        setIndividualPortalState(id, stateObj);
+        setIndividualPortalState(portalId, stateObj);
       }
-      props.mustReportState = mustReportState[id] || false;
+      props.mustReportState = mustReportState[portalId] || false;
       
     }
     // props['data-unbreakable'] = true;
-    const clone = React.cloneElement(component, Object.assign(props, {id}), text);
+    const clone = React.cloneElement(component, Object.assign(props, {portalId}), text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals(previousPortals => {
-      const priorIndex = previousPortals.findIndex( p => p.key === id )
+      const priorIndex = previousPortals.findIndex( p => p.key === portalId )
       if (priorIndex >= 0) {
         previousPortals.splice(priorIndex, 1);
       }
