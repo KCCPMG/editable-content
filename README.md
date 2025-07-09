@@ -1,4 +1,6 @@
-# Actual README
+# Overview
+
+EditableContent is a collection of components and context to give developers the ability to create their own rich-text editors, including React components to wrap text. The basic gist is that an `EditableContentContextProvider` will be rendered at the top level, and then within, an `EditableContent` component which takes arguments for initialHTML and for the buttons that it will render. Using functions and values passed down from `EditableContentContextProvider`, it is possible for developers to dehydrate HTML and then rehydrate it to restore React wrappers through the provider's use of instances of `ReactPortal`.
 
 How to use:
 
@@ -58,6 +60,7 @@ useEditableContentContext is a simple custom hook which exposes the context at w
     - The setter for divToSetSelectionTo, used internally and generally not necessary for you to use.
   - getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void
     - This is a helper function which is designed specifically for the developer to call. This prop takes a function that you will define, which will be passed the dehydratedHTML as an argument. The dehydratedHTML is the HTML of the contentRef with all of the ReactPortals removed and only the containing div and the textContent remaining. This is a means of being able to save the content that is created in EditableContent, as the dehydratedHTML can be passed as a prop to EditableContent, and assuming the `editTextButtons` are the same, the same hydrated React will be rendered.  
+  - updatePortalProps: 
 
 ### EditableContent
 
