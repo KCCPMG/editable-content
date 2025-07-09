@@ -1,6 +1,7 @@
 import { Button, ButtonOwnProps } from "@mui/material";
 import React from "react";
 import { WrapperArgs } from ".";
+import { useEditableContentContext } from "@/context/EditableContentContext";
 
 // "color", even when not named, causes type conflict from WrapperArgs
 type EditTextButtonProps = Omit<ButtonOwnProps, "color"> 
@@ -31,6 +32,17 @@ export default function EditTextButton({
   ...remainderProps
 }: EditTextButtonProps
 ) {
+
+  const { keyAndWrapperObjs } = useEditableContentContext();
+  const thisKeyAndWrapper = keyAndWrapperObjs.find(kw => kw.dataKey === dataKey);
+
+  const wrapper = thisKeyAndWrapper?.wrapper;
+
+  function handleEditTextButtonClick() {
+    if (!wrapper) return;
+    // implement logic from etb.map, make determination about if and when to use 
+    // isReactComponent
+  }
 
   return (
     isMUIButton ? 
