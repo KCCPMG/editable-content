@@ -4,6 +4,7 @@ import { useEditableContentContext } from "@/context/EditableContentContext";
 import EditableContent from "@/components/EditableContent";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import PropfulBox from "@/components/TestComponents/PropfulBox";
+import { Container } from "@mui/material";
 
 const initialHTML = `
 Normal Text 
@@ -13,10 +14,17 @@ Normal Text
 >
   Propful Component</div>`.replaceAll(/\n */g, '');
 
+const tableStyle: React.CSSProperties = {border: "1px solid black", borderCollapse: "collapse"};
+
 export default function Content() {
   
   const [componentBorderColor, setComponentBorderColor] = useState("red");
   const context = useEditableContentContext();
+  const getAllPortalProps = context.getAllPortalProps;
+
+  const allPortalProps = getAllPortalProps();
+  console.log(allPortalProps);
+
 
   return (
     <>
@@ -29,7 +37,7 @@ export default function Content() {
       <EditableContent
         initialHTML={initialHTML}
         divStyle={{
-          height: "450px",
+          height: "200px",
           padding: "10px"
         }}
         editTextButtons={[
@@ -56,6 +64,37 @@ export default function Content() {
 
         ]}
       />
+      <Container>
+        <h3>All Props</h3>
+        <table style={tableStyle}>
+          <thead style={tableStyle}>
+            <tr>
+              <td><h5>Component ID</h5></td>
+              <td><h5>Props</h5></td>
+            </tr>
+          </thead>
+          {
+            Object.entries(allPortalProps).map(([id, props]) => {
+              return(
+                <tr style={tableStyle}>
+                  <td style={tableStyle}>{id}</td>
+                  {
+                    Object.entries(props).map(([k,v]) => {
+                      if (k != "children" && k != "context")
+                      return(
+                        <tr style={tableStyle}>
+                          <td style={tableStyle}>{k}</td>
+                          <td style={tableStyle}>{v}</td>
+                        </tr>
+                      )
+                    })
+                  }
+                </tr>
+              )
+            })
+          }
+        </table>
+      </Container>
       {/* <PropfulBox clickCount={0} borderC="red" context={useEditableContentContext()}>
         Propful Box
       </PropfulBox> */}
