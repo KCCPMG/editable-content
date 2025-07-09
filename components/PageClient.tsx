@@ -126,20 +126,11 @@ export default function PageClient() {
     window.initialHTML = initialHTML;
   }, [])
 
-  const sampleMUIButtonEditableContentButtonProps: MUIButtonEditableContentButtonProps = {
-    isMUIButton: true
-  };
-  const sampleHTMLWrapperInstructions: HTMLWrapperInstructions = {
-    wrapperArgs: {
-      element: "strong"
-    }
-  }
-  // const dataKey: string = 
-
+  const { selectionToString, contentRefCurrentInnerHTML} = useEditableContentContext();
 
   return (
     <>  
-      <EditableContentContextProvider>
+
         <Dialog
           open={changeTextDialogIsOpen}
           onClose={() => {setChangeTextDialogIsOpen(false)}}
@@ -307,7 +298,19 @@ export default function PageClient() {
         />
         <ClearButton />
         <GetDehydratedHTMLButton />
-      </EditableContentContextProvider>
+        <div>
+          <p>
+            <span>Selection: </span>
+            {selectionToString}
+          </p>
+        </div>
+        <div>
+          <p>
+            <span>ContentRef.current Inner HTML: </span>
+            {contentRefCurrentInnerHTML}
+          </p>
+        </div>
+
     </>
   )
 }

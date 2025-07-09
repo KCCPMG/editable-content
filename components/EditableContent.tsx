@@ -831,18 +831,6 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
           />
         }
       </div>
-      <div>
-        <p>
-          <span>Selection: </span>
-          {selectionToString}
-        </p>
-      </div>
-      <div>
-        <p>
-          <span>ContentRef.current Inner HTML: </span>
-          {contentRefCurrentInnerHTML}
-        </p>
-      </div>
       {portals.map(portal => portal)};
     </>
   )

@@ -1,3 +1,4 @@
+"use client"
 import theme from "@/theme";
 import EditableContent from "@/components/EditableContent";
 
@@ -6,6 +7,7 @@ import { Button } from "@mui/material";
 import { MUIButtonEditableContentButtonProps, HTMLButtonEditableContentButtonProps } from "@/components/ContentEditableExperimentComponents";
 import PageClient from "@/components/PageClient";
 import PureReactDiv from "@/components/PureReactDiv";
+import { EditableContentContextProvider } from "@/context/EditableContentContext"
 
 
 
@@ -18,7 +20,9 @@ export default function Home() {
         marginTop: 100
       }}
     >
+    <EditableContentContextProvider>
       <PageClient />
+    </EditableContentContextProvider>
       {/* <PureReactDiv /> */}
       {/* <EditableContent>
         <EditTextButtonRow>
