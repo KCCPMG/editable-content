@@ -10,7 +10,7 @@ type PortalProps = {
 
 type KeyAndWrapperObj = {
   dataKey: string,
-  wrapper: React.ReactNode,
+  wrapper: React.ReactElement,
 }
 
 
@@ -70,6 +70,15 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
   const [portalsState, setPortalsState] = useState<{[key: string]: any}>({});
   const [mustReportState, setMustReportState] = useState<{[key: string]: any}>({});
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
+
+
+  console.log(keyAndWrapperObjs);
+
+  console.log(keyAndWrapperObjs.map(obj => {
+    return typeof obj.wrapper.type
+  }));
+
+
 
   /**
    * Create DOMParser from current html of contentRef.current, find

@@ -6,7 +6,29 @@ How to use:
 
 ### EditableContentContextProvider
 
-The EditableContentContextProvider *must* be rendered as an ancestor to the EditableContent component. It does not take any props on its own, but will hold all the relevant state that the EditableContent depends on. All of this can be accessed through the useEditableContentContext hook.
+The EditableContentContextProvider *must* be rendered as an ancestor to the EditableContent component. It takes only one prop (see Defining Your Own Wrappers) and will hold all the relevant state that the EditableContent depends on. All of this can be accessed through the useEditableContentContext hook.
+
+
+### Defining Your Own Wrappers
+
+To define your own wrapper, it must be passed to the EditableContentContext in the prop `keyAndWrapperObjs`. This prop takes an array of objects, each of which represents a wrapper and has two key/value pairs:
+
+```
+KeyAndWrapperObj = {
+  dataKey: string,
+  wrapper: React.ReactElement,
+}
+```
+
+In this case the wrapper is JSX rendering a React component or HTML. As a part of the rendering process, there are several props which will be passed to each wrapper automatically and should not be passed into the wrapper declaration here. Those props are the following:
+
+  - `portalId`: the id of the portal to which the wrapper will be appended
+  - `getContext`: a function which will return the result of `useEditableContentContext`. **IMPORTANT:** Do NOT call `useEditableContentContext` in the body of your wrapper, as this will cause an error. Call `getContext` instead.
+  - `children`: children is the reserved prop for the children this component will receive, all of which is handled for you as part of the portal creation process
+
+When declaring the PropTypes for your wrappers, make sure that any of these values which you wish to access are declared as optional. Inside the component, make sure that any access of these props is conditional.
+
+
 
 ### useEditableContentContext
 

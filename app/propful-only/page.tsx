@@ -28,6 +28,14 @@ export default function Page() {
           {
             dataKey: "stateful-component",
             wrapper: <StatefulBox />
+          },
+          {
+            dataKey: "non-react-strong",
+            wrapper: <strong className="non-react-strong"></strong>
+          },
+          {
+            dataKey: "block-italics",
+            wrapper: <div><i></i></div>
           }
         ]}
       >
@@ -36,12 +44,4 @@ export default function Page() {
     </>
   )
 }
-
-
-
-
-
-
-
-
 

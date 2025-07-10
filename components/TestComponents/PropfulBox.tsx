@@ -8,21 +8,21 @@ type PropfulBoxProps = {
   clickCount: number,
   borderC: string,
   children?: ReactNode,
-  // context: EditableContentContextType,
+  getContext?: () => EditableContentContextType,
   [key: string]: any
 }
 
 
 export default function PropfulBox(
-  {portalId, clickCount, borderC, children, context, ...rest}: PropfulBoxProps) 
+  {portalId, clickCount, borderC, children, getContext, ...rest}: PropfulBoxProps) 
 {
 
-  const { updatePortalProps } = useEditableContentContext();
-  // const { updatePortalProps } = context;
+  // const { updatePortalProps } = useEditableContentContext();
+  const { updatePortalProps } = getContext ? getContext() : {};
 
   function increaseClicks() {
     console.log(`clicked ${portalId}`)
-    if (portalId) updatePortalProps({
+    if (portalId && updatePortalProps) updatePortalProps({
       [portalId]:
         {
           clickCount: clickCount+1

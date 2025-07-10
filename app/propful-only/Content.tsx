@@ -38,8 +38,8 @@ export default function Content() {
       <EditTextButton
         isMUIButton={true}
         dataKey="propful-only"
-        isReactComponent={true}
-        isStateful={false}
+        // isReactComponent={true}
+        // isStateful={false}
       >
         Propful Box
       </EditTextButton>
