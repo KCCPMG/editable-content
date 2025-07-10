@@ -784,3 +784,22 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
 
   return status;
 }
+
+
+
+export function getLastValidTextNode(textNodeArr: Array<Text>) {
+  for (let i=textNodeArr.length-1; i>=0; i--) {
+    const textNode = textNodeArr[i];
+    if (textNode.textContent?.match("[^\u200B]")) return textNode;
+  } 
+  return textNodeArr[0];
+}
+
+
+export function getLastValidCharacterIndex(textNode: Text) {
+  if (!textNode.textContent) return 0;
+  for (let i=textNode.length-1; i--; i>=0) {
+    if (textNode.textContent[i].match("[^\u200B]")) return i+1;
+  }
+  return 0;
+}

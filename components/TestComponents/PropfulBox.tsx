@@ -21,7 +21,7 @@ export default function PropfulBox(
   const { updatePortalProps } = getContext ? getContext() : {};
 
   function increaseClicks() {
-    console.log(`clicked ${portalId}`)
+    // console.log(`clicked ${portalId}`)
     if (portalId && updatePortalProps) updatePortalProps({
       [portalId]:
         {

@@ -24,7 +24,7 @@ export default function Content() {
   const getAllPortalProps = context.getAllPortalProps;
 
   const allPortalProps = getAllPortalProps();
-  console.log(allPortalProps);
+  // console.log(allPortalProps);
 
 
   return (
@@ -35,14 +35,40 @@ export default function Content() {
           setComponentBorderColor={setComponentBorderColor} 
         />
       </div>
-      <EditTextButton
-        isMUIButton={true}
-        dataKey="propful-only"
-        // isReactComponent={true}
-        // isStateful={false}
-      >
-        Propful Box
-      </EditTextButton>
+      <div>
+        <h4>React Buttons</h4>
+        <EditTextButton
+          isMUIButton={true}
+          dataKey="propful-only"
+          // isReactComponent={true}
+          // isStateful={false}
+        >
+          Propful Box
+        </EditTextButton>
+        <EditTextButton
+          isMUIButton={true}
+          dataKey="stateful-component"
+          // isReactComponent={true}
+          // isStateful={false}
+        >
+          Stateful Box
+        </EditTextButton>
+      </div>
+      <div>
+        <h4>Non-React Buttons</h4>
+        <EditTextButton
+          isMUIButton={true}
+          dataKey="non-react-strong"
+        >
+          Non React Strong
+        </EditTextButton>
+        <EditTextButton
+          isMUIButton={false}
+          dataKey="block-italics"
+        >
+          Block Italics
+        </EditTextButton>
+      </div>
       <EditableContent
         initialHTML={initialHTML}
         divStyle={{

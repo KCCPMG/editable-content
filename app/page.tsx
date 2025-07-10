@@ -20,6 +20,7 @@ export default function Home() {
         marginTop: 100
       }}
     >
+    <h1>Texteditable Experiment</h1>
     <EditableContentContextProvider>
       <PageClient />
     </EditableContentContextProvider>
