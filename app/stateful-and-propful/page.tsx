@@ -5,6 +5,7 @@ import { EditableContentContextProvider, useEditableContentContext } from "@/con
 import StatefulAndPropfulBox from "@/components/TestComponents/StatefulAndPropfulBox";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import { Button } from "@mui/material";
+import EditTextButton from "@/components/ContentEditableExperimentComponents/EditTextButton";
 
 const initialHTML = 
 `
@@ -34,7 +35,22 @@ export default function Page() {
           Clicking the "Increase Clicks From..." button will also change an upstream state value and this should also change the props, of each "Stateful and Propful" component, but the value displayed for the clicks of that component should not change, as the component's click count is determined by its internal state. However, future "Stateful and Propful" components that are created should all start from whatever value is held at the time from "Increase Clicks From..."
         </li>
       </ul>
-      <EditableContentContextProvider>
+      <EditableContentContextProvider
+        keyAndWrapperObjs={[
+          {
+            dataKey: "stateful-and-propful",
+            wrapper: <StatefulAndPropfulBox 
+              initialClicks={initialClicks}
+              borderC={componentBorderColor} 
+            />
+          }, 
+          {
+            dataKey: "stateful-component",
+            wrapper: <StatefulBox />
+          }
+        ]}
+
+      >
         <div>
           <IncreaseColorButton 
             componentBorderColor={componentBorderColor} 
@@ -45,34 +61,26 @@ export default function Page() {
             setInitialClicks={setInitialClicks}
           />
         </div>
+        <div>
+          <EditTextButton
+            isMUIButton={true}
+            dataKey="stateful-and-propful"
+          >
+            Stateful and Propful
+          </EditTextButton>
+          <EditTextButton
+            isMUIButton={true}
+            dataKey="stateful-component"
+          >
+            Stateful Component
+          </EditTextButton>          
+        </div>
         <EditableContent
           initialHTML={initialHTML}
           divStyle={{
             height: "450px",
             padding: "10px"
           }}
-          editTextButtons={[
-            {
-              isMUIButton: true,
-              dataKey: "stateful-and-propful",
-              child: "Stateful And Propful",
-              isReactComponent: true,
-              isStateful: true,
-              component: <StatefulAndPropfulBox 
-                initialClicks={initialClicks}
-                borderC={componentBorderColor} 
-              />,
-            },
-            {
-              isMUIButton: true,
-              dataKey: "stateful-component",
-              child: "SC",
-              isReactComponent: true,
-              isStateful: true,
-              component: <StatefulBox />
-            },
-
-          ]}
         />
       </EditableContentContextProvider>
     </>

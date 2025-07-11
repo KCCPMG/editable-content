@@ -130,186 +130,185 @@ export default function PageClient() {
 
   return (
     <>  
+      <Dialog
+        open={changeTextDialogIsOpen}
+        onClose={() => {setChangeTextDialogIsOpen(false)}}
+        // disableRestoreFocus
+      >
+        <DialogTitle>Test Dialog</DialogTitle>
+        <DialogContent>
+          Change the selected text!
+          <TextField
+            // autoFocus
+            value={changeTextDialogText}
+            onChange={(e) => {setChangeTextDialogText(e.target.value)}}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={(e) => {
+              setChangeTextDialogIsOpen(false);
+              const selectionUpdateRange = new Range();
 
-        <Dialog
-          open={changeTextDialogIsOpen}
-          onClose={() => {setChangeTextDialogIsOpen(false)}}
-          // disableRestoreFocus
-        >
-          <DialogTitle>Test Dialog</DialogTitle>
-          <DialogContent>
-            Change the selected text!
-            <TextField
-              // autoFocus
-              value={changeTextDialogText}
-              onChange={(e) => {setChangeTextDialogText(e.target.value)}}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={(e) => {
-                setChangeTextDialogIsOpen(false);
-                const selectionUpdateRange = new Range();
+              if (!changeTextAnchorNode || !changeTextFocusNode) return;
+              if (changeTextAnchorOffset === null || changeTextFocusOffset === null) return;
 
-                if (!changeTextAnchorNode || !changeTextFocusNode) return;
-                if (changeTextAnchorOffset === null || changeTextFocusOffset === null) return;
-
-                if (changeTextSelectionDirection === "backward") {
-                  selectionUpdateRange.setEnd(changeTextAnchorNode, changeTextAnchorOffset);
-                  selectionUpdateRange.setStart(changeTextFocusNode, changeTextFocusOffset);
-                } else {
-                  selectionUpdateRange.setStart(changeTextAnchorNode, changeTextAnchorOffset);
-                  selectionUpdateRange.setEnd(changeTextFocusNode, changeTextFocusOffset);
-                }
-
-                selectionUpdateRange.extractContents();
-                const newTextNode = document.createTextNode(changeTextDialogText);
-                selectionUpdateRange.insertNode(newTextNode);
-
-                const selection = window.getSelection();
-                selection?.removeAllRanges();
-                selection?.addRange(selectionUpdateRange);
-              }}
-            >
-              Change Text
-            </Button>
-          </DialogActions>
-
-        </Dialog>
-        <EditableContent 
-          initialHTML={initialHTML}
-          // buttonRowStyle={{width: "70%", margin: "auto"}}
-          divStyle={{
-            width: "100%",
-            height: "250px",
-            margin: "auto",
-            border: "2px solid black",
-            overflowY: "scroll"
-          }}
-          editTextButtons={[
-            {
-              isMUIButton: true,
-              dataKey: "callback-sample",
-              child: "CB",
-              wrapperArgs: {
-                element: "strong"
-              },
-              selectCallback: () => {
-                const selection = window.getSelection();
-                if (!selection) return;
-                const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
-                setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
-                setChangeTextDialogText(selection?.toString() || "")
-                setChangeTextDialogIsOpen(true);
-                setChangeTextAnchorNode(anchorNode);
-                setChangeTextAnchorOffset(anchorOffset);
-                setChangeTextFocusNode(focusNode);
-                setChangeTextFocusOffset(focusOffset);
+              if (changeTextSelectionDirection === "backward") {
+                selectionUpdateRange.setEnd(changeTextAnchorNode, changeTextAnchorOffset);
+                selectionUpdateRange.setStart(changeTextFocusNode, changeTextFocusOffset);
+              } else {
+                selectionUpdateRange.setStart(changeTextAnchorNode, changeTextAnchorOffset);
+                selectionUpdateRange.setEnd(changeTextFocusNode, changeTextFocusOffset);
               }
-            },
-            {
-              isMUIButton: true, 
-              dataKey: "bold",
-              child: <FormatBoldIcon/>,
-              // variant: "contained",
-              wrapperArgs: {
-                element: "strong"
-              }
-              // deselectedVariant: "",
-              // selectedVariant: "outlined"
 
+              selectionUpdateRange.extractContents();
+              const newTextNode = document.createTextNode(changeTextDialogText);
+              selectionUpdateRange.insertNode(newTextNode);
+
+              const selection = window.getSelection();
+              selection?.removeAllRanges();
+              selection?.addRange(selectionUpdateRange);
+            }}
+          >
+            Change Text
+          </Button>
+        </DialogActions>
+
+      </Dialog>
+      <EditableContent 
+        initialHTML={initialHTML}
+        // buttonRowStyle={{width: "70%", margin: "auto"}}
+        divStyle={{
+          width: "100%",
+          height: "250px",
+          margin: "auto",
+          border: "2px solid black",
+          overflowY: "scroll"
+        }}
+        editTextButtons={[
+          {
+            isMUIButton: true,
+            dataKey: "callback-sample",
+            child: "CB",
+            wrapperArgs: {
+              element: "strong"
             },
-            {
-              isMUIButton: true, 
-              dataKey: "italics",
-              child: <FormatItalic/>,
-              // variant: "contained",
-              wrapperArgs: {
-                element: "i"
-              },
-              // selectedVariant: "contained",
-              // deselectedVariant: "outlined"
-            },
-            {
-              isMUIButton: true, 
-              dataKey: "underlined",
-              child: <FormatUnderlined/>,
-              // variant: "contained",
-              wrapperArgs: {
-                element: "u",
-                attributes: {
-                  testAttribute: "ta",
-                  testAttribute2: "ta2",
-                },
-                eventListeners: {
-                  click: function() {
-                    console.log("clicked");
-                  }
-                },
-                unbreakable: true
-              }
-            },
-            {
-              isMUIButton: true,
-              dataKey: "react-button",
-              child: "RB",
-              isReactComponent: true, 
-              component: <Box 
-                component="div"
-                sx={{
-                  display: 'inline',
-                  p: 1,
-                  m: 1,
-                  bgcolor: '#fff',
-                  color: 'grey.800',
-                  border: '1px solid',
-                  borderColor: 'grey.300',
-                  borderRadius: 2,
-                  fontSize: '0.875rem',
-                  fontWeight: '700',
-                }}
-              /> 
-            },
-            {
-              isMUIButton: true,
-              dataKey: "stateful-component",
-              child: "SC",
-              isReactComponent: true,
-              isStateful: true,
-              component: <StatefulBox />
-            },
-            {
-              isMUIButton: true,
-              dataKey: "multilevel-component",
-              child: "MLB",
-              isReactComponent: true,
-              isStateful: false,
-              component: <MultiLevelBox />
-            },
-            {
-              isMUIButton: true,
-              dataKey: "underline-color",
-              child: "UC",
-              isReactComponent: true,
-              isStateful: false,
-              component: <UnderlineColor color={underlineColor} />
+            selectCallback: () => {
+              const selection = window.getSelection();
+              if (!selection) return;
+              const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+              setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
+              setChangeTextDialogText(selection?.toString() || "")
+              setChangeTextDialogIsOpen(true);
+              setChangeTextAnchorNode(anchorNode);
+              setChangeTextAnchorOffset(anchorOffset);
+              setChangeTextFocusNode(focusNode);
+              setChangeTextFocusOffset(focusOffset);
             }
-          ]}
-        />
-        <ClearButton />
-        <GetDehydratedHTMLButton />
-        <div>
-          <p>
-            <span>Selection: </span>
-            {selectionToString}
-          </p>
-        </div>
-        <div>
-          <p>
-            <span>ContentRef.current Inner HTML: </span>
-            {contentRefCurrentInnerHTML}
-          </p>
-        </div>
+          },
+          {
+            isMUIButton: true, 
+            dataKey: "bold",
+            child: <FormatBoldIcon/>,
+            // variant: "contained",
+            wrapperArgs: {
+              element: "strong"
+            }
+            // deselectedVariant: "",
+            // selectedVariant: "outlined"
+
+          },
+          {
+            isMUIButton: true, 
+            dataKey: "italics",
+            child: <FormatItalic/>,
+            // variant: "contained",
+            wrapperArgs: {
+              element: "i"
+            },
+            // selectedVariant: "contained",
+            // deselectedVariant: "outlined"
+          },
+          {
+            isMUIButton: true, 
+            dataKey: "underlined",
+            child: <FormatUnderlined/>,
+            // variant: "contained",
+            wrapperArgs: {
+              element: "u",
+              attributes: {
+                testAttribute: "ta",
+                testAttribute2: "ta2",
+              },
+              eventListeners: {
+                click: function() {
+                  console.log("clicked");
+                }
+              },
+              unbreakable: true
+            }
+          },
+          {
+            isMUIButton: true,
+            dataKey: "react-button",
+            child: "RB",
+            isReactComponent: true, 
+            component: <Box 
+              component="div"
+              sx={{
+                display: 'inline',
+                p: 1,
+                m: 1,
+                bgcolor: '#fff',
+                color: 'grey.800',
+                border: '1px solid',
+                borderColor: 'grey.300',
+                borderRadius: 2,
+                fontSize: '0.875rem',
+                fontWeight: '700',
+              }}
+            /> 
+          },
+          {
+            isMUIButton: true,
+            dataKey: "stateful-component",
+            child: "SC",
+            isReactComponent: true,
+            isStateful: true,
+            component: <StatefulBox />
+          },
+          {
+            isMUIButton: true,
+            dataKey: "multilevel-component",
+            child: "MLB",
+            isReactComponent: true,
+            isStateful: false,
+            component: <MultiLevelBox />
+          },
+          {
+            isMUIButton: true,
+            dataKey: "underline-color",
+            child: "UC",
+            isReactComponent: true,
+            isStateful: false,
+            component: <UnderlineColor color={underlineColor} />
+          }
+        ]}
+      />
+      <ClearButton />
+      <GetDehydratedHTMLButton />
+      <div>
+        <p>
+          <span>Selection: </span>
+          {selectionToString}
+        </p>
+      </div>
+      <div>
+        <p>
+          <span>ContentRef.current Inner HTML: </span>
+          {contentRefCurrentInnerHTML}
+        </p>
+      </div>
 
     </>
   )
