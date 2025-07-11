@@ -10,7 +10,7 @@ import { createPortal } from "react-dom";
 import { v4 as uuidv4 } from 'uuid';
 import { useEditableContentContext } from "@/context/EditableContentContext";
 
-const PORTAL_CONTAINER_ID_PREFIX = "portal-container-";
+
 const reportState = new CustomEvent("reportState");
 
 

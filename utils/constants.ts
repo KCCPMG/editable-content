@@ -1,0 +1,1 @@
+export const PORTAL_CONTAINER_ID_PREFIX = "portal-container-";

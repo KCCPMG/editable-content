@@ -1,8 +1,11 @@
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode } from "@/utils/utils";
-import { EditableContentProps, EditTextButtonObject, WrapperInstructions } from "@/components/ContentEditableExperimentComponents";
-import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, cloneElement, isValidElement } from "react";
+import { EditableContentProps, EditTextButtonObject, WrapperInstructions, WrapperArgs } from "@/components/ContentEditableExperimentComponents";
+import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement } from "react";
 import { createPortal } from "react-dom";
-const PORTAL_CONTAINER_ID_PREFIX = "portal-container-";
+import { renderToString } from "react-dom/server";
+import { v4 as uuidv4 } from 'uuid';
+import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
+
 
 
 type PortalProps = {
@@ -50,7 +53,11 @@ export type EditableContentContextType = {
   getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void,
   updatePortalProps: (updateObj: PortalProps) => void,
   getAllPortalProps: () => PortalProps,
-  keyAndWrapperObjs: Array<KeyAndWrapperObj>
+  keyAndWrapperObjs: Array<KeyAndWrapperObj>,
+  updateContent: () => void, 
+  createContentPortal: (component: ReactElement, buttonKey: string, isStateful: boolean) => void, 
+  appendPortalToDiv: (containingDiv: HTMLDivElement) => void,
+  removePortal: (key: string) => void,
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -208,110 +215,110 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
   }
 
 
-  function reactWrapperToEditTextButton(etb: EditTextButtonObject) {
-    // confirm and coerce this is ReactWrapper type of EditTextButtonObject
-    if (!etb.isReactComponent) return;
+  // function reactWrapperToEditTextButton(etb: EditTextButtonObject) {
+  //   // confirm and coerce this is ReactWrapper type of EditTextButtonObject
+  //   if (!etb.isReactComponent) return;
 
-    const {isStateful, component, dataKey, selectCallback, deselectCallback, isReactComponent, ...otherProps} = etb;
+  //   const {isStateful, component, dataKey, selectCallback, deselectCallback, isReactComponent, ...otherProps} = etb;
 
-    const wrapperArgs = reactNodeToWrapperArgs(component);
+  //   const wrapperArgs = reactNodeToWrapperArgs(component);
 
-    const query = generateQuery(wrapperArgs);
-    const selection = window.getSelection();
+  //   const query = generateQuery(wrapperArgs);
+  //   const selection = window.getSelection();
     
-    if (hasSelection && selection) {
-      const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
+  //   if (hasSelection && selection) {
+  //     const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
 
-      if (
-        anchorNode == contentRef.current && 
-        focusNode == contentRef.current &&
-        anchorOffset == 0 && 
-        focusOffset == 0
-      ) {
-        const thisRange = selection.getRangeAt(0);
-        thisRange.insertNode(document.createTextNode(""));   
-        selection.removeAllRanges();
-        selection.addRange(thisRange);
-      }
-    }
+  //     if (
+  //       anchorNode == contentRef.current && 
+  //       focusNode == contentRef.current &&
+  //       anchorOffset == 0 && 
+  //       focusOffset == 0
+  //     ) {
+  //       const thisRange = selection.getRangeAt(0);
+  //       thisRange.insertNode(document.createTextNode(""));   
+  //       selection.removeAllRanges();
+  //       selection.addRange(thisRange);
+  //     }
+  //   }
 
-    const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
+  //   const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
 
-    if (!hasSelection) {
-      status.enabled = false;
-      status.selected = false;
-    }
-    const {selected, enabled} = status;
+  //   if (!hasSelection) {
+  //     status.enabled = false;
+  //     status.selected = false;
+  //   }
+  //   const {selected, enabled} = status;
 
-    return ( 
-      <EditTextButton
-        {...otherProps}
-        // wrapperArgs={wrapperArgs}
-        dataKey={dataKey}
-        key={dataKey}
-        disabled={!enabled}
-        onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => {e.preventDefault();}}
-        // selected={selected}
-        onClick={() => handleEditTextButtonClick(selection, wrapperArgs, !!isReactComponent, selected, query, selectCallback, deselectCallback, component, dataKey, !!isStateful)}
-      />
-    )
-  }
+  //   return ( 
+  //     <EditTextButton
+  //       {...otherProps}
+  //       // wrapperArgs={wrapperArgs}
+  //       dataKey={dataKey}
+  //       key={dataKey}
+  //       disabled={!enabled}
+  //       onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => {e.preventDefault();}}
+  //       // selected={selected}
+  //       onClick={() => handleEditTextButtonClick(selection, wrapperArgs, !!isReactComponent, selected, query, selectCallback, deselectCallback, component, dataKey, !!isStateful)}
+  //     />
+  //   )
+  // }
 
 
-  function HTMLWrapperInstructionsToEditTextButton(etb: EditTextButtonObject) {
-    // confirm and coerce this is HTMLWrapperInstructions type of EditTextButtonObject
-    if (etb.isReactComponent) return;
+  // function HTMLWrapperInstructionsToEditTextButton(etb: EditTextButtonObject) {
+  //   // confirm and coerce this is HTMLWrapperInstructions type of EditTextButtonObject
+  //   if (etb.isReactComponent) return;
 
-    // destructure to extract props
-    const {dataKey, selectCallback, deselectCallback, isReactComponent, wrapperArgs, ...otherProps} = etb;
+  //   // destructure to extract props
+  //   const {dataKey, selectCallback, deselectCallback, isReactComponent, wrapperArgs, ...otherProps} = etb;
 
-    const query = generateQuery(wrapperArgs);
-    const selection = window.getSelection();
+  //   const query = generateQuery(wrapperArgs);
+  //   const selection = window.getSelection();
 
-    if (hasSelection && selection) {
-      const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
+  //   if (hasSelection && selection) {
+  //     const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
 
-      if (
-        anchorNode == contentRef.current && 
-        focusNode == contentRef.current &&
-        anchorOffset == 0 && 
-        focusOffset == 0
-      ) {
-        const thisRange = selection.getRangeAt(0);
-        thisRange.insertNode(document.createTextNode(""));   
-        selection.removeAllRanges();
-        selection.addRange(thisRange);
-      }
-    }
+  //     if (
+  //       anchorNode == contentRef.current && 
+  //       focusNode == contentRef.current &&
+  //       anchorOffset == 0 && 
+  //       focusOffset == 0
+  //     ) {
+  //       const thisRange = selection.getRangeAt(0);
+  //       thisRange.insertNode(document.createTextNode(""));   
+  //       selection.removeAllRanges();
+  //       selection.addRange(thisRange);
+  //     }
+  //   }
 
-    const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current)
+  //   const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current)
             
-    if (!hasSelection) {
-      status.enabled = false;
-      status.selected = false;
-    }
-    const {selected, enabled} = status;
+  //   if (!hasSelection) {
+  //     status.enabled = false;
+  //     status.selected = false;
+  //   }
+  //   const {selected, enabled} = status;
 
-    return ( 
-      <EditTextButton
-        {...otherProps}
-        // wrapperArgs={wrapperArgs}
-        dataKey={dataKey}
-        key={dataKey}
-        disabled={!enabled}
-        onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => {e.preventDefault();}}
-        // selected={selected}
-        onClick={() => handleEditTextButtonClick(selection, wrapperArgs, !!isReactComponent, selected, query, selectCallback, deselectCallback, undefined, dataKey, false)}
-      />
-    )
+  //   return ( 
+  //     <EditTextButton
+  //       {...otherProps}
+  //       // wrapperArgs={wrapperArgs}
+  //       dataKey={dataKey}
+  //       key={dataKey}
+  //       disabled={!enabled}
+  //       onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => {e.preventDefault();}}
+  //       // selected={selected}
+  //       onClick={() => handleEditTextButtonClick(selection, wrapperArgs, !!isReactComponent, selected, query, selectCallback, deselectCallback, undefined, dataKey, false)}
+  //     />
+  //   )
 
-  }
+  // }
 
 
-  function editTextButtonObjectToEditTextButton(etb: EditTextButtonObject) {
-    if (etb.isReactComponent) return reactWrapperToEditTextButton(etb);
-    else return HTMLWrapperInstructionsToEditTextButton(etb);
-  }
+  // function editTextButtonObjectToEditTextButton(etb: EditTextButtonObject) {
+  //   if (etb.isReactComponent) return reactWrapperToEditTextButton(etb);
+  //   else return HTMLWrapperInstructionsToEditTextButton(etb);
+  // }
 
 
   /**
@@ -419,7 +426,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
       
     }
     // props['data-unbreakable'] = true;
-    const clone = React.cloneElement(component, Object.assign(props, {portalId}), text);
+    const clone = cloneElement(component, Object.assign(props, {portalId}), text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals(previousPortals => {
       const priorIndex = previousPortals.findIndex( p => p.key === portalId )
@@ -765,7 +772,11 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
       getDehydratedHTML,
       updatePortalProps,
       getAllPortalProps,
-      keyAndWrapperObjs
+      keyAndWrapperObjs,
+      updateContent,
+      createContentPortal,
+      appendPortalToDiv,
+      removePortal
     }}
   >
     {children}

@@ -3,7 +3,8 @@ import { isValidElement, MutableRefObject, ReactElement, ReactNode } from "react
 import { WrapperArgs } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
-import { generateQuery, getButtonStatus } from "@/utils/utils";
+import { generateQuery, getButtonStatus, unwrapSelectionFromQuery, createWrapper, wrapInElement, getAncestorNode, resetSelectionToTextNodes, resetRangeToTextNodes, getRangeChildNodes, getLastValidTextNode, getLastValidCharacterIndex, getRangeLowestAncestorElement, moveSelection} from "@/utils/utils";
+import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
 
 // "color", even when not named, causes type conflict from WrapperArgs
 type EditTextButtonProps = Omit<ButtonOwnProps, "color"> 
@@ -40,7 +41,7 @@ export default function EditTextButton({
 ) {
 
   // get wrapper
-  const { hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef } = useEditableContentContext();
+  const { hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef, updateContent, createContentPortal, portals, removePortal } = useEditableContentContext();
   const thisKeyAndWrapper = keyAndWrapperObjs.find(kw => kw.dataKey === dataKey);
   const wrapper = thisKeyAndWrapper?.wrapper;
 
@@ -60,7 +61,6 @@ export default function EditTextButton({
 
 
   function handleEditTextButtonClick(
-    wrapperInstructions: WrapperInstructions, 
     isStateful: boolean
   ) {
 
@@ -98,7 +98,7 @@ export default function EditTextButton({
       else if (!selected) {
         if (isReactComponent) {
           // if isReactComponent, can assert wrapperInstructions as ReactElement
-          createContentPortal(wrapperInstructions as ReactElement, dataKey, isStateful);
+          createContentPortal(wrapper, dataKey, isStateful);
           // createContentPortal(wrapperArgs, dataKey, isStateful);
         
         } else if (!isReactComponent) {
@@ -139,7 +139,7 @@ export default function EditTextButton({
 
       childrenRange.setStart(targetDiv, 0);
       childrenRange.setEnd(targetDiv, targetDiv.childNodes.length)
-
+      
       resetRangeToTextNodes(childrenRange);
       const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
       const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
@@ -152,9 +152,7 @@ export default function EditTextButton({
         breakElementAtEnd(targetDiv, selection);
         return;
       }
-      
     }
-
 
     // else to either condition above
     const targetComponent = targetPortal.children;
@@ -285,7 +283,7 @@ export default function EditTextButton({
   return (
     isMUIButton ? 
       <Button 
-        onClick={handleEditTextButtonClick}
+        onClick={() => { handleEditTextButtonClick() }}
         variant={selected ? 
           (selectedVariant || "contained") : 
           (deselectedVariant || "outlined")
@@ -296,7 +294,7 @@ export default function EditTextButton({
         {children}
       </Button> :
       <button
-        onClick={handleEditTextButtonClick}
+        onClick={() => { handleEditTextButtonClick() }}
         // id={id}
         // className={classList?.join(" ")}
         {...remainderProps}
