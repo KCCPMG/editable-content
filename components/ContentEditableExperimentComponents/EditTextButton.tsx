@@ -1,5 +1,5 @@
 import { Button, ButtonOwnProps } from "@mui/material";
-import { isValidElement, MutableRefObject, ReactElement, ReactNode } from "react";
+import { isValidElement, MutableRefObject, ReactElement, ReactNode, useEffect, useState } from "react";
 import { WrapperArgs } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
@@ -42,21 +42,34 @@ export default function EditTextButton({
 
   // get wrapper
   const { hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef, updateContent, createContentPortal, portals, removePortal, getIsReactComponent } = useEditableContentContext();
+
+
+  const [selected, setSelected] = useState<boolean>(false);
+  const [enabled, setEnabled] = useState<boolean>(false);
+
+  useEffect(function() {
+    const selection = window.getSelection();
+  
+    const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
+    setSelected(status.selected);
+    setEnabled(status.enabled);
+
+    console.log(dataKey, selection, status);
+
+  }, [hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset])
+
+  // opportunity for useMemo
   const thisKeyAndWrapper = keyAndWrapperObjs.find(kw => kw.dataKey === dataKey);
   const wrapper = thisKeyAndWrapper?.wrapper;
-
   if (!wrapper) return;
+  const isReactComponent = getIsReactComponent(wrapper);
 
   // get wrapperArgs
   const wrapperArgs = reactNodeToWrapperArgs(wrapper);
   const query = generateQuery(wrapperArgs);
 
-  const selection = window.getSelection();
 
-  const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
-  const { selected, enabled } = status;
-
-  const isReactComponent = getIsReactComponent(wrapper);
+  
   
 
 
@@ -67,6 +80,7 @@ export default function EditTextButton({
     // if and when to use isReactComponent
     console.log({wrapper, query, selected})
 
+    const selection = window.getSelection();
 
     if (selection) {         
       if (selected) {
@@ -281,6 +295,7 @@ export default function EditTextButton({
   return (
     isMUIButton ? 
       <Button 
+        disabled={!enabled}
         onClick={() => { handleEditTextButtonClick() }}
         variant={selected ? 
           (selectedVariant || "contained") : 
@@ -292,6 +307,7 @@ export default function EditTextButton({
         {children}
       </Button> :
       <button
+        disabled={!enabled}
         onClick={() => { handleEditTextButtonClick() }}
         // id={id}
         // className={classList?.join(" ")}

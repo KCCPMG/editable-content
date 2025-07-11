@@ -699,6 +699,8 @@ export function selectionContainsNoUnbreakables(selection: Selection, limitingCo
 
 export function getButtonStatus(selection: Selection | null, isUnbreakable: boolean | undefined, query: string, limitingContainer: Node | null) {
 
+  console.log(selection, isUnbreakable, query, limitingContainer)
+
   const status = {
     enabled: true,
     selected: false
