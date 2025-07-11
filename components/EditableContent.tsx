@@ -29,7 +29,7 @@ const reportState = new CustomEvent("reportState");
 
 
 
-export default function EditableContent({divStyle, buttonRowStyle, initialHTML, editTextButtons}: EditableContentProps) {
+export default function EditableContent({divStyle, initialHTML }: EditableContentProps) {
 
   // const contentRef = useRef<null | HTMLDivElement>(null);
   // const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
@@ -70,20 +70,20 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
   } = useEditableContentContext();
 
   // make sure all react elements are unbreakable
-  editTextButtons = editTextButtons.map(etb => {
-    if (!etb.isReactComponent) return etb;
+  // editTextButtons = editTextButtons.map(etb => {
+  //   if (!etb.isReactComponent) return etb;
 
-    else {
-      const { component } = etb;
-      const newProps = {...component.props};
-      newProps['data-unbreakable'] = '';
-      const clonedComponent = React.cloneElement(component, newProps);
-      return({
-        ...etb,
-        component: clonedComponent
-      })
-    }
-  })
+  //   else {
+  //     const { component } = etb;
+  //     const newProps = {...component.props};
+  //     newProps['data-unbreakable'] = '';
+  //     const clonedComponent = React.cloneElement(component, newProps);
+  //     return({
+  //       ...etb,
+  //       component: clonedComponent
+  //     })
+  //   }
+  // })
 
   // on render
   useEffect(() => {

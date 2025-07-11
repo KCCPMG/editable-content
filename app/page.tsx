@@ -21,11 +21,16 @@ export default function Home() {
       }}
     >
     <h1>Texteditable Experiment</h1>
-    <EditableContentContextProvider>
+    <EditableContentContextProvider
+      keyAndWrapperObjs={{
+        key: "bold",
+        wrapper: "strong"
+      }}
+    >
       <PageClient />
     </EditableContentContextProvider>
       {/* <PureReactDiv /> */}
-      {/* <EditableContent>
+      <EditableContent>
         <EditTextButtonRow>
           <Button
             dataKey="bold"
@@ -45,7 +50,7 @@ export default function Home() {
         <ControlTextButtonRow>
 
         </ControlTextButtonRow>
-      </EditableContent> */}
+      </EditableContent>
     </main>
   );
 }

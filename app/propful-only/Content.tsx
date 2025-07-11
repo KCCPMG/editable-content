@@ -47,16 +47,12 @@ export default function Content() {
         <EditTextButton
           isMUIButton={true}
           dataKey="propful-only"
-          // isReactComponent={true}
-          // isStateful={false}
         >
           Propful Box
         </EditTextButton>
         <EditTextButton
           isMUIButton={true}
           dataKey="stateful-component"
-          // isReactComponent={true}
-          // isStateful={false}
         >
           Stateful Box
         </EditTextButton>
@@ -82,58 +78,35 @@ export default function Content() {
           height: "200px",
           padding: "10px"
         }}
-        editTextButtons={[
-          {
-            isMUIButton: true,
-            dataKey: "propful-only",
-            child: "Propful Box",
-            isReactComponent: true,
-            isStateful: false,
-            component: <PropfulBox 
-              clickCount={0}
-              borderC={componentBorderColor} 
-              context={useEditableContentContext()}
-            />,
-          },
-          {
-            isMUIButton: true,
-            dataKey: "stateful-component",
-            child: "SC",
-            isReactComponent: true,
-            isStateful: true,
-            component: <StatefulBox />
-          },
-
-        ]}
       />
       <Container>
         <h3>All Props</h3>
-        <table style={tableStyle}>
-          {
-            Object.entries(allPortalProps).map(([id, props]) => {
-              return(
-                <>
-                  <thead key={id} style={tableStyle}>
-                    <td style={tableStyle}><h5>PortalId: {id}</h5></td>
-                  </thead>
-                  <tbody>
-                    {
-                      Object.entries(props).map(([k,v]) => {
-                        if (k != "children" && k != "getContext")
-                        return(
-                          <tr key={k} style={tableStyle}>
-                            <td style={tableStyle}>{k}</td>
-                            <td style={tableStyle}>{v}</td>
-                          </tr>
-                        )
-                      })
-                    }
-                  </tbody>
-                </>
-              )
-            })
-          }
-        </table>
+        {
+          Object.entries(allPortalProps).map(([id, props]) => {
+            return(
+              <table key={id} style={tableStyle}>
+                <thead style={tableStyle}>
+                  <tr>
+                    <th style={tableStyle}><h5>PortalId: {id}</h5></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    Object.entries(props).map(([k,v]) => {
+                      if (k != "children" && k != "getContext")
+                      return(
+                        <tr key={k} style={tableStyle}>
+                          <td style={tableStyle}>{k}</td>
+                          <td style={tableStyle}>{v}</td>
+                        </tr>
+                      )
+                    })
+                  }
+                </tbody>
+              </table>
+            )
+          })
+        }
       </Container>
     </>
   )

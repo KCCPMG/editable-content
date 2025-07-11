@@ -109,13 +109,13 @@ export type EditableContentEditTextButtonProps = (
 
 
 export type EditableContentProps = {
-  buttonRowStyle?: CSSProperties,
+  // buttonRowStyle?: CSSProperties,
   divStyle?: CSSProperties,
   initialHTML?: string,
   // editTextButtons: Array<EditableContentButtonProps>
   // editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>,
   // editTextButtons: Array<EditableContentEditTextButtonProps>
-  editTextButtons: Array<EditTextButtonObject>
+  // editTextButtons: Array<EditTextButtonObject>
 }
 
 

@@ -25,7 +25,7 @@ type EditableContentContextProviderProps = {
 }
 
 
-// this would be a replacement for EditableContent's state in many cases
+// this is a replacement for EditableContent's state in all cases
 export type EditableContentContextType = {
   contentRef: MutableRefObject<HTMLDivElement | null>,
   contentRefCurrentInnerHTML: string,
