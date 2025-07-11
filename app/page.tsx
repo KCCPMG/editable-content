@@ -2,22 +2,95 @@
 import theme from "@/theme";
 import EditableContent from "@/components/EditableContent";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import { useState } from "react";
-import EditTextButtonRow from "@/components/ContentEditableExperimentComponents/EditTextButtonRow";
-import { Box, Button } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Box, Container } from "@mui/material";
 import { MUIButtonEditableContentButtonProps, HTMLButtonEditableContentButtonProps } from "@/components/ContentEditableExperimentComponents";
-import { getSelectionDirection } from "@/utils/utils";
+import { getSelectionDirection, wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from "@/utils/utils";
 import PageClient from "@/components/PageClient";
 import PureReactDiv from "@/components/PureReactDiv";
-import { EditableContentContextProvider } from "@/context/EditableContentContext"
+import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext"
 import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
 import UnderlineColor from "@/components/TestComponents/UnderlineColor";
 import EditTextButton from "@/components/ContentEditableExperimentComponents/EditTextButton";
 import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
+import StatefulBox from "@/components/TestComponents/StatefulBox";
+import GetDehydratedHTMLButton from "@/components/TestComponents/GetDehydratedHTMLButton";
+import ClearButton from "@/components/TestComponents/ClearButton";
+import SelectionToStringContainer from "@/components/TestComponents/SelectionToStringContainer";
+import ContentRefCurrentInnerHTMLContainer from "@/components/TestComponents/ContentRefCurrentInnerHTMLContainer";
 
+const initialHTML = `
+<strong>Lorem, ipsum</strong>
+  ​dolor ​sit ​ 
+  ​<i>amet  ​cons
+  <strong>
+    ectetur adipisicing ​ ​ ​
+    <br>
+    elit.
+  </strong> ​Sunt,
+</i>
+repudiandae. ​Lorem, ipsum ​dolor ​sit ​amet ​ ​consectetur ​ ​ ​
+<br>
+adipisicing
+<u testattribute="ta" testattribute2="ta2" data-unbreakable="">
+  elit.
+</u>
+Sunt, ​re
+<div 
+  id="portal-container-2bf69a61-17c5-498f-ad4c-ba9a2b01132d" 
+  data-button-key="react-button" 
+  style="display: inline;"
+>
 
+    pud
 
-export default function Home() {
+      iand
+
+    a
+
+  e. ​ ​Lorem
+</div>
+, ​ipsum ​dolor ​ ​
+<br>
+sit amet
+<strong>
+  consectetur
+  <i>
+    adipisicing
+  </i>
+  elit.
+</strong>
+  Sunt,  ​repudiandae. ​Lorem, ​
+​<div id="portal-container-f56a36a4-00b7-42c8-9d92-e14691b2ee1a" data-button-key="react-button" style="display: inline;">
+  ipsum ​dolorsit
+</div>`.replaceAll(/\n */g, '');
+
+declare global {
+  interface Window {
+    wrapInElement?: typeof wrapInElement;
+    selectionIsDescendentOfNode?: typeof selectionIsDescendentOfNode;
+    generateQuery?: typeof generateQuery;
+    selectionIsCoveredBy?: typeof selectionIsCoveredBy;
+    createWrapper?: typeof createWrapper;
+    unwrapSelectionFromQuery?: typeof unwrapSelectionFromQuery;
+    resetSelectionToTextNodes?: typeof resetSelectionToTextNodes;
+    selectionHasTextNodes?: typeof selectionHasTextNodes;
+    getSelectionChildNodes?: typeof getSelectionChildNodes;
+    selectionContainsOnlyText?: typeof selectionContainsOnlyText;
+    getButtonStatus?: typeof getButtonStatus;
+    getRangeLowestAncestorElement?: typeof getRangeLowestAncestorElement;
+    promoteChildrenOfNode?: typeof promoteChildrenOfNode;
+    deleteEmptyElements?: typeof deleteEmptyElements;
+    setSelection?: typeof setSelection;
+    moveSelection?: typeof moveSelection;
+    getRangeChildNodes?: typeof getRangeChildNodes;
+    limitingContainer?: any;
+    getAncestorNode?: typeof getAncestorNode;
+    initialHTML?: string;
+  }
+}
+
+export default function Page() {
 
   const [changeTextDialogIsOpen, setChangeTextDialogIsOpen] = useState<boolean>(false)
   const [changeTextDialogText, setChangeTextDialogText] = useState<string>("Blah blah blah");
@@ -29,6 +102,31 @@ export default function Home() {
 
   const [underlineColor, setUnderlineColor] = useState("red");
 
+  
+  // utilities in window
+  useEffect(function() {
+    window.wrapInElement = wrapInElement;
+    window.selectionIsDescendentOfNode = selectionIsDescendentOfNode;
+    window.generateQuery = generateQuery;
+    window.selectionIsCoveredBy = selectionIsCoveredBy;
+    window.createWrapper = createWrapper;
+    window.unwrapSelectionFromQuery = unwrapSelectionFromQuery;
+    window.resetSelectionToTextNodes = resetSelectionToTextNodes;
+    window.selectionHasTextNodes = selectionHasTextNodes;
+    window.getSelectionChildNodes = getSelectionChildNodes;
+    window.selectionContainsOnlyText = selectionContainsOnlyText;
+    window.getButtonStatus = getButtonStatus;
+    window.getRangeLowestAncestorElement = getRangeLowestAncestorElement;
+    window.promoteChildrenOfNode = promoteChildrenOfNode;
+    window.deleteEmptyElements = deleteEmptyElements;
+    window.setSelection = setSelection;
+    window.moveSelection = moveSelection;
+    window.getRangeChildNodes = getRangeChildNodes;
+    window.limitingContainer = document.querySelector("[contenteditable]")
+    window.getAncestorNode = getAncestorNode;
+    window.initialHTML = initialHTML;
+  }, [])
+
   return (
     <main
       style={{
@@ -37,146 +135,141 @@ export default function Home() {
         marginTop: 100
       }}
     >
-    <h1>Texteditable Experiment</h1>
-    <EditableContentContextProvider
-      keyAndWrapperObjs={[
-        {
-          dataKey: "callback-sample",
-          wrapper: <strong className="callback-sample" />
-        },
-        {
-          dataKey: "bold",
-          wrapper: <strong />
-        },
-        {
-          dataKey: "italics",
-          wrapper: <i />
-        },
-        {
-          dataKey: "underlined",
-          wrapper: <u 
-            data-testAttribute="ta" 
-            data-testAttribute2="ta2" 
-            data-unbreakable=""
-            onClick={(e) => {console.log("clicked")}} 
-          />
-        },
-        {
-          dataKey: "react-button",
-          wrapper: <Box 
-            component="div"
-            sx={{
-              display: 'inline',
-              p: 1,
-              m: 1,
-              bgcolor: '#fff',
-              color: 'grey.800',
-              border: '1px solid',
-              borderColor: 'grey.300',
-              borderRadius: 2,
-              fontSize: '0.875rem',
-              fontWeight: '700',
+      <h1>Texteditable Experiment</h1>
+      <EditableContentContextProvider
+        keyAndWrapperObjs={[
+          {
+            dataKey: "callback-sample",
+            wrapper: <strong className="callback-sample" />
+          },
+          {
+            dataKey: "bold",
+            wrapper: <strong />
+          },
+          {
+            dataKey: "italics",
+            wrapper: <i />
+          },
+          {
+            dataKey: "underlined",
+            wrapper: <u 
+              data-test-attribute="ta" 
+              data-test-attribute2="ta2" 
+              data-unbreakable=""
+              onClick={(e) => {console.log("clicked")}} 
+            />
+          },
+          {
+            dataKey: "react-button",
+            wrapper: <Box 
+              component="div"
+              sx={{
+                display: 'inline',
+                p: 1,
+                m: 1,
+                bgcolor: '#fff',
+                color: 'grey.800',
+                border: '1px solid',
+                borderColor: 'grey.300',
+                borderRadius: 2,
+                fontSize: '0.875rem',
+                fontWeight: '700',
+              }}
+            /> 
+          },
+          {
+            dataKey: "stateful-component",
+            wrapper: <StatefulBox />
+          },
+          {
+            dataKey: "multilevel-component",
+            wrapper: <MultiLevelBox />
+          },
+          {
+            dataKey: "underline-color",
+            wrapper: <UnderlineColor color={underlineColor} />
+          }
+        ]}
+      >
+        <div>
+          <h3>Buttons</h3>
+          <EditTextButton 
+            dataKey="callback-sample"
+            isMUIButton={true}
+            selectCallback={() => {
+              const selection = window.getSelection();
+              if (!selection) return;
+              const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+              setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
+              setChangeTextDialogText(selection?.toString() || "")
+              setChangeTextDialogIsOpen(true);
+              setChangeTextAnchorNode(anchorNode);
+              setChangeTextAnchorOffset(anchorOffset);
+              setChangeTextFocusNode(focusNode);
+              setChangeTextFocusOffset(focusOffset);
             }}
-          /> 
-        },
-        {
-          dataKey: "multilevel-component",
-          wrapper: <MultiLevelBox />
-        },
-        {
-          dataKey: "underline-color",
-          wrapper: <UnderlineColor color={underlineColor} />
-        }
-      ]}
-    >
-      <div>
-        <h3>Buttons</h3>
-        <EditTextButton 
-          dataKey="callback-sample"
-          isMUIButton={true}
-          selectCallback={() => {
-            const selection = window.getSelection();
-            if (!selection) return;
-            const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
-            setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
-            setChangeTextDialogText(selection?.toString() || "")
-            setChangeTextDialogIsOpen(true);
-            setChangeTextAnchorNode(anchorNode);
-            setChangeTextAnchorOffset(anchorOffset);
-            setChangeTextFocusNode(focusNode);
-            setChangeTextFocusOffset(focusOffset);
-          }}
-        >
-          Callback Sample
-        </EditTextButton>
-        <EditTextButton 
-          dataKey="bold"
-          isMUIButton={true}
-        >
-          <FormatBoldIcon />
-        </EditTextButton>
-        <EditTextButton
-          dataKey="italics"
-          isMUIButton={true}
-        >
-          <FormatItalic/>
-        </EditTextButton>
-        <EditTextButton
-          dataKey="underlined"
-          isMUIButton={true}
-        >
-          <FormatUnderlined />
-        </EditTextButton>
-        <EditTextButton
-          dataKey="react-button"
-          isMUIButton={true}
-        >
-          React Button
-        </EditTextButton>
-        <EditTextButton
-          dataKey="stateful-component"
-          isMUIButton={true}
-        >
-          Stateful Component
-        </EditTextButton>
-        <EditTextButton
-          dataKey="multilevel-component"
-          isMUIButton={true}
-        >
-          Multilevel Component
-        </EditTextButton>
-        <EditTextButton
-          dataKey="underline-color"
-          isMUIButton={true}
-        >
-          Underline With Color
-        </EditTextButton>
-      </div>
-      <EditableContent />
-      {/* <PageClient /> */}
-    </EditableContentContextProvider>
-      {/* <PureReactDiv /> */}
-      {/* <EditableContent>
-        <EditTextButtonRow>
-          <Button
+          >
+            Callback Sample
+          </EditTextButton>
+          <EditTextButton 
             dataKey="bold"
-            wrapperArgs={
-              element: "strong"
-            }
-          
+            isMUIButton={true}
           >
             <FormatBoldIcon />
-          </Button>
-          <button>
-            <FormatBoldIcon />
-          </button>
+          </EditTextButton>
+          <EditTextButton
+            dataKey="italics"
+            isMUIButton={true}
+          >
+            <FormatItalic/>
+          </EditTextButton>
+          <EditTextButton
+            dataKey="underlined"
+            isMUIButton={true}
+          >
+            <FormatUnderlined />
+          </EditTextButton>
+          <EditTextButton
+            dataKey="react-button"
+            isMUIButton={true}
+          >
+            React Button
+          </EditTextButton>
+          <EditTextButton
+            dataKey="stateful-component"
+            isMUIButton={true}
+          >
+            Stateful Component
+          </EditTextButton>
+          <EditTextButton
+            dataKey="multilevel-component"
+            isMUIButton={true}
+          >
+            Multilevel Component
+          </EditTextButton>
+          <EditTextButton
+            dataKey="underline-color"
+            isMUIButton={true}
+          >
+            Underline With Color
+          </EditTextButton>
+        </div>
+        <EditableContent 
+          initialHTML={initialHTML}
+          divStyle={{
+            width: "100%",
+            height: "250px",
+            margin: "auto",
+            border: "2px solid black",
+            overflowY: "scroll"
+          }}
+        />
+        <GetDehydratedHTMLButton />
+        <ClearButton />
+        <SelectionToStringContainer />
+        <ContentRefCurrentInnerHTMLContainer />
 
-        </EditTextButtonRow>
-        <EditableDiv />
-        <ControlTextButtonRow>
-
-        </ControlTextButtonRow>
-      </EditableContent> */}
+      </EditableContentContextProvider>
     </main>
   );
 }
