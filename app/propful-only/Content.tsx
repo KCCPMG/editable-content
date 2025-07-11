@@ -15,7 +15,16 @@ Normal Text
 >
   Propful Component</div>`.replaceAll(/\n */g, '');
 
-const tableStyle: React.CSSProperties = {border: "1px solid black", borderCollapse: "collapse"};
+const tableStyle: React.CSSProperties = {
+  border: "1px solid black", 
+  borderCollapse: "collapse",
+  // margin: "-1px",
+  whiteSpace: "pre",
+  padding: "6px"
+  // paddingTop: "2px",
+  // paddingBottom: "2px"
+  // paddingLeft: "2px"
+};
 
 export default function Content() {
   
@@ -102,29 +111,27 @@ export default function Content() {
       <Container>
         <h3>All Props</h3>
         <table style={tableStyle}>
-          <thead style={tableStyle}>
-            <tr>
-              <td><h5>Component ID</h5></td>
-              <td><h5>Props</h5></td>
-            </tr>
-          </thead>
           {
             Object.entries(allPortalProps).map(([id, props]) => {
               return(
-                <tr style={tableStyle}>
-                  <td style={tableStyle}>{id}</td>
-                  {
-                    Object.entries(props).map(([k,v]) => {
-                      if (k != "children" && k != "context")
-                      return(
-                        <tr style={tableStyle}>
-                          <td style={tableStyle}>{k}</td>
-                          <td style={tableStyle}>{v}</td>
-                        </tr>
-                      )
-                    })
-                  }
-                </tr>
+                <>
+                  <thead key={id} style={tableStyle}>
+                    <td style={tableStyle}><h5>PortalId: {id}</h5></td>
+                  </thead>
+                  <tbody>
+                    {
+                      Object.entries(props).map(([k,v]) => {
+                        if (k != "children" && k != "context")
+                        return(
+                          <tr key={k} style={tableStyle}>
+                            <td style={tableStyle}>{k}</td>
+                            <td style={tableStyle}>{v}</td>
+                          </tr>
+                        )
+                      })
+                    }
+                  </tbody>
+                </>
               )
             })
           }

@@ -185,13 +185,13 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
 
   return (
     <>
-      <div style={buttonRowStyle}>
+      {/* <div style={buttonRowStyle}>
         {
           editTextButtons.map(etb => {
             return editTextButtonObjectToEditTextButton(etb);
           })
         }
-      </div>
+      </div> */}
       <div
         contentEditable
         spellCheck={false}
