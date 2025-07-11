@@ -44,10 +44,6 @@ export type EditableContentContextType = {
   setHasSelection: Dispatch<SetStateAction<boolean>>,
   portals: Array<ReactPortal>, 
   setPortals: Dispatch<SetStateAction<Array<ReactPortal>>>,
-  portalsState: {[key: string]: any}, 
-  setPortalsState: Dispatch<SetStateAction<{[key: string]: any}>>,
-  mustReportState: {[key: string]: boolean},  
-  setMustReportState: Dispatch<SetStateAction<{[key: string]: any}>>,
   divToSetSelectionTo: HTMLElement | null, 
   setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>,
   getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void,
@@ -55,9 +51,11 @@ export type EditableContentContextType = {
   getAllPortalProps: () => PortalProps,
   keyAndWrapperObjs: Array<KeyAndWrapperObj>,
   updateContent: () => void, 
-  createContentPortal: (component: ReactElement, buttonKey: string, isStateful: boolean) => void, 
+  createContentPortal: (component: ReactElement, buttonKey: string) => void, 
   appendPortalToDiv: (containingDiv: HTMLDivElement) => void,
   removePortal: (key: string) => void,
+  updateSelection: () => void,
+  getIsReactComponent: (component: ReactElement) => boolean
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -76,9 +74,14 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
   const [selectionFocusOffset, setSelectionFocusOffset] = useState<number | null>(null);
   const [hasSelection, setHasSelection] = useState<boolean>(false);
   const [portals, setPortals] = useState<Array<React.ReactPortal>>([]);
-  const [portalsState, setPortalsState] = useState<{[key: string]: any}>({});
-  const [mustReportState, setMustReportState] = useState<{[key: string]: any}>({});
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
+
+
+  function getIsReactComponent(component: ReactElement) {
+    if (!isValidElement(component)) return false;
+    return (typeof component.type === "function" || 
+      typeof component.type === "object");
+  }
 
 
   /**
@@ -321,36 +324,6 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
   // }
 
 
-  /**
-   * if changes need to be made to selection, make those changes, 
-   * otherwise update selection pieces of state
-   */
-  function handleSelectionChange() {
-    const selection = window.getSelection();
-    if (selection && 
-      contentRef.current && 
-      selection?.anchorNode?.nodeType !== Node.TEXT_NODE &&
-      selection?.focusNode?.nodeType !== Node.TEXT_NODE
-    ) {
-      console.log("selectionHasTextNodes", selectionHasTextNodes(selection, contentRef.current));
-      if (selectionHasTextNodes(selection, contentRef.current)) {
-        resetSelectionToTextNodes();
-      } else {
-        const textNode = document.createTextNode('\u200B\u200B');
-        // contentRef.current.append(textNode);
-        const range = selection.getRangeAt(0);
-        range.insertNode(textNode)
-        range.setStart(textNode, 1);
-        range.setEnd(textNode, 1);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    }
-    else {
-      updateSelection();
-    } 
-  }
-
 
   function updateSelection() {
     const gotSelection = window.getSelection();
@@ -383,22 +356,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
   }
 
 
-  function setIndividualPortalState (id: string, obj: {[key: string]: any}) {
-    setPortalsState(previousPortalsState => {
-      const newPortalsState = {...previousPortalsState};
-      newPortalsState[id] = obj;
-      return {...newPortalsState};
-    });
-  };
 
-
-  function setIndividualMustReportState(id: string, mustReport: boolean) {
-    setMustReportState( previousMustReportState => {
-      const newMustReportState = {...previousMustReportState};
-      newMustReportState[id] = mustReport;
-      return {...newMustReportState};
-    })
-  }
 
 
   /**
@@ -409,22 +367,9 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
    * @param text 
    * @param targetDiv 
    */
-  function cloneElementIntoPortal(component: ReactElement, props: {[key: string] : any}, text: string, targetDiv: Element, isStateful: boolean) {
+  function cloneElementIntoPortal(component: ReactElement, props: {[key: string] : any}, text: string, targetDiv: Element) {
     const portalId = props["key"] as string;
 
-    if (isStateful) {
-      
-      // initialize relevant state in EditableContent
-      setIndividualPortalState(portalId, {});
-      setIndividualMustReportState(portalId, false);
-  
-      // define function to pass to stateful component
-      props.reportState = function(stateObj: {[key: string]: any}) {
-        setIndividualPortalState(portalId, stateObj);
-      }
-      props.mustReportState = mustReportState[portalId] || false;
-      
-    }
     // props['data-unbreakable'] = true;
     const clone = cloneElement(component, Object.assign(props, {portalId}), text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
@@ -443,7 +388,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
    * create portal and add that portal to portals state
    * @param component 
    */
-  function createContentPortal(component: ReactElement, buttonKey: string, isStateful: boolean) {
+  function createContentPortal(component: ReactElement, buttonKey: string) {
     const uuid = uuidv4();
     const id = PORTAL_CONTAINER_ID_PREFIX+uuid;
     const newDiv = document.createElement("div");
@@ -465,7 +410,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
     
     // curently only handling range text, not nested elements
     if (contentRef.current && contentRef.current && foundNewDiv) {
-      cloneElementIntoPortal(component, {key: uuid}, text, foundNewDiv, !!isStateful)
+      cloneElementIntoPortal(component, {key: uuid}, text, foundNewDiv)
     }
   }
 
@@ -494,12 +439,12 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
 
     
     // find correct wrapper button
-    const foundButton = editTextButtons.find(etb => etb.dataKey === key);
-    if (!foundButton) return;
-    if (!foundButton.isReactComponent) return;
+    const foundKeyAndWrapperObj = keyAndWrapperObjs.find(obj => obj.dataKey === key);
+    if (!foundKeyAndWrapperObj) return;
+    if (!getIsReactComponent(foundKeyAndWrapperObj.wrapper)) return;
     
-    const component = foundButton.component;
-    cloneElementIntoPortal(component, {key: uuid}, text, containingDiv, !!foundButton.isStateful);
+    const component = foundKeyAndWrapperObj.wrapper;
+    cloneElementIntoPortal(component, {key: uuid}, text, containingDiv);
   }
 
 
@@ -679,63 +624,6 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
   }
 
 
-  function handleEditTextButtonClick(
-    selection: Selection | null, 
-    wrapperArgs: WrapperArgs, 
-    isReactComponent: boolean, 
-    selected: boolean, 
-    query: string, 
-    selectCallback: ((wrapper: HTMLElement) => void) | undefined, 
-    deselectCallback: (() => void) | undefined, 
-    wrapperInstructions: WrapperInstructions, 
-    dataKey: string,
-    isStateful: boolean
-  ) {
-    if (selection) {         
-      if (selected) {
-        if (isReactComponent) {
-          unwrapReactComponent(selection);
-        } 
-        else if (!isReactComponent) {
-          if (wrapperArgs.unbreakable) {
-            unwrapUnbreakableElement(selection);  
-          }
-          else if (!wrapperArgs.unbreakable) {
-            unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-            updateContent();
-          } 
-          else {
-            console.log("uncaught secnario in selected and not react component");
-          }
-        }
-        else {
-          console.log("uncaught scenario in handling click on text selected by button")
-        }
-        
-        if (deselectCallback) {
-          deselectCallback();
-        } 
-      } 
-      else if (!selected) {
-        if (isReactComponent) {
-          // if isReactComponent, can assert wrapperInstructions as ReactElement
-          createContentPortal(wrapperInstructions as ReactElement, dataKey, isStateful);
-          // createContentPortal(wrapperArgs, dataKey, isStateful);
-        
-        } else if (!isReactComponent) {
-          const wrapper = createWrapper(wrapperArgs, document);
-          wrapInElement(selection, wrapper, contentRef.current!);
-          updateContent();
-          if (selectCallback) {
-            selectCallback(wrapper);
-          } 
-        }
-        
-      }                  
-    }
-    // if no selection, no click handler
-    
-  }
 
 
 
@@ -763,10 +651,6 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
       setHasSelection,
       portals, 
       setPortals,
-      portalsState, 
-      setPortalsState,
-      mustReportState, 
-      setMustReportState,
       divToSetSelectionTo, 
       setDivToSetSelectionTo,
       getDehydratedHTML,
@@ -776,7 +660,9 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
       updateContent,
       createContentPortal,
       appendPortalToDiv,
-      removePortal
+      removePortal,
+      updateSelection,
+      getIsReactComponent
     }}
   >
     {children}

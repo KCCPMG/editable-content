@@ -62,12 +62,11 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
     setHasSelection,
     portals, 
     setPortals,
-    portalsState, 
-    setPortalsState,
-    mustReportState, 
-    setMustReportState,
     divToSetSelectionTo, 
     setDivToSetSelectionTo,
+    appendPortalToDiv,
+    updateSelection,
+    updateContent
   } = useEditableContentContext();
 
   // make sure all react elements are unbreakable
@@ -153,7 +152,35 @@ export default function EditableContent({divStyle, buttonRowStyle, initialHTML, 
   }, [divToSetSelectionTo])
 
 
-
+  /**
+   * if changes need to be made to selection, make those changes, 
+   * otherwise update selection pieces of state
+   */
+  function handleSelectionChange() {
+    const selection = window.getSelection();
+    if (selection && 
+      contentRef.current && 
+      selection?.anchorNode?.nodeType !== Node.TEXT_NODE &&
+      selection?.focusNode?.nodeType !== Node.TEXT_NODE
+    ) {
+      console.log("selectionHasTextNodes", selectionHasTextNodes(selection, contentRef.current));
+      if (selectionHasTextNodes(selection, contentRef.current)) {
+        resetSelectionToTextNodes();
+      } else {
+        const textNode = document.createTextNode('\u200B\u200B');
+        // contentRef.current.append(textNode);
+        const range = selection.getRangeAt(0);
+        range.insertNode(textNode)
+        range.setStart(textNode, 1);
+        range.setEnd(textNode, 1);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+    else {
+      updateSelection();
+    } 
+  }
 
 
   return (

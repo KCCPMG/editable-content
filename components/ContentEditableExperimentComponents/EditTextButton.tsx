@@ -41,7 +41,7 @@ export default function EditTextButton({
 ) {
 
   // get wrapper
-  const { hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef, updateContent, createContentPortal, portals, removePortal } = useEditableContentContext();
+  const { hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef, updateContent, createContentPortal, portals, removePortal, getIsReactComponent } = useEditableContentContext();
   const thisKeyAndWrapper = keyAndWrapperObjs.find(kw => kw.dataKey === dataKey);
   const wrapper = thisKeyAndWrapper?.wrapper;
 
@@ -60,9 +60,7 @@ export default function EditTextButton({
   
 
 
-  function handleEditTextButtonClick(
-    isStateful: boolean
-  ) {
+  function handleEditTextButtonClick() {
 
     if (!wrapper) return;
     // implement logic from etb.map, make determination about 
@@ -98,8 +96,8 @@ export default function EditTextButton({
       else if (!selected) {
         if (isReactComponent) {
           // if isReactComponent, can assert wrapperInstructions as ReactElement
-          createContentPortal(wrapper, dataKey, isStateful);
-          // createContentPortal(wrapperArgs, dataKey, isStateful);
+          createContentPortal(wrapper, dataKey);
+
         
         } else if (!isReactComponent) {
           const wrapper = createWrapper(wrapperArgs, document);
@@ -305,11 +303,7 @@ export default function EditTextButton({
 }
 
 
-function getIsReactComponent(component: ReactElement) {
-  if (!isValidElement(component)) return false;
-  return (typeof component.type === "function" || 
-    typeof component.type === "object");
-}
+
 
 
 // unfinished, unused
