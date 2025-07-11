@@ -78,7 +78,6 @@ export default function EditTextButton({
     if (!wrapper) return;
     // implement logic from etb.map, make determination about 
     // if and when to use isReactComponent
-    console.log({wrapper, query, selected})
 
     const selection = window.getSelection();
 

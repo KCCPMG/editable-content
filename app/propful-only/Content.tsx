@@ -18,12 +18,10 @@ Normal Text
 const tableStyle: React.CSSProperties = {
   border: "1px solid black", 
   borderCollapse: "collapse",
-  // margin: "-1px",
   whiteSpace: "pre",
-  padding: "6px"
-  // paddingTop: "2px",
-  // paddingBottom: "2px"
-  // paddingLeft: "2px"
+  padding: "6px",
+  minWidth: "60px"
+
 };
 
 export default function Content() {
@@ -121,7 +119,7 @@ export default function Content() {
                   <tbody>
                     {
                       Object.entries(props).map(([k,v]) => {
-                        if (k != "children" && k != "context")
+                        if (k != "children" && k != "getContext")
                         return(
                           <tr key={k} style={tableStyle}>
                             <td style={tableStyle}>{k}</td>
