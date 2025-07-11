@@ -370,8 +370,14 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
   function cloneElementIntoPortal(component: ReactElement, props: {[key: string] : any}, text: string, targetDiv: Element) {
     const portalId = props["key"] as string;
 
+    const additionalProps ={
+      portalId: portalId,
+      "data-unbreakable": "",
+      getContext: useEditableContentContext
+    }
+
     // props['data-unbreakable'] = true;
-    const clone = cloneElement(component, Object.assign(props, {portalId}), text);
+    const clone = cloneElement(component, {...props, ...additionalProps}, text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals(previousPortals => {
       const priorIndex = previousPortals.findIndex( p => p.key === portalId )
