@@ -49,6 +49,11 @@ export default function EditTextButton({
 
   useEffect(function() {
     const selection = window.getSelection();
+
+    if (dataKey==="strong") {
+      console.log("strong");
+      console.log(query);
+    }
   
     const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
     setSelected(status.selected);

@@ -3,12 +3,9 @@ import theme from "@/theme";
 import EditableContent from "@/components/EditableContent";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { useState, useEffect } from "react";
-import { Box, Container } from "@mui/material";
-import { MUIButtonEditableContentButtonProps, HTMLButtonEditableContentButtonProps } from "@/components/ContentEditableExperimentComponents";
+import { Box } from "@mui/material";
 import { getSelectionDirection, wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from "@/utils/utils";
-import PageClient from "@/components/PageClient";
-import PureReactDiv from "@/components/PureReactDiv";
-import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext"
+import { EditableContentContextProvider } from "@/context/EditableContentContext"
 import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
 import UnderlineColor from "@/components/TestComponents/UnderlineColor";
 import EditTextButton from "@/components/ContentEditableExperimentComponents/EditTextButton";
@@ -144,7 +141,7 @@ export default function Page() {
           },
           {
             dataKey: "bold",
-            wrapper: <strong />
+            wrapper: <strong></strong>
           },
           {
             dataKey: "italics",
