@@ -5,7 +5,7 @@ import { EditableContentContextProvider, useEditableContentContext } from "@/con
 import StatefulAndPropfulBox from "@/components/TestComponents/StatefulAndPropfulBox";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import { Button } from "@mui/material";
-import EditTextButton from "@/components/ContentEditableExperimentComponents/EditTextButton";
+import EditTextButton from "@/components/EditTextButton";
 
 const initialHTML = 
 `

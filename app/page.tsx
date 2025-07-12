@@ -16,6 +16,7 @@ import ClearButton from "@/components/TestComponents/ClearButton";
 import SelectionToStringContainer from "@/components/TestComponents/SelectionToStringContainer";
 import ContentRefCurrentInnerHTMLContainer from "@/components/TestComponents/ContentRefCurrentInnerHTMLContainer";
 import { renderToString } from "react-dom/server";
+import RenderedContent from "@/components/RenderedContent";
 
 const initialHTML = `
 <strong>Lorem, ipsum</strong>
@@ -39,13 +40,9 @@ Sunt, ​re
   data-button-key="react-button" 
   style="display: inline;"
 >
-
     pud
-
       iand
-
     a
-
   e. ​ ​Lorem
 </div>
 , ​ipsum ​dolor ​ ​
@@ -98,6 +95,7 @@ export default function Page() {
   const [changeTextAnchorOffset, setChangeTextAnchorOffset] = useState<number | null>(null);
   const [changeTextFocusNode, setChangeTextFocusNode] = useState<Node | null>(null);
   const [changeTextFocusOffset, setChangeTextFocusOffset] = useState<number | null>(null);
+  const [editMode, setEditMode] = useState<boolean>(true)
 
   const [underlineColor, setUnderlineColor] = useState("red");
 
@@ -313,18 +311,35 @@ export default function Page() {
             Underline With Color
           </EditTextButton>
         </div>
-        <EditableContent 
-          initialHTML={initialHTML}
-          divStyle={{
-            width: "100%",
-            height: "250px",
-            margin: "auto",
-            border: "2px solid black",
-            overflowY: "scroll"
-          }}
-        />
+        {
+          editMode ? 
+            <EditableContent 
+              initialHTML={initialHTML}
+              divStyle={{
+                width: "100%",
+                height: "250px",
+                margin: "auto",
+                border: "2px solid black",
+                overflowY: "scroll"
+              }}
+            /> : 
+            <RenderedContent 
+              initialHTML={initialHTML}
+              divStyle={{
+                width: "100%",
+                height: "250px",
+                margin: "auto",
+                border: "2px solid black",
+                overflowY: "scroll"
+              }}
+            />
+        }
+
         <GetDehydratedHTMLButton />
         <ClearButton />
+        <Button onClick={() => setEditMode(!editMode)}>
+          {editMode ? "Render Text" : "Edit Text"}
+        </Button>
         <SelectionToStringContainer />
         <ContentRefCurrentInnerHTMLContainer />
 
