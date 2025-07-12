@@ -1,6 +1,6 @@
 import { Button, ButtonOwnProps } from "@mui/material";
 import { isValidElement, MutableRefObject, ReactElement, ReactNode, useEffect, useState } from "react";
-import { WrapperArgs } from ".";
+import { WrapperArgs } from "./";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
 import { generateQuery, getButtonStatus, unwrapSelectionFromQuery, createWrapper, wrapInElement, getAncestorNode, resetSelectionToTextNodes, resetRangeToTextNodes, getRangeChildNodes, getLastValidTextNode, getLastValidCharacterIndex, getRangeLowestAncestorElement, moveSelection, getIsReactComponent} from "@/utils/utils";

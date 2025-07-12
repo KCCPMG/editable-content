@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect } from "react";
 import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection } from '@/utils/utils';
-import { EditableContentProps } from "./ContentEditableExperimentComponents";
+import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 
 

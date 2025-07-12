@@ -5,7 +5,7 @@ import EditableContent from "@/components/EditableContent";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import PropfulBox from "@/components/TestComponents/PropfulBox";
 import { Container } from "@mui/material";
-import EditTextButton from "@/components/ContentEditableExperimentComponents/EditTextButton";
+import EditTextButton from "@/components/EditTextButton";
 
 const initialHTML = `
 Normal Text 

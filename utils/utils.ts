@@ -1,4 +1,4 @@
-import { WrapperArgs } from "@/components/ContentEditableExperimentComponents";
+import { WrapperArgs } from "@/components";
 import React from "react";
 import { ReactElement } from "react";
 

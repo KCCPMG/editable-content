@@ -1,5 +1,5 @@
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent } from "@/utils/utils";
-import { EditableContentProps, EditTextButtonObject, WrapperInstructions, WrapperArgs } from "@/components/ContentEditableExperimentComponents";
+import { EditableContentProps, EditTextButtonObject, WrapperInstructions, WrapperArgs } from "@/components";
 import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement } from "react";
 import { createPortal } from "react-dom";
 import { renderToString } from "react-dom/server";

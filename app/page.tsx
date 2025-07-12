@@ -8,7 +8,7 @@ import { getSelectionDirection, wrapInElement, selectionIsDescendentOfNode, gene
 import { EditableContentContextProvider } from "@/context/EditableContentContext"
 import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
 import UnderlineColor from "@/components/TestComponents/UnderlineColor";
-import EditTextButton from "@/components/ContentEditableExperimentComponents/EditTextButton";
+import EditTextButton from "@/components/EditTextButton";
 import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import GetDehydratedHTMLButton from "@/components/TestComponents/GetDehydratedHTMLButton";
