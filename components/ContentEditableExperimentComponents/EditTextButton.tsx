@@ -3,7 +3,7 @@ import { isValidElement, MutableRefObject, ReactElement, ReactNode, useEffect, u
 import { WrapperArgs } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
-import { generateQuery, getButtonStatus, unwrapSelectionFromQuery, createWrapper, wrapInElement, getAncestorNode, resetSelectionToTextNodes, resetRangeToTextNodes, getRangeChildNodes, getLastValidTextNode, getLastValidCharacterIndex, getRangeLowestAncestorElement, moveSelection} from "@/utils/utils";
+import { generateQuery, getButtonStatus, unwrapSelectionFromQuery, createWrapper, wrapInElement, getAncestorNode, resetSelectionToTextNodes, resetRangeToTextNodes, getRangeChildNodes, getLastValidTextNode, getLastValidCharacterIndex, getRangeLowestAncestorElement, moveSelection, getIsReactComponent} from "@/utils/utils";
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
 
 // "color", even when not named, causes type conflict from WrapperArgs
@@ -41,18 +41,26 @@ export default function EditTextButton({
 ) {
 
   // get wrapper
-  const { hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef, updateContent, createContentPortal, portals, removePortal, getIsReactComponent } = useEditableContentContext();
+  const { hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef, updateContent, createContentPortal, portals, removePortal } = useEditableContentContext();
 
 
   const [selected, setSelected] = useState<boolean>(false);
   const [enabled, setEnabled] = useState<boolean>(false);
 
   useEffect(function() {
+    (window as any).renderToString = renderToString;
+  }, [])
+
+  useEffect(function() {
     const selection = window.getSelection();
 
-    if (dataKey==="strong") {
-      console.log("strong");
-      console.log(query);
+    if (dataKey==="react-button") {
+      console.log(dataKey);
+      console.log({thisKeyAndWrapper});
+      console.log({wrapper});
+      console.log({isReactComponent});
+      console.log({wrapperArgs});
+      console.log({query});
     }
   
     const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
@@ -336,7 +344,7 @@ function reactNodeToWrapperArgs(rn: ReactNode): WrapperArgs {
   let mappedAttributes: {[key: string] : string | undefined} = {}
 
   for (let attr of Array.from(element.attributes)) {
-    if ((attr.name) === 'class') continue;
+    if ((attr.name) === 'class' || (attr.name) === 'getContext') continue;
     if (attr.name === 'style') {
       // TODO: make style compatible for wrapperArgs search
       continue;
@@ -355,7 +363,8 @@ function reactNodeToWrapperArgs(rn: ReactNode): WrapperArgs {
     id: element.getAttribute('id') || undefined,
     attributes: mappedAttributes,
     // unbreakable: typeof mappedAttributes['data-unbreakable'] === 'string'
-    unbreakable: true
+    // unbreakable: true
+    unbreakable: element.hasAttribute("data-unbreakable") || getIsReactComponent(rn as ReactElement)
     // eventListeners: getEventListeners(element)      
   };
 

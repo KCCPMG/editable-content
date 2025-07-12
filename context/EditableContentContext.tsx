@@ -1,4 +1,4 @@
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode } from "@/utils/utils";
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent } from "@/utils/utils";
 import { EditableContentProps, EditTextButtonObject, WrapperInstructions, WrapperArgs } from "@/components/ContentEditableExperimentComponents";
 import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement } from "react";
 import { createPortal } from "react-dom";
@@ -55,7 +55,6 @@ export type EditableContentContextType = {
   appendPortalToDiv: (containingDiv: HTMLDivElement) => void,
   removePortal: (key: string) => void,
   updateSelection: () => void,
-  getIsReactComponent: (component: ReactElement) => boolean
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -77,11 +76,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
 
 
-  function getIsReactComponent(component: ReactElement) {
-    if (!isValidElement(component)) return false;
-    return (typeof component.type === "function" || 
-      typeof component.type === "object");
-  }
+  
 
 
   /**
@@ -667,8 +662,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
       createContentPortal,
       appendPortalToDiv,
       removePortal,
-      updateSelection,
-      getIsReactComponent
+      updateSelection
     }}
   >
     {children}

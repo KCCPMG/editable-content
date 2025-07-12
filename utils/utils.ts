@@ -1,4 +1,6 @@
 import { WrapperArgs } from "@/components/ContentEditableExperimentComponents";
+import React from "react";
+import { ReactElement } from "react";
 
 
 
@@ -802,4 +804,10 @@ export function getLastValidCharacterIndex(textNode: Text) {
     if (textNode.textContent[i].match("[^\u200B]")) return i+1;
   }
   return 0;
+}
+
+export function getIsReactComponent(component: ReactElement) {
+  if (!React.isValidElement(component)) return false;
+  return (typeof component.type === "function" || 
+    typeof component.type === "object");
 }
