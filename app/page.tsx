@@ -3,7 +3,7 @@ import theme from "@/theme";
 import EditableContent from "@/components/EditableContent";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { useState, useEffect } from "react";
-import { Box } from "@mui/material";
+import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Container } from "@mui/material";
 import { getSelectionDirection, wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from "@/utils/utils";
 import { EditableContentContextProvider } from "@/context/EditableContentContext"
 import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
@@ -15,6 +15,7 @@ import GetDehydratedHTMLButton from "@/components/TestComponents/GetDehydratedHT
 import ClearButton from "@/components/TestComponents/ClearButton";
 import SelectionToStringContainer from "@/components/TestComponents/SelectionToStringContainer";
 import ContentRefCurrentInnerHTMLContainer from "@/components/TestComponents/ContentRefCurrentInnerHTMLContainer";
+import { renderToString } from "react-dom/server";
 
 const initialHTML = `
 <strong>Lorem, ipsum</strong>
@@ -84,6 +85,7 @@ declare global {
     limitingContainer?: any;
     getAncestorNode?: typeof getAncestorNode;
     initialHTML?: string;
+    renderToString?: typeof renderToString
   }
 }
 
@@ -122,6 +124,7 @@ export default function Page() {
     window.limitingContainer = document.querySelector("[contenteditable]")
     window.getAncestorNode = getAncestorNode;
     window.initialHTML = initialHTML;
+    window.renderToString = renderToString
   }, [])
 
   return (
@@ -188,12 +191,71 @@ export default function Page() {
           }
         ]}
       >
+        <Dialog
+          open={changeTextDialogIsOpen}
+          onClose={() => {setChangeTextDialogIsOpen(false)}}
+          // disableRestoreFocus
+        >
+          <DialogTitle>Test Dialog</DialogTitle>
+          <DialogContent>
+            <Container>
+              Change the selected text!
+            </Container>
+            <TextField
+              // autoFocus
+              value={changeTextDialogText}
+              onChange={(e) => {setChangeTextDialogText(e.target.value)}}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={(e) => {
+                setChangeTextDialogIsOpen(false);
+                const selectionUpdateRange = new Range();
+
+                if (!changeTextAnchorNode || !changeTextFocusNode) return;
+                if (changeTextAnchorOffset === null || changeTextFocusOffset === null) return;
+
+                if (changeTextSelectionDirection === "backward") {
+                  selectionUpdateRange.setEnd(changeTextAnchorNode, changeTextAnchorOffset);
+                  selectionUpdateRange.setStart(changeTextFocusNode, changeTextFocusOffset);
+                } else {
+                  selectionUpdateRange.setStart(changeTextAnchorNode, changeTextAnchorOffset);
+                  selectionUpdateRange.setEnd(changeTextFocusNode, changeTextFocusOffset);
+                }
+
+                selectionUpdateRange.extractContents();
+                const newTextNode = document.createTextNode(changeTextDialogText);
+                selectionUpdateRange.insertNode(newTextNode);
+
+                const selection = window.getSelection();
+                selection?.removeAllRanges();
+                selection?.addRange(selectionUpdateRange);
+              }}
+            >
+              Change Text
+            </Button>
+          </DialogActions>
+
+        </Dialog>
         <div>
           <h3>Buttons</h3>
           <EditTextButton 
             dataKey="callback-sample"
             isMUIButton={true}
             selectCallback={() => {
+              const selection = window.getSelection();
+              if (!selection) return;
+              const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+              setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
+              setChangeTextDialogText(selection?.toString() || "")
+              setChangeTextDialogIsOpen(true);
+              setChangeTextAnchorNode(anchorNode);
+              setChangeTextAnchorOffset(anchorOffset);
+              setChangeTextFocusNode(focusNode);
+              setChangeTextFocusOffset(focusOffset);
+            }}
+            deselectCallback={() => {
               const selection = window.getSelection();
               if (!selection) return;
               const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;

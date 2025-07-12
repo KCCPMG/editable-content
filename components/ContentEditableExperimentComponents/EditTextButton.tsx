@@ -48,20 +48,7 @@ export default function EditTextButton({
   const [enabled, setEnabled] = useState<boolean>(false);
 
   useEffect(function() {
-    (window as any).renderToString = renderToString;
-  }, [])
-
-  useEffect(function() {
     const selection = window.getSelection();
-
-    if (dataKey==="react-button") {
-      console.log(dataKey);
-      console.log({thisKeyAndWrapper});
-      console.log({wrapper});
-      console.log({isReactComponent});
-      console.log({wrapperArgs});
-      console.log({query});
-    }
   
     const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
     setSelected(status.selected);
@@ -88,8 +75,6 @@ export default function EditTextButton({
   function handleEditTextButtonClick() {
 
     if (!wrapper) return;
-    // implement logic from etb.map, make determination about 
-    // if and when to use isReactComponent
 
     const selection = window.getSelection();
 

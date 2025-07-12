@@ -1,48 +1,11 @@
 "use client"
-import React, { useRef, useState, useEffect, isValidElement, ReactElement, useCallback } from "react";
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode } from '@/utils/utils';
-import { EditableContentProps, EditTextButtonObject, WrapperInstructions } from "./ContentEditableExperimentComponents";
-import EditTextButton from "./ContentEditableExperimentComponents/EditTextButton";
-import { renderToString } from "react-dom/server";
-import { WrapperArgs } from "./ContentEditableExperimentComponents";
-import { ReactNode } from "react";
-import { createPortal } from "react-dom";
-import { v4 as uuidv4 } from 'uuid';
+import React, { useEffect } from "react";
+import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection } from '@/utils/utils';
+import { EditableContentProps } from "./ContentEditableExperimentComponents";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 
 
-const reportState = new CustomEvent("reportState");
-
-
-/**
- * create custom event
- * fire event on all *portals*
- * pass function to report state
- * if I put the event listener on the portal,
- * I would have to do so dynamically, in its useEffect
- * I would also have to put the event emitter on the portal
- * Alternatively, if there is some way I could access
- * the state directly from the portals?
- * If components take a prop, reportState: () => void
- */
-
-
-
-
 export default function EditableContent({divStyle, initialHTML }: EditableContentProps) {
-
-  // const contentRef = useRef<null | HTMLDivElement>(null);
-  // const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
-  // const [selectionToString, setSelectionToString] = useState<string>("");
-  // const [selectionAnchorNode, setSelectionAnchorNode] = useState<Node | null>(null)
-  // const [selectionAnchorOffset, setSelectionAnchorOffset] = useState<Number | null>(null);
-  // const [selectionFocusNode, setSelectionFocusNode] = useState<Node | null>(null)
-  // const [selectionFocusOffset, setSelectionFocusOffset] = useState<Number | null>(null);
-  // const [hasSelection, setHasSelection] = useState<boolean>(false);
-  // const [portals, setPortals] = useState<Array<React.ReactPortal>>([]);
-  // const [portalsState, setPortalsState] = useState<{[key: string]: any}>({});
-  // const [mustReportState, setMustReportState] = useState<{[key: string]: any}>({});
-  // const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
 
   const {
     contentRef, 
@@ -69,21 +32,6 @@ export default function EditableContent({divStyle, initialHTML }: EditableConten
     updateContent
   } = useEditableContentContext();
 
-  // make sure all react elements are unbreakable
-  // editTextButtons = editTextButtons.map(etb => {
-  //   if (!etb.isReactComponent) return etb;
-
-  //   else {
-  //     const { component } = etb;
-  //     const newProps = {...component.props};
-  //     newProps['data-unbreakable'] = '';
-  //     const clonedComponent = React.cloneElement(component, newProps);
-  //     return({
-  //       ...etb,
-  //       component: clonedComponent
-  //     })
-  //   }
-  // })
 
   // on render
   useEffect(() => {
@@ -107,7 +55,6 @@ export default function EditableContent({divStyle, initialHTML }: EditableConten
         !contentRef.current ||
         !selectionIsDescendentOfNode(selection, contentRef.current)
       ) {
-        console.log("selection not in div")
         updateSelection();
       }
       else {
@@ -182,16 +129,8 @@ export default function EditableContent({divStyle, initialHTML }: EditableConten
     } 
   }
 
-
   return (
     <>
-      {/* <div style={buttonRowStyle}>
-        {
-          editTextButtons.map(etb => {
-            return editTextButtonObjectToEditTextButton(etb);
-          })
-        }
-      </div> */}
       <div
         contentEditable
         spellCheck={false}
