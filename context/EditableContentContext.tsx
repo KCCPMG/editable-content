@@ -48,7 +48,7 @@ export type EditableContentContextType = {
   setPortals: Dispatch<SetStateAction<Array<ReactPortal>>>,
   divToSetSelectionTo: HTMLElement | null, 
   setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>,
-  getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void,
+  getDehydratedHTML: (callback: (dehydrated: string) => void) => void,
   updatePortalProps: (updateObj: PortalProps) => void,
   getAllPortalProps: () => PortalProps,
   keyAndWrapperObjs: Array<KeyAndWrapperObj>,
@@ -57,6 +57,7 @@ export type EditableContentContextType = {
   appendPortalToDiv: (containingDiv: HTMLDivElement) => void,
   removePortal: (key: string) => void,
   updateSelection: () => void,
+  dehydratedHTML: string
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -76,21 +77,10 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   const [hasSelection, setHasSelection] = useState<boolean>(false);
   const [portals, setPortals] = useState<Array<React.ReactPortal>>([]);
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
+  const [dehydratedHTML, setDehydratedHTML] = useState<string>(initialHTML || "")
 
 
-  useEffect(function() {
-    if (contentRef.current) {
-      if (initialHTML) {
-        contentRef.current.innerHTML = initialHTML;
-        // load react portals
-        const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
-        reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
-      } else {
-        contentRef.current.innerHTML = "";
-      }   
-      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
-    }
-  }, [])
+
 
   // useEffect(function() {
   //   console.trace();
@@ -114,7 +104,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
    * text, pass dehydraded html to callback.
    * @param callback 
    */
-  function getDehydratedHTML(callback: (dehydratedHTML: string) => void) {
+  function getDehydratedHTML(callback: (dehydrated: string) => void) {
 
     const parsedHTMLBody = new DOMParser()
       .parseFromString(contentRefCurrentInnerHTML, "text/html").body;
@@ -136,7 +126,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       });
     }
 
-    callback(parsedHTMLBody.innerHTML);
+    return callback(parsedHTMLBody.innerHTML);
   }
 
 
@@ -412,7 +402,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       createContentPortal,
       appendPortalToDiv,
       removePortal,
-      updateSelection
+      updateSelection,
+      dehydratedHTML
     }}
   >
     {children}

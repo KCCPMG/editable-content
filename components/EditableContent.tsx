@@ -29,9 +29,25 @@ export default function EditableContent({divStyle }: EditableContentProps) {
     setDivToSetSelectionTo,
     appendPortalToDiv,
     updateSelection,
-    updateContent
+    updateContent,
+    dehydratedHTML
   } = useEditableContentContext();
 
+
+  // on render
+  useEffect(function() {
+    if (contentRef.current) {
+      // if (initialHTML) {
+        contentRef.current.innerHTML = dehydratedHTML;
+        // load react portals
+        const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
+        reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
+      // } else {
+      //   contentRef.current.innerHTML = "";
+      // }   
+      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+    }
+  }, [])
 
   // on render
   useEffect(() => {
