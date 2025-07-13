@@ -5,7 +5,7 @@ import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 
 
-export default function RenderedContent({divStyle, initialHTML }: EditableContentProps) {
+export default function RenderedContent({divStyle }: EditableContentProps) {
 
   const {
     contentRef, 
@@ -36,6 +36,10 @@ export default function RenderedContent({divStyle, initialHTML }: EditableConten
   // on render
   useEffect(() => {
     setHasSelection(false);
+    console.log("useEffect in RenderedContent")
+    console.log(contentRefCurrentInnerHTML);
+    console.log(contentRef.current);
+
 
     // populate div with html and update state
     // if (contentRef.current) {
@@ -73,14 +77,14 @@ export default function RenderedContent({divStyle, initialHTML }: EditableConten
 
   // on portal change
   useEffect(() => {
-    updateContent();
+    // updateContent();
     
     // clean up divs which no longer contain a portal
     if (!contentRef.current) return;
     const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
 
     toDelete.forEach(td => promoteChildrenOfNode(td));
-    resetSelectionToTextNodes();
+    // resetSelectionToTextNodes();
 
   }, [portals])
 
@@ -198,7 +202,7 @@ export default function RenderedContent({divStyle, initialHTML }: EditableConten
           width: "100%",
           height: "150px",
           margin: "auto",
-          border: "2px solid black",
+          // border: "2px solid black",
           overflowY: "scroll"
         }}
       >

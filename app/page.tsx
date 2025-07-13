@@ -188,6 +188,7 @@ export default function Page() {
             wrapper: <UnderlineColor color={underlineColor} />
           }
         ]}
+        initialHTML={initialHTML}
       >
         <Dialog
           open={changeTextDialogIsOpen}
@@ -314,7 +315,7 @@ export default function Page() {
         {
           editMode ? 
             <EditableContent 
-              initialHTML={initialHTML}
+              // initialHTML={initialHTML}
               divStyle={{
                 width: "100%",
                 height: "250px",
@@ -324,7 +325,7 @@ export default function Page() {
               }}
             /> : 
             <RenderedContent 
-              initialHTML={initialHTML}
+              // initialHTML={initialHTML}
               divStyle={{
                 width: "100%",
                 height: "250px",

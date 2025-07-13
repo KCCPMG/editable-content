@@ -5,7 +5,7 @@ import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 
 
-export default function EditableContent({divStyle, initialHTML }: EditableContentProps) {
+export default function EditableContent({divStyle }: EditableContentProps) {
 
   const {
     contentRef, 
@@ -36,17 +36,7 @@ export default function EditableContent({divStyle, initialHTML }: EditableConten
   // on render
   useEffect(() => {
     // populate div with html and update state
-    if (contentRef.current) {
-      if (initialHTML) {
-        contentRef.current.innerHTML = initialHTML;
-        // load react portals
-        const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
-        reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
-      } else {
-        contentRef.current.innerHTML = "";
-      }   
-      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
-    }
+    
     
     // assign event listeners
     document.addEventListener('selectionchange', (e) => {

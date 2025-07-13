@@ -1,10 +1,11 @@
 import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent } from "@/utils/utils";
 import { EditableContentProps, EditTextButtonObject, WrapperInstructions, WrapperArgs } from "@/components";
-import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement } from "react";
+import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { renderToString } from "react-dom/server";
 import { v4 as uuidv4 } from 'uuid';
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
+import ContentRefCurrentInnerHTMLContainer from "@/components/TestComponents/ContentRefCurrentInnerHTMLContainer";
 
 
 
@@ -21,7 +22,8 @@ type KeyAndWrapperObj = {
 
 type EditableContentContextProviderProps = {
   children: ReactNode,
-  keyAndWrapperObjs: Array<KeyAndWrapperObj>
+  keyAndWrapperObjs: Array<KeyAndWrapperObj>,
+  initialHTML?: string
 }
 
 
@@ -62,7 +64,7 @@ const EditableContentContext = createContext<EditableContentContextType | null>(
 
 
 
-export function EditableContentContextProvider({children, keyAndWrapperObjs}: EditableContentContextProviderProps) {
+export function EditableContentContextProvider({children, keyAndWrapperObjs, initialHTML}: EditableContentContextProviderProps) {
 
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
@@ -75,6 +77,33 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
   const [portals, setPortals] = useState<Array<React.ReactPortal>>([]);
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
 
+
+  useEffect(function() {
+    if (contentRef.current) {
+      if (initialHTML) {
+        contentRef.current.innerHTML = initialHTML;
+        // load react portals
+        const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
+        reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
+      } else {
+        contentRef.current.innerHTML = "";
+      }   
+      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+    }
+  }, [])
+
+  // useEffect(function() {
+  //   console.trace();
+  // }, [contentRefCurrentInnerHTML])
+
+
+  // useEffect(function() {
+  //   console.log("change of contentRef");
+  //   console.log({contentRefCurrentInnerHTML})
+  //   if (contentRef?.current) {
+  //     contentRef.current.innerHTML = contentRefCurrentInnerHTML;
+  //   }
+  // }, [contentRef.current])
 
   
 
@@ -213,113 +242,6 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
   }
 
 
-  // function reactWrapperToEditTextButton(etb: EditTextButtonObject) {
-  //   // confirm and coerce this is ReactWrapper type of EditTextButtonObject
-  //   if (!etb.isReactComponent) return;
-
-  //   const {isStateful, component, dataKey, selectCallback, deselectCallback, isReactComponent, ...otherProps} = etb;
-
-  //   const wrapperArgs = reactNodeToWrapperArgs(component);
-
-  //   const query = generateQuery(wrapperArgs);
-  //   const selection = window.getSelection();
-    
-  //   if (hasSelection && selection) {
-  //     const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
-
-  //     if (
-  //       anchorNode == contentRef.current && 
-  //       focusNode == contentRef.current &&
-  //       anchorOffset == 0 && 
-  //       focusOffset == 0
-  //     ) {
-  //       const thisRange = selection.getRangeAt(0);
-  //       thisRange.insertNode(document.createTextNode(""));   
-  //       selection.removeAllRanges();
-  //       selection.addRange(thisRange);
-  //     }
-  //   }
-
-  //   const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
-
-  //   if (!hasSelection) {
-  //     status.enabled = false;
-  //     status.selected = false;
-  //   }
-  //   const {selected, enabled} = status;
-
-  //   return ( 
-  //     <EditTextButton
-  //       {...otherProps}
-  //       // wrapperArgs={wrapperArgs}
-  //       dataKey={dataKey}
-  //       key={dataKey}
-  //       disabled={!enabled}
-  //       onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => {e.preventDefault();}}
-  //       // selected={selected}
-  //       onClick={() => handleEditTextButtonClick(selection, wrapperArgs, !!isReactComponent, selected, query, selectCallback, deselectCallback, component, dataKey, !!isStateful)}
-  //     />
-  //   )
-  // }
-
-
-  // function HTMLWrapperInstructionsToEditTextButton(etb: EditTextButtonObject) {
-  //   // confirm and coerce this is HTMLWrapperInstructions type of EditTextButtonObject
-  //   if (etb.isReactComponent) return;
-
-  //   // destructure to extract props
-  //   const {dataKey, selectCallback, deselectCallback, isReactComponent, wrapperArgs, ...otherProps} = etb;
-
-  //   const query = generateQuery(wrapperArgs);
-  //   const selection = window.getSelection();
-
-  //   if (hasSelection && selection) {
-  //     const {anchorNode, focusNode, anchorOffset, focusOffset} = selection;
-
-  //     if (
-  //       anchorNode == contentRef.current && 
-  //       focusNode == contentRef.current &&
-  //       anchorOffset == 0 && 
-  //       focusOffset == 0
-  //     ) {
-  //       const thisRange = selection.getRangeAt(0);
-  //       thisRange.insertNode(document.createTextNode(""));   
-  //       selection.removeAllRanges();
-  //       selection.addRange(thisRange);
-  //     }
-  //   }
-
-  //   const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current)
-            
-  //   if (!hasSelection) {
-  //     status.enabled = false;
-  //     status.selected = false;
-  //   }
-  //   const {selected, enabled} = status;
-
-  //   return ( 
-  //     <EditTextButton
-  //       {...otherProps}
-  //       // wrapperArgs={wrapperArgs}
-  //       dataKey={dataKey}
-  //       key={dataKey}
-  //       disabled={!enabled}
-  //       onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => {e.preventDefault();}}
-  //       // selected={selected}
-  //       onClick={() => handleEditTextButtonClick(selection, wrapperArgs, !!isReactComponent, selected, query, selectCallback, deselectCallback, undefined, dataKey, false)}
-  //     />
-  //   )
-
-  // }
-
-
-  // function editTextButtonObjectToEditTextButton(etb: EditTextButtonObject) {
-  //   if (etb.isReactComponent) return reactWrapperToEditTextButton(etb);
-  //   else return HTMLWrapperInstructionsToEditTextButton(etb);
-  // }
-
-
-
   function updateSelection() {
     const gotSelection = window.getSelection();
 
@@ -345,6 +267,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
 
 
   function updateContent() {
+    console.log("updateContent");
+    console.trace();
     if (hasSelection) resetSelectionToTextNodes();
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
     contentRef.current?.focus();
@@ -449,186 +373,12 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs}: Ed
   }
 
 
-  function breakElementAtEnd(targetElement: Element, selection: Selection) {
-    if (!contentRef.current) return;
-
-    const childrenRange = new Range();
-
-    childrenRange.setStart(targetElement, 0);
-    childrenRange.setEnd(targetElement, targetElement.childNodes.length)
-
-    resetRangeToTextNodes(childrenRange);
-    const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
-    const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
-    const range = selection.getRangeAt(0);
-
-    moveSelection(selection, contentRef?.current, "right");
-    
-    // get new selection, make sure it starts with zero width space
-    // if not, add it, put selection after zero width space)
-    // if (!selection?.anchorNode?.textContent) return;
-    if (!(selection?.anchorNode)) return;
-
-    // if selection is still inside of element, - end of text
-    if (textNodes.includes(selection.anchorNode as Text)) {
-      console.log("sanity check 1");
-      const newRange = new Range();
-      newRange.setStartAfter(targetElement);
-      newRange.collapse();
-      console.log("sanity check 2");
-      const newTextNode = document.createTextNode("\u200B\u200B");
-      newRange.insertNode(newTextNode);
-      console.log(newRange);
-      console.log("sanity check 3");
-
-      window.getSelection()?.setBaseAndExtent(newTextNode, 1, newTextNode, 1);
-      console.log(window.getSelection()?.getRangeAt(0));
-      console.log()
-      // moveSelection(selection, contentRef?.current, "right");
-      console.log("sanity check 4");
-    }
-    // make sure next text node starts with zero width space
-    if (selection.anchorNode.textContent != null && (
-      selection.anchorNode.textContent.length == 0 ||
-      !selection.anchorNode.textContent[0].match("\u200B"))
-    ) {
-      console.log("in the text node space catcher");
-      selection.anchorNode.nodeValue = "\u200B" + selection.anchorNode.textContent;
-      selection.setBaseAndExtent(selection.anchorNode, 1, selection.anchorNode, 1);
-    }
-    return;
-    
-  }
-
-
-  function unwrapUnbreakableElement(selection: Selection) {
-    if (!contentRef.current) return;
-    const range = selection.getRangeAt(0);
-    const element = getRangeLowestAncestorElement(range);
-    if (element) {
-      
-      const elementRange = new Range();
-      elementRange.setStart(element, 0);
-      elementRange.setEnd(element, element.childNodes.length);
-      resetRangeToTextNodes(elementRange);
-      const childNodes = getRangeChildNodes(elementRange, contentRef.current);
-
-      // const childNodes = Array.from(element.childNodes);
-
-      const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
-
-      // handle break off from end of element
-      if (range.toString().length === 0) {
-        const lastTextNode = getLastValidTextNode(textNodes);
-        const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
-    
-        if (range.startContainer === lastTextNode && range.startOffset > lastTextIndex) {
-          breakElementAtEnd(element, selection);
-          return;
-        }
-      }
-      
-      // else to either condition above
-      const startNodeIndex = childNodes.findIndex(cn => cn === range.startContainer);
-      const startNodeOffset = range.startOffset;
-      const endNodeIndex = childNodes.findIndex(cn => cn === range.endContainer);
-      const endNodeOffset = range.endOffset;
-      
-      const parentNode = element.parentNode;
-      
-      for (let i=0; i<childNodes.length; i++) {
-        parentNode?.insertBefore(childNodes[i], element);
-        
-        if (i === startNodeIndex) {
-          range.setStart(childNodes[i], startNodeOffset);
-        }
-        
-        if (i === endNodeIndex) {
-          range.setEnd(childNodes[i], endNodeOffset);
-        }
-      }
-      
-      parentNode?.removeChild(element);
-      
-      updateContent();
-      resetSelectionToTextNodes();
-      return;
-    }
-  }
-
-
-  function unwrapReactComponent(selection: Selection) {
-    const range = selection.getRangeAt(0);
-    if (!selection.anchorNode || !contentRef.current) return;
-    const targetDiv = getAncestorNode(selection.anchorNode, "div[data-button-key]", contentRef.current) as Element;
-
-    if (!targetDiv) return;
-
-    const key = targetDiv.getAttribute('id')?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
-
-    if (!key || key.length === 0) return;
-
-    const targetPortal = portals.find(p => p.key === key);
-
-    if (!targetPortal) return;
-
-    // const childNodes = Array.from(targetPortal.childNodes);
-
-    if (targetPortal.children && range.toString().length === 0) {
-
-      const childrenRange = new Range();
-
-      childrenRange.setStart(targetDiv, 0);
-      childrenRange.setEnd(targetDiv, targetDiv.childNodes.length)
-
-      resetRangeToTextNodes(childrenRange);
-      const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
-      const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
-    
-      const lastTextNode = getLastValidTextNode(textNodes);
-      const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
-      
-      // if at end of react component
-      if (range.startContainer === lastTextNode && range.startOffset > lastTextIndex) {
-        breakElementAtEnd(targetDiv, selection);
-        return;
-      }
-      
-    }
-
-
-    // else to either condition above
-    const targetComponent = targetPortal.children;
-    if (!targetComponent || !isValidElement(targetComponent)) return;
-    
-    const children = targetComponent.props.children;
-    const htmlChildren = (typeof children === "string") ? 
-      document.createTextNode(children) :
-      reactNodeToElement(children);
-    targetDiv.appendChild(htmlChildren);
-
-    removePortal(key);
-
-    // need to remove containing div / unwrap text normally
-    targetDiv.setAttribute('data-mark-for-deletion', '');
-
-    // promoteChildrenOfNode(targetDiv);
-
-  }
-
-
   function removePortal(key: string) {
     const portalsCopy = [...portals];
     const targetIndex = portalsCopy.findIndex(p => p.key === key);
     portalsCopy.splice(targetIndex, 1);
     setPortals(portalsCopy);
   }
-
-
-
-
-
-
 
   /**  End of functions moved from EditableContent  **/
 
