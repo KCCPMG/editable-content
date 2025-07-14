@@ -34,7 +34,8 @@ export default function EditableContent({divStyle }: EditableContentProps) {
     dehydratedHTML,
     reHousePortals,
     updatePortalProps,
-    resetPortalContainers
+    resetPortalContainers,
+    assignContentRef
   } = useEditableContentContext();
 
 
@@ -235,7 +236,7 @@ export default function EditableContent({divStyle }: EditableContentProps) {
             }
           }    
         }}
-        ref={contentRef}
+        ref={assignContentRef}
         style={divStyle ? divStyle : {
           width: "100%",
           height: "150px",

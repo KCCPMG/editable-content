@@ -120,6 +120,7 @@ export type EditableContentContextType = {
   dehydratedHTML: string,
   reHousePortals: (containerDivs: Array<HTMLDivElement>) => void,
   resetPortalContainers: () => void,
+  assignContentRef: (newRef: HTMLDivElement) => void,
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -176,6 +177,10 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     window.reHousePortals = reHousePortals
   }, [])
 
+
+  function assignContentRef(newRef: HTMLDivElement) {
+    contentRef.current = newRef;
+  }
 
   // useEffect(function() {
   //   console.trace();
@@ -576,7 +581,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       updateSelection,
       dehydratedHTML,
       reHousePortals,
-      resetPortalContainers
+      resetPortalContainers,
+      assignContentRef
     }}
   >
     {children}
