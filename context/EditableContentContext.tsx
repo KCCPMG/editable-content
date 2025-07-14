@@ -57,7 +57,8 @@ export type EditableContentContextType = {
   appendPortalToDiv: (containingDiv: HTMLDivElement) => void,
   removePortal: (key: string) => void,
   updateSelection: () => void,
-  dehydratedHTML: string
+  dehydratedHTML: string,
+  reHousePortals: (containerDivs: Array<HTMLDivElement>) => void
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -94,9 +95,14 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   //     contentRef.current.innerHTML = contentRefCurrentInnerHTML;
   //   }
   // }, [contentRef.current])
-
   
-
+  useEffect(function() {
+    getDehydratedHTML(setDehydratedHTML);
+  }, [contentRefCurrentInnerHTML])
+  
+  useEffect(function() {
+    // console.log("dehydratedHTML: ", dehydratedHTML);
+  }, [dehydratedHTML])
 
   /**
    * Create DOMParser from current html of contentRef.current, find
@@ -115,7 +121,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       const divRange = new Range();
       divRange.setStart(div, 0);
       divRange.setEnd(div, div.childNodes.length);
-      console.log(divRange.toString())
+      // console.log(divRange.toString())
       const textNodes = getRangeChildNodes(divRange, parsedHTMLBody)
         .filter(cn => cn.nodeType === Node.TEXT_NODE);
       
@@ -257,8 +263,9 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
 
 
   function updateContent() {
-    console.log("updateContent");
-    console.trace();
+    // console.log("updateContent");
+    // console.trace();
+    console.log("updateContent, dehydratedHTML == initialHTML: ", dehydratedHTML == initialHTML )
     if (hasSelection) resetSelectionToTextNodes();
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
     contentRef.current?.focus();
@@ -295,6 +302,38 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       }
       return [...previousPortals, portal]
     });
+  }
+
+  function reHousePortals(targetDivs: Array<HTMLDivElement>) {
+    const clonePortals = targetDivs.map(containingDiv => {
+      const key = containingDiv.getAttribute("data-button-key");
+      const uuid = containingDiv.getAttribute('id')?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
+
+      if (!uuid || uuid.length === 0) return;
+      if (!key) return;
+
+      const contentRange = new Range();
+      contentRange.setStart(containingDiv, 0);
+      contentRange.setEnd(containingDiv, containingDiv.childNodes.length);
+      const text = contentRange.toString();
+      const content = contentRange.extractContents();
+  
+      
+      // find correct wrapper button
+      const foundKeyAndWrapperObj = keyAndWrapperObjs.find(obj => obj.dataKey === key);
+      if (!foundKeyAndWrapperObj) return;
+      if (!getIsReactComponent(foundKeyAndWrapperObj.wrapper)) return;
+      
+      const component = foundKeyAndWrapperObj.wrapper;
+      const clone = cloneElement(component, {}, text);
+
+      return createPortal(clone, containingDiv, uuid);
+
+    }).filter(p => !!p);
+
+    setPortals(clonePortals);
+
+
   }
 
 
@@ -403,7 +442,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       appendPortalToDiv,
       removePortal,
       updateSelection,
-      dehydratedHTML
+      dehydratedHTML,
+      reHousePortals
     }}
   >
     {children}

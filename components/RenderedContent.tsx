@@ -30,19 +30,28 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
     appendPortalToDiv,
     updateSelection,
     updateContent,
-    dehydratedHTML
+    dehydratedHTML,
+    reHousePortals
   } = useEditableContentContext();
 
 
   // on render
   useEffect(function() {
+    setHasSelection(false);
+    // console.log("RenderedContent - useEffect on render")
+    // console.log(contentRefCurrentInnerHTML);
+    // console.log(contentRef.current);
     if (contentRef.current) {
       // if (initialHTML) {
-        contentRef.current.innerHTML = dehydratedHTML;
-        // load react portals
-        const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
+      contentRef.current.innerHTML = dehydratedHTML;
+      
+      // load react portals
+      const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
+      if (portals.length === 0) {
         reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
-      // } else {
+      } else reHousePortals(reactContainerDivs);
+      
+        // } else {
       //   contentRef.current.innerHTML = "";
       // }   
       setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
@@ -51,19 +60,16 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
 
   // on render
   useEffect(() => {
-    setHasSelection(false);
-    console.log("useEffect in RenderedContent")
-    console.log(contentRefCurrentInnerHTML);
-    console.log(contentRef.current);
+
 
 
     // populate div with html and update state
     // if (contentRef.current) {
     //   if (initialHTML) {
     //     contentRef.current.innerHTML = initialHTML;
-    //     // load react portals
-    //     const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
-    //     reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
+        // // load react portals
+        // const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
+        // reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
     //   } else {
     //     contentRef.current.innerHTML = "";
     //   }   

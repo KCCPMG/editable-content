@@ -30,7 +30,8 @@ export default function EditableContent({divStyle }: EditableContentProps) {
     appendPortalToDiv,
     updateSelection,
     updateContent,
-    dehydratedHTML
+    dehydratedHTML,
+    reHousePortals
   } = useEditableContentContext();
 
 
@@ -39,9 +40,14 @@ export default function EditableContent({divStyle }: EditableContentProps) {
     if (contentRef.current) {
       // if (initialHTML) {
         contentRef.current.innerHTML = dehydratedHTML;
+
         // load react portals
-        const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
-        reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
+        const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
+        if (portals.length === 0) {
+          reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
+        } else reHousePortals(reactContainerDivs);
+      
+      // console.log("sanity check");
       // } else {
       //   contentRef.current.innerHTML = "";
       // }   
@@ -77,6 +83,7 @@ export default function EditableContent({divStyle }: EditableContentProps) {
 
   // on portal change
   useEffect(() => {
+    // console.log("post-sanity check check on portals")
     updateContent();
     
     // clean up divs which no longer contain a portal
@@ -84,7 +91,7 @@ export default function EditableContent({divStyle }: EditableContentProps) {
     const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
 
     toDelete.forEach(td => promoteChildrenOfNode(td));
-    resetSelectionToTextNodes();
+    if (hasSelection) resetSelectionToTextNodes();
 
 
     // TODO: Delete these once done testing
@@ -116,7 +123,7 @@ export default function EditableContent({divStyle }: EditableContentProps) {
       selection?.anchorNode?.nodeType !== Node.TEXT_NODE &&
       selection?.focusNode?.nodeType !== Node.TEXT_NODE
     ) {
-      console.log("selectionHasTextNodes", selectionHasTextNodes(selection, contentRef.current));
+      // console.log("selectionHasTextNodes", selectionHasTextNodes(selection, contentRef.current));
       if (selectionHasTextNodes(selection, contentRef.current)) {
         resetSelectionToTextNodes();
       } else {
@@ -211,7 +218,9 @@ export default function EditableContent({divStyle }: EditableContentProps) {
         }}
       >
       </div>
-      {portals.map(portal => portal)}
+      {portals}
     </>
   )
 }
+
+
