@@ -118,7 +118,8 @@ export type EditableContentContextType = {
   removePortal: (key: string) => void,
   updateSelection: () => void,
   dehydratedHTML: string,
-  reHousePortals: (containerDivs: Array<HTMLDivElement>) => void
+  reHousePortals: (containerDivs: Array<HTMLDivElement>) => void,
+  resetPortalContainers: () => void,
 }
 
 const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -574,7 +575,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       removePortal,
       updateSelection,
       dehydratedHTML,
-      reHousePortals
+      reHousePortals,
+      resetPortalContainers
     }}
   >
     {children}

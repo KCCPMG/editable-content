@@ -300,17 +300,17 @@ export default function Page() {
                 overflowY: "scroll"
               }}
             /> :
-            null 
-            // <RenderedContent 
-            //   // initialHTML={initialHTML}
-            //   divStyle={{
-            //     width: "100%",
-            //     height: "250px",
-            //     margin: "auto",
-            //     border: "2px solid black",
-            //     overflowY: "scroll"
-            //   }}
-            // />
+            // null 
+            <RenderedContent 
+              // initialHTML={initialHTML}
+              divStyle={{
+                width: "100%",
+                height: "250px",
+                margin: "auto",
+                border: "2px solid black",
+                overflowY: "scroll"
+              }}
+            />
         }
 
         <GetDehydratedHTMLButton />

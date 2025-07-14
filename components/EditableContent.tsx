@@ -33,7 +33,8 @@ export default function EditableContent({divStyle }: EditableContentProps) {
     updateContent,
     dehydratedHTML,
     reHousePortals,
-    updatePortalProps
+    updatePortalProps,
+    resetPortalContainers
   } = useEditableContentContext();
 
 
@@ -166,38 +167,7 @@ export default function EditableContent({divStyle }: EditableContentProps) {
     } 
   }
 
-  function resetPortalContainers() {
-    return setPortals(previousPortals => {
 
-      const portalClones: Array<ReactPortal> = [];
-
-      previousPortals.forEach(function(portal) {
-        const portalId = portal.key;
-        const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
-        if (!container) return;
-
-        const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
-        if (foundPortalIndex < 0) return;
-
-        const foundPortal = previousPortals[foundPortalIndex];
-        if (!foundPortal) return;
-
-        const targetComponent = foundPortal.children;
-        if (!isValidElement(targetComponent)) return;
-
-        // const clone = cloneElement(targetComponent, targetComponent.props, targetComponent.props.children);
-
-        // try this, might not be necessary to clone element
-        const clonedPortal = createPortal(targetComponent, container, portalId);
-
-        portalClones.push(clonedPortal);
-
-      })
-
-      return portalClones;
-
-    })
-  }
 
   return (
     <>

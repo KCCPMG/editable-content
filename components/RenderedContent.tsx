@@ -31,12 +31,15 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
     updateSelection,
     updateContent,
     dehydratedHTML,
-    reHousePortals
+    reHousePortals,
+    resetPortalContainers
   } = useEditableContentContext();
 
 
-  // on render
-  useEffect(function() {
+
+  // on initial render
+  useEffect(() => {
+
     setHasSelection(false);
     // console.log("RenderedContent - useEffect on render")
     // console.log(contentRefCurrentInnerHTML);
@@ -49,19 +52,14 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
       const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
       if (portals.length === 0) {
         reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
-      } else reHousePortals(reactContainerDivs);
+      } else resetPortalContainers();
+      // } else reHousePortals(reactContainerDivs);
       
         // } else {
       //   contentRef.current.innerHTML = "";
       // }   
-      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+      // setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
     }
-  }, [])
-
-  // on render
-  useEffect(() => {
-
-
 
     // populate div with html and update state
     // if (contentRef.current) {
@@ -91,9 +89,10 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
     // })
 
     // teardown
-    // return () => {
-    //   document.removeEventListener('selectionchange', handleSelectionChange);
-    // }
+    return () => {
+      contentRef.current = null;
+      // document.removeEventListener('selectionchange', handleSelectionChange);
+    }
 
   }, [])
 
