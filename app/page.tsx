@@ -95,7 +95,7 @@ export default function Page() {
   const [changeTextAnchorOffset, setChangeTextAnchorOffset] = useState<number | null>(null);
   const [changeTextFocusNode, setChangeTextFocusNode] = useState<Node | null>(null);
   const [changeTextFocusOffset, setChangeTextFocusOffset] = useState<number | null>(null);
-  const [editMode, setEditMode] = useState<boolean>(false)
+  const [editMode, setEditMode] = useState<boolean>(true)
 
   const [underlineColor, setUnderlineColor] = useState("red");
 

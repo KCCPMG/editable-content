@@ -307,7 +307,9 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   function reHousePortals(targetDivs: Array<HTMLDivElement>) {
     const clonePortals = targetDivs.map(containingDiv => {
       const key = containingDiv.getAttribute("data-button-key");
-      const uuid = containingDiv.getAttribute('id')?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
+      const containingDivId = containingDiv.getAttribute('id');
+      if (!containingDivId) return;
+      const uuid = containingDivId.split(PORTAL_CONTAINER_ID_PREFIX)[1];
 
       if (!uuid || uuid.length === 0) return;
       if (!key) return;
