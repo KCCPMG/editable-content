@@ -60,31 +60,7 @@ sit amet
   ipsum ​dolorsit
 </div>`.replaceAll(/\n */g, '');
 
-declare global {
-  interface Window {
-    wrapInElement?: typeof wrapInElement;
-    selectionIsDescendentOfNode?: typeof selectionIsDescendentOfNode;
-    generateQuery?: typeof generateQuery;
-    selectionIsCoveredBy?: typeof selectionIsCoveredBy;
-    createWrapper?: typeof createWrapper;
-    unwrapSelectionFromQuery?: typeof unwrapSelectionFromQuery;
-    resetSelectionToTextNodes?: typeof resetSelectionToTextNodes;
-    selectionHasTextNodes?: typeof selectionHasTextNodes;
-    getSelectionChildNodes?: typeof getSelectionChildNodes;
-    selectionContainsOnlyText?: typeof selectionContainsOnlyText;
-    getButtonStatus?: typeof getButtonStatus;
-    getRangeLowestAncestorElement?: typeof getRangeLowestAncestorElement;
-    promoteChildrenOfNode?: typeof promoteChildrenOfNode;
-    deleteEmptyElements?: typeof deleteEmptyElements;
-    setSelection?: typeof setSelection;
-    moveSelection?: typeof moveSelection;
-    getRangeChildNodes?: typeof getRangeChildNodes;
-    limitingContainer?: any;
-    getAncestorNode?: typeof getAncestorNode;
-    initialHTML?: string;
-    renderToString?: typeof renderToString
-  }
-}
+
 
 export default function Page() {
 
@@ -323,17 +299,18 @@ export default function Page() {
                 border: "2px solid black",
                 overflowY: "scroll"
               }}
-            /> : 
-            <RenderedContent 
-              // initialHTML={initialHTML}
-              divStyle={{
-                width: "100%",
-                height: "250px",
-                margin: "auto",
-                border: "2px solid black",
-                overflowY: "scroll"
-              }}
-            />
+            /> :
+            null 
+            // <RenderedContent 
+            //   // initialHTML={initialHTML}
+            //   divStyle={{
+            //     width: "100%",
+            //     height: "250px",
+            //     margin: "auto",
+            //     border: "2px solid black",
+            //     overflowY: "scroll"
+            //   }}
+            // />
         }
 
         <GetDehydratedHTMLButton />

@@ -1,8 +1,9 @@
 "use client"
-import React, { useEffect } from "react";
+import React, { isValidElement, ReactPortal, useEffect } from "react";
 import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection } from '@/utils/utils';
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
+import { createPortal } from "react-dom";
 
 
 export default function EditableContent({divStyle }: EditableContentProps) {
@@ -31,53 +32,76 @@ export default function EditableContent({divStyle }: EditableContentProps) {
     updateSelection,
     updateContent,
     dehydratedHTML,
-    reHousePortals
+    reHousePortals,
+    updatePortalProps
   } = useEditableContentContext();
 
 
-  // on render
-  useEffect(function() {
-    if (contentRef.current) {
-      // if (initialHTML) {
-        contentRef.current.innerHTML = dehydratedHTML;
 
-        // load react portals
-        const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
-        if (portals.length === 0) {
-          reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
-        } else reHousePortals(reactContainerDivs);
-      
-      // console.log("sanity check");
-      // } else {
-      //   contentRef.current.innerHTML = "";
-      // }   
-      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
-    }
-  }, [])
 
-  // on render
+  // on initial render
   useEffect(() => {
     // populate div with html and update state
-    
-    
-    // assign event listeners
-    document.addEventListener('selectionchange', (e) => {
-      const selection = window.getSelection();
-      if (!selection || 
-        !contentRef.current ||
-        !selectionIsDescendentOfNode(selection, contentRef.current)
-      ) {
-        updateSelection();
-      }
-      else {
-        handleSelectionChange();
-      } 
-    })
+    if (contentRef.current) {
+    // if (initialHTML) {
+      contentRef.current.innerHTML = dehydratedHTML;
 
-    // teardown
-    return () => {
-      document.removeEventListener('selectionchange', handleSelectionChange);
+      // load react portals
+      const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
+      if (portals.length === 0) {
+        reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
+      } 
+      else resetPortalContainers();
+      // else {
+      //   // reHousePortals(reactContainerDivs);
+
+      //   // get uuids
+      //   const uuids = (reactContainerDivs.map(rcd => {
+      //     const key = rcd.getAttribute("data-button-key");
+      //     const containingDivId = rcd.getAttribute('id');
+      //     if (!containingDivId) return;
+      //     return containingDivId.split("portal-container-")[1];
+      //   }).filter(uuid => uuid != undefined));
+
+      //   // empty text from reactContainerDivs
+      //   reactContainerDivs.forEach(rcd => rcd.innerHTML = "")
+
+
+      //   // create updateObj, empty props
+      //   const updateObj: {[key: string]: {}} = {};
+      //   for (let uuid of uuids) {
+      //     updateObj[uuid] = {}
+      //   }
+      //   // clone objects to reestablish correct containers
+      //   updatePortalProps(updateObj)
+      // }
+    
+    // console.log("sanity check");
+    // } else {
+    //   contentRef.current.innerHTML = "";
+    // }   
+    setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+  }
+    
+  // assign event listeners
+  document.addEventListener('selectionchange', (e) => {
+    const selection = window.getSelection();
+    if (!selection || 
+      !contentRef.current ||
+      !selectionIsDescendentOfNode(selection, contentRef.current)
+    ) {
+      updateSelection();
     }
+    else {
+      handleSelectionChange();
+    } 
+  })
+
+  // teardown
+  return () => {
+    document.removeEventListener('selectionchange', handleSelectionChange);
+    console.log("teardown");
+  }
 
   }, [])
 
@@ -140,6 +164,39 @@ export default function EditableContent({divStyle }: EditableContentProps) {
     else {
       updateSelection();
     } 
+  }
+
+  function resetPortalContainers() {
+    return setPortals(previousPortals => {
+
+      const portalClones: Array<ReactPortal> = [];
+
+      previousPortals.forEach(function(portal) {
+        const portalId = portal.key;
+        const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
+        if (!container) return;
+
+        const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
+        if (foundPortalIndex < 0) return;
+
+        const foundPortal = previousPortals[foundPortalIndex];
+        if (!foundPortal) return;
+
+        const targetComponent = foundPortal.children;
+        if (!isValidElement(targetComponent)) return;
+
+        // const clone = cloneElement(targetComponent, targetComponent.props, targetComponent.props.children);
+
+        // try this, might not be necessary to clone element
+        const clonedPortal = createPortal(targetComponent, container, portalId);
+
+        portalClones.push(clonedPortal);
+
+      })
+
+      return portalClones;
+
+    })
   }
 
   return (

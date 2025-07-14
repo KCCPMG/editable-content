@@ -7,7 +7,67 @@ import { v4 as uuidv4 } from 'uuid';
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
 import ContentRefCurrentInnerHTMLContainer from "@/components/TestComponents/ContentRefCurrentInnerHTMLContainer";
 
+// <div class="MuiBox-root css-yg5p1g" portalid="2bf69a61-17c5-498f-ad4c-ba9a2b01132d" data-unbreakable="">pudiandae. &ZeroWidthSpace; &ZeroWidthSpace;Lorem</div>
 
+// to
+
+// <div class="MuiBox-root css-yg5p1g">pudiandae. &ZeroWidthSpace; &ZeroWidthSpace;Lorem</div>
+
+declare global {
+  interface Window {
+    wrapInElement?: typeof wrapInElement;
+    selectionIsDescendentOfNode?: typeof selectionIsDescendentOfNode;
+    generateQuery?: typeof generateQuery;
+    selectionIsCoveredBy?: typeof selectionIsCoveredBy;
+    createWrapper?: typeof createWrapper;
+    unwrapSelectionFromQuery?: typeof unwrapSelectionFromQuery;
+    resetSelectionToTextNodes?: typeof resetSelectionToTextNodes;
+    selectionHasTextNodes?: typeof selectionHasTextNodes;
+    getSelectionChildNodes?: typeof getSelectionChildNodes;
+    selectionContainsOnlyText?: typeof selectionContainsOnlyText;
+    getButtonStatus?: typeof getButtonStatus;
+    getRangeLowestAncestorElement?: typeof getRangeLowestAncestorElement;
+    promoteChildrenOfNode?: typeof promoteChildrenOfNode;
+    deleteEmptyElements?: typeof deleteEmptyElements;
+    setSelection?: typeof setSelection;
+    moveSelection?: typeof moveSelection;
+    getRangeChildNodes?: typeof getRangeChildNodes;
+    limitingContainer?: any;
+    getAncestorNode?: typeof getAncestorNode;
+    initialHTML?: string;
+    renderToString?: typeof renderToString
+    contentRef: any;
+    contentRefCurrentInnerHTML?: any;
+    setContentRefCurrentInnerHTML?: any;
+    selectionToString?: any;
+    setSelectionToString?: any;
+    selectionAnchorNode?: any;
+    setSelectionAnchorNode?: any;
+    selectionAnchorOffset?: any;
+    setSelectionAnchorOffset?: any;
+    selectionFocusNode?: any;
+    setSelectionFocusNode?: any;
+    selectionFocusOffset?: any;
+    setSelectionFocusOffset?: any;
+    hasSelection?: any;
+    setHasSelection?: any;
+    portals?: any;
+    setPortals?: any;
+    divToSetSelectionTo?: any;
+    setDivToSetSelectionTo?: any;
+    getDehydratedHTML?: any;
+    updatePortalProps?: any;
+    getAllPortalProps?: any;
+    keyAndWrapperObjs?: any;
+    updateContent?: any;
+    createContentPortal?: any;
+    appendPortalToDiv?: any;
+    removePortal?: any;
+    updateSelection?: any;
+    dehydratedHTML?: any;
+    reHousePortals?: any;
+  }
+}
 
 type PortalProps = {
   [key: string]: {[key: string]: any}
@@ -81,6 +141,39 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   const [dehydratedHTML, setDehydratedHTML] = useState<string>(initialHTML || "")
 
 
+
+  useEffect(function() {
+    window.contentRef = contentRef,
+    window.contentRefCurrentInnerHTML = contentRefCurrentInnerHTML, 
+    window.setContentRefCurrentInnerHTML = setContentRefCurrentInnerHTML,
+    window.selectionToString = selectionToString, 
+    window.setSelectionToString = setSelectionToString,
+    window.selectionAnchorNode = selectionAnchorNode, 
+    window.setSelectionAnchorNode = setSelectionAnchorNode,
+    window.selectionAnchorOffset = selectionAnchorOffset, 
+    window.setSelectionAnchorOffset = setSelectionAnchorOffset,
+    window.selectionFocusNode = selectionFocusNode, 
+    window.setSelectionFocusNode = setSelectionFocusNode,
+    window.selectionFocusOffset = selectionFocusOffset, 
+    window.setSelectionFocusOffset = setSelectionFocusOffset,
+    window.hasSelection = hasSelection, 
+    window.setHasSelection = setHasSelection,
+    window.portals = portals, 
+    window.setPortals = setPortals,
+    window.divToSetSelectionTo = divToSetSelectionTo, 
+    window.setDivToSetSelectionTo = setDivToSetSelectionTo,
+    window.getDehydratedHTML = getDehydratedHTML,
+    window.updatePortalProps = updatePortalProps,
+    window.getAllPortalProps = getAllPortalProps,
+    window.keyAndWrapperObjs = keyAndWrapperObjs,
+    window.updateContent = updateContent,
+    window.createContentPortal = createContentPortal,
+    window.appendPortalToDiv = appendPortalToDiv,
+    window.removePortal = removePortal,
+    window.updateSelection = updateSelection,
+    window.dehydratedHTML = dehydratedHTML,
+    window.reHousePortals = reHousePortals
+  }, [])
 
 
   // useEffect(function() {
@@ -174,6 +267,39 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
         ...previousPortals.filter(portal => portal.key===null ||!portalIds.includes(portal.key)),
         ...(portalClones as Array<ReactPortal>)
       ])
+    })
+  }
+
+  function resetPortalContainers() {
+    return setPortals(previousPortals => {
+
+      const portalClones: Array<ReactPortal> = [];
+
+      previousPortals.forEach(function(portal) {
+        const portalId = portal.key;
+        const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
+        if (!container) return;
+
+        const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
+        if (foundPortalIndex < 0) return;
+
+        const foundPortal = previousPortals[foundPortalIndex];
+        if (!foundPortal) return;
+
+        const targetComponent = foundPortal.children;
+        if (!isValidElement(targetComponent)) return;
+
+        // const clone = cloneElement(targetComponent, targetComponent.props, targetComponent.props.children);
+
+        // try this, might not be necessary to clone element
+        const clonedPortal = createPortal(targetComponent, container, portalId);
+
+        portalClones.push(clonedPortal);
+
+      })
+
+      return portalClones;
+
     })
   }
 
@@ -305,6 +431,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   }
 
   function reHousePortals(targetDivs: Array<HTMLDivElement>) {
+    // this assumes portals already exist and just need new homes
     const clonePortals = targetDivs.map(containingDiv => {
       const key = containingDiv.getAttribute("data-button-key");
       const containingDivId = containingDiv.getAttribute('id');
@@ -382,7 +509,9 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   function appendPortalToDiv(containingDiv: HTMLDivElement) {
     
     const key = containingDiv.getAttribute("data-button-key");
-    const uuid = containingDiv.getAttribute('id')?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
+    const containingDivId = containingDiv.getAttribute('id');
+    if (!containingDivId) return;
+    const uuid = containingDivId.split(PORTAL_CONTAINER_ID_PREFIX)[1];
 
     if (!uuid || uuid.length === 0) return;
     if (!key) return;
