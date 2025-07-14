@@ -177,7 +177,7 @@ export default function EditableContent({divStyle }: EditableContentProps) {
         spellCheck={false}
         onInput={updateContent}
         onFocus={() => { setHasSelection(true) }}
-        onBlur={() => { setHasSelection(false) }}
+        onBlur={(e) => { setHasSelection(false) }}
         onKeyDown={(e) => {
           const selection = window.getSelection(); 
           if (!selection || selection.rangeCount === 0 || !contentRef.current) return;

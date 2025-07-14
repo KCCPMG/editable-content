@@ -12,52 +12,49 @@ type EditTextButtonProps = Omit<ButtonOwnProps, "color">
   isMUIButton: boolean,
   dataKey: string,
   children?: ReactNode,
-  // child: React.ReactNode,
-  // contentRef: React.MutableRefObject<HTMLDivElement | null> | undefined,
-  // selected: Boolean,
-  // onClick: () => void,
   selectedVariant?: ButtonOwnProps["variant"],
   deselectedVariant?: ButtonOwnProps["variant"],
   selectCallback?: ((wrapper: HTMLElement) => void) | undefined,
   deselectCallback?: () => void | undefined,
-  // wrapperArgs: WrapperArgs
 };
 
 export default function EditTextButton({
   isMUIButton, 
   dataKey, 
   children,
-  // child, 
-  // contentRef, 
-  // onClick, 
-  // selected,
   selectedVariant,
   deselectedVariant,
   selectCallback,
   deselectCallback,
-  // wrapperArgs: {element, classList, id}, 
   ...remainderProps
 }: EditTextButtonProps
 ) {
 
-  // get wrapper
-  const { hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef, updateContent, createContentPortal, portals, removePortal } = useEditableContentContext();
+  const { hasSelection, setHasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef, updateContent, createContentPortal, portals, removePortal } = useEditableContentContext();
 
 
   const [selected, setSelected] = useState<boolean>(false);
   const [enabled, setEnabled] = useState<boolean>(false);
+  const [beingClicked, setBeingClicked] = useState<boolean>(false);
 
   useEffect(function() {
     const selection = window.getSelection();
   
-    const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
-    setSelected(status.selected);
-    setEnabled(status.enabled);
+    // disable button if div doesn't have selection and button is not actively being clicked
+    if (!hasSelection && !beingClicked) {
+      setSelected(false);
+      setEnabled(false);
+    }
+    else {
+      const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
+      setSelected(status.selected);
+      setEnabled(status.enabled);
+    }
 
 
   }, [hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset])
 
-  // opportunity for useMemo
+  // TODO: opportunity for useMemo
   const thisKeyAndWrapper = keyAndWrapperObjs.find(kw => kw.dataKey === dataKey);
   const wrapper = thisKeyAndWrapper?.wrapper;
   if (!wrapper) return;
@@ -286,7 +283,14 @@ export default function EditTextButton({
     isMUIButton ? 
       <Button 
         disabled={!enabled}
-        onClick={() => { handleEditTextButtonClick() }}
+        // prevent !hasSelection from blocking button's ability to click
+        onMouseDown={() => {
+          setBeingClicked(true);
+        }}
+        onClick={() => { 
+          handleEditTextButtonClick() 
+          setBeingClicked(false);
+        }}
         variant={selected ? 
           (selectedVariant || "contained") : 
           (deselectedVariant || "outlined")
