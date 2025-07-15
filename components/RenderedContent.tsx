@@ -31,7 +31,6 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
     updateSelection,
     updateContent,
     dehydratedHTML,
-    reHousePortals,
     resetPortalContainers,
     assignContentRef
   } = useEditableContentContext();

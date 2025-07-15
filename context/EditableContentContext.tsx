@@ -65,7 +65,6 @@ declare global {
     removePortal?: any;
     updateSelection?: any;
     dehydratedHTML?: any;
-    reHousePortals?: any;
   }
 }
 
@@ -118,7 +117,6 @@ export type EditableContentContextType = {
   removePortal: (key: string) => void,
   updateSelection: () => void,
   dehydratedHTML: string,
-  reHousePortals: (containerDivs: Array<HTMLDivElement>) => void,
   resetPortalContainers: () => void,
   assignContentRef: (newRef: HTMLDivElement) => void,
 }
@@ -173,8 +171,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     window.appendPortalToDiv = appendPortalToDiv,
     window.removePortal = removePortal,
     window.updateSelection = updateSelection,
-    window.dehydratedHTML = dehydratedHTML,
-    window.reHousePortals = reHousePortals
+    window.dehydratedHTML = dehydratedHTML
   }, [])
 
 
@@ -299,10 +296,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
         if (!isValidElement(targetComponent)) return;
 
         const clone = cloneElement(targetComponent, targetComponent.props, children);
-
-        // try this, might not be necessary to clone element
-        const clonedPortal = createPortal(targetComponent, container, portalId);
-
+        const clonedPortal = createPortal(clone, container, portalId);
         portalClones.push(clonedPortal);
 
       })
@@ -439,41 +433,6 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     });
   }
 
-  function reHousePortals(targetDivs: Array<HTMLDivElement>) {
-    // this assumes portals already exist and just need new homes
-    const clonePortals = targetDivs.map(containingDiv => {
-      const key = containingDiv.getAttribute("data-button-key");
-      const containingDivId = containingDiv.getAttribute('id');
-      if (!containingDivId) return;
-      const uuid = containingDivId.split(PORTAL_CONTAINER_ID_PREFIX)[1];
-
-      if (!uuid || uuid.length === 0) return;
-      if (!key) return;
-
-      const contentRange = new Range();
-      contentRange.setStart(containingDiv, 0);
-      contentRange.setEnd(containingDiv, containingDiv.childNodes.length);
-      const text = contentRange.toString();
-      const content = contentRange.extractContents();
-  
-      
-      // find correct wrapper button
-      const foundKeyAndWrapperObj = keyAndWrapperObjs.find(obj => obj.dataKey === key);
-      if (!foundKeyAndWrapperObj) return;
-      if (!getIsReactComponent(foundKeyAndWrapperObj.wrapper)) return;
-      
-      const component = foundKeyAndWrapperObj.wrapper;
-      const clone = cloneElement(component, {}, text);
-
-      return createPortal(clone, containingDiv, uuid);
-
-    }).filter(p => !!p);
-
-    setPortals(clonePortals);
-
-
-  }
-
 
   /**
    * Generate a containing div element, append ReactElement to that div, 
@@ -583,7 +542,6 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       removePortal,
       updateSelection,
       dehydratedHTML,
-      reHousePortals,
       resetPortalContainers,
       assignContentRef
     }}

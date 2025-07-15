@@ -32,7 +32,6 @@ export default function EditableContent({divStyle }: EditableContentProps) {
     updateSelection,
     updateContent,
     dehydratedHTML,
-    reHousePortals,
     updatePortalProps,
     resetPortalContainers,
     assignContentRef
@@ -71,34 +70,7 @@ export default function EditableContent({divStyle }: EditableContentProps) {
         reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
       } 
       else resetPortalContainers();
-      // else {
-      //   // reHousePortals(reactContainerDivs);
 
-      //   // get uuids
-      //   const uuids = (reactContainerDivs.map(rcd => {
-      //     const key = rcd.getAttribute("data-button-key");
-      //     const containingDivId = rcd.getAttribute('id');
-      //     if (!containingDivId) return;
-      //     return containingDivId.split("portal-container-")[1];
-      //   }).filter(uuid => uuid != undefined));
-
-      //   // empty text from reactContainerDivs
-      //   reactContainerDivs.forEach(rcd => rcd.innerHTML = "")
-
-
-      //   // create updateObj, empty props
-      //   const updateObj: {[key: string]: {}} = {};
-      //   for (let uuid of uuids) {
-      //     updateObj[uuid] = {}
-      //   }
-      //   // clone objects to reestablish correct containers
-      //   updatePortalProps(updateObj)
-      // }
-    
-    // console.log("sanity check");
-    // } else {
-    //   contentRef.current.innerHTML = "";
-    // }   
     setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
   }
     
