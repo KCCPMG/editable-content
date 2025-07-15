@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection } from '@/utils/utils';
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
@@ -39,7 +39,7 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
 
 
   // on initial render
-  useEffect(() => {
+  useLayoutEffect(() => {
 
     setHasSelection(false);
 
@@ -47,6 +47,8 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
       // if (initialHTML) {
       contentRef.current.innerHTML = dehydratedHTML;
       
+      console.log("portals.length:", portals.length);
+
       // load react portals
       const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
       if (portals.length === 0) {
@@ -61,7 +63,7 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
       // document.removeEventListener('selectionchange', handleSelectionChange);
     }
 
-  }, [])
+  }, [contentRef])
 
   // on portal change
   useEffect(() => {

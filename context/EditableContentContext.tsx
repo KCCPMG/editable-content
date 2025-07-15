@@ -200,7 +200,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   }, [contentRefCurrentInnerHTML])
   
   useEffect(function() {
-    // console.log("dehydratedHTML: ", dehydratedHTML);
+    console.log("dehydratedHTML: ", dehydratedHTML);
   }, [dehydratedHTML])
 
   /**
@@ -286,6 +286,9 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
         const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
         if (!container) return;
 
+        const children = container.innerHTML;
+        container.innerHTML = "";
+
         const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
         if (foundPortalIndex < 0) return;
 
@@ -295,7 +298,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
         const targetComponent = foundPortal.children;
         if (!isValidElement(targetComponent)) return;
 
-        // const clone = cloneElement(targetComponent, targetComponent.props, targetComponent.props.children);
+        const clone = cloneElement(targetComponent, targetComponent.props, children);
 
         // try this, might not be necessary to clone element
         const clonedPortal = createPortal(targetComponent, container, portalId);

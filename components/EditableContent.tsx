@@ -1,5 +1,5 @@
 "use client"
-import React, { isValidElement, ReactPortal, useEffect } from "react";
+import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect } from "react";
 import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection } from '@/utils/utils';
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
@@ -39,14 +39,31 @@ export default function EditableContent({divStyle }: EditableContentProps) {
   } = useEditableContentContext();
 
 
+  // experiment
+  useLayoutEffect(() => {
+    console.log("useEffect");
+    console.log("if contentRef.current: ", !!contentRef.current)
+    if (contentRef.current) {
+
+      // populate div with html and update state
+      contentRef.current.innerHTML = dehydratedHTML;
+      console.log("initialRender in if block"); 
+    }  
+  }, [contentRef])
+
 
 
   // on initial render
   useEffect(() => {
-    // populate div with html and update state
+    console.log("useEffect");
+    console.log("if contentRef.current: ", !!contentRef.current)
     if (contentRef.current) {
-    // if (initialHTML) {
+
+      // populate div with html and update state
       contentRef.current.innerHTML = dehydratedHTML;
+      console.log("initialRender in if block");
+
+      console.log(contentRef.current.innerHTML);
 
       // load react portals
       const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
@@ -102,18 +119,19 @@ export default function EditableContent({divStyle }: EditableContentProps) {
   // teardown
   return () => {
     document.removeEventListener('selectionchange', handleSelectionChange);
+    contentRef.current = null;
     console.log("teardown");
   }
 
-  }, [])
+  }, [contentRef])
 
   // on portal change
   useEffect(() => {
     // console.log("post-sanity check check on portals")
-    updateContent();
     
     // clean up divs which no longer contain a portal
     if (!contentRef.current) return;
+    updateContent();
     const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
 
     toDelete.forEach(td => promoteChildrenOfNode(td));
