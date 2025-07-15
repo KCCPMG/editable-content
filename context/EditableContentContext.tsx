@@ -174,31 +174,19 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     window.dehydratedHTML = dehydratedHTML
   }, [])
 
-
+  /**
+   * Used in place of ref={contentRef} to avoid race condition
+   * in resetting ref on component render
+   * @param newRef 
+   */
   function assignContentRef(newRef: HTMLDivElement) {
     contentRef.current = newRef;
   }
 
-  // useEffect(function() {
-  //   console.trace();
-  // }, [contentRefCurrentInnerHTML])
-
-
-  // useEffect(function() {
-  //   console.log("change of contentRef");
-  //   console.log({contentRefCurrentInnerHTML})
-  //   if (contentRef?.current) {
-  //     contentRef.current.innerHTML = contentRefCurrentInnerHTML;
-  //   }
-  // }, [contentRef.current])
   
   useEffect(function() {
     getDehydratedHTML(setDehydratedHTML);
   }, [contentRefCurrentInnerHTML])
-  
-  useEffect(function() {
-    console.log("dehydratedHTML: ", dehydratedHTML);
-  }, [dehydratedHTML])
 
   /**
    * Create DOMParser from current html of contentRef.current, find
@@ -217,7 +205,6 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       const divRange = new Range();
       divRange.setStart(div, 0);
       divRange.setEnd(div, div.childNodes.length);
-      // console.log(divRange.toString())
       const textNodes = getRangeChildNodes(divRange, parsedHTMLBody)
         .filter(cn => cn.nodeType === Node.TEXT_NODE);
       
@@ -322,51 +309,10 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   }
 
 
-  /**  Functions moved from EditableContent  **/
-
-  function reactNodeToElement(reactNode: ReactNode) {
-    const stringified = renderToString(reactNode);
-    const parsedElement = new DOMParser().parseFromString(stringified, "text/html").body.children[0];
-    return parsedElement;
-  }
-
-
-  function reactNodeToWrapperArgs(rn: ReactNode): WrapperArgs {
-
-    const element = reactNodeToElement(rn);
-
-    let mappedAttributes: {[key: string] : string | undefined} = {}
-
-    for (let attr of Array.from(element.attributes)) {
-      if ((attr.name) === 'class') continue;
-      if (attr.name === 'style') {
-        // TODO: make style compatible for wrapperArgs search
-        continue;
-      }
-      const attrName = attr.name;
-      const attrValue = attr.value || '';
-      // console.log({attrName, attrValue});
-      mappedAttributes[attrName] = attrValue;
-    }
-    
-
-    // set all react elements to unbreakable, might change this later
-    const wrapperArgs = {
-      element: element.tagName,
-      classList: element.className ? element.className.split(" ") : [],
-      id: element.getAttribute('id') || undefined,
-      attributes: mappedAttributes,
-      // unbreakable: typeof mappedAttributes['data-unbreakable'] === 'string'
-      unbreakable: true
-      // eventListeners: getEventListeners(element)      
-    };
-
-    // console.log(rn?.type?.name, wrapperArgs);
-
-    return wrapperArgs;
-  }
-
-
+  /**
+   * Update state related to selection to reflect the 
+   * current window.getSelection()
+   */
   function updateSelection() {
     const gotSelection = window.getSelection();
 
@@ -391,17 +337,16 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   }
 
 
+  /**
+   * Reset selection to text nodes, setContentRefCurrentInnerHTML
+   * (which will also update dehydrated HTML on useEffect), restore
+   * focus on contentRef
+   */
   function updateContent() {
-    // console.log("updateContent");
-    // console.trace();
-    console.log("updateContent, dehydratedHTML == initialHTML: ", dehydratedHTML == initialHTML )
     if (hasSelection) resetSelectionToTextNodes();
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
     contentRef.current?.focus();
   }
-
-
-
 
 
   /**
@@ -421,7 +366,6 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       getContext: useEditableContentContext
     }
 
-    // props['data-unbreakable'] = true;
     const clone = cloneElement(component, {...props, ...additionalProps}, text);
     const portal = createPortal(clone, targetDiv, props["key"] || null);
     setPortals(previousPortals => {
@@ -488,8 +432,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     contentRange.setStart(containingDiv, 0);
     contentRange.setEnd(containingDiv, containingDiv.childNodes.length);
     const text = contentRange.toString();
-    const content = contentRange.extractContents();
-
+    const content = contentRange.extractContents(); // content currently unused
     
     // find correct wrapper button
     const foundKeyAndWrapperObj = keyAndWrapperObjs.find(obj => obj.dataKey === key);
@@ -501,14 +444,16 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   }
 
 
+  /**
+   * Remove a portal from the portals object selecting by its key
+   * @param key 
+   */
   function removePortal(key: string) {
     const portalsCopy = [...portals];
     const targetIndex = portalsCopy.findIndex(p => p.key === key);
     portalsCopy.splice(targetIndex, 1);
     setPortals(portalsCopy);
   }
-
-  /**  End of functions moved from EditableContent  **/
 
 
   return (
