@@ -1,9 +1,23 @@
 "use client"
-import { EditableContentContextProvider } from "@/context/EditableContentContext";
-import Content from "./Content";
+import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext";
 import { useState } from "react";
 import PropfulBox from "@/components/TestComponents/PropfulBox";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
+import IncreaseColorButton from "./IncreaseColorButton";
+import EditableContent from "@/components/EditableContent";
+import { Container } from "@mui/material";
+import EditTextButton from "@/components/EditTextButton";
+import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
+
+
+const initialHTML = `
+Normal Text 
+<div 
+  id="portal-container-12345" 
+  data-button-key="propful-only" 
+>
+  Propful Component</div>`.replaceAll(/\n */g, '');
+
 
 
 export default function Page() {
@@ -38,8 +52,54 @@ export default function Page() {
             wrapper: <div><i></i></div>
           }
         ]}
+        initialHTML={initialHTML}
       >
-        <Content />
+        <Container>
+          <IncreaseColorButton 
+            componentBorderColor={componentBorderColor} 
+            setComponentBorderColor={setComponentBorderColor} 
+          />
+        </Container>
+        <Container>
+          <h4>React Buttons</h4>
+          <EditTextButton
+            isMUIButton={true}
+            dataKey="propful-only"
+          >
+            Propful Box
+          </EditTextButton>
+          <EditTextButton
+            isMUIButton={true}
+            dataKey="stateful-component"
+          >
+            Stateful Box
+          </EditTextButton>
+        </Container>
+        <Container>
+          <h4>Non-React Buttons</h4>
+          <EditTextButton
+            isMUIButton={true}
+            dataKey="non-react-strong"
+          >
+            Non React Strong
+          </EditTextButton>
+          <EditTextButton
+            isMUIButton={false}
+            dataKey="block-italics"
+          >
+            Block Italics
+          </EditTextButton>
+        </Container>
+        <EditableContent
+
+          divStyle={{
+            height: "200px",
+            padding: "10px"
+          }}
+        />
+        <Container>
+          <AllPropsDisplay />
+        </Container>
       </EditableContentContextProvider>
     </>
   )
