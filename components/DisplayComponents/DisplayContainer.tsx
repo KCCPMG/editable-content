@@ -1,5 +1,5 @@
 "use client"
-import { Box, Button, Container, Fade, Grow } from "@mui/material"
+import { Box, Button, Collapse, Container, Fade, Grow } from "@mui/material"
 import React, { useState } from "react"
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -23,7 +23,7 @@ export default function DisplayContainer({showInitial, title, children}: Display
         </h2>
 
         <Button onClick={() => setShow(prevShow => !prevShow)} >
-          <ExpandLessIcon   
+          <ExpandMoreIcon   
             sx={{
               color: "black",
               transition: "transform 0.5s",
@@ -33,13 +33,13 @@ export default function DisplayContainer({showInitial, title, children}: Display
         </Button>
       </Container>
       <hr style={{marginTop: "0px"}} />
-      <Grow in={show}>
-        {/* <Fade> */}
-        <Container>
-          {children}
-        </Container>
-        {/* </Fade> */}
-      </Grow>
+      <Collapse in={show} timeout={600}>
+        <Fade in={show} timeout={1200}>
+          <Container>
+            {children}
+          </Container>
+        </Fade>
+      </Collapse>
     </>
   )
 }
