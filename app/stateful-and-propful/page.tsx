@@ -29,13 +29,14 @@ export default function Page() {
       </p>
       <ul>
         <li>
-          Clicking the "Rotate Color From..." button should change the props of all "Stateful and Propful" components, as these change a state value upstream which then updates the props of all found portal instances (see the logic in the useEffect hook). Each component's border color should immediately change as the component's background color is the prop passed to it.
+          Clicking the &quot;Rotate Color From...&quot; button should change the props of all &quot;Stateful and Propful&quot; components, as these change a state value upstream which then updates the props of all found portal instances (see the logic in the useEffect hook). Each component&apos;s border color should immediately change as the component&apos;s background color is the prop passed to it.
         </li>
         <li>
-          Clicking the "Increase Clicks From..." button will also change an upstream state value and this should also change the props, of each "Stateful and Propful" component, but the value displayed for the clicks of that component should not change, as the component's click count is determined by its internal state. However, future "Stateful and Propful" components that are created should all start from whatever value is held at the time from "Increase Clicks From..."
+          Clicking the &quot;Increase Clicks From...&quot; button will also change an upstream state value and this should also change the props, of each &quot;Stateful and Propful&quot; component, but the value displayed for the clicks of that component should not change, as the component&apos;s click count is determined by its internal state. However, future &quot;Stateful and Propful&quot; components that are created should all start from whatever value is held at the time from &quot;Increase Clicks From...&quot;
         </li>
       </ul>
       <EditableContentContextProvider
+        initialHTML={initialHTML}
         keyAndWrapperObjs={[
           {
             dataKey: "stateful-and-propful",
@@ -76,7 +77,6 @@ export default function Page() {
           </EditTextButton>          
         </div>
         <EditableContent
-          initialHTML={initialHTML}
           divStyle={{
             height: "450px",
             padding: "10px"

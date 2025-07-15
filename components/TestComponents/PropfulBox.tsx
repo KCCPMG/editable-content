@@ -17,8 +17,8 @@ export default function PropfulBox(
   {portalId, clickCount, borderC, children, getContext, ...rest}: PropfulBoxProps) 
 {
 
-  // const { updatePortalProps } = useEditableContentContext();
-  const { updatePortalProps } = getContext ? getContext() : {};
+  const { updatePortalProps } = useEditableContentContext();
+  // const { updatePortalProps } = getContext ? getContext() : {};
 
   function increaseClicks() {
     // console.log(`clicked ${portalId}`)
