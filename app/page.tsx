@@ -216,81 +216,95 @@ export default function Page() {
           </DialogActions>
 
         </Dialog>
-        <div>
-          <h3>Buttons</h3>
-          <EditTextButton 
-            dataKey="callback-sample"
-            isMUIButton={true}
-            selectCallback={() => {
-              const selection = window.getSelection();
-              if (!selection) return;
-              const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
-              setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
-              setChangeTextDialogText(selection?.toString() || "")
-              setChangeTextDialogIsOpen(true);
-              setChangeTextAnchorNode(anchorNode);
-              setChangeTextAnchorOffset(anchorOffset);
-              setChangeTextFocusNode(focusNode);
-              setChangeTextFocusOffset(focusOffset);
-            }}
-            deselectCallback={() => {
-              const selection = window.getSelection();
-              if (!selection) return;
-              const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
-              setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
-              setChangeTextDialogText(selection?.toString() || "")
-              setChangeTextDialogIsOpen(true);
-              setChangeTextAnchorNode(anchorNode);
-              setChangeTextAnchorOffset(anchorOffset);
-              setChangeTextFocusNode(focusNode);
-              setChangeTextFocusOffset(focusOffset);
-            }}
-          >
-            Callback Sample
-          </EditTextButton>
-          <EditTextButton 
-            dataKey="bold"
-            isMUIButton={true}
-          >
-            <FormatBoldIcon />
-          </EditTextButton>
-          <EditTextButton
-            dataKey="italics"
-            isMUIButton={true}
-          >
-            <FormatItalic/>
-          </EditTextButton>
-          <EditTextButton
-            dataKey="underlined"
-            isMUIButton={true}
-          >
-            <FormatUnderlined />
-          </EditTextButton>
-          <EditTextButton
-            dataKey="react-button"
-            isMUIButton={true}
-          >
-            React Button
-          </EditTextButton>
-          <EditTextButton
-            dataKey="stateful-component"
-            isMUIButton={true}
-          >
-            Stateful Component
-          </EditTextButton>
-          <EditTextButton
-            dataKey="multilevel-component"
-            isMUIButton={true}
-          >
-            Multilevel Component
-          </EditTextButton>
-          <EditTextButton
-            dataKey="underline-color"
-            isMUIButton={true}
-          >
-            Underline With Color
-          </EditTextButton>
-        </div>
+        {
+          editMode && 
+          <Container>
+            <h3>Buttons</h3>
+            <Box sx={{display: "flex"}}>
+
+              <Container disableGutters>
+                <h4>Standard Buttons</h4>
+                <EditTextButton 
+                  dataKey="bold"
+                  isMUIButton={true}
+                >
+                  <FormatBoldIcon />
+                </EditTextButton>
+                <EditTextButton
+                  dataKey="italics"
+                  isMUIButton={true}
+                >
+                  <FormatItalic/>
+                </EditTextButton>
+                <EditTextButton
+                  dataKey="underlined"
+                  isMUIButton={true}
+                >
+                  <FormatUnderlined />
+                </EditTextButton>
+              </Container>
+              {/* <EditTextButton 
+                dataKey="callback-sample"
+                isMUIButton={true}
+                selectCallback={() => {
+                  const selection = window.getSelection();
+                  if (!selection) return;
+                  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+                  setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
+                  setChangeTextDialogText(selection?.toString() || "")
+                  setChangeTextDialogIsOpen(true);
+                  setChangeTextAnchorNode(anchorNode);
+                  setChangeTextAnchorOffset(anchorOffset);
+                  setChangeTextFocusNode(focusNode);
+                  setChangeTextFocusOffset(focusOffset);
+                }}
+                deselectCallback={() => {
+                  const selection = window.getSelection();
+                  if (!selection) return;
+                  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+                  setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
+                  setChangeTextDialogText(selection?.toString() || "")
+                  setChangeTextDialogIsOpen(true);
+                  setChangeTextAnchorNode(anchorNode);
+                  setChangeTextAnchorOffset(anchorOffset);
+                  setChangeTextFocusNode(focusNode);
+                  setChangeTextFocusOffset(focusOffset);
+                }}
+              >
+                Callback Sample
+              </EditTextButton> */}
+              <Container disableGutters maxWidth="md">
+                <h4>Unbreakable Components</h4>
+                <EditTextButton
+                  dataKey="react-button"
+                  isMUIButton={true}
+                >
+                  React Button
+                </EditTextButton>
+                <EditTextButton
+                  dataKey="stateful-component"
+                  isMUIButton={true}
+                >
+                  Stateful Component
+                </EditTextButton>
+                <EditTextButton
+                  dataKey="multilevel-component"
+                  isMUIButton={true}
+                >
+                  Multilevel Component
+                </EditTextButton>
+                <EditTextButton
+                  dataKey="underline-color"
+                  isMUIButton={true}
+                >
+                  Underline With Color
+                </EditTextButton>
+              </Container>
+
+
+            </Box>
+          </Container>
+        }
         {
           editMode ? 
             <EditableContent 
@@ -316,8 +330,13 @@ export default function Page() {
             />
         }
 
-        <GetDehydratedHTMLButton />
-        <ClearButton />
+        {
+          editMode && 
+            <>
+              <GetDehydratedHTMLButton />
+              <ClearButton />
+            </>
+        }
         <Button onClick={() => setEditMode(!editMode)}>
           {editMode ? "Render Text" : "Edit Text"}
         </Button>
