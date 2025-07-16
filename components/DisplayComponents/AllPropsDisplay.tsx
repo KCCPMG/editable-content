@@ -1,6 +1,7 @@
 import { useEditableContentContext } from "@/context/EditableContentContext"
 import DisplayContainer from "./DisplayContainer";
 import safeStringify from "safe-stringify";
+import { Table, TableContainer, TableHead, TableBody, TableRow, TableCell } from "@mui/material";
 
 const tableStyle: React.CSSProperties = {
   border: "1px solid black", 
@@ -23,39 +24,49 @@ export default function AllPropsDisplay({show} : AllPropsDisplayProps) {
   const { getAllPortalProps } = useEditableContentContext();
   const allProps = getAllPortalProps();
 
+  console.log(allProps);
+
   return (
     <DisplayContainer title="All Props" showInitial={!!show} >
-      {
-        Object.entries(allProps).map(([id, props]) => {
-          return(
-            <table key={id} style={tableStyle}>
-              <thead style={tableStyle}>
-                <tr>
-                  <th style={tableStyle}><h5>PortalId: {id}</h5></th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  Object.entries(props).map(([k,v]) => {
-                    return(
-                      <tr key={k} style={tableStyle}>
-                        <td style={tableStyle}>{k}</td>
-                        <td style={tableStyle}>
-                          {
-                            typeof v === 'function' ? 
-                            <i>{v.toString().slice(0,50)}</i> : 
-                            safeStringify(v)
-                          }
-                        </td>
-                      </tr>
-                    )
-                  })
-                }
-              </tbody>
-            </table>
-          )
-        })
-      }
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Portal Id</TableCell>
+              <TableCell>Prop</TableCell>
+              <TableCell>Prop Value</TableCell>
+            </TableRow>
+          </TableHead>
+          {/* <TableBody> */}
+            {
+              Object.entries(allProps).map(([id, props]) => {
+
+                const propsArr = Object.entries(props);
+
+                return (
+                  <TableBody key={id} >
+                    <TableRow>
+                      <TableCell rowSpan={propsArr.length}>{id}</TableCell>
+                      <TableCell>{propsArr[0][0]}</TableCell>
+                      <TableCell>{propsArr[0][1]}</TableCell>
+                    </TableRow>           
+                    {
+                      propsArr.slice(1).map((propPair) => {
+                        return (
+                          <TableRow key={`${id}-${propPair[0]}`}>
+                            <TableCell>{propPair[0]}</TableCell>
+                            <TableCell>{propPair[1]}</TableCell>
+                          </TableRow>
+                        )
+                      })
+                    }
+                  </TableBody>
+                )
+              }
+            )}
+          {/* </TableBody> */}
+        </Table>
+      </TableContainer>
     </DisplayContainer>
   )
 }
