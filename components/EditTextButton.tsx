@@ -5,8 +5,6 @@ import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
 import { generateQuery, getButtonStatus, unwrapSelectionFromQuery, createWrapper, wrapInElement, getAncestorNode, resetSelectionToTextNodes, resetRangeToTextNodes, getRangeChildNodes, getLastValidTextNode, getLastValidCharacterIndex, getRangeLowestAncestorElement, moveSelection, getIsReactComponent} from "@/utils/utils";
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
-// import jsdom from "jsdom";
-// const { JSDOM } = jsdom;
 
 // "color", even when not named, causes type conflict from WrapperArgs
 type EditTextButtonProps = Omit<ButtonOwnProps, "color"> 
@@ -369,9 +367,7 @@ function reactNodeToWrapperArgs(rn: ReactNode): WrapperArgs {
 
 function reactNodeToElement(reactNode: ReactNode) {
   const stringified = renderToString(reactNode);
-  // const dom = new JSDOM(`<!DOCTYPE html><body></body>`);
-  // const { window } = dom;
-  // const parsedElement = new window.DOMParser().parseFromString(stringified, "text/html").body.children[0];
+
   const parsedElement = (typeof window !== "undefined") ? new DOMParser().parseFromString(stringified, "text/html").body.children[0] : null;
   return parsedElement;
 }

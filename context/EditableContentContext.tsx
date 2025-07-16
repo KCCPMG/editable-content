@@ -6,8 +6,6 @@ import { renderToString } from "react-dom/server";
 import { v4 as uuidv4 } from 'uuid';
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
 import ContentRefCurrentInnerHTMLContainer from "@/components/TestComponents/ContentRefCurrentInnerHTMLContainer";
-// import jsdom from "jsdom";
-// const { JSDOM } = jsdom;
 
 
 
@@ -193,9 +191,6 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
    * @param callback 
    */
   function getDehydratedHTML(callback: (dehydrated: string) => void) {
-
-    // const dom = new JSDOM(`<!DOCTYPE html><body></body>`);
-    // const { window } = dom;
 
     const parsedHTMLBody = (typeof window !== "undefined") ? new DOMParser()
       .parseFromString(contentRefCurrentInnerHTML, "text/html").body : null;
