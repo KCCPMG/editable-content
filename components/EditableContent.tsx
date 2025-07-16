@@ -39,16 +39,16 @@ export default function EditableContent({divStyle }: EditableContentProps) {
 
 
   // experiment
-  useLayoutEffect(() => {
-    console.log("useEffect");
-    console.log("if contentRef.current: ", !!contentRef.current)
-    if (contentRef.current) {
+  // useLayoutEffect(() => {
+  //   console.log("useEffect");
+  //   console.log("if contentRef.current: ", !!contentRef.current)
+  //   if (contentRef.current) {
 
-      // populate div with html and update state
-      contentRef.current.innerHTML = dehydratedHTML;
-      console.log("initialRender in if block"); 
-    }  
-  }, [contentRef])
+  //     // populate div with html and update state
+  //     contentRef.current.innerHTML = dehydratedHTML;
+  //     console.log("initialRender in if block"); 
+  //   }  
+  // }, [contentRef])
 
 
 

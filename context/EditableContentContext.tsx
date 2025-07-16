@@ -228,6 +228,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     const portalClones: Array<ReactPortal> = [];
     const portalIds = Object.keys(updateObj);
 
+    if (portalIds.length === 0) return; // prevent unnecessary setPortals especially during dev re-render
+
     return setPortals(previousPortals => {
 
       portalIds.forEach(portalId => {

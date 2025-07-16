@@ -10,7 +10,7 @@ type IncreaseColorButtonProps = {
 
 export default function IncreaseColorButton({componentBorderColor, setComponentBorderColor}: IncreaseColorButtonProps) {
 
-  const { updatePortalProps, contentRef } = useEditableContentContext();
+  const { updatePortalProps, contentRef, portals } = useEditableContentContext();
 
   const colors = ["red", "blue", "green", "black"];
 
