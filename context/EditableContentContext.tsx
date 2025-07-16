@@ -6,12 +6,10 @@ import { renderToString } from "react-dom/server";
 import { v4 as uuidv4 } from 'uuid';
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
 import ContentRefCurrentInnerHTMLContainer from "@/components/TestComponents/ContentRefCurrentInnerHTMLContainer";
+// import jsdom from "jsdom";
+// const { JSDOM } = jsdom;
 
-// <div class="MuiBox-root css-yg5p1g" portalid="2bf69a61-17c5-498f-ad4c-ba9a2b01132d" data-unbreakable="">pudiandae. &ZeroWidthSpace; &ZeroWidthSpace;Lorem</div>
 
-// to
-
-// <div class="MuiBox-root css-yg5p1g">pudiandae. &ZeroWidthSpace; &ZeroWidthSpace;Lorem</div>
 
 declare global {
   interface Window {
@@ -196,8 +194,13 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
    */
   function getDehydratedHTML(callback: (dehydrated: string) => void) {
 
-    const parsedHTMLBody = new DOMParser()
-      .parseFromString(contentRefCurrentInnerHTML, "text/html").body;
+    // const dom = new JSDOM(`<!DOCTYPE html><body></body>`);
+    // const { window } = dom;
+
+    const parsedHTMLBody = (typeof window !== "undefined") ? new DOMParser()
+      .parseFromString(contentRefCurrentInnerHTML, "text/html").body : null;
+
+    if (!parsedHTMLBody) return;
 
     const divs = Array.from(parsedHTMLBody.querySelectorAll("div[data-button-key]"));
 

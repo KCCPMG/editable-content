@@ -91,7 +91,6 @@ export default function Page() {
           </EditTextButton>
         </Container>
         <EditableContent
-
           divStyle={{
             height: "200px",
             padding: "10px"
