@@ -16,7 +16,8 @@ Normal Text
   id="portal-container-12345" 
   data-button-key="propful-only" 
 >
-  Propful Component</div>`.replaceAll(/\n */g, '');
+  Propful Component
+</div>`.replaceAll(/\n */g, '');
 
 
 
