@@ -17,6 +17,9 @@ import SelectionToStringContainer from "@/components/TestComponents/SelectionToS
 import ContentRefCurrentInnerHTMLContainer from "@/components/TestComponents/ContentRefCurrentInnerHTMLContainer";
 import { renderToString } from "react-dom/server";
 import RenderedContent from "@/components/RenderedContent";
+import ContentRefCurrentInnerHTMLDisplay from "@/components/DisplayComponents/ContentRefCurrentInnerHTMLDisplay";
+import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
+import SelectionDisplay from "@/components/DisplayComponents/SelectionToStringDisplay";
 
 const initialHTML = `
 <strong>Lorem, ipsum</strong>
@@ -318,8 +321,9 @@ export default function Page() {
         <Button onClick={() => setEditMode(!editMode)}>
           {editMode ? "Render Text" : "Edit Text"}
         </Button>
-        <SelectionToStringContainer />
-        <ContentRefCurrentInnerHTMLContainer />
+        <SelectionDisplay show={true} />
+        <ContentRefCurrentInnerHTMLDisplay show={true} />
+        {/* <AllPropsDisplay show={false} /> */}
 
       </EditableContentContextProvider>
     </main>
