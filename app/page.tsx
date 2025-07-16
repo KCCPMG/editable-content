@@ -19,7 +19,7 @@ import { renderToString } from "react-dom/server";
 import RenderedContent from "@/components/RenderedContent";
 import ContentRefCurrentInnerHTMLDisplay from "@/components/DisplayComponents/ContentRefCurrentInnerHTMLDisplay";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
-import SelectionDisplay from "@/components/DisplayComponents/SelectionToStringDisplay";
+import SelectionDisplay from "@/components/DisplayComponents/SelectionDisplay";
 
 const initialHTML = `
 <strong>Lorem, ipsum</strong>
@@ -323,7 +323,7 @@ export default function Page() {
         </Button>
         <SelectionDisplay show={true} />
         <ContentRefCurrentInnerHTMLDisplay show={true} />
-        {/* <AllPropsDisplay show={false} /> */}
+        <AllPropsDisplay show={false} />
 
       </EditableContentContextProvider>
     </main>
