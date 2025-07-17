@@ -64,11 +64,6 @@ export default function EditTextButton({
   const wrapperArgs = reactNodeToWrapperArgs(wrapper);
   const query = generateQuery(wrapperArgs);
 
-
-  
-  
-
-
   function handleEditTextButtonClick() {
 
     if (!wrapper) return;

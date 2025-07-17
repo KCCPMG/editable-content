@@ -6,6 +6,10 @@ import { EditableContentContextProvider } from "@/context/EditableContentContext
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
 import UnderlineColor from "@/components/TestComponents/UnderlineColor";
+import EditableLink from "@/components/TestComponents/EditableLink"
+import EditableContent from "@/components/EditableContent";
+import EditTextButton from "@/components/EditTextButton";
+import FormatUnderlined from "@mui/icons-material/FormatUnderlined";
 
 
 const initialHTML = `
@@ -108,11 +112,25 @@ export default function Page() {
         {
           dataKey: "underline-color",
           wrapper: <UnderlineColor color="blue" />
+        },
+        {
+          dataKey: "editable-link",
+          wrapper: <EditableLink />
         }
       ]}
       initialHTML={initialHTML}
     >
       <Container>
+        <EditTextButton isMUIButton={true} dataKey="editable-link">
+          Link
+        </EditTextButton>
+        <EditTextButton
+          dataKey="underlined"
+          isMUIButton={true}
+        >
+          <FormatUnderlined />
+        </EditTextButton>
+        <EditableContent />
         <DisplayContainer showInitial={false} title="Test" />
         <AllPropsDisplay show={false} />
         <DisplayContainer showInitial={false} title="Test" />
