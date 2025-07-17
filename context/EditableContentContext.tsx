@@ -208,7 +208,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       
       divRange.extractContents();
       textNodes.forEach(tn => {
-        console.log(tn);
+        // console.log(tn);
         divRange.insertNode(tn)
       });
     }
@@ -252,6 +252,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
         portalClones.push(clonedPortal);
 
       })
+
+      if (portalClones.length === 0) return previousPortals; // second check to prevent bad setState
 
       return ([
         ...previousPortals.filter(portal => portal.key===null ||!portalIds.includes(portal.key)),
