@@ -28,8 +28,8 @@ export default function AllPropsDisplay({show} : AllPropsDisplayProps) {
 
   return (
     <DisplayContainer title="All Props" showInitial={!!show} >
-      <TableContainer>
-        <Table>
+      <TableContainer sx={{maxHeight: 500}}>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell>Portal Id</TableCell>
@@ -37,34 +37,32 @@ export default function AllPropsDisplay({show} : AllPropsDisplayProps) {
               <TableCell>Prop Value</TableCell>
             </TableRow>
           </TableHead>
-          {/* <TableBody> */}
-            {
-              Object.entries(allProps).map(([id, props]) => {
+          {
+            Object.entries(allProps).map(([id, props]) => {
 
-                const propsArr = Object.entries(props);
+              const propsArr = Object.entries(props);
 
-                return (
-                  <TableBody key={id} >
-                    <TableRow>
-                      <TableCell rowSpan={propsArr.length}>{id}</TableCell>
-                      <TableCell>{propsArr[0][0]}</TableCell>
-                      <TableCell>{propsArr[0][1]}</TableCell>
-                    </TableRow>           
-                    {
-                      propsArr.slice(1).map((propPair) => {
-                        return (
-                          <TableRow key={`${id}-${propPair[0]}`}>
-                            <TableCell>{propPair[0]}</TableCell>
-                            <TableCell>{propPair[1]}</TableCell>
-                          </TableRow>
-                        )
-                      })
-                    }
-                  </TableBody>
-                )
-              }
-            )}
-          {/* </TableBody> */}
+              return (
+                <TableBody key={id} >
+                  <TableRow>
+                    <TableCell rowSpan={propsArr.length}><strong>{id}</strong></TableCell>
+                    <TableCell>{propsArr[0][0]}</TableCell>
+                    <TableCell>{propsArr[0][1]}</TableCell>
+                  </TableRow>           
+                  {
+                    propsArr.slice(1).map((propPair) => {
+                      return (
+                        <TableRow key={`${id}-${propPair[0]}`}>
+                          <TableCell><strong>{propPair[0]}</strong></TableCell>
+                          <TableCell>{propPair[1]}</TableCell>
+                        </TableRow>
+                      )
+                    })
+                  }
+                </TableBody>
+              )
+            }
+          )}
         </Table>
       </TableContainer>
     </DisplayContainer>
