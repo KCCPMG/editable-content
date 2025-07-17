@@ -63,37 +63,42 @@ export default function EditableContent({divStyle }: EditableContentProps) {
       console.log("initialRender in if block");
 
       console.log(contentRef.current.innerHTML);
+      console.log(portals.length);
 
       // load react portals
       const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
       if (portals.length === 0) {
+        console.log("should add", reactContainerDivs.length,"portals");
         reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
       } 
-      else resetPortalContainers();
+      else {
+        console.log("should reset portal containers");
+        resetPortalContainers();
+      }
 
-    setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
-  }
-    
-  // assign event listeners
-  document.addEventListener('selectionchange', (e) => {
-    const selection = window.getSelection();
-    if (!selection || 
-      !contentRef.current ||
-      !selectionIsDescendentOfNode(selection, contentRef.current)
-    ) {
-      updateSelection();
+      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
     }
-    else {
-      handleSelectionChange();
-    } 
-  })
+    
+    // assign event listeners
+    document.addEventListener('selectionchange', (e) => {
+      const selection = window.getSelection();
+      if (!selection || 
+        !contentRef.current ||
+        !selectionIsDescendentOfNode(selection, contentRef.current)
+      ) {
+        updateSelection();
+      }
+      else {
+        handleSelectionChange();
+      } 
+    })
 
-  // teardown
-  return () => {
-    document.removeEventListener('selectionchange', handleSelectionChange);
-    contentRef.current = null;
-    console.log("teardown");
-  }
+    // teardown
+    return () => {
+      document.removeEventListener('selectionchange', handleSelectionChange);
+      contentRef.current = null;
+      console.log("teardown");
+    }
 
   }, [contentRef])
 
@@ -164,6 +169,7 @@ export default function EditableContent({divStyle }: EditableContentProps) {
     <>
       <div
         contentEditable
+        ref={assignContentRef}
         spellCheck={false}
         onInput={updateContent}
         onFocus={() => { setHasSelection(true) }}
@@ -226,7 +232,6 @@ export default function EditableContent({divStyle }: EditableContentProps) {
             }
           }    
         }}
-        ref={assignContentRef}
         style={divStyle ? divStyle : {
           width: "100%",
           height: "150px",

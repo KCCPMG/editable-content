@@ -5,7 +5,7 @@ import PropfulBox from "@/components/TestComponents/PropfulBox";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import IncreaseColorButton from "./IncreaseColorButton";
 import EditableContent from "@/components/EditableContent";
-import { Container, Button } from "@mui/material";
+import { Container, Button, Box } from "@mui/material";
 import EditTextButton from "@/components/EditTextButton";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import RenderedContent from "@/components/RenderedContent";
@@ -58,57 +58,59 @@ export default function Page() {
         initialHTML={initialHTML}
       >
         {editMode && 
-          <Container>
-            <IncreaseColorButton 
-              componentBorderColor={componentBorderColor} 
-              setComponentBorderColor={setComponentBorderColor} 
-            />
-          </Container>
+          <Box sx={{display: "flex"}}>
+            <Container>
+              <h4>React Buttons</h4>
+              <EditTextButton
+                isMUIButton={true}
+                dataKey="propful-only"
+              >
+                Propful Box
+              </EditTextButton>
+              <EditTextButton
+                isMUIButton={true}
+                dataKey="stateful-component"
+              >
+                Stateful Box
+              </EditTextButton>
+            </Container>
+            <Container>
+              <h4>Non-React Buttons</h4>
+              <EditTextButton
+                isMUIButton={true}
+                dataKey="non-react-strong"
+              >
+                Non React Strong
+              </EditTextButton>
+              <EditTextButton
+                isMUIButton={false}
+                dataKey="block-italics"
+              >
+                Block Italics
+              </EditTextButton>
+            </Container>
+          </Box>
         }
-        {editMode && 
-          <Container>
-            <h4>React Buttons</h4>
-            <EditTextButton
-              isMUIButton={true}
-              dataKey="propful-only"
-            >
-              Propful Box
-            </EditTextButton>
-            <EditTextButton
-              isMUIButton={true}
-              dataKey="stateful-component"
-            >
-              Stateful Box
-            </EditTextButton>
-          </Container>
-        }
-        <Container>
-          <h4>Non-React Buttons</h4>
-          <EditTextButton
-            isMUIButton={true}
-            dataKey="non-react-strong"
-          >
-            Non React Strong
-          </EditTextButton>
-          <EditTextButton
-            isMUIButton={false}
-            dataKey="block-italics"
-          >
-            Block Italics
-          </EditTextButton>
-        </Container>
         {editMode ?
           <EditableContent
             divStyle={{
               height: "200px",
-              padding: "10px"
+              padding: "10px",
+              overflowY: "scroll"
             }}
           /> :
           <RenderedContent 
             divStyle={{
               height: "200px",
-              padding: "10px"
+              padding: "10px",
+              overflowY: "scroll"
             }}
+          />
+        }
+        {editMode && 
+          <IncreaseColorButton 
+            componentBorderColor={componentBorderColor} 
+            setComponentBorderColor={setComponentBorderColor} 
           />
         }
         <Button onClick={() => setEditMode(!editMode)}>
