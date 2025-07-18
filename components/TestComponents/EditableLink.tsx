@@ -1,4 +1,5 @@
-import { Link } from "@mui/material";
+import { Container, Link, Box } from "@mui/material";
+import { MutableRefObject, useEffect, useRef, useState} from "react";
 
 type EditableLinkProps = {
   href?: string,
@@ -8,7 +9,67 @@ type EditableLinkProps = {
 
 
 export default function EditableLink({href, children, ...rest}: EditableLinkProps) {
+
+  const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
+  const linkRef = useRef(null);
+
+  useEffect(function() {
+    (window as any).linkRef = linkRef;
+  }, [linkRef])
+
   return (
-    <Link href={href ? href : ""} {...rest} >{children}</Link>
+    <Link 
+      ref={linkRef}
+      href={href ? href : ""} {...rest} 
+      onContextMenu={(e) => {
+        e.preventDefault();
+        console.log(e.pageX);
+        setShowContextMenu(true)
+      }}
+    >
+      <CustomContextMenu show={showContextMenu} linkRef={linkRef}/>
+      {children}
+    </Link>
   )
+}
+
+
+type CustomContextMenuProps = {
+  show: boolean,
+  linkRef: MutableRefObject<HTMLAnchorElement | null>
+}
+
+
+export function CustomContextMenu({show, linkRef}: CustomContextMenuProps) {
+
+  const [xPos, setXPos] = useState<number>(0);
+  const [yPos, setYPos] = useState<number>(0);
+
+  useEffect(function() {
+    if (!linkRef.current) return;
+    console.log(linkRef.current?.getBoundingClientRect());
+    const {x, width, y, height} = linkRef.current?.getBoundingClientRect();
+    setXPos(x + width);
+    setYPos(y + height);
+
+  }, [show])
+
+
+  if (show) {
+    return (
+      <Box
+        sx={{
+          position: "fixed",
+          left: xPos,
+          top: yPos,
+          border: "1px solid black",
+          borderRadius: "5px",
+          padding: "10px"
+        }}
+      >
+        Test Text which is editable due to being child of contentRef
+      </Box> 
+    )
+  }
+  else return null;
 }
