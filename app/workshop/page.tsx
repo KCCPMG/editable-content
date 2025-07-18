@@ -1,7 +1,7 @@
 "use client"
 import DisplayContainer from "@/components/DisplayComponents/DisplayContainer";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
-import { Box, Container } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import { EditableContentContextProvider } from "@/context/EditableContentContext";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
@@ -12,6 +12,7 @@ import EditTextButton from "@/components/EditTextButton";
 import FormatUnderlined from "@mui/icons-material/FormatUnderlined";
 import { useState } from "react";
 import EditHrefDialog from "@/components/TestComponents/EditHrefDialog";
+import RenderedContent from "@/components/RenderedContent";
 
 
 const initialHTML = `Text text text`.replaceAll(/\n */g, '');
@@ -22,7 +23,8 @@ const initialHTML = `Text text text`.replaceAll(/\n */g, '');
 export default function Page() {
 
   const [showHrefDialog, setShowHrefDialog] = useState<boolean>(false);
-  const [href, setHref] = useState<string>("")
+  const [href, setHref] = useState<string>("");
+  const [editMode, setEditMode] = useState<boolean>(true);
   const [portalIdForHrefDialog, setPortalIdForHrefDialog] = useState<string | undefined>(undefined);
 
   return (
@@ -111,7 +113,10 @@ export default function Page() {
         >
           <FormatUnderlined />
         </EditTextButton>
-        <EditableContent />
+        {editMode ? <EditableContent /> : <RenderedContent />}
+        <Button onClick={() => setEditMode(em => (!em))}>
+          {editMode ? "Render Text" : "Edit Text"}
+        </Button>
         <DisplayContainer showInitial={false} title="Test" />
         <AllPropsDisplay show={false} />
         <DisplayContainer showInitial={false} title="Test" />
