@@ -10,6 +10,8 @@ import EditableLink from "@/components/TestComponents/EditableLink"
 import EditableContent from "@/components/EditableContent";
 import EditTextButton from "@/components/EditTextButton";
 import FormatUnderlined from "@mui/icons-material/FormatUnderlined";
+import { useState } from "react";
+import EditHrefDialog from "@/components/TestComponents/EditHrefDialog";
 
 
 const initialHTML = `
@@ -58,6 +60,9 @@ sit amet
 
 
 export default function Page() {
+
+  const [showHrefDialog, setShowHrefDialog] = useState<boolean>(false);
+  const [href, setHref] = useState<string>("")
 
   return (
     <EditableContentContextProvider
@@ -120,6 +125,12 @@ export default function Page() {
       ]}
       initialHTML={initialHTML}
     >
+      <EditHrefDialog 
+        isOpen={showHrefDialog} 
+        setIsOpen={setShowHrefDialog}
+        href={href}
+        setHref={setHref}
+      />
       <Container>
         <EditTextButton isMUIButton={true} dataKey="editable-link">
           Link
@@ -127,6 +138,9 @@ export default function Page() {
         <EditTextButton
           dataKey="underlined"
           isMUIButton={true}
+          selectCallback={() => {
+            setShowHrefDialog(true);
+          }}
         >
           <FormatUnderlined />
         </EditTextButton>
