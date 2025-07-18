@@ -1,10 +1,13 @@
 import { Button, ButtonOwnProps } from "@mui/material";
-import { isValidElement, MutableRefObject, ReactElement, ReactNode, useEffect, useState } from "react";
+import { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, ReactNode, useEffect, useState } from "react";
 import { WrapperArgs } from "./";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
 import { generateQuery, getButtonStatus, unwrapSelectionFromQuery, createWrapper, wrapInElement, getAncestorNode, resetSelectionToTextNodes, resetRangeToTextNodes, getRangeChildNodes, getLastValidTextNode, getLastValidCharacterIndex, getRangeLowestAncestorElement, moveSelection, getIsReactComponent} from "@/utils/utils";
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
+
+type htmlSelectCallback = (wrapper: HTMLElement) => void
+type reactSelectCallback = (wrapper: ReactElement<any, string | JSXElementConstructor<any>>, portalId: string | undefined) => void
 
 // "color", even when not named, causes type conflict from WrapperArgs
 type EditTextButtonProps = Omit<ButtonOwnProps, "color"> 
@@ -14,7 +17,7 @@ type EditTextButtonProps = Omit<ButtonOwnProps, "color">
   children?: ReactNode,
   selectedVariant?: ButtonOwnProps["variant"],
   deselectedVariant?: ButtonOwnProps["variant"],
-  selectCallback?: ((wrapper: HTMLElement) => void) | undefined,
+  selectCallback?: htmlSelectCallback | reactSelectCallback,
   deselectCallback?: () => void | undefined,
 };
 
@@ -98,7 +101,14 @@ export default function EditTextButton({
       else if (!selected) {
         if (isReactComponent) {
           // if isReactComponent, can assert wrapperInstructions as ReactElement
-          createContentPortal(wrapper, dataKey);
+          const portalId = createContentPortal(wrapper, dataKey);
+          if (selectCallback) {
+            console.log("there's a selectCallback here");
+            console.log(wrapper, portalId);
+            console.log(portals);
+            console.log(portals.find(portal => portal.key === portalId));
+            (selectCallback as reactSelectCallback)(wrapper, portalId) ;
+          }
 
         
         } else if (!isReactComponent) {
@@ -106,7 +116,7 @@ export default function EditTextButton({
           wrapInElement(selection, wrapper, contentRef.current!);
           updateContent();
           if (selectCallback) {
-            selectCallback(wrapper);
+            (selectCallback as htmlSelectCallback)(wrapper);
           } 
         }
         

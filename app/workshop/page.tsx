@@ -14,47 +14,7 @@ import { useState } from "react";
 import EditHrefDialog from "@/components/TestComponents/EditHrefDialog";
 
 
-const initialHTML = `
-<strong>Lorem, ipsum</strong>
-  ​dolor ​sit ​ 
-  ​<i>amet  ​cons
-  <strong>
-    ectetur adipisicing ​ ​ ​
-    <br>
-    elit.
-  </strong> ​Sunt,
-</i>
-repudiandae. ​Lorem, ipsum ​dolor ​sit ​amet ​ ​consectetur ​ ​ ​
-<br>
-adipisicing
-<u testattribute="ta" testattribute2="ta2" data-unbreakable="">
-  elit.
-</u>
-Sunt, ​re
-<div 
-  id="portal-container-2bf69a61-17c5-498f-ad4c-ba9a2b01132d" 
-  data-button-key="react-button" 
-  style="display: inline;"
->
-    pud
-      iand
-    a
-  e. ​ ​Lorem
-</div>
-, ​ipsum ​dolor ​ ​
-<br>
-sit amet
-<strong>
-  consectetur
-  <i>
-    adipisicing
-  </i>
-  elit.
-</strong>
-  Sunt,  ​repudiandae. ​Lorem, ​
-​<div id="portal-container-f56a36a4-00b7-42c8-9d92-e14691b2ee1a" data-button-key="react-button" style="display: inline;">
-  ipsum ​dolorsit
-</div>`.replaceAll(/\n */g, '');
+const initialHTML = `Text text text`.replaceAll(/\n */g, '');
 
 
 
@@ -63,6 +23,7 @@ export default function Page() {
 
   const [showHrefDialog, setShowHrefDialog] = useState<boolean>(false);
   const [href, setHref] = useState<string>("")
+  const [portalIdForHrefDialog, setPortalIdForHrefDialog] = useState<string | undefined>(undefined);
 
   return (
     <EditableContentContextProvider
@@ -130,17 +91,23 @@ export default function Page() {
         setIsOpen={setShowHrefDialog}
         href={href}
         setHref={setHref}
+        portalId={portalIdForHrefDialog}
       />
       <Container>
-        <EditTextButton isMUIButton={true} dataKey="editable-link">
+        <EditTextButton 
+          isMUIButton={true} 
+          dataKey="editable-link"
+          selectCallback={(wrapper, portalId) => {
+            setShowHrefDialog(true);
+            setPortalIdForHrefDialog(portalId);
+            console.log(wrapper, portalId);
+          }}
+        >
           Link
         </EditTextButton>
         <EditTextButton
           dataKey="underlined"
           isMUIButton={true}
-          selectCallback={() => {
-            setShowHrefDialog(true);
-          }}
         >
           <FormatUnderlined />
         </EditTextButton>

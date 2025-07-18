@@ -108,7 +108,7 @@ export type EditableContentContextType = {
   getAllPortalProps: () => PortalProps,
   keyAndWrapperObjs: Array<KeyAndWrapperObj>,
   updateContent: () => void, 
-  createContentPortal: (component: ReactElement, buttonKey: string) => void, 
+  createContentPortal: (component: ReactElement, buttonKey: string) => string | undefined, 
   appendPortalToDiv: (containingDiv: HTMLDivElement) => void,
   removePortal: (key: string) => void,
   updateSelection: () => void,
@@ -407,7 +407,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     
     // curently only handling range text, not nested elements
     if (contentRef.current && contentRef.current && foundNewDiv) {
-      cloneElementIntoPortal(component, {key: uuid}, text, foundNewDiv)
+      cloneElementIntoPortal(component, {key: uuid}, text, foundNewDiv);
+      return uuid;
     }
   }
 
