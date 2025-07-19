@@ -11,8 +11,10 @@ import EditableContent from "@/components/EditableContent";
 import EditTextButton from "@/components/EditTextButton";
 import FormatUnderlined from "@mui/icons-material/FormatUnderlined";
 import { useState } from "react";
-import EditHrefDialog from "@/components/TestComponents/EditHrefDialog";
+// import EditHrefDialog from "@/components/TestComponents/EditHrefDialog";
 import RenderedContent from "@/components/RenderedContent";
+import { EditableLinkDialogContextProvider, useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
+import LinkEditTextButton from "@/components/TestComponents/LinkEditTextButton";
 
 
 const initialHTML = `Text text text`.replaceAll(/\n */g, '');
@@ -88,39 +90,33 @@ export default function Page() {
       ]}
       initialHTML={initialHTML}
     >
-      <EditHrefDialog 
-        isOpen={showHrefDialog} 
-        setIsOpen={setShowHrefDialog}
-        href={href}
-        setHref={setHref}
-        portalId={portalIdForHrefDialog}
-      />
-      <Container>
-        <EditTextButton 
-          isMUIButton={true} 
-          dataKey="editable-link"
-          selectCallback={(wrapper, portalId) => {
-            setShowHrefDialog(true);
-            setPortalIdForHrefDialog(portalId);
-            console.log(wrapper, portalId);
-          }}
-        >
-          Link
-        </EditTextButton>
-        <EditTextButton
-          dataKey="underlined"
-          isMUIButton={true}
-        >
-          <FormatUnderlined />
-        </EditTextButton>
-        {editMode ? <EditableContent /> : <RenderedContent />}
-        <Button onClick={() => setEditMode(em => (!em))}>
-          {editMode ? "Render Text" : "Edit Text"}
-        </Button>
-        <DisplayContainer showInitial={false} title="Test" />
-        <AllPropsDisplay show={false} />
-        <DisplayContainer showInitial={false} title="Test" />
-      </Container>
+      <EditableLinkDialogContextProvider>
+        {/* <EditHrefDialog 
+          isOpen={showHrefDialog} 
+          setIsOpen={setShowHrefDialog}
+          href={href}
+          setHref={setHref}
+          portalId={portalIdForHrefDialog}
+        /> */}
+        <Container>
+          <LinkEditTextButton>
+            Link
+          </LinkEditTextButton>
+          <EditTextButton
+            dataKey="underlined"
+            isMUIButton={true}
+          >
+            <FormatUnderlined />
+          </EditTextButton>
+          {editMode ? <EditableContent /> : <RenderedContent />}
+          <Button onClick={() => setEditMode(em => (!em))}>
+            {editMode ? "Render Text" : "Edit Text"}
+          </Button>
+          <DisplayContainer showInitial={false} title="Test" />
+          <AllPropsDisplay show={false} />
+          <DisplayContainer showInitial={false} title="Test" />
+        </Container>
+      </EditableLinkDialogContextProvider>
     </EditableContentContextProvider>
   )
 

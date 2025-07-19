@@ -225,6 +225,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
    */
   function updatePortalProps(updateObj: PortalProps) {
 
+    console.log("updatePortalProps", updateObj);
+
     const portalClones: Array<ReactPortal> = [];
     const portalIds = Object.keys(updateObj);
 

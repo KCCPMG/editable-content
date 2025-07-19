@@ -1,17 +1,20 @@
 import { Container, Link, Box } from "@mui/material";
 import { MutableRefObject, useEffect, useRef, useState} from "react";
+import { useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
 
 type EditableLinkProps = {
   href?: string,
   children?: React.ReactNode,
+  portalId?: string,
   [key: string]: any
 }
 
 
-export default function EditableLink({href, children, ...rest}: EditableLinkProps) {
+export default function EditableLink({href, children, portalId, ...rest}: EditableLinkProps) {
 
   const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
   const linkRef = useRef(null);
+  const { setPortalId } = useEditableLinkDialogContext();
 
   useEffect(function() {
     (window as any).linkRef = linkRef;
@@ -21,11 +24,12 @@ export default function EditableLink({href, children, ...rest}: EditableLinkProp
     <Link 
       ref={linkRef}
       href={href ? href : ""} {...rest} 
-      onContextMenu={(e) => {
-        e.preventDefault();
-        console.log(e.pageX);
-        setShowContextMenu(true)
-      }}
+      // onContextMenu={(e) => {
+      //   e.preventDefault();
+      //   console.log(e.pageX);
+      //   setShowContextMenu(true)
+      // }}
+      onContextMenu={(e) => { setPortalId(portalId) }}
     >
       <CustomContextMenu show={showContextMenu} linkRef={linkRef}/>
       {children}
