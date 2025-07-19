@@ -1,20 +1,25 @@
-import { Container, Link, Box } from "@mui/material";
-import { MutableRefObject, useEffect, useRef, useState} from "react";
+import { useEditableContentContext } from "@/context/EditableContentContext";
 import { useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
+import { Container, Link, Box, Dialog, DialogTitle, Button, DialogActions, DialogContent, TextField } from "@mui/material";
+import { Dispatch, MutableRefObject, ReactElement, SetStateAction, useEffect, useRef, useState} from "react";
 
 type EditableLinkProps = {
   href?: string,
   children?: React.ReactNode,
   portalId?: string,
+  // getContext: typeof useEditableContentContext,
   [key: string]: any
 }
 
 
-export default function EditableLink({href, children, portalId, ...rest}: EditableLinkProps) {
+export default function EditableLink({href, children, portalId,  ...rest}: EditableLinkProps) {
 
-  const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
+  // const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
+  const [showEditHrefDialog, setShowEditHrefDialog] = useState<boolean>(false);
+  // const { portals, updatePortalProps } = getContext();
+
   const linkRef = useRef(null);
-  const { setPortalId } = useEditableLinkDialogContext();
+
 
   useEffect(function() {
     (window as any).linkRef = linkRef;
@@ -29,13 +34,110 @@ export default function EditableLink({href, children, portalId, ...rest}: Editab
       //   console.log(e.pageX);
       //   setShowContextMenu(true)
       // }}
-      onContextMenu={(e) => { setPortalId(portalId) }}
+
+      // onContextMenu={(e) => { setPortalId(portalId) }}
+
+      onContextMenu={(e) => {
+        console.log("onContextMenu")
+        e.preventDefault();
+        setShowEditHrefDialog(true);
+      }}
+    
+    
     >
-      <CustomContextMenu show={showContextMenu} linkRef={linkRef}/>
+      <EditableLinkEditHrefDialog
+        show={showEditHrefDialog}
+        setShow={setShowEditHrefDialog}
+        portalId={portalId || ""}
+      />
+      {/* <CustomContextMenu show={showContextMenu} linkRef={linkRef}/> */}
       {children}
     </Link>
   )
 }
+
+
+type EditableLinkEditHrefDialogProps = {
+  show: boolean,
+  setShow: Dispatch<SetStateAction<boolean>>,
+  portalId: string
+}
+
+
+
+function EditableLinkEditHrefDialog({show, setShow, portalId}: EditableLinkEditHrefDialogProps) {
+
+  // const { portals, updatePortalProps } = useEditableContentContext();
+  const [href, setHref] = useState<string>("");
+  const [portalIsFound, setPortalIsFound] = useState<boolean>(false);
+
+
+  // useEffect(function() {
+  //   const foundPortal = portals.find(portal => portal.key === portalId);
+  //   if (foundPortal) {
+  //     const children = foundPortal.children as ReactElement;
+  //     setPortalIsFound(true);
+  //     if (children) {
+  //       setHref(children.props?.href || "");
+  //     }
+  //   }
+  //   else setPortalIsFound(false);
+
+  // }, [portals, portalId])
+
+
+  function cancelDialog() {
+    setHref("");
+    setShow(false);
+  }
+
+  function saveAndCloseDialog() {
+    // updatePortalProps({[portalId]: {href: href}})
+    setHref("");
+    setShow(false);
+  }
+
+
+  return (
+    <Dialog 
+      open={show && portalIsFound} 
+      fullWidth={true} 
+      maxWidth={"sm"}
+    >
+      <DialogTitle>
+        Set URL for Link
+      </DialogTitle>
+      <DialogContent sx={{padding: "18px"}}>
+        <TextField 
+          label="Set URL"
+          fullWidth={true}
+          variant="standard"
+          // helperText="Set URL"
+          value={href}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setHref(e.target.value)
+          }}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={cancelDialog}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={saveAndCloseDialog}
+        >
+          Save
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+
+}
+
+
+
 
 
 type CustomContextMenuProps = {
