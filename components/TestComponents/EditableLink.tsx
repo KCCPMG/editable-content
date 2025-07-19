@@ -20,9 +20,7 @@ type EditableLinkProps = {
 
 export default function EditableLink({href, children, portalId, getContext,  ...rest}: EditableLinkProps) {
 
-  // const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
   const [showEditHrefDialog, setShowEditHrefDialog] = useState<boolean>(false);
-  // const { portals, updatePortalProps } = getContext();
   const { updatePortalProps=undefined } = getContext ? getContext() : {};
 
   const linkRef = useRef(null);
@@ -36,20 +34,13 @@ export default function EditableLink({href, children, portalId, getContext,  ...
     <Link 
       ref={linkRef}
       href={href ? href : ""} {...rest} 
-      // onContextMenu={(e) => {
-      //   e.preventDefault();
-      //   console.log(e.pageX);
-      //   setShowContextMenu(true)
-      // }}
-
-      // onContextMenu={(e) => { setPortalId(portalId) }}
 
       onContextMenu={(e) => {
         console.log("onContextMenu")
         e.preventDefault();
         setShowEditHrefDialog(true);
       }}
-    
+
     
     >
       <EditableLinkEditHrefDialog
@@ -78,23 +69,8 @@ type EditableLinkEditHrefDialogProps = {
 
 function EditableLinkEditHrefDialog({show, setShow, hrefIn, portalId, updatePortalProps}: EditableLinkEditHrefDialogProps) {
 
-  // const { portals, updatePortalProps } = useEditableContentContext();
   const [href, setHref] = useState<string>("");
   const [portalIsFound, setPortalIsFound] = useState<boolean>(false);
-
-
-  // useEffect(function() {
-  //   const foundPortal = portals.find(portal => portal.key === portalId);
-  //   if (foundPortal) {
-  //     const children = foundPortal.children as ReactElement;
-  //     setPortalIsFound(true);
-  //     if (children) {
-  //       setHref(children.props?.href || "");
-  //     }
-  //   }
-  //   else setPortalIsFound(false);
-
-  // }, [portals, portalId])
 
   useEffect(function() {
     if (show) setHref(hrefIn || "");
@@ -115,7 +91,6 @@ function EditableLinkEditHrefDialog({show, setShow, hrefIn, portalId, updatePort
     }
   }
 
-
   return (
     <Dialog 
       open={show} 
@@ -130,7 +105,6 @@ function EditableLinkEditHrefDialog({show, setShow, hrefIn, portalId, updatePort
           label="Set URL"
           fullWidth={true}
           variant="standard"
-          // helperText="Set URL"
           value={href}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setHref(e.target.value)
