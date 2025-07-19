@@ -367,8 +367,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     const additionalProps ={
       portalId: portalId,
       "data-unbreakable": "",
-      // getContext: useEditableContentContext
-      updatePortalProps: updatePortalProps
+      getContext: useEditableContentContext
     }
 
     const clone = cloneElement(component, {...props, ...additionalProps}, text);

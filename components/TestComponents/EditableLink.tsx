@@ -1,4 +1,4 @@
-import { useEditableContentContext } from "@/context/EditableContentContext";
+import { EditableContentContextType, useEditableContentContext } from "@/context/EditableContentContext";
 import { useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
 import { Container, Link, Box, Dialog, DialogTitle, Button, DialogActions, DialogContent, TextField } from "@mui/material";
 import { Dispatch, MutableRefObject, ReactElement, SetStateAction, useEffect, useRef, useState} from "react";
@@ -13,16 +13,17 @@ type EditableLinkProps = {
   children?: React.ReactNode,
   portalId?: string,
   [key: string]: any,
-  // getContext: typeof useEditableContentContext,
-  updatePortalProps?: (updateObj: PortalProps) => void
+  getContext?: () => EditableContentContextType,
+  // updatePortalProps?: (updateObj: PortalProps) => void
 }
 
 
-export default function EditableLink({href, children, portalId, updatePortalProps,  ...rest}: EditableLinkProps) {
+export default function EditableLink({href, children, portalId, getContext,  ...rest}: EditableLinkProps) {
 
   // const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
   const [showEditHrefDialog, setShowEditHrefDialog] = useState<boolean>(false);
   // const { portals, updatePortalProps } = getContext();
+  const { updatePortalProps=undefined } = getContext ? getContext() : {};
 
   const linkRef = useRef(null);
 
@@ -54,6 +55,7 @@ export default function EditableLink({href, children, portalId, updatePortalProp
       <EditableLinkEditHrefDialog
         show={showEditHrefDialog}
         setShow={setShowEditHrefDialog}
+        hrefIn={href}
         portalId={portalId || ""}
         updatePortalProps={updatePortalProps}
       />
@@ -67,13 +69,14 @@ export default function EditableLink({href, children, portalId, updatePortalProp
 type EditableLinkEditHrefDialogProps = {
   show: boolean,
   setShow: Dispatch<SetStateAction<boolean>>,
+  hrefIn?: string,
   portalId: string,
   updatePortalProps?: (updateObj: PortalProps) => void
 }
 
 
 
-function EditableLinkEditHrefDialog({show, setShow, portalId, updatePortalProps}: EditableLinkEditHrefDialogProps) {
+function EditableLinkEditHrefDialog({show, setShow, hrefIn, portalId, updatePortalProps}: EditableLinkEditHrefDialogProps) {
 
   // const { portals, updatePortalProps } = useEditableContentContext();
   const [href, setHref] = useState<string>("");
@@ -93,6 +96,10 @@ function EditableLinkEditHrefDialog({show, setShow, portalId, updatePortalProps}
 
   // }, [portals, portalId])
 
+  useEffect(function() {
+    if (show) setHref(hrefIn || "");
+  }, [show])
+
 
   function cancelDialog() {
     setHref("");
@@ -100,6 +107,7 @@ function EditableLinkEditHrefDialog({show, setShow, portalId, updatePortalProps}
   }
 
   function saveAndCloseDialog() {
+    console.log(updatePortalProps)
     if (updatePortalProps){
       updatePortalProps({[portalId]: {href: href}})
       setHref("");
