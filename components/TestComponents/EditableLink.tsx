@@ -1,3 +1,4 @@
+import { useContextMenuContext } from "@/context/ContextMenuContext";
 import { EditableContentContextType, useEditableContentContext } from "@/context/EditableContentContext";
 import { useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
 import { Container, Link, Box, Dialog, DialogTitle, Button, DialogActions, DialogContent, TextField } from "@mui/material";
@@ -22,6 +23,7 @@ export default function EditableLink({href, children, portalId, getContext,  ...
 
   const [showEditHrefDialog, setShowEditHrefDialog] = useState<boolean>(false);
   const { updatePortalProps=undefined } = getContext ? getContext() : {};
+  const { populateContextMenu } = useContextMenuContext();
 
   const linkRef = useRef(null);
 
