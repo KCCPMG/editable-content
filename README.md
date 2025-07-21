@@ -41,6 +41,47 @@ When declaring the PropTypes for your wrappers, make sure that any of these valu
 
 When passing props to your component in the return call, make sure to destructure `{...rest}` from your props, and then to pass `{...rest}` into the top level of the component. This will ensure that you can pass additional props through, and especially will pass through the `data-unbreakable` prop which is assigned behind the scenes.
 
+#### A Note on Contexts used by wrappers
+
+When a wrapper is passed to the `keyAndWrapperObjs` array it is initially called as a function at that level, meaning it will not have access to any context initially. In order to use context, you can do one of two things. The first of which is to make all calls to context safe by using conditional logic, as below: 
+
+`const { localAccessToContextNumberVariable=0 } = useContext(parentContext);`
+
+***Note - check on this***
+The second possible solution is to wrap your EditableContentContextProvider in another function which itself references the context consumer in its body and passes that context to your component as a prop.
+
+```
+export function ContextAssignmentWrapper() {
+
+  const consumedContext = useContext(HigherContext);
+
+  return (
+    <EditableContentContextProvider
+      keyAndWrapperObjs={[
+        {
+          dataKey: "context-access-wrapper"
+          wrapper: <MyCustomContextDependentWrapper contextAsProp={consumedContext}>
+        }
+      ]}
+    >
+      <EditTextButton dataKey="context-access-wrapper">
+        Context Access Wrapper
+      </EditTextButton>
+      <EditableContent />
+      
+    </EditableContentContextProvider>
+  )
+}
+```
+
+Now that there is a functional component which accesses the context inside of its body and can pass that context as a prop, we can simply do:
+
+```
+<HigherContextProvider>
+  <ContextAssignmentWrapper />
+</HigherContextProvider>
+```
+
 
 
 ### useEditableContentContext

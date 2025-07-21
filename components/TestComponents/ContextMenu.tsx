@@ -22,8 +22,10 @@ export default function ContextMenu({
     }}>
       <Menu open={showMenu}>
         {additionalMenuItemProps.map(item => {
+          const {key=uuidv4(), ...rest} = item;
+
           return (
-            <MenuItem key={uuidv4()} {...item} />
+            <MenuItem key={key} {...rest} />
           )
         })}
       </Menu>
