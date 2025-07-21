@@ -78,7 +78,8 @@ type KeyAndWrapperObj = {
 type EditableContentContextProviderProps = {
   children: ReactNode,
   keyAndWrapperObjs: Array<KeyAndWrapperObj>,
-  initialHTML?: string
+  initialHTML?: string,
+  initialProps?: PortalProps
 }
 
 
@@ -122,7 +123,7 @@ const EditableContentContext = createContext<EditableContentContextType | null>(
 
 
 
-export function EditableContentContextProvider({children, keyAndWrapperObjs, initialHTML}: EditableContentContextProviderProps) {
+export function EditableContentContextProvider({children, keyAndWrapperObjs, initialHTML, initialProps}: EditableContentContextProviderProps) {
 
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
@@ -264,6 +265,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     })
   }
 
+
   function resetPortalContainers() {
     return setPortals(previousPortals => {
 
@@ -354,8 +356,9 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
 
 
   /**
-   * Clone react component with child text, 
-   * create portal, add portal to portals
+   * Clone react component with child text. If this is the first time this 
+   * portal is being created, load initial props for this component if they
+   * exist, create portal, add portal to portals.
    * @param component 
    * @param props 
    * @param text 
@@ -370,13 +373,22 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       getContext: useEditableContentContext
     }
 
-    const clone = cloneElement(component, {...props, ...additionalProps}, text);
-    const portal = createPortal(clone, targetDiv, props["key"] || null);
+
+
     setPortals(previousPortals => {
       const priorIndex = previousPortals.findIndex( p => p.key === portalId )
+      const componentInitialProps: PortalProps = {};
       if (priorIndex >= 0) {
         previousPortals.splice(priorIndex, 1);
+      } else {
+        if (initialProps && initialProps[portalId]) {
+          for (let [k, v] of Object.entries(initialProps[portalId])) {
+            componentInitialProps[k] = v;
+          }
+        }
       }
+      const clone = cloneElement(component, {...props, ...additionalProps, ...componentInitialProps}, text);
+      const portal = createPortal(clone, targetDiv, props["key"] || null);
       return [...previousPortals, portal]
     });
   }
@@ -420,7 +432,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
    * then finds the correct button by looking in the editTextButtons
    * prop for the corresponding dataKey, renders the correct component
    * from that button's wrapperInstructions, creates a portal
-   * and appends that portal to portals
+   * and appends that portal to portals. This is called when RenderedContent
+   * or EditableContent first render
    * @param containingDiv 
    */
   function appendPortalToDiv(containingDiv: HTMLDivElement) {

@@ -64,6 +64,7 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
 
   }, [contentRef])
 
+  
   // on portal change
   useEffect(() => {
     

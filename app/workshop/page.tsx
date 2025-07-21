@@ -17,7 +17,7 @@ import { ContextMenuContextProvider } from "@/context/ContextMenuContext";
 import LinkEditTextButton from "@/components/TestComponents/LinkEditTextButton";
 
 
-const initialHTML = `'Text <div id="portal-container-040262ba-3545-4db7-a441-8fd975018686" data-button-key="editable-link" style="display: inline;">text</div> text`.replaceAll(/\n */g, '');
+const initialHTML = `Text <div id="portal-container-040262ba-3545-4db7-a441-8fd975018686" data-button-key="editable-link" style="display: inline;">text</div> text`.replaceAll(/\n */g, '');
 
 
 
@@ -90,6 +90,11 @@ export default function Page() {
           }
         ]}
         initialHTML={initialHTML}
+        initialProps={{
+          "040262ba-3545-4db7-a441-8fd975018686": {
+            "href": "https://www.google.com"
+          }
+        }}
       >
         <EditableLinkDialogContextProvider>
           {/* <EditHrefDialog 
