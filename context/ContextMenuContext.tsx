@@ -1,4 +1,6 @@
+import { MenuItem } from "@mui/material";
 import React, { createContext, useContext, useState } from "react";
+import ContextMenu from "@/components/TestComponents/ContextMenu";
 
 
 
@@ -6,8 +8,8 @@ export type ContextMenuContextType = {
   showMenu: boolean,
   menuX: number,
   menuY: number,
-  additionalMenuItems: Array<React.ReactNode>,
-  populateContextMenu: (x: number, y: number) => void
+  populateContextMenu: (x: number, y: number) => void,
+  additionalMenuItemProps: Array<React.ComponentProps<typeof MenuItem>>
 }
 
 export const ContextMenuContext = createContext<ContextMenuContextType | null>(null)
@@ -21,7 +23,23 @@ export function ContextMenuContextProvider({children}: ContextMenuContextProvide
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [menuX, setMenuX] = useState<number>(0);
   const [menuY, setMenuY] = useState<number>(0);
-  const [additionalMenuItems, setAdditionalMenuItems] = useState<Array<React.ReactNode>>([]);
+  const [additionalMenuItemProps, setAdditionalMenuItemProps] = useState<Array<React.ComponentProps<typeof MenuItem>>>([
+    {
+      key: "option-1",
+      children: "Option 1",
+      onClick: (e) => {
+        console.log("Option 1");
+      }
+    },
+    {
+      key: "option-2",
+      children: "Option 2",
+      onClick: (e) => {
+        console.log("Option 2");
+      }
+    }
+  ]);
+
 
   function populateContextMenu (x: number, y: number) {
     setShowMenu(true);
@@ -36,10 +54,16 @@ export function ContextMenuContextProvider({children}: ContextMenuContextProvide
         showMenu,
         menuX,
         menuY,
-        additionalMenuItems,
+        additionalMenuItemProps,
         populateContextMenu
       }}
     >
+      <ContextMenu 
+        showMenu={showMenu}
+        menuX={menuX}
+        menuY={menuY}
+        additionalMenuItemProps={additionalMenuItemProps}
+      />
       {children}
     </ContextMenuContext.Provider>
   )

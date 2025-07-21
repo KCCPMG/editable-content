@@ -29,26 +29,42 @@ export default function EditableLink({href, children, portalId, key, getContext,
   const linkRef = useRef(null);
 
   // experiment
-  useEffect(function() {
-    try {
-      useContextMenuContext();
-      console.log("safe load of context - useContextMenuContext");
-    } catch(err) {
-      console.log("failure to load context - useContextMenuContext");
-    }
+  // useEffect(function() {
+  //   try {
+  //     useContextMenuContext();
+  //     console.log("safe load of context - useContextMenuContext");
+  //   } catch(err) {
+  //     console.log("failure to load context - useContextMenuContext");
+  //   }
 
-    try {
-      useContext(ContextMenuContext);
-      console.log("safe load of context - useContext(ContextMenuContext)");
-    } catch(err) {
-      console.log("failure to load context - useContext(ContextMenuContext)");
-    }
+  //   try {
+  //     useContext(ContextMenuContext);
+  //     console.log("safe load of context - useContext(ContextMenuContext)");
+  //   } catch(err) {
+  //     console.log("failure to load context - useContext(ContextMenuContext)");
+  //   }
     
-  }, [ContextMenuContext, href, key])
+  // }, [ContextMenuContext, href, key])
 
 
-  const { populateContextMenu=undefined } = useContext(ContextMenuContext) || {};
-  console.log(populateContextMenu);
+  // try {
+  //   useContextMenuContext();
+  //   console.log("safe load of context - useContextMenuContext");
+  // } catch(err) {
+  //   console.log("failure to load context - useContextMenuContext");
+  // }
+
+  // try {
+  //   useContext(ContextMenuContext);
+  //   console.log("safe load of context - useContext(ContextMenuContext)");
+  // } catch(err) {
+  //   console.log("failure to load context - useContext(ContextMenuContext)");
+  // }
+
+  const menuContext = useContext(ContextMenuContext);
+
+  // const { populateContextMenu=undefined } = useContext(ContextMenuContext) || {};
+  // console.log(populateContextMenu);
   // end experiment
 
   useEffect(function() {
@@ -61,9 +77,12 @@ export default function EditableLink({href, children, portalId, key, getContext,
       href={href ? href : ""} {...rest} 
 
       onContextMenu={(e) => {
-        console.log("onContextMenu")
-        e.preventDefault();
-        setShowEditHrefDialog(true);
+
+        if (menuContext) {
+          e.preventDefault();
+          console.log("phew, there's menu context")
+          menuContext.populateContextMenu(e.clientX, e.clientY);
+        }
       }}
 
     
