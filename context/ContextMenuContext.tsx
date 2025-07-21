@@ -8,7 +8,8 @@ export type ContextMenuContextType = {
   showMenu: boolean,
   menuX: number,
   menuY: number,
-  populateContextMenu: (x: number, y: number) => void,
+  populateContextMenu: (x: number, y: number, itemMenuProps: Array<React.ComponentProps<typeof MenuItem>>) => void,
+  depopulateAndHideContextMenu: () => void,
   additionalMenuItemProps: Array<React.ComponentProps<typeof MenuItem>>
 }
 
@@ -23,29 +24,24 @@ export function ContextMenuContextProvider({children}: ContextMenuContextProvide
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [menuX, setMenuX] = useState<number>(0);
   const [menuY, setMenuY] = useState<number>(0);
-  const [additionalMenuItemProps, setAdditionalMenuItemProps] = useState<Array<React.ComponentProps<typeof MenuItem>>>([
-    {
-      key: "option-1",
-      children: "Option 1",
-      onClick: (e) => {
-        console.log("Option 1");
-      }
-    },
-    {
-      key: "option-2",
-      children: "Option 2",
-      onClick: (e) => {
-        console.log("Option 2");
-      }
-    }
-  ]);
+  const [additionalMenuItemProps, setAdditionalMenuItemProps] = useState<Array<React.ComponentProps<typeof MenuItem>>>([]);
 
 
-  function populateContextMenu (x: number, y: number) {
+  function  populateContextMenu(
+    x: number, y: number, itemMenuProps: Array<React.ComponentProps<typeof MenuItem>>
+  ) {
     setShowMenu(true);
     setMenuX(x);
     setMenuY(y);
+    setAdditionalMenuItemProps(itemMenuProps);
     return;
+  }
+
+  function depopulateAndHideContextMenu() {
+    setAdditionalMenuItemProps([]);
+    setMenuX(0);
+    setMenuY(0);
+    setShowMenu(false);
   }
 
   return (
@@ -54,12 +50,14 @@ export function ContextMenuContextProvider({children}: ContextMenuContextProvide
         showMenu,
         menuX,
         menuY,
+        populateContextMenu,
+        depopulateAndHideContextMenu,
         additionalMenuItemProps,
-        populateContextMenu
       }}
     >
       <ContextMenu 
         showMenu={showMenu}
+        setShowMenu={setShowMenu}
         menuX={menuX}
         menuY={menuY}
         additionalMenuItemProps={additionalMenuItemProps}

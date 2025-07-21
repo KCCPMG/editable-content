@@ -24,68 +24,36 @@ export default function EditableLink({href, children, portalId, key, getContext,
 
   const [showEditHrefDialog, setShowEditHrefDialog] = useState<boolean>(false);
   const { updatePortalProps=undefined } = getContext ? getContext() : {};
-  // const { populateContextMenu } = useContextMenuContext();
-
-  const linkRef = useRef(null);
-
-  // experiment
-  // useEffect(function() {
-  //   try {
-  //     useContextMenuContext();
-  //     console.log("safe load of context - useContextMenuContext");
-  //   } catch(err) {
-  //     console.log("failure to load context - useContextMenuContext");
-  //   }
-
-  //   try {
-  //     useContext(ContextMenuContext);
-  //     console.log("safe load of context - useContext(ContextMenuContext)");
-  //   } catch(err) {
-  //     console.log("failure to load context - useContext(ContextMenuContext)");
-  //   }
-    
-  // }, [ContextMenuContext, href, key])
-
-
-  // try {
-  //   useContextMenuContext();
-  //   console.log("safe load of context - useContextMenuContext");
-  // } catch(err) {
-  //   console.log("failure to load context - useContextMenuContext");
-  // }
-
-  // try {
-  //   useContext(ContextMenuContext);
-  //   console.log("safe load of context - useContext(ContextMenuContext)");
-  // } catch(err) {
-  //   console.log("failure to load context - useContext(ContextMenuContext)");
-  // }
 
   const menuContext = useContext(ContextMenuContext);
 
-  // const { populateContextMenu=undefined } = useContext(ContextMenuContext) || {};
-  // console.log(populateContextMenu);
-  // end experiment
-
-  useEffect(function() {
-    (window as any).linkRef = linkRef;
-  }, [linkRef])
 
   return (
     <Link 
-      ref={linkRef}
       href={href ? href : ""} {...rest} 
-
       onContextMenu={(e) => {
-
         if (menuContext) {
           e.preventDefault();
-          console.log("phew, there's menu context")
-          menuContext.populateContextMenu(e.clientX, e.clientY);
+          menuContext.populateContextMenu(e.clientX, e.clientY, [
+            {
+              key: "option-1",
+              children: `Open ${href} in new tab`,
+              onClick: (e) => {
+                window.open(href);
+                menuContext.depopulateAndHideContextMenu();
+              }
+            },
+            {
+              key: "option-2",
+              children: "Change URL",
+              onClick: (e) => {
+                setShowEditHrefDialog(true);
+                menuContext.depopulateAndHideContextMenu();
+              }
+            }
+          ]);
         }
       }}
-
-    
     >
       <EditableLinkEditHrefDialog
         show={showEditHrefDialog}
@@ -94,7 +62,6 @@ export default function EditableLink({href, children, portalId, key, getContext,
         portalId={portalId || ""}
         updatePortalProps={updatePortalProps}
       />
-      {/* <CustomContextMenu show={showContextMenu} linkRef={linkRef}/> */}
       {children}
     </Link>
   )
