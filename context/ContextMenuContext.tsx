@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 
 
 
-type ContextMenuContextType = {
+export type ContextMenuContextType = {
   showMenu: boolean,
   menuX: number,
   menuY: number,
@@ -10,7 +10,7 @@ type ContextMenuContextType = {
   populateContextMenu: (x: number, y: number) => void
 }
 
-const ContextMenuContext = createContext<ContextMenuContextType | null>(null)
+export const ContextMenuContext = createContext<ContextMenuContextType | null>(null)
 
 type ContextMenuContextProviderProps = {
   children?: React.ReactNode
@@ -23,7 +23,7 @@ export function ContextMenuContextProvider({children}: ContextMenuContextProvide
   const [menuY, setMenuY] = useState<number>(0);
   const [additionalMenuItems, setAdditionalMenuItems] = useState<Array<React.ReactNode>>([]);
 
-  function populateContextMenu(x: number, y: number) {
+  function populateContextMenu (x: number, y: number) {
     setShowMenu(true);
     setMenuX(x);
     setMenuY(y);
@@ -50,7 +50,7 @@ export function useContextMenuContext() {
   const context = useContext(ContextMenuContext);
 
   if (!context) {
-    throw new Error("useContextMenuContext must be in ContextMenuContext")
+    throw new Error("useContextMenuContext must be in ContextMenuContextProvider")
   }
 
   return context;

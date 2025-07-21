@@ -1,8 +1,8 @@
-import { useContextMenuContext } from "@/context/ContextMenuContext";
+import { ContextMenuContext, ContextMenuContextType, useContextMenuContext } from "@/context/ContextMenuContext";
 import { EditableContentContextType, useEditableContentContext } from "@/context/EditableContentContext";
 import { useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
 import { Container, Link, Box, Dialog, DialogTitle, Button, DialogActions, DialogContent, TextField } from "@mui/material";
-import { Dispatch, MutableRefObject, ReactElement, SetStateAction, useEffect, useRef, useState} from "react";
+import { Dispatch, MutableRefObject, ReactElement, SetStateAction, useEffect, useRef, useState, useContext } from "react";
 
 type PortalProps = {
   [key: string]: {[key: string]: any}
@@ -13,20 +13,43 @@ type EditableLinkProps = {
   href?: string,
   children?: React.ReactNode,
   portalId?: string,
+  key?: string,
   [key: string]: any,
   getContext?: () => EditableContentContextType,
   // updatePortalProps?: (updateObj: PortalProps) => void
 }
 
 
-export default function EditableLink({href, children, portalId, getContext,  ...rest}: EditableLinkProps) {
+export default function EditableLink({href, children, portalId, key, getContext, ...rest}: EditableLinkProps) {
 
   const [showEditHrefDialog, setShowEditHrefDialog] = useState<boolean>(false);
   const { updatePortalProps=undefined } = getContext ? getContext() : {};
-  const { populateContextMenu } = useContextMenuContext();
+  // const { populateContextMenu } = useContextMenuContext();
 
   const linkRef = useRef(null);
 
+  // experiment
+  useEffect(function() {
+    try {
+      useContextMenuContext();
+      console.log("safe load of context - useContextMenuContext");
+    } catch(err) {
+      console.log("failure to load context - useContextMenuContext");
+    }
+
+    try {
+      useContext(ContextMenuContext);
+      console.log("safe load of context - useContext(ContextMenuContext)");
+    } catch(err) {
+      console.log("failure to load context - useContext(ContextMenuContext)");
+    }
+    
+  }, [ContextMenuContext, href, key])
+
+
+  const { populateContextMenu=undefined } = useContext(ContextMenuContext) || {};
+  console.log(populateContextMenu);
+  // end experiment
 
   useEffect(function() {
     (window as any).linkRef = linkRef;
