@@ -5,7 +5,7 @@ import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 
 
-export default function RenderedContent({divStyle }: EditableContentProps) {
+export default function RenderedContent({className}: EditableContentProps) {
 
   const {
     contentRef, 
@@ -64,7 +64,7 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
 
   }, [contentRef])
 
-  
+
   // on portal change
   useEffect(() => {
     
@@ -82,13 +82,14 @@ export default function RenderedContent({divStyle }: EditableContentProps) {
       <div
         spellCheck={false}
         ref={assignContentRef}
-        style={divStyle ? divStyle : {
-          width: "100%",
-          height: "150px",
-          margin: "auto",
-          // border: "2px solid black",
-          overflowY: "scroll"
-        }}
+        className={className}
+        // style={divStyle ? divStyle : {
+        //   width: "100%",
+        //   height: "150px",
+        //   margin: "auto",
+        //   // border: "2px solid black",
+        //   overflowY: "scroll"
+        // }}
       >
       </div>
       {portals}

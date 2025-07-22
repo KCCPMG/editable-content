@@ -1,0 +1,15 @@
+.default-editable-content {
+  width: 100%;
+  height: 150px;
+  margin: auto;
+  border: 2px solid black;
+  overflow-y: scroll;
+}
+
+.default-rendered-content {
+  width: 100%;
+  height: 150px;
+  margin: auto;
+  border: 2px solid black;
+  overflow-y: scroll;
+}

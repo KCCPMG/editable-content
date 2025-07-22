@@ -6,7 +6,7 @@ import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
 
 
-export default function EditableContent({divStyle }: EditableContentProps) {
+export default function EditableContent({className }: EditableContentProps) {
 
   const {
     contentRef, 
@@ -232,13 +232,14 @@ export default function EditableContent({divStyle }: EditableContentProps) {
             }
           }    
         }}
-        style={divStyle ? divStyle : {
-          width: "100%",
-          height: "150px",
-          margin: "auto",
-          border: "2px solid black",
-          overflowY: "scroll"
-        }}
+        className={className}
+        // style={divStyle ? divStyle : {
+        //   width: "100%",
+        //   height: "150px",
+        //   margin: "auto",
+        //   border: "2px solid black",
+        //   overflowY: "scroll"
+        // }}
       >
       </div>
       {portals}
