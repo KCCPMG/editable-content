@@ -1,6 +1,6 @@
 import { useEditableContentContext } from "@/context/EditableContentContext"
 import DisplayContainer from "./DisplayContainer";
-import { Table, TableRow, TableBody, TableCell} from "@mui/material";
+import { Table, TableRow, TableBody, TableCell, TableContainer} from "@mui/material";
 
 type SelectionToStringDisplayProps = {
   show?: boolean
@@ -18,28 +18,32 @@ export default function SelectionDisplay({show}: SelectionToStringDisplayProps) 
 
   return (
     <DisplayContainer title="Selection Text (selectionToString)" showInitial={!show}>
-      <TableBody>
-        <TableRow>
-          <TableCell><strong>selectionToString:</strong></TableCell>
-          <TableCell>{ selectionToString }</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell><strong>selectionAnchorNode:</strong></TableCell>
-          <TableCell>{ stringRepresentationOfNode(selectionAnchorNode) }</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell><strong>selectionAnchorOffset:</strong></TableCell>
-          <TableCell>{ selectionAnchorOffset }</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell><strong>selectionFocusNode:</strong></TableCell>
-          <TableCell>{ stringRepresentationOfNode(selectionFocusNode) }</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell><strong>selectionFocusOffset:</strong></TableCell>
-          <TableCell>{ selectionFocusOffset }</TableCell>
-        </TableRow>
-      </TableBody> 
+      <TableContainer>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell><strong>selectionToString:</strong></TableCell>
+              <TableCell>{ selectionToString }</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell><strong>selectionAnchorNode:</strong></TableCell>
+              <TableCell>{ stringRepresentationOfNode(selectionAnchorNode) }</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell><strong>selectionAnchorOffset:</strong></TableCell>
+              <TableCell>{ selectionAnchorOffset }</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell><strong>selectionFocusNode:</strong></TableCell>
+              <TableCell>{ stringRepresentationOfNode(selectionFocusNode) }</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell><strong>selectionFocusOffset:</strong></TableCell>
+              <TableCell>{ selectionFocusOffset }</TableCell>
+            </TableRow>
+          </TableBody> 
+        </Table>
+      </TableContainer>
     </DisplayContainer>
   )
 
