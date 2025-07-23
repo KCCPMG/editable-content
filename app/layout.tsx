@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 };
 
 const sideBarWidthInPixels=200;
-const headBarHeightInPixels=100;
+const headBarHeightInPixels=70;
 
 export default function RootLayout({
   children,
