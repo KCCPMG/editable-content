@@ -3,7 +3,7 @@ import theme from "@/theme";
 import EditableContent from "@/components/EditableContent";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { useState, useEffect } from "react";
-import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Container } from "@mui/material";
+import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Container, Typography } from "@mui/material";
 import { getSelectionDirection, wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from "@/utils/utils";
 import { EditableContentContextProvider } from "@/context/EditableContentContext"
 import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
@@ -78,9 +78,9 @@ export default function Page() {
 
   const [underlineColor, setUnderlineColor] = useState("red");
 
-  
+
   // utilities in window
-  useEffect(function() {
+  useEffect(function () {
     window.wrapInElement = wrapInElement;
     window.selectionIsDescendentOfNode = selectionIsDescendentOfNode;
     window.generateQuery = generateQuery;
@@ -112,12 +112,14 @@ export default function Page() {
         marginTop: 100
       }}
     >
-      <h1>Editable-Content</h1>
+      <Typography variant="h1">
+        Editable-Content
+      </Typography>
       <p>
         Welcome to editable-content! This tool is designed to give developers the ability to create rich-text editors which include React Components as elements.
       </p>
       <p>
-        As a demo, please feel free to play around with the editable div below. As you can see, there are two types of buttons: Standard Wrappers and Unbreakble Components. 
+        As a demo, please feel free to play around with the editable div below. As you can see, there are two types of buttons: Standard Wrappers and Unbreakble Components.
       </p>
       <p>
         Standard Wrappers work as you would normally expect from a word processor- when text is selected and the button is clicked, the selected text will take on that text decoration. Click the button again, and the selected text will lose that given text decoration. Text can have multiple standard wrappers at work, such as text which is in italics and in bold while inside of other text which is bold. When the cursor is in just one space, clicking the button will make future text from the cursor have that decoration, or lose that decoration if the button was already clicked.
@@ -144,16 +146,16 @@ export default function Page() {
           },
           {
             dataKey: "underlined",
-            wrapper: <u 
-              data-test-attribute="ta" 
-              data-test-attribute2="ta2" 
+            wrapper: <u
+              data-test-attribute="ta"
+              data-test-attribute2="ta2"
               data-unbreakable=""
-              onClick={(e) => {console.log("clicked")}} 
+              onClick={(e) => { console.log("clicked") }}
             />
           },
           {
             dataKey: "react-button",
-            wrapper: <Box 
+            wrapper: <Box
               component="div"
               sx={{
                 display: 'inline',
@@ -167,7 +169,7 @@ export default function Page() {
                 fontSize: '0.875rem',
                 fontWeight: '700',
               }}
-            /> 
+            />
           },
           {
             dataKey: "stateful-component",
@@ -186,8 +188,8 @@ export default function Page() {
       >
         <Dialog
           open={changeTextDialogIsOpen}
-          onClose={() => {setChangeTextDialogIsOpen(false)}}
-          // disableRestoreFocus
+          onClose={() => { setChangeTextDialogIsOpen(false) }}
+        // disableRestoreFocus
         >
           <DialogTitle>Test Dialog</DialogTitle>
           <DialogContent>
@@ -197,7 +199,7 @@ export default function Page() {
             <TextField
               // autoFocus
               value={changeTextDialogText}
-              onChange={(e) => {setChangeTextDialogText(e.target.value)}}
+              onChange={(e) => { setChangeTextDialogText(e.target.value) }}
             />
           </DialogContent>
           <DialogActions>
@@ -232,14 +234,14 @@ export default function Page() {
 
         </Dialog>
         {
-          editMode && 
+          editMode &&
           <Container>
             <h3>Buttons</h3>
-            <Box sx={{display: "flex"}}>
+            <Box sx={{ display: "flex" }}>
 
               <Container disableGutters>
                 <h4>Standard Wrappers</h4>
-                <EditTextButton 
+                <EditTextButton
                   dataKey="bold"
                   isMUIButton={true}
                 >
@@ -249,7 +251,7 @@ export default function Page() {
                   dataKey="italics"
                   isMUIButton={true}
                 >
-                  <FormatItalic/>
+                  <FormatItalic />
                 </EditTextButton>
                 <EditTextButton
                   dataKey="underlined"
@@ -321,38 +323,38 @@ export default function Page() {
           </Container>
         }
         {
-          editMode ? 
-            <EditableContent 
+          editMode ?
+            <EditableContent
               className="default-editable-content"
-              // initialHTML={initialHTML}
-              // divStyle={{
-              //   width: "100%",
-              //   height: "250px",
-              //   margin: "auto",
-              //   border: "2px solid black",
-              //   overflowY: "scroll"
-              // }}
+            // initialHTML={initialHTML}
+            // divStyle={{
+            //   width: "100%",
+            //   height: "250px",
+            //   margin: "auto",
+            //   border: "2px solid black",
+            //   overflowY: "scroll"
+            // }}
             /> :
             // null 
-            <RenderedContent 
+            <RenderedContent
               // initialHTML={initialHTML}
               className="default-rendered-content"
-              // divStyle={{
-              //   width: "100%",
-              //   height: "250px",
-              //   margin: "auto",
-              //   border: "2px solid black",
-              //   overflowY: "scroll"
-              // }}
+            // divStyle={{
+            //   width: "100%",
+            //   height: "250px",
+            //   margin: "auto",
+            //   border: "2px solid black",
+            //   overflowY: "scroll"
+            // }}
             />
         }
 
         {
-          editMode && 
-            <>
-              <GetDehydratedHTMLButton />
-              <ClearButton />
-            </>
+          editMode &&
+          <>
+            <GetDehydratedHTMLButton />
+            <ClearButton />
+          </>
         }
         <Button onClick={() => setEditMode(!editMode)}>
           {editMode ? "Render Text" : "Edit Text"}
