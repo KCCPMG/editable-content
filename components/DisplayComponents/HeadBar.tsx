@@ -14,8 +14,8 @@ export default function HeadBar({heightInPixels}: HeadBarProps) {
       }}
     >
       <Toolbar>
-        <Typography variant="h6" component="div">
-          My Fixed App Bar
+        <Typography variant="h3" component="div" sx={{marginLeft: "auto"}}>
+          E&lt;?&gt;C
         </Typography>
       </Toolbar>
     </AppBar>

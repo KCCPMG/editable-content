@@ -11,10 +11,15 @@ export default function SideBar({widthInPixels, headBarHeightInPixels}: SideBarP
       variant="permanent"
       anchor="left"
       sx={{
-        paddingTop: `${headBarHeightInPixels}px`,
         width: `${widthInPixels}px`,
-        height: "100vh",
-        position: "absolute"
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          width: `${widthInPixels}px`,
+          boxSizing: 'border-box',
+          position: 'fixed',
+          top: `${headBarHeightInPixels}px`,
+          height: `calc(100% = ${headBarHeightInPixels}px`,
+        }
       }}
     >
       <List>

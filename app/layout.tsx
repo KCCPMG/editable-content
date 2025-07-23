@@ -39,18 +39,21 @@ export default function RootLayout({
       <body>
         <ThemeProvider theme={theme}>
           <HeadBar heightInPixels={headBarHeightInPixels} />
-          <SideBar 
-            widthInPixels={sideBarWidthInPixels} 
-            headBarHeightInPixels={headBarHeightInPixels}
-          />
-          <Box 
-            component="main"
-            sx={{
-              marginLeft: `${sideBarWidthInPixels}px`,
-              marginTop: `${headBarHeightInPixels}px`
-            }}
-          >
-            {children}
+          <Box sx={{marginTop: `${headBarHeightInPixels}px`}}>
+            <SideBar 
+              widthInPixels={sideBarWidthInPixels} 
+              headBarHeightInPixels={headBarHeightInPixels}
+            />
+            <Box 
+              component="main"
+              sx={{
+                marginLeft: `${sideBarWidthInPixels}px`,
+                marginTop: `${headBarHeightInPixels}px`,
+                padding: "40px"
+              }}
+            >
+              {children}
+            </Box>
           </Box>
         </ThemeProvider>
       </body>
