@@ -93,18 +93,10 @@ export default function Page() {
         }
         {editMode ?
           <EditableContent
-            divStyle={{
-              height: "200px",
-              padding: "10px",
-              overflowY: "scroll"
-            }}
+            className="default-editable-content"
           /> :
           <RenderedContent 
-            divStyle={{
-              height: "200px",
-              padding: "10px",
-              overflowY: "scroll"
-            }}
+            className="default-rendered-content"
           />
         }
         {editMode && 

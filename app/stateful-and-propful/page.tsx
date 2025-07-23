@@ -77,10 +77,7 @@ export default function Page() {
           </EditTextButton>          
         </div>
         <EditableContent
-          divStyle={{
-            height: "450px",
-            padding: "10px"
-          }}
+          className="default-editable-content"
         />
       </EditableContentContextProvider>
     </>
