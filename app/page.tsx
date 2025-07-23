@@ -105,16 +105,17 @@ export default function Page() {
   }, [])
 
   return (
-    <main
-      style={{
-        width: 900,
-        margin: "auto",
-        marginTop: 100
-      }}
-    >
-      <Typography variant="h1">
+    // <main
+    //   // style={{
+    //   //   width: 900,
+    //   //   margin: "auto",
+    //   //   marginTop: 100
+    //   // }}
+    // >
+    <>
+      <h1>
         Editable-Content
-      </Typography>
+      </h1>
       <p>
         Welcome to editable-content! This tool is designed to give developers the ability to create rich-text editors which include React Components as elements.
       </p>
@@ -125,7 +126,7 @@ export default function Page() {
         Standard Wrappers work as you would normally expect from a word processor- when text is selected and the button is clicked, the selected text will take on that text decoration. Click the button again, and the selected text will lose that given text decoration. Text can have multiple standard wrappers at work, such as text which is in italics and in bold while inside of other text which is bold. When the cursor is in just one space, clicking the button will make future text from the cursor have that decoration, or lose that decoration if the button was already clicked.
       </p>
       <p>
-        Unbreakable Components are different: Unlike Standard Wrappers, no other decoration can &ldquo;nest&rdquo; within an Unbreakable Component, and an Unbreakable Component cannot be inside of any other decoration. Additionally, unbreakable components cannot be &ldquo;split&rdquo;, and so clicking the Wrapper Component&apos;s button again will cause the entire component to disappear. The one exception to this is if the cursor is placed at the ennd of the text inside the Unbreakable Component, in which case the cursor will move out of the Unbreakable Component&apos;s text and back into plain text.
+        Unbreakable Components are different: Unlike Standard Wrappers, no other decoration can &ldquo;nest&rdquo; within an Unbreakable Component, and an Unbreakable Component cannot be inside of any other decoration. Additionally, unbreakable components cannot be &ldquo;split&rdquo;, and so clicking the Wrapper Component&apos;s button again will cause the entire component to disappear. The one exception to this is if the cursor is placed at the ennd of the text inside the Unbreakable Component, in which case the cursor will move out of the Unbreakable Component&apos;s text and back into plain text. All React Components are unbreakable.
       </p>
       <p>
         Lastly, you can go back and forth between Editable Text and a Rendered (and non-editable) version of what you&apos;ve written, simply click the button below the text!
@@ -364,6 +365,7 @@ export default function Page() {
         <AllPropsDisplay show={false} />
 
       </EditableContentContextProvider>
-    </main>
+    </>
+    // </main>
   );
 }

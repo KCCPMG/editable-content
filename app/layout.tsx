@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import theme from "@/theme";
-import { ThemeProvider } from "@mui/material";
+import { Box, ThemeProvider } from "@mui/material";
 import { Montserrat, Roboto } from 'next/font/google';
+import SideBar from "@/components/DisplayComponents/SideBar";
+import HeadBar from "@/components/DisplayComponents/HeadBar";
 
 
 
@@ -24,6 +26,9 @@ export const metadata: Metadata = {
   description: "Use React components in editable-content divs",
 };
 
+const sideBarWidthInPixels=200;
+const headBarHeightInPixels=100;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,7 +38,20 @@ export default function RootLayout({
     <html lang="en" className={`${montserrat.variable} ${roboto.variable}`}>
       <body>
         <ThemeProvider theme={theme}>
-          {children}
+          <HeadBar heightInPixels={headBarHeightInPixels} />
+          <SideBar 
+            widthInPixels={sideBarWidthInPixels} 
+            headBarHeightInPixels={headBarHeightInPixels}
+          />
+          <Box 
+            component="main"
+            sx={{
+              marginLeft: `${sideBarWidthInPixels}px`,
+              marginTop: `${headBarHeightInPixels}px`
+            }}
+          >
+            {children}
+          </Box>
         </ThemeProvider>
       </body>
     </html>
