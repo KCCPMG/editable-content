@@ -6,8 +6,11 @@ export default createTheme({
     primary: {
       // main: "#1976d2",
       main: "#202A44",
-      // light: "",
+      light: "#087ea4",
       dark: "#324268"
+    },
+    secondary: {
+      main: "#324268",
     }
   },
   typography:  {

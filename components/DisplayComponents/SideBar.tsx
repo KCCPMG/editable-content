@@ -19,7 +19,7 @@ export default function SideBar({widthInPixels, headBarHeightInPixels}: SideBarP
         width: `${widthInPixels}px`,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
-          backgroundColor: theme.palette.primary.dark,
+          backgroundColor: theme.palette.primary.light,
           width: `${widthInPixels}px`,
           boxSizing: 'border-box',
           position: 'fixed',
@@ -29,25 +29,10 @@ export default function SideBar({widthInPixels, headBarHeightInPixels}: SideBarP
       }}
     >
       <List>
-          <LinkItem href="/" text="Main Demo" />
-          <LinkItem href="/stateful-and-propful" text="Statefeul and Propful Components"/>
-          <LinkItem href="/propful-only" text="Propful Only Components"/>
-          <LinkItem href="/readme" text="README" />
-        {/* <ListItem>
-          <Link 
-            href="/stateful-and-propful"
-            sx={{
-              color: "white",
-              display: 'inline-block', // Or 'inline-block' if needed
-              width: '100%',
-              whiteSpace: 'normal', // Force wrapping
-              overflowWrap: 'break-word' // For breaking long words
-            }}
-          >
-            Stateful and Propful Components
-          </Link>
-        </ListItem> */}
-
+        <LinkItem href="/" text="Main Demo" />
+        <LinkItem href="/stateful-and-propful" text="Statefeul and Propful Components"/>
+        <LinkItem href="/propful-only" text="Propful Only Components"/>
+        <LinkItem href="/readme" text="README" />
       </List>
     </Drawer>
   )
@@ -67,7 +52,10 @@ function LinkItem({href, text}: LinkItemProps) {
         href={href}
         sx={{
           color: "white",
-          textDecorationColor: "white"
+          textDecoration: "none",
+          '&:hover': {
+            fontWeight: 'bold'
+          }
         }}
       >
         {text}
