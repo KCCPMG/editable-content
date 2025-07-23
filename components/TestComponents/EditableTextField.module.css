@@ -1,0 +1,21 @@
+.EditableTextField {
+  border-bottom: 2px solid black;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  padding-top: 0.3rem;
+  padding-right: 4px;
+  padding-left: 4px;
+  width: 300px;
+  white-space: nowrap;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  height: 1.5rem;
+  margin-top: 14px;
+  background-color: aliceblue;
+  outline: none;
+}
+
+.EditableTextField:focus {
+  background-color: transparent;
+}
