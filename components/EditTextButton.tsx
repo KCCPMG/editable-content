@@ -1,5 +1,5 @@
 import { Button, ButtonOwnProps } from "@mui/material";
-import { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, ReactNode, useEffect, useState } from "react";
+import { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, ReactNode, useEffect, useMemo, useState } from "react";
 import { WrapperArgs } from "./";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
@@ -65,6 +65,7 @@ export default function EditTextButton({
 
   // get wrapperArgs
   const wrapperArgs = reactNodeToWrapperArgs(wrapper);
+  // const query = useMemo((()=> {return generateQuery(wrapperArgs)}), []);
   const query = generateQuery(wrapperArgs);
 
   function handleEditTextButtonClick() {

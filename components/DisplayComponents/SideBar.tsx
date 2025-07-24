@@ -32,6 +32,7 @@ export default function SideBar({widthInPixels, headBarHeightInPixels}: SideBarP
         <LinkItem href="/" text="Main Demo" />
         <LinkItem href="/stateful-and-propful" text="Statefeul and Propful Components"/>
         <LinkItem href="/propful-only" text="Propful Only Components"/>
+        <LinkItem href="/styling-and-callbacks" text="Styling and Callbacks" />
         <LinkItem href="/readme" text="README" />
       </List>
     </Drawer>

@@ -130,7 +130,7 @@ export default function Page() {
         Unbreakable Components are different: Unlike Standard Wrappers, no other decoration can &ldquo;nest&rdquo; within an Unbreakable Component, and an Unbreakable Component cannot be inside of any other decoration. Additionally, unbreakable components cannot be &ldquo;split&rdquo;, and so clicking the Wrapper Component&apos;s button again will cause the entire component to disappear, leaving only the text behind. The one exception to this is if the cursor is placed at the end of the text inside the Unbreakable Component, in which case the cursor will move out of the Unbreakable Component&apos;s text and back into plain text. All React Components are unbreakable.
       </p>
       <p>
-        Lastly, take a look at some of what&apos;s below the EditableContent. There's a button to clear the contents, and there's also a "Render Text" button you can click so that you can go back and forth between Editable Text and a Rendered (and non-editable) version of what you&apos;ve written. If you want to take a look at some of the state changes going on under the hood, take a look at some of the accordion menus underneath.
+        Lastly, take a look at some of what&apos;s below the EditableContent. There&apos;s a button to clear the contents, and there&apos;s also a &ldquo;Render Text&rdquo; button you can click so that you can go back and forth between Editable Text and a Rendered (and non-editable) version of what you&apos;ve written. If you want to take a look at some of the state changes going on under the hood, take a look at some of the accordion menus underneath.
       </p>
       <EditableContentContextProvider
         keyAndWrapperObjs={[
