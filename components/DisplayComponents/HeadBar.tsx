@@ -1,5 +1,5 @@
 "use client"
-import { AppBar, Toolbar, Typography, useTheme } from "@mui/material";
+import { AppBar, Toolbar, Typography } from "@mui/material";
 
 
 type HeadBarProps = {
@@ -9,14 +9,11 @@ type HeadBarProps = {
 
 export default function HeadBar({heightInPixels}: HeadBarProps) {
 
-  const theme = useTheme();
-
   return (
     <AppBar 
       position="fixed"
       sx={{
-        color: theme.palette.primary.light,
-        // bgcolor: 'secondary',
+        color: "primary.light",
         bgcolor: "white",
         height: `${heightInPixels}px`,
         display: 'flex',
@@ -38,7 +35,23 @@ export default function HeadBar({heightInPixels}: HeadBarProps) {
           color="primary.light"
           // sx={{margin: "auto"}}
         >
-          &lt; * /&gt;
+          &lt;&nbsp;&nbsp;
+        </Typography>
+        <Typography 
+          variant="h3" 
+          component="div" 
+          color="primary.light"
+          sx={{mt: 2.8}}
+        >
+           * 
+        </Typography>
+        <Typography 
+          variant="h3" 
+          component="div" 
+          color="primary.light"
+          // sx={{margin: "auto"}}
+        >
+          &nbsp;/&gt;
         </Typography>
         <Typography 
           variant="h3" 

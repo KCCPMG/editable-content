@@ -115,9 +115,7 @@ export default function Page() {
         margin: 'auto'
       }}
     >
-      <h1>
-        Editable-Content
-      </h1>
+      <Typography variant="h2">Editable-Content</Typography>
       <p>
         Welcome to editable-content! This tool is designed to give developers the ability to create rich-text editors which include React Components as elements.
       </p>
@@ -246,7 +244,7 @@ export default function Page() {
         {
           editMode &&
           <>
-            <h3>Buttons</h3>
+            <Typography variant="h4">Buttons</Typography>
             <Box 
               sx={{ 
                 display: "flex",
@@ -258,13 +256,13 @@ export default function Page() {
               }} 
             >
 
-              <Paper 
+              <Box
                 sx={{
                   width: 'fit-content',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'flex-start',
-                  gap: 1
+                  gap: 1,
                 }}
               >
                 <h4>Standard Wrappers</h4>
@@ -288,15 +286,16 @@ export default function Page() {
                     <FormatUnderlined />
                   </EditTextButton>
                 </Box>
-              </Paper>
+              </Box>
             
-              <Paper 
+              <Box 
                 sx={{
                   width: 'fit-content',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'flex-start',
-                  gap: 1
+                  gap: 1,
+                  boxShadow: "none",
                 }}
               >
                 <h4>Unbreakable Components</h4>
@@ -345,7 +344,7 @@ export default function Page() {
                     Underline With Color
                   </EditTextButton> */}
                 </Box>
-              </Paper>
+              </Box>
             </Box>
           </>
         }
