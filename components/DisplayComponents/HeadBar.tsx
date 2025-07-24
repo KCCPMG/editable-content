@@ -35,10 +35,10 @@ export default function HeadBar({heightInPixels}: HeadBarProps) {
         <Typography 
           variant="h3" 
           component="div" 
-          color="primary"
+          color="primary.light"
           // sx={{margin: "auto"}}
         >
-          &lt; ? /&gt;
+          &lt; * /&gt;
         </Typography>
         <Typography 
           variant="h3" 

@@ -12,6 +12,7 @@ body {
   margin: auto;
   border: 2px solid black;
   overflow-y: scroll;
+  padding: 4px;
 }
 
 .default-rendered-content {

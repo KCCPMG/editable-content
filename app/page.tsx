@@ -3,7 +3,7 @@ import theme from "@/theme";
 import EditableContent from "@/components/EditableContent";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { useState, useEffect } from "react";
-import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Container, Typography } from "@mui/material";
+import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Container, Typography, Paper } from "@mui/material";
 import { getSelectionDirection, wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode } from "@/utils/utils";
 import { EditableContentContextProvider } from "@/context/EditableContentContext"
 import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
@@ -21,47 +21,50 @@ import ContentRefCurrentInnerHTMLDisplay from "@/components/DisplayComponents/Co
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import SelectionDisplay from "@/components/DisplayComponents/SelectionDisplay";
 
+// const initialHTML = `
+// <strong>Lorem, ipsum</strong>
+//   ​dolor ​sit ​ 
+//   ​<i>amet  ​cons
+//   <strong>
+//     ectetur adipisicing ​ ​ ​
+//     <br>
+//     elit.
+//   </strong> ​Sunt,
+// </i>
+// repudiandae. ​Lorem, ipsum ​dolor ​sit ​amet ​ ​consectetur ​ ​ ​
+// <br>
+// adipisicing
+// <u testattribute="ta" testattribute2="ta2" data-unbreakable="">
+//   elit.
+// </u>
+// Sunt, ​re
+// <div 
+//   id="portal-container-2bf69a61-17c5-498f-ad4c-ba9a2b01132d" 
+//   data-button-key="react-button" 
+//   style="display: inline;"
+// >
+//     pud
+//       iand
+//     a
+//   e. ​ ​Lorem
+// </div>
+// , ​ipsum ​dolor ​ ​
+// <br>
+// sit amet
+// <strong>
+//   consectetur
+//   <i>
+//     adipisicing
+//   </i>
+//   elit.
+// </strong>
+//   Sunt,  ​repudiandae. ​Lorem, ​
+// ​<div id="portal-container-f56a36a4-00b7-42c8-9d92-e14691b2ee1a" data-button-key="react-button" style="display: inline;">
+//   ipsum ​dolorsit
+// </div>`.replaceAll(/\n */g, '');
+
 const initialHTML = `
-<strong>Lorem, ipsum</strong>
-  ​dolor ​sit ​ 
-  ​<i>amet  ​cons
-  <strong>
-    ectetur adipisicing ​ ​ ​
-    <br>
-    elit.
-  </strong> ​Sunt,
-</i>
-repudiandae. ​Lorem, ipsum ​dolor ​sit ​amet ​ ​consectetur ​ ​ ​
-<br>
-adipisicing
-<u testattribute="ta" testattribute2="ta2" data-unbreakable="">
-  elit.
-</u>
-Sunt, ​re
-<div 
-  id="portal-container-2bf69a61-17c5-498f-ad4c-ba9a2b01132d" 
-  data-button-key="react-button" 
-  style="display: inline;"
->
-    pud
-      iand
-    a
-  e. ​ ​Lorem
-</div>
-, ​ipsum ​dolor ​ ​
-<br>
-sit amet
-<strong>
-  consectetur
-  <i>
-    adipisicing
-  </i>
-  elit.
-</strong>
-  Sunt,  ​repudiandae. ​Lorem, ​
-​<div id="portal-container-f56a36a4-00b7-42c8-9d92-e14691b2ee1a" data-button-key="react-button" style="display: inline;">
-  ipsum ​dolorsit
-</div>`.replaceAll(/\n */g, '');
+​Welcome ​to ​<strong class=\"bold-standard\"><i class=\"italics-standard\"><u class=\"underlined-standard\">editable-content! ​</u></i>​</strong>​ ​This tool is designed to give developers the ability to create rich-text editors which include <div id=\"portal-container-113c4399-af4e-459f-9df2-5e93609d3f86\" data-button-key=\"stateful-component\" style=\"display: inline;\">React Components</div> as elements.<br><br>​As a demo, please feel free to play around with the editable div below. As you can see, there are two types of buttons: <strong class=\"bold-standard\">Standard Wrappers</strong> and <strong data-unbreakable=\"\">Unbreakble Components.</strong><br>​<br><strong class=\"bold-standard\">Standard ​Wrappers</strong> ​work ​as ​you ​would ​normally&nbsp;expect from a word processor- when text is selected and the button is clicked, the selected text will take on that text decoration. Click the button again, and the selected text will lose that given text decoration. Text can have multiple standard wrappers at work, such as text which is in italics and in bold while inside of other text which is bold. When the cursor is in just one space, clicking the button will make future text from the cursor have that decoration, or lose that decoration if the button was already clicked.<br><br>​<strong data-unbreakable=\"\">Unbreakable Components</strong> are different: Unlike Standard Wrappers, no other decoration can “nest” within an Unbreakable Component, and an Unbreakable Component cannot be inside of any other decoration. Additionally, <u data-unbreakable=\"\">unbreakable components cannot be “split”</u>, and so clicking the Wrapper Component's <div id=\"portal-container-ecb741ef-5918-4d7b-ba41-e0d7bef29930\" data-button-key=\"stateful-component\" style=\"display: inline;\">button </div>again will cause the entire component to disappear, ​leaving ​only ​the ​text ​behind. The one exception to this is if the cursor is placed at the ennd of the text inside the Unbreakable Component, in which case the cursor will move out of the Unbreakable Component's text and back into plain text. <strong data-unbreakable=\"\">All React Components are unbreakable.</strong>​<br>`
 
 
 
@@ -105,14 +108,12 @@ export default function Page() {
   }, [])
 
   return (
-    // <main
-    //   // style={{
-    //   //   width: 900,
-    //   //   margin: "auto",
-    //   //   marginTop: 100
-    //   // }}
-    // >
-    <>
+    <main
+      style={{
+        maxWidth: '1000px',
+        margin: 'auto'
+      }}
+    >
       <h1>
         Editable-Content
       </h1>
@@ -126,10 +127,10 @@ export default function Page() {
         Standard Wrappers work as you would normally expect from a word processor- when text is selected and the button is clicked, the selected text will take on that text decoration. Click the button again, and the selected text will lose that given text decoration. Text can have multiple standard wrappers at work, such as text which is in italics and in bold while inside of other text which is bold. When the cursor is in just one space, clicking the button will make future text from the cursor have that decoration, or lose that decoration if the button was already clicked.
       </p>
       <p>
-        Unbreakable Components are different: Unlike Standard Wrappers, no other decoration can &ldquo;nest&rdquo; within an Unbreakable Component, and an Unbreakable Component cannot be inside of any other decoration. Additionally, unbreakable components cannot be &ldquo;split&rdquo;, and so clicking the Wrapper Component&apos;s button again will cause the entire component to disappear. The one exception to this is if the cursor is placed at the ennd of the text inside the Unbreakable Component, in which case the cursor will move out of the Unbreakable Component&apos;s text and back into plain text. All React Components are unbreakable.
+        Unbreakable Components are different: Unlike Standard Wrappers, no other decoration can &ldquo;nest&rdquo; within an Unbreakable Component, and an Unbreakable Component cannot be inside of any other decoration. Additionally, unbreakable components cannot be &ldquo;split&rdquo;, and so clicking the Wrapper Component&apos;s button again will cause the entire component to disappear, leaving only the text behind. The one exception to this is if the cursor is placed at the end of the text inside the Unbreakable Component, in which case the cursor will move out of the Unbreakable Component&apos;s text and back into plain text. All React Components are unbreakable.
       </p>
       <p>
-        Lastly, you can go back and forth between Editable Text and a Rendered (and non-editable) version of what you&apos;ve written, simply click the button below the text!
+        Lastly, take a look at some of what&apos;s below the EditableContent. There's a button to clear the contents, and there's also a "Render Text" button you can click so that you can go back and forth between Editable Text and a Rendered (and non-editable) version of what you&apos;ve written. If you want to take a look at some of the state changes going on under the hood, take a look at some of the accordion menus underneath.
       </p>
       <EditableContentContextProvider
         keyAndWrapperObjs={[
@@ -139,20 +140,27 @@ export default function Page() {
           },
           {
             dataKey: "bold",
-            wrapper: <strong></strong>
+            wrapper: <strong className="bold-standard" />
           },
           {
             dataKey: "italics",
-            wrapper: <i />
+            wrapper: <i className="italics-standard" />
           },
           {
             dataKey: "underlined",
-            wrapper: <u
-              data-test-attribute="ta"
-              data-test-attribute2="ta2"
-              data-unbreakable=""
-              onClick={(e) => { console.log("clicked") }}
-            />
+            wrapper: <u className="underlined-standard" />
+          },
+          {
+            dataKey: "bold-unbreakable",
+            wrapper: <strong data-unbreakable="" />
+          },
+          {
+            dataKey: "italics-unbreakable",
+            wrapper: <i data-unbreakable="" />
+          },
+          {
+            dataKey: "underlined-unbreakable",
+            wrapper: <u data-unbreakable="" />
           },
           {
             dataKey: "react-button",
@@ -236,124 +244,120 @@ export default function Page() {
         </Dialog>
         {
           editMode &&
-          <Container>
+          <>
             <h3>Buttons</h3>
-            <Box sx={{ display: "flex" }}>
+            <Box 
+              sx={{ 
+                display: "flex",
+                flexDirection: "row",
+                gap: "4",
+                alignItems: "flex-start",
+                flexWrap: "wrap",
+                justifyContent: "left"
+              }} 
+            >
 
-              <Container disableGutters>
-                <h4>Standard Wrappers</h4>
-                <EditTextButton
-                  dataKey="bold"
-                  isMUIButton={true}
-                >
-                  <FormatBoldIcon />
-                </EditTextButton>
-                <EditTextButton
-                  dataKey="italics"
-                  isMUIButton={true}
-                >
-                  <FormatItalic />
-                </EditTextButton>
-                <EditTextButton
-                  dataKey="underlined"
-                  isMUIButton={true}
-                >
-                  <FormatUnderlined />
-                </EditTextButton>
-              </Container>
-              {/* <EditTextButton 
-                dataKey="callback-sample"
-                isMUIButton={true}
-                selectCallback={() => {
-                  const selection = window.getSelection();
-                  if (!selection) return;
-                  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
-                  setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
-                  setChangeTextDialogText(selection?.toString() || "")
-                  setChangeTextDialogIsOpen(true);
-                  setChangeTextAnchorNode(anchorNode);
-                  setChangeTextAnchorOffset(anchorOffset);
-                  setChangeTextFocusNode(focusNode);
-                  setChangeTextFocusOffset(focusOffset);
-                }}
-                deselectCallback={() => {
-                  const selection = window.getSelection();
-                  if (!selection) return;
-                  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
-                  setChangeTextSelectionDirection(getSelectionDirection(selection) || "none")
-                  setChangeTextDialogText(selection?.toString() || "")
-                  setChangeTextDialogIsOpen(true);
-                  setChangeTextAnchorNode(anchorNode);
-                  setChangeTextAnchorOffset(anchorOffset);
-                  setChangeTextFocusNode(focusNode);
-                  setChangeTextFocusOffset(focusOffset);
+              <Paper 
+                sx={{
+                  width: 'fit-content',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: 1
                 }}
               >
-                Callback Sample
-              </EditTextButton> */}
-              <Container disableGutters maxWidth="md">
+                <h4>Standard Wrappers</h4>
+                <Box>
+                  <EditTextButton
+                    dataKey="bold"
+                    isMUIButton={true}
+                  >
+                    <FormatBoldIcon />
+                  </EditTextButton>
+                  <EditTextButton
+                    dataKey="italics"
+                    isMUIButton={true}
+                  >
+                    <FormatItalic />
+                  </EditTextButton>
+                  <EditTextButton
+                    dataKey="underlined"
+                    isMUIButton={true}
+                  >
+                    <FormatUnderlined />
+                  </EditTextButton>
+                </Box>
+              </Paper>
+            
+              <Paper 
+                sx={{
+                  width: 'fit-content',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: 1
+                }}
+              >
                 <h4>Unbreakable Components</h4>
-                <EditTextButton
-                  dataKey="react-button"
-                  isMUIButton={true}
-                >
-                  React Button
-                </EditTextButton>
-                <EditTextButton
-                  dataKey="stateful-component"
-                  isMUIButton={true}
-                >
-                  Stateful Component
-                </EditTextButton>
-                <EditTextButton
-                  dataKey="multilevel-component"
-                  isMUIButton={true}
-                >
-                  Multilevel Component
-                </EditTextButton>
-                <EditTextButton
-                  dataKey="underline-color"
-                  isMUIButton={true}
-                >
-                  Underline With Color
-                </EditTextButton>
-              </Container>
+                <Box>
+                  <EditTextButton 
+                    dataKey="bold-unbreakable"
+                    isMUIButton={true}
+                  >
+                    <FormatBoldIcon />
+                  </EditTextButton>
 
-
+                  <EditTextButton
+                    dataKey="italics-unbreakable"
+                    isMUIButton={true}
+                  >
+                    <FormatItalic />
+                  </EditTextButton>
+                  <EditTextButton
+                    dataKey="underlined-unbreakable"
+                    isMUIButton={true}
+                  >
+                    <FormatUnderlined />
+                  </EditTextButton>
+                  {/* <EditTextButton
+                    dataKey="react-button"
+                    isMUIButton={true}
+                  >
+                    React Button
+                  </EditTextButton> */}
+                  <EditTextButton
+                    dataKey="stateful-component"
+                    isMUIButton={true}
+                  >
+                    Sample React Component
+                  </EditTextButton>
+                  {/* <EditTextButton
+                    dataKey="multilevel-component"
+                    isMUIButton={true}
+                  >
+                    Multilevel Component
+                  </EditTextButton>
+                  <EditTextButton
+                    dataKey="underline-color"
+                    isMUIButton={true}
+                  >
+                    Underline With Color
+                  </EditTextButton> */}
+                </Box>
+              </Paper>
             </Box>
-          </Container>
+          </>
         }
         {
           editMode ?
-            <EditableContent
-              className="default-editable-content"
-            // initialHTML={initialHTML}
-            // divStyle={{
-            //   width: "100%",
-            //   height: "250px",
-            //   margin: "auto",
-            //   border: "2px solid black",
-            //   overflowY: "scroll"
-            // }}
-            /> :
-            // null 
-            <RenderedContent
-              // initialHTML={initialHTML}
-              className="default-rendered-content"
-            // divStyle={{
-            //   width: "100%",
-            //   height: "250px",
-            //   margin: "auto",
-            //   border: "2px solid black",
-            //   overflowY: "scroll"
-            // }}
-            />
+            <EditableContent className="default-editable-content"/> :
+            <RenderedContent className="default-rendered-content" />
         }
 
         {
           editMode &&
           <>
-            <GetDehydratedHTMLButton />
+            {/* <GetDehydratedHTMLButton /> */}
             <ClearButton />
           </>
         }
@@ -365,7 +369,6 @@ export default function Page() {
         <AllPropsDisplay show={false} />
 
       </EditableContentContextProvider>
-    </>
-    // </main>
+    </main>
   );
 }
