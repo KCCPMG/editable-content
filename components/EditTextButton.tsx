@@ -64,7 +64,7 @@ export default function EditTextButton({
   const isReactComponent = getIsReactComponent(wrapper);
 
   // get wrapperArgs
-  const wrapperArgs = reactNodeToWrapperArgs(wrapper);
+  const wrapperArgs = reactNodeToWrapperArgs(wrapper, dataKey);
   // const query = useMemo((()=> {return generateQuery(wrapperArgs)}), []);
   const query = generateQuery(wrapperArgs);
 
@@ -332,13 +332,15 @@ function getWrapperArgs(component: ReactElement, isReactComponent: boolean) {
 }
 
 
-function reactNodeToWrapperArgs(rn: ReactNode): WrapperArgs {
+function reactNodeToWrapperArgs(rn: ReactNode, dataKey: string): WrapperArgs {
 
   const element = reactNodeToElement(rn);
 
   if (!element) return {element: ""};
 
-  let mappedAttributes: {[key: string] : string | undefined} = {}
+  let mappedAttributes: {[key: string] : string | undefined} = {
+    'data-bk': dataKey
+  }
 
   for (let attr of Array.from(element.attributes)) {
     if ((attr.name) === 'class' || (attr.name) === 'getContext') continue;

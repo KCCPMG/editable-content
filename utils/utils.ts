@@ -638,7 +638,8 @@ export function generateQuery({element, classList, id, unbreakable, attributes}:
       .join(""):
     "";
 
-  return element + classListString + idString + unbreakableString + attributesString;
+  // return element + classListString + idString + unbreakableString + attributesString;
+  return element + idString + unbreakableString + attributesString;
 }
 
 

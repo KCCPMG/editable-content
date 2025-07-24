@@ -373,8 +373,6 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       getContext: useEditableContentContext
     }
 
-
-
     setPortals(previousPortals => {
       const priorIndex = previousPortals.findIndex( p => p.key === portalId )
       const componentInitialProps: PortalProps = {};
@@ -387,6 +385,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
           }
         }
       }
+
       const clone = cloneElement(component, {...props, ...additionalProps, ...componentInitialProps}, text);
       const portal = createPortal(clone, targetDiv, props["key"] || null);
       return [...previousPortals, portal]
@@ -421,7 +420,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     
     // curently only handling range text, not nested elements
     if (contentRef.current && contentRef.current && foundNewDiv) {
-      cloneElementIntoPortal(component, {key: uuid}, text, foundNewDiv);
+      cloneElementIntoPortal(component, {key: uuid, 'data-bk': buttonKey}, text, foundNewDiv);
       return uuid;
     }
   }
@@ -458,7 +457,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     if (!getIsReactComponent(foundKeyAndWrapperObj.wrapper)) return;
     
     const component = foundKeyAndWrapperObj.wrapper;
-    cloneElementIntoPortal(component, {key: uuid}, text, containingDiv);
+    cloneElementIntoPortal(component, {key: uuid, 'data-bk': key}, text, containingDiv);
   }
 
 
