@@ -185,12 +185,12 @@ export default function EditableContent({className, disableNewLines }: EditableC
             range.extractContents();
             
             const br = document.createElement("br");
-            const textNode = document.createTextNode('\u200B');
+            const textNode = document.createTextNode('\u200B\u200B');
             range.insertNode(textNode);
             range.insertNode(br);
             
-            range.setStart(textNode, 0);
-            range.setEnd(textNode, textNode.length);
+            range.setStart(textNode, 1);
+            range.collapse();
             
             selection.removeAllRanges();
             selection.addRange(range);  
