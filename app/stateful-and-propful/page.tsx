@@ -10,6 +10,7 @@ import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import ContentRefCurrentInnerHTMLDisplay from "@/components/DisplayComponents/ContentRefCurrentInnerHTMLDisplay";
 import SelectionDisplay from "@/components/DisplayComponents/SelectionDisplay";
 import RenderedContent from "@/components/RenderedContent";
+import NextPageLink from "@/components/TestComponents/NextPageLink";
 
 const initialHTML = `​Normal ​Text<br>
 <div id=\"portal-container-3dbccd2a-6a07-460b-b2d2-fff8ba8e0595\" data-button-key=\"stateful-and-propful\" style=\"display: inline;\">First Stateful ​and ​Propful ​Component</div>
@@ -108,8 +109,8 @@ export default function Page() {
           {editMode ? "Render Text" : "Edit Text"}
         </Button>
         <AllPropsDisplay show={false} />
-
       </EditableContentContextProvider>
+      <NextPageLink href="/propful-only" />
     </>
   )
 }

@@ -9,7 +9,7 @@ import { Container, Button, Box, Typography } from "@mui/material";
 import EditTextButton from "@/components/EditTextButton";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import RenderedContent from "@/components/RenderedContent";
-
+import NextPageLink from "@/components/TestComponents/NextPageLink";
 
 const initialHTML = `
 Normal Text 
@@ -141,6 +141,7 @@ export default function Page() {
           <AllPropsDisplay show={true} />
         </Container>
       </EditableContentContextProvider>
+      <NextPageLink href="/styling-and-callbacks" />
     </main>
   )
 }

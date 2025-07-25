@@ -20,6 +20,8 @@ import RenderedContent from "@/components/RenderedContent";
 import ContentRefCurrentInnerHTMLDisplay from "@/components/DisplayComponents/ContentRefCurrentInnerHTMLDisplay";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import SelectionDisplay from "@/components/DisplayComponents/SelectionDisplay";
+import Link from "next/link";
+import NextPageLink from "@/components/TestComponents/NextPageLink";
 
 // const initialHTML = `
 // <strong>Lorem, ipsum</strong>
@@ -367,8 +369,8 @@ export default function Page() {
         <SelectionDisplay show={true} />
         <ContentRefCurrentInnerHTMLDisplay show={true} />
         <AllPropsDisplay show={false} />
-
       </EditableContentContextProvider>
+      <NextPageLink href="/stateful-and-propful" />
     </main>
   );
 }
