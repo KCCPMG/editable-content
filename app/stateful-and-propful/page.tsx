@@ -79,32 +79,32 @@ export default function Page() {
               setInitialClicks={setInitialClicks}
             /> */}
           </Box>
-          <Box
-
-          >
-            <h4>Edit Text Buttons</h4>
+          {editMode && 
             <Box>
-              <EditTextButton
-                isMUIButton={true}
-                dataKey="stateful-and-propful"
-              >
-                Stateful and Propful
-              </EditTextButton>
-              <EditTextButton
-                isMUIButton={true}
-                dataKey="stateful-component"
-              >
-                Stateful Component
-              </EditTextButton>          
+              <h4>Edit Text Buttons</h4>
+              <Box>
+                <EditTextButton
+                  isMUIButton={true}
+                  dataKey="stateful-and-propful"
+                >
+                  Stateful and Propful
+                </EditTextButton>
+                <EditTextButton
+                  isMUIButton={true}
+                  dataKey="stateful-component"
+                >
+                  Stateful Only
+                </EditTextButton>          
+              </Box>
             </Box>
-          </Box>
+          }
         </Box>
         {
           editMode ?
             <EditableContent className="default-editable-content"/> :
             <RenderedContent className="default-rendered-content" />
         }
-        <Button onClick={() => setEditMode(!editMode)}>
+        <Button variant="outlined" onClick={() => setEditMode(!editMode)}>
           {editMode ? "Render Text" : "Edit Text"}
         </Button>
         <AllPropsDisplay show={false} />

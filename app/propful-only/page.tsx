@@ -24,7 +24,7 @@ Normal Text
 
 export default function Page() {
 
-  const [componentBorderColor, setComponentBorderColor] = useState("red");
+  const [componentBorderColor, setComponentBorderColor] = useState("Red");
   const [editMode, setEditMode] = useState<boolean>(true);
 
   return (
@@ -134,7 +134,7 @@ export default function Page() {
             setComponentBorderColor={setComponentBorderColor} 
           />
         }
-        <Button onClick={() => setEditMode(!editMode)}>
+        <Button variant="outlined" onClick={() => setEditMode(!editMode)}>
           {editMode ? "Render Text" : "Edit Text"}
         </Button>
         <Container>

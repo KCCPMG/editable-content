@@ -12,7 +12,7 @@ export default function IncreaseColorButton({componentBorderColor, setComponentB
 
   const { updatePortalProps, contentRef, portals } = useEditableContentContext();
 
-  const colors = ["red", "blue", "green", "black"];
+  const colors = ["Red", "Blue", "Green", "Black"];
 
   // on componentBorderColor change, updatePortalProps
   useEffect(function() {
@@ -36,8 +36,12 @@ export default function IncreaseColorButton({componentBorderColor, setComponentB
   }
 
   return (
-    <Button onClick={rotateColor}>
-      Rotate Color from sadf adsf {componentBorderColor.slice(0,1).toUpperCase() + componentBorderColor.slice(1)}
+    <Button 
+      sx={{borderColor: componentBorderColor}} 
+      onClick={rotateColor}
+      variant="outlined"
+    >
+      Rotate Color From {componentBorderColor}
     </Button>
   )
 }
