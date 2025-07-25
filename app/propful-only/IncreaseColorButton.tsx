@@ -37,7 +37,7 @@ export default function IncreaseColorButton({componentBorderColor, setComponentB
 
   return (
     <Button onClick={rotateColor}>
-      Rotate Color from {componentBorderColor}
+      Rotate Color from sadf adsf {componentBorderColor.slice(0,1).toUpperCase() + componentBorderColor.slice(1)}
     </Button>
   )
 }

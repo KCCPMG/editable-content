@@ -19,7 +19,7 @@ Second Stateful and Propful Component</div><div id=\"portal-container-5aabe861-8
 export default function Page() {
 
   const [initialClicks, setInitialClicks] = useState(0);
-  const [componentBorderColor, setComponentBorderColor] = useState("red");
+  const [componentBorderColor, setComponentBorderColor] = useState("Red");
   const [editMode, setEditMode] = useState<boolean>(true);
 
   return (
@@ -126,7 +126,7 @@ function IncreaseColorButton({componentBorderColor, setComponentBorderColor}: In
 
   const { updatePortalProps, contentRef } = useEditableContentContext();
 
-  const colors = ["red", "blue", "green", "black"];
+  const colors = ["Red", "Blue", "Green", "Black"];
 
   // on componentBorderColor change, updatePortalProps
   useEffect(function() {
@@ -150,7 +150,11 @@ function IncreaseColorButton({componentBorderColor, setComponentBorderColor}: In
   }
 
   return (
-    <Button onClick={rotateColor}>
+    <Button 
+      variant="outlined" 
+      sx={{borderColor: componentBorderColor}} 
+      onClick={rotateColor}
+    >
       Rotate Color from {componentBorderColor}
     </Button>
   )

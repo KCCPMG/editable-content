@@ -13,6 +13,16 @@ export default createTheme({
       main: "#324268",
     }
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontFamily: 'var(--font-montserrat)',
+          textTransform: 'none'
+        }
+      }
+    }
+  },
   typography:  {
     fontFamily: "Calibri"
   }
