@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext";
 import StatefulAndPropfulBox from "@/components/TestComponents/StatefulAndPropfulBox";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import EditTextButton from "@/components/EditTextButton";
 
 const initialHTML = 
@@ -20,10 +20,14 @@ export default function Page() {
 
   const [initialClicks, setInitialClicks] = useState(0);
   const [componentBorderColor, setComponentBorderColor] = useState("red");
+  const [editMode, setEditMode] = useState<boolean>(true);
 
   return (
     <>
-      <h1>Stateful and Propful Component Example</h1>
+      <Typography variant="h2">Stateful and Propful Components</Typography>
+      <p>
+        Since we are using React, we presumably want our components to have the ability to change. Generally speaking, the two ways that that is done are through changes to a component&apos;s props or its state. Here we have two different components which handle those changes differently.
+      </p>
       <p>
         There are two values here which are passed as props to every StatefulAndPropfulBox that is rendered here. What I expect to happen is that changing these props at this level (which can be done with the buttons) will have two distinct outcomes: 
       </p>

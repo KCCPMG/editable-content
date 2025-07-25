@@ -5,7 +5,7 @@ import PropfulBox from "@/components/TestComponents/PropfulBox";
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import IncreaseColorButton from "./IncreaseColorButton";
 import EditableContent from "@/components/EditableContent";
-import { Container, Button, Box } from "@mui/material";
+import { Container, Button, Box, Typography } from "@mui/material";
 import EditTextButton from "@/components/EditTextButton";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import RenderedContent from "@/components/RenderedContent";
@@ -29,7 +29,7 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Propful Only Component Example</h1>
+      <Typography variant="h2">Propful Only Components</Typography>
       <p>
         There are two values here which are passed as props to every PropfulBox that is rendered here. What I expect to happen is that clicking an instance of PropfulBox will cause the click value to increase by setting its props directly with updatePortalProps.
       </p>
@@ -58,37 +58,66 @@ export default function Page() {
         initialHTML={initialHTML}
       >
         {editMode && 
-          <Box sx={{display: "flex"}}>
-            <Container>
+          <Box 
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              gap: "4",
+              alignItems: "flex-start",
+              felxWrap: "wrap",
+              justifyContent: "left"
+            }}
+          >
+            <Box
+              sx={{
+                width: 'fit-content',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: 1
+              }}  
+            >
               <h4>React Buttons</h4>
-              <EditTextButton
-                isMUIButton={true}
-                dataKey="propful-only"
-              >
-                Propful Box
-              </EditTextButton>
-              <EditTextButton
-                isMUIButton={true}
-                dataKey="stateful-component"
-              >
-                Stateful Box
-              </EditTextButton>
-            </Container>
-            <Container>
+              <Box>
+                <EditTextButton
+                  isMUIButton={true}
+                  dataKey="propful-only"
+                >
+                  Propful Box
+                </EditTextButton>
+                <EditTextButton
+                  isMUIButton={true}
+                  dataKey="stateful-component"
+                >
+                  Stateful Box
+                </EditTextButton>
+              </Box>
+            </Box>
+            <Box
+              sx={{
+                width: 'fit-content',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: 1
+              }}  
+            >
               <h4>Non-React Buttons</h4>
-              <EditTextButton
-                isMUIButton={true}
-                dataKey="non-react-strong"
-              >
-                Non React Strong
-              </EditTextButton>
-              <EditTextButton
-                isMUIButton={false}
-                dataKey="block-italics"
-              >
-                Block Italics
-              </EditTextButton>
-            </Container>
+              <Box>
+                <EditTextButton
+                  isMUIButton={true}
+                  dataKey="non-react-strong"
+                >
+                  Non React Strong
+                </EditTextButton>
+                <EditTextButton
+                  isMUIButton={false}
+                  dataKey="block-italics"
+                >
+                  Block Italics
+                </EditTextButton>
+              </Box>
+            </Box>
           </Box>
         }
         {editMode ?
