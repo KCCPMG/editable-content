@@ -112,6 +112,7 @@ export type EditableContentProps = {
   // buttonRowStyle?: CSSProperties,
   // divStyle?: CSSProperties,
   className?: string,
+  disableNewLines?: boolean
   // initialHTML?: string,
   // editTextButtons: Array<EditableContentButtonProps>
   // editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>,

@@ -6,7 +6,7 @@ import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
 
 
-export default function EditableContent({className }: EditableContentProps) {
+export default function EditableContent({className, disableNewLines }: EditableContentProps) {
 
   const {
     contentRef, 
@@ -181,6 +181,7 @@ export default function EditableContent({className }: EditableContentProps) {
 
           if (e.code === "Enter") {
             e.preventDefault();
+            if (disableNewLines) return;
             range.extractContents();
             
             const br = document.createElement("br");
