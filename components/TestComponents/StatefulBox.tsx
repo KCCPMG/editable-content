@@ -52,7 +52,7 @@ export default function StatefulBox(
         }}
         {...rest}
       >
-        {children}
+        {clicks} {children}
       </Box>
     </Box>
   )

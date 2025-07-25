@@ -6,15 +6,12 @@ import StatefulAndPropfulBox from "@/components/TestComponents/StatefulAndPropfu
 import StatefulBox from "@/components/TestComponents/StatefulBox";
 import { Button, Typography } from "@mui/material";
 import EditTextButton from "@/components/EditTextButton";
+import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
+import ContentRefCurrentInnerHTMLDisplay from "@/components/DisplayComponents/ContentRefCurrentInnerHTMLDisplay";
+import SelectionDisplay from "@/components/DisplayComponents/SelectionDisplay";
+import RenderedContent from "@/components/RenderedContent";
 
-const initialHTML = 
-`
-Normal Text 
-<div 
-  id="portal-container-12345" 
-  data-button-key="stateful-and-propful" 
->
-  Stateful and Propful Component</div>`.replaceAll(/\n */g, '');
+const initialHTML = `​Normal ​Text<br><div id=\"portal-container-3dbccd2a-6a07-460b-b2d2-fff8ba8e0595\" data-button-key=\"stateful-and-propful\" style=\"display: inline;\">Stateful ​and ​Propful ​Component</div><div id=\"portal-container-5aabe861-8470-430d-b77e-310d272864f1\" data-button-key=\"stateful-component\" style=\"display: inline;\">​Stateful ​Only ​Component</div>​<br>`;
 
 export default function Page() {
 
@@ -80,9 +77,16 @@ export default function Page() {
             Stateful Component
           </EditTextButton>          
         </div>
-        <EditableContent
-          className="default-editable-content"
-        />
+        {
+          editMode ?
+            <EditableContent className="default-editable-content"/> :
+            <RenderedContent className="default-rendered-content" />
+        }
+        <Button onClick={() => setEditMode(!editMode)}>
+          {editMode ? "Render Text" : "Edit Text"}
+        </Button>
+        <AllPropsDisplay show={false} />
+
       </EditableContentContextProvider>
     </>
   )

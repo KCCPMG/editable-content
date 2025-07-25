@@ -8,7 +8,7 @@ body {
 
 .default-editable-content {
   width: 100%;
-  height: 150px;
+  height: 200px;
   margin: auto;
   border: 2px solid black;
   overflow-y: scroll;
@@ -17,7 +17,7 @@ body {
 
 .default-rendered-content {
   width: 100%;
-  height: 150px;
+  height: 200px;
   margin: auto;
   border: 2px solid black;
   overflow-y: scroll;
