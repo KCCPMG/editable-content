@@ -66,7 +66,7 @@ export default function Page() {
           <Box>
             <Box>
               <h4>
-                Change Props For All Componennts
+                Change Props For All Components
               </h4>
               <IncreaseColorButton 
                 componentBorderColor={componentBorderColor} 
@@ -79,7 +79,7 @@ export default function Page() {
                 flexDirection: "row",
                 gap: "4",
                 alignItems: "flex-start",
-                felxWrap: "wrap",
+                flexWrap: "wrap",
                 justifyContent: "left"
               }}
             >

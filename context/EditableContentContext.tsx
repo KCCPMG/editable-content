@@ -188,7 +188,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   /**
    * Create DOMParser from current html of contentRef.current, find
    * divs which house portals, remove all contents of those divs except
-   * text, pass dehydraded html to callback.
+   * text, pass dehydrated html to callback.
    * @param callback 
    */
   function getDehydratedHTML(callback: (dehydrated: string) => void) {
@@ -302,7 +302,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
 
   /**
    * Gets current props for all portals in context
-   * @returns PortalProls
+   * @returns PortalProps
    */
   function getAllPortalProps(): PortalProps {
     return Object.assign({}, ...portals.map(portal => {
@@ -418,7 +418,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
     if (!foundNewDiv) return;
     
-    // curently only handling range text, not nested elements
+    // currently only handling range text, not nested elements
     if (contentRef.current && contentRef.current && foundNewDiv) {
       cloneElementIntoPortal(component, {key: uuid, 'data-bk': buttonKey}, text, foundNewDiv);
       return uuid;

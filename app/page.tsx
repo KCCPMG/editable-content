@@ -25,50 +25,6 @@ import NextPageLink from "@/components/TestComponents/NextPageLink";
 import SampleReactButtonProp from "@/components/TestComponents/SampleReactButton";
 import SampleReactButton from "@/components/TestComponents/SampleReactButton";
 
-// const initialHTML = `
-// <strong>Lorem, ipsum</strong>
-//   ​dolor ​sit ​ 
-//   ​<i>amet  ​cons
-//   <strong>
-//     ectetur adipisicing ​ ​ ​
-//     <br>
-//     elit.
-//   </strong> ​Sunt,
-// </i>
-// repudiandae. ​Lorem, ipsum ​dolor ​sit ​amet ​ ​consectetur ​ ​ ​
-// <br>
-// adipisicing
-// <u testattribute="ta" testattribute2="ta2" data-unbreakable="">
-//   elit.
-// </u>
-// Sunt, ​re
-// <div 
-//   id="portal-container-2bf69a61-17c5-498f-ad4c-ba9a2b01132d" 
-//   data-button-key="react-button" 
-//   style="display: inline;"
-// >
-//     pud
-//       iand
-//     a
-//   e. ​ ​Lorem
-// </div>
-// , ​ipsum ​dolor ​ ​
-// <br>
-// sit amet
-// <strong>
-//   consectetur
-//   <i>
-//     adipisicing
-//   </i>
-//   elit.
-// </strong>
-//   Sunt,  ​repudiandae. ​Lorem, ​
-// ​<div id="portal-container-f56a36a4-00b7-42c8-9d92-e14691b2ee1a" data-button-key="react-button" style="display: inline;">
-//   ipsum ​dolorsit
-// </div>`.replaceAll(/\n */g, '');
-
-// const initialHTML = `
-// ​Welcome ​to ​<strong class=\"bold-standard\"><i class=\"italics-standard\"><u class=\"underlined-standard\">editable-content! ​</u></i>​</strong>​ ​This tool is designed to give developers the ability to create rich-text editors which include <div id=\"portal-container-113c4399-af4e-459f-9df2-5e93609d3f86\" data-button-key=\"stateful-component\" style=\"display: inline;\">React Components</div> as elements.<br><br>​As a demo, please feel free to play around with the editable div below. As you can see, there are two types of buttons: <strong class=\"bold-standard\">Standard Wrappers</strong> and <strong data-unbreakable=\"\">Unbreakble Components.</strong><br>​<br><strong class=\"bold-standard\">Standard ​Wrappers</strong> ​work ​as ​you ​would ​normally&nbsp;expect from a word processor- when text is selected and the button is clicked, the selected text will take on that text decoration. Click the button again, and the selected text will lose that given text decoration. Text can have multiple standard wrappers at work, such as text which is in italics and in bold while inside of other text which is bold. When the cursor is in just one space, clicking the button will make future text from the cursor have that decoration, or lose that decoration if the button was already clicked.<br><br>​<strong data-unbreakable=\"\">Unbreakable Components</strong> are different: Unlike Standard Wrappers, no other decoration can “nest” within an Unbreakable Component, and an Unbreakable Component cannot be inside of any other decoration. Additionally, <u data-unbreakable=\"\">unbreakable components cannot be “split”</u>, and so clicking the Wrapper Component's <div id=\"portal-container-ecb741ef-5918-4d7b-ba41-e0d7bef29930\" data-button-key=\"stateful-component\" style=\"display: inline;\">button </div>again will cause the entire component to disappear, ​leaving ​only ​the ​text ​behind. The one exception to this is if the cursor is placed at the ennd of the text inside the Unbreakable Component, in which case the cursor will move out of the Unbreakable Component's text and back into plain text. <strong data-unbreakable=\"\">All React Components are unbreakable.</strong>​<br>`
 
 const initialHTML = `"​Welcome ​to <strong class=\"bold-standard\" data-bk=\"bold\"><i class=\"italics-standard\" data-bk=\"italics\"><u class=\"underlined-standard\" data-bk=\"underlined\">editable-content!</u></i></strong><strong class=\"bold-standard\"><i class=\"italics-standard\"><u class=\"underlined-standard\">​</u></i>​</strong>​ ​This tool is designed to give developers the ability to create rich-text editors which include <div id=\"portal-container-f40524bc-5e43-46ed-b9c2-7ae6585f5c34\" data-button-key=\"react-button\" style=\"display: inline;\">​React Components</div> ​as elements.<br><br>​As a demo, please feel free to play around with the editable div below. As you can see, there are two types of buttons: ​<strong class=\"bold-standard\" data-bk=\"bold\">Standard ​Wrappers</strong>&nbsp;and <strong data-bk=\"bold-unbreakable\" data-unbreakable=\"\">Unbreakable ​Components.</strong><br>​<br><strong class=\"bold-standard\">Standard ​Wrappers</strong> ​work ​as ​you ​would ​normally&nbsp;expect from a word processor- when text is selected and the button is clicked, the selected text will take on that text decoration. Click the button again, and the selected text will lose that given text decoration. Text can have multiple standard wrappers at work, such as text which is in italics and in bold while inside of other text which is bold. When the cursor is in just one space, clicking the button will make future text from the cursor have that decoration, or lose that decoration if the button was already clicked.<br><br>​<strong data-bk=\"bold-unbreakable\" data-unbreakable=\"\">Unbreakable ​Components</strong>&nbsp;are different: Unlike Standard Wrappers, no other decoration can “nest” within an Unbreakable Component, and an Unbreakable Component cannot be inside of any other decoration. Additionally,  ​ <u data-bk=\"underlined-unbreakable\" data-unbreakable=\"\">unbreakable components cannot be “split”,</u>&nbsp; ​​and so <div id=\"portal-container-8441e5d6-e708-40cb-baaf-8037688b06b1\" data-button-key=\"react-button\" style=\"display: inline;\">clicking the Wrapper Component's​ ​button ​again will cause the entire component to disappear, ​leaving ​only ​the ​text ​behind. ​(try ​it ​here!)</div>The one exception to this is if the cursor is placed at the end of the text inside the Unbreakable Component, in which case the cursor will move out of the Unbreakable Component's text and back into plain text. ​<strong data-bk=\"bold-unbreakable\" data-unbreakable=\"\">All ​React ​Components ​are ​unbreakable.</strong>​<br>"`
 
@@ -124,7 +80,7 @@ export default function Page() {
         Welcome to editable-content! This tool is designed to give developers the ability to create rich-text editors which include React Components as elements.
       </p>
       <p>
-        As a demo, please feel free to play around with the editable div below. As you can see, there are two types of buttons: Standard Wrappers and Unbreakble Components.
+        As a demo, please feel free to play around with the editable div below. As you can see, there are two types of buttons: Standard Wrappers and Unbreakable Components.
       </p>
       <p>
         Standard Wrappers work as you would normally expect from a word processor- when text is selected and the button is clicked, the selected text will take on that text decoration. Click the button again, and the selected text will lose that given text decoration. Text can have multiple standard wrappers at work, such as text which is in italics and in bold while inside of other text which is bold. When the cursor is in just one space, clicking the button will make future text from the cursor have that decoration, or lose that decoration if the button was already clicked.
@@ -351,7 +307,7 @@ export default function Page() {
             <ClearButton />
           </>
         }
-        <Button onClick={() => setEditMode(!editMode)}>
+        <Button variant="outlined" onClick={() => setEditMode(!editMode)}>
           {editMode ? "Render Text" : "Edit Text"}
         </Button>
         <SelectionDisplay show={true} />

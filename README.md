@@ -1,4 +1,4 @@
-# Overview
+# EditableContent
 
 EditableContent is a collection of components and context to give developers the ability to create their own rich-text editors, including React components to wrap text. The basic gist is that an `EditableContentContextProvider` will be rendered at the top level, and then within, an `EditableContent` component which takes arguments for initialHTML and for the buttons that it will render. Using functions and values passed down from `EditableContentContextProvider`, it is possible for developers to dehydrate HTML and then rehydrate it to restore React wrappers through the provider's use of instances of `ReactPortal`.
 
@@ -148,7 +148,7 @@ EditableContent is the root component from which everything else flows. Editable
     - Each object added here will render a MaterialUI Button or an HTML button. If you wish to use an MUI Button, set "isMUIButton" to true. If you set "isMUIButton" to false or do not include it, an HTML button will be rendered. 
     - Each object has several required properties:
       - dataKey: string
-        - A unique string which will serve as the key for the renndered button as well as a way of retrieving text which has been put into a wrapper by that button (not yet implemented)
+        - A unique string which will serve as the key for the rendered button as well as a way of retrieving text which has been put into a wrapper by that button (not yet implemented)
       - child: ReactNode
         - A single child which will be rendered as the child of the button. This is usually going to be an icon or a short string demonstrating what clicking the button will do to the selection
       - wrapperArgs: WrapperArgs
@@ -160,7 +160,7 @@ EditableContent is the root component from which everything else flows. Editable
 
 #### Unbreakable Elements
 
-There are elements which you can assign the "unbreakable" attribute to, which generally means that those elements are not to be affected by other selections and deselections but are rather distinct blocks. Here are the basic rules:
+There are elements which you can assign the "unbreakable" attribute to, which generally means that those elements are not to be affected by other selections and de-selections but are rather distinct blocks. Here are the basic rules:
 
 
   - If a selection is created which covers all or part of an unbreakable element in addition to other text outside of the unbreakable element, the wrap operation will not affect the unbreakable element or any of its contents

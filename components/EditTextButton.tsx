@@ -88,7 +88,7 @@ export default function EditTextButton({
             updateContent();
           } 
           else {
-            console.log("uncaught secnario in selected and not react component");
+            console.log("uncaught scenario in selected and not react component");
           }
         }
         else {
