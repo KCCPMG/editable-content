@@ -10,6 +10,7 @@ import EditTextButton from "@/components/EditTextButton";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import RenderedContent from "@/components/RenderedContent";
 import NextPageLink from "@/components/TestComponents/NextPageLink";
+import { FormatBold, FormatItalic } from "@mui/icons-material";
 
 const initialHTML = `
 Normal Text 
@@ -31,7 +32,10 @@ export default function Page() {
     <main>
       <Typography variant="h2">Propful Only Components</Typography>
       <p>
-        There are two values here which are passed as props to every PropfulBox that is rendered here. What I expect to happen is that clicking an instance of PropfulBox will cause the click value to increase by setting its props directly with updatePortalProps.
+        Since state does not persist across renders (and is difficult to get out of the component itself), the solution is to rely on props. In comparison to the last example, there are two examples here: <strong>Propful Box</strong> and <strong>Stateful Box</strong>.
+      </p>
+      <p>
+        The text that is already wrapped here is in a <strong>Propful Box</strong>. You can create more of these or create a <strong>Stateful Box</strong> for comparison. What you will see with the <strong>Propful Box</strong> is that in addition to the color persisting as it did in the previous example, the number of clicks will also persist when going back and forth between <strong>Edit Text</strong> and <strong>Render Text</strong>. You can also see the props that are passed to all elements by expanding the <strong>All Props</strong> display container at the bottom of the page. This display uses the <code>getAllPortalProps</code> function which is passed through the <code>EditableContentContext</code> and allows developers to extract props to save for future hydration.
       </p>
       <EditableContentContextProvider
         keyAndWrapperObjs={[
@@ -47,75 +51,87 @@ export default function Page() {
             wrapper: <StatefulBox />
           },
           {
-            dataKey: "non-react-strong",
-            wrapper: <strong className="non-react-strong"></strong>
+            dataKey: "strong",
+            wrapper: <strong></strong>
           },
           {
-            dataKey: "block-italics",
-            wrapper: <div><i></i></div>
+            dataKey: "standard-italics",
+            wrapper: <i></i>
           }
         ]}
         initialHTML={initialHTML}
       >
+
         {editMode && 
-          <Box 
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              gap: "4",
-              alignItems: "flex-start",
-              felxWrap: "wrap",
-              justifyContent: "left"
-            }}
-          >
-            <Box
-              sx={{
-                width: 'fit-content',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: 1
-              }}  
-            >
-              <h4>React Buttons</h4>
-              <Box>
-                <EditTextButton
-                  isMUIButton={true}
-                  dataKey="propful-only"
-                >
-                  Propful Box
-                </EditTextButton>
-                <EditTextButton
-                  isMUIButton={true}
-                  dataKey="stateful-component"
-                >
-                  Stateful Box
-                </EditTextButton>
-              </Box>
+          <Box>
+            <Box>
+              <h4>
+                Change Props For All Componennts
+              </h4>
+              <IncreaseColorButton 
+                componentBorderColor={componentBorderColor} 
+                setComponentBorderColor={setComponentBorderColor} 
+              />
             </Box>
-            <Box
+            <Box 
               sx={{
-                width: 'fit-content',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: 1
-              }}  
+                display: "flex",
+                flexDirection: "row",
+                gap: "4",
+                alignItems: "flex-start",
+                felxWrap: "wrap",
+                justifyContent: "left"
+              }}
             >
-              <h4>Non-React Buttons</h4>
-              <Box>
-                <EditTextButton
-                  isMUIButton={true}
-                  dataKey="non-react-strong"
-                >
-                  Non React Strong
-                </EditTextButton>
-                <EditTextButton
-                  isMUIButton={false}
-                  dataKey="block-italics"
-                >
-                  Block Italics
-                </EditTextButton>
+              <Box
+                sx={{
+                  width: 'fit-content',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: 1
+                }}  
+              >
+                <h4>React Buttons</h4>
+                <Box>
+                  <EditTextButton
+                    isMUIButton={true}
+                    dataKey="propful-only"
+                  >
+                    Propful Box
+                  </EditTextButton>
+                  <EditTextButton
+                    isMUIButton={true}
+                    dataKey="stateful-component"
+                  >
+                    Stateful Box
+                  </EditTextButton>
+                </Box>
+              </Box>
+              <Box
+                sx={{
+                  width: 'fit-content',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: 1
+                }}  
+              >
+                <h4>Non-React Buttons</h4>
+                <Box>
+                  <EditTextButton
+                    isMUIButton={true}
+                    dataKey="strong"
+                  >
+                    <FormatBold />
+                  </EditTextButton>
+                  <EditTextButton
+                    isMUIButton={true}
+                    dataKey="standard-italics"
+                  >
+                    <FormatItalic />
+                  </EditTextButton>
+                </Box>
               </Box>
             </Box>
           </Box>
@@ -126,12 +142,6 @@ export default function Page() {
           /> :
           <RenderedContent 
             className="default-rendered-content"
-          />
-        }
-        {editMode && 
-          <IncreaseColorButton 
-            componentBorderColor={componentBorderColor} 
-            setComponentBorderColor={setComponentBorderColor} 
           />
         }
         <Button variant="outlined" onClick={() => setEditMode(!editMode)}>
