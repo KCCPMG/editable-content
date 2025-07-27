@@ -3,8 +3,8 @@ import "./globals.css";
 import theme from "@/theme";
 import { Box, ThemeProvider } from "@mui/material";
 import { Montserrat, Roboto } from 'next/font/google';
-import SideBar from "@/components/DisplayComponents/SideBar";
-import HeadBar from "@/components/DisplayComponents/HeadBar";
+import SideBar from "@/components/LayoutComponents/SideBar";
+import HeadBar from "@/components/LayoutComponents/HeadBar";
 
 
 

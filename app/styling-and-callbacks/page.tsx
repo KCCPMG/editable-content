@@ -2,17 +2,17 @@
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import { Box, Button, Typography } from "@mui/material";
 import { EditableContentContextProvider } from "@/context/EditableContentContext";
-import StatefulBox from "@/components/TestComponents/StatefulBox";
-import MultiLevelBox from "@/components/TestComponents/MultilLevelBox";
-import UnderlineColor from "@/components/TestComponents/UnderlineColor";
-import EditableLink from "@/components/TestComponents/EditableLink"
+import StatefulBox from "@/components/Wrappers/StatefulBox";
+import MultiLevelBox from "@/components/Wrappers/MultilLevelBox";
+import UnderlineColor from "@/components/Wrappers/UnderlineColor";
+import EditableLink from "@/components/Wrappers/EditableLink"
 import { useState } from "react";
 import RenderedContent from "@/components/RenderedContent";
 import { EditableLinkDialogContextProvider, useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
 import { ContextMenuContextProvider } from "@/context/ContextMenuContext";
-import LinkEditTextButton from "@/components/TestComponents/LinkEditTextButton";
-import EditableTextField from "@/components/TestComponents/EditableTextField";
-import NextPageLink from "@/components/TestComponents/NextPageLink";
+import LinkEditTextButton from "@/components/ButtonsAndUI/LinkEditTextButton";
+import EditableTextField from "@/components/ContentWrappers/EditableTextField";
+import NextPageLink from "@/components/LayoutComponents/NextPageLink";
 
 
 const initialHTML = `<div id="portal-container-040262ba-3545-4db7-a441-8fd975018686" data-button-key="editable-link" style="display: inline;">Sample Link</div>`.replaceAll(/\n */g, '');

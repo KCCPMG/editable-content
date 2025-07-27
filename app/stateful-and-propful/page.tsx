@@ -2,15 +2,15 @@
 import EditableContent from "@/components/EditableContent";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext";
-import StatefulAndPropfulBox from "@/components/TestComponents/StatefulAndPropfulBox";
-import StatefulBox from "@/components/TestComponents/StatefulBox";
+import StatefulAndPropfulBox from "@/components/Wrappers/StatefulAndPropfulBox";
+import StatefulBox from "@/components/Wrappers/StatefulBox";
 import { Box, Button, Typography } from "@mui/material";
 import EditTextButton from "@/components/EditTextButton";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import ContentRefCurrentInnerHTMLDisplay from "@/components/DisplayComponents/ContentRefCurrentInnerHTMLDisplay";
 import SelectionDisplay from "@/components/DisplayComponents/SelectionDisplay";
 import RenderedContent from "@/components/RenderedContent";
-import NextPageLink from "@/components/TestComponents/NextPageLink";
+import NextPageLink from "@/components/LayoutComponents/NextPageLink";
 
 const initialHTML = `​Normal ​Text<br>
 <div id=\"portal-container-3dbccd2a-6a07-460b-b2d2-fff8ba8e0595\" data-button-key=\"stateful-and-propful\" style=\"display: inline;\">First Stateful ​and ​Propful ​Component</div>

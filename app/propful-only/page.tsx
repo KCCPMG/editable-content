@@ -1,15 +1,15 @@
 "use client"
 import { EditableContentContextProvider } from "@/context/EditableContentContext";
 import { useState } from "react";
-import PropfulBox from "@/components/TestComponents/PropfulBox";
-import StatefulBox from "@/components/TestComponents/StatefulBox";
+import PropfulBox from "@/components/Wrappers/PropfulBox";
+import StatefulBox from "@/components/Wrappers/StatefulBox";
 import IncreaseColorButton from "./IncreaseColorButton";
 import EditableContent from "@/components/EditableContent";
 import { Container, Button, Box, Typography } from "@mui/material";
 import EditTextButton from "@/components/EditTextButton";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import RenderedContent from "@/components/RenderedContent";
-import NextPageLink from "@/components/TestComponents/NextPageLink";
+import NextPageLink from "@/components/LayoutComponents/NextPageLink";
 import { FormatBold, FormatItalic } from "@mui/icons-material";
 
 const initialHTML = `
