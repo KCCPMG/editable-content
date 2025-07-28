@@ -62,8 +62,8 @@ export default function EditableContent({className, disableNewLines }: EditableC
       contentRef.current.innerHTML = dehydratedHTML;
       console.log("initialRender in if block");
 
-      console.log(contentRef.current.innerHTML);
-      console.log(portals.length);
+      // console.log(contentRef.current.innerHTML);
+      // console.log(portals.length);
 
       // load react portals
       const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;

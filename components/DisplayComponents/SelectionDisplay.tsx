@@ -17,7 +17,7 @@ export default function SelectionDisplay({show}: SelectionToStringDisplayProps) 
   } = useEditableContentContext()
 
   return (
-    <DisplayContainer title="Selection Text (selectionToString)" showInitial={!show}>
+    <DisplayContainer title="Selection Text (selectionToString)" showInitial={!!show}>
       <TableContainer>
         <Table>
           <TableBody>
