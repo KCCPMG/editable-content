@@ -200,7 +200,6 @@ export default function Page() {
                 justifyContent: "left"
               }} 
             >
-
               <Box
                 sx={{
                   width: 'fit-content',

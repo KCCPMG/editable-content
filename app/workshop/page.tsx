@@ -1,21 +1,13 @@
 "use client"
-import DisplayContainer from "@/components/DisplayComponents/DisplayContainer";
-import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
-import { Box, Button, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import { EditableContentContextProvider } from "@/context/EditableContentContext";
 import StatefulBox from "@/components/Wrappers/StatefulBox";
 import MultiLevelBox from "@/components/Wrappers/MultilLevelBox";
 import UnderlineColor from "@/components/Wrappers/UnderlineColor";
 import EditableLink from "@/components/Wrappers/EditableLink"
-import EditableContent from "@/components/EditableContent";
-import EditTextButton from "@/components/EditTextButton";
-import FormatUnderlined from "@mui/icons-material/FormatUnderlined";
 import { useState } from "react";
-import RenderedContent from "@/components/RenderedContent";
-import { EditableLinkDialogContextProvider, useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
 import { ContextMenuContextProvider } from "@/context/ContextMenuContext";
-import LinkEditTextButton from "@/components/ButtonsAndUI/LinkEditTextButton";
-import EditableTextField from "@/components/ContentWrappers/EditableTextField";
+import ButtonAndContentContainer from "@/components/ContentWrappers/ButtonAndContentContainer";
 
 
 const initialHTML = `Text <div id="portal-container-040262ba-3545-4db7-a441-8fd975018686" data-button-key="editable-link" style="display: inline;">text</div> text`.replaceAll(/\n */g, '');
@@ -97,33 +89,7 @@ export default function Page() {
           }
         }}
       >
-        <EditableLinkDialogContextProvider>
-          {/* <EditHrefDialog 
-            isOpen={showHrefDialog} 
-            setIsOpen={setShowHrefDialog}
-            href={href}
-            setHref={setHref}
-            portalId={portalIdForHrefDialog}
-          /> */}
-          <Container>
-            <LinkEditTextButton>
-              Link
-            </LinkEditTextButton>
-            <EditTextButton
-              dataKey="underlined"
-              isMUIButton={true}
-            >
-              <FormatUnderlined />
-            </EditTextButton>
-            {editMode ? <EditableTextField /> : <RenderedContent />}
-            <Button onClick={() => setEditMode(em => (!em))}>
-              {editMode ? "Render Text" : "Edit Text"}
-            </Button>
-            <DisplayContainer showInitial={false} title="Test" />
-            <AllPropsDisplay show={false} />
-            <DisplayContainer showInitial={false} title="Test" />
-          </Container>
-        </EditableLinkDialogContextProvider>
+        <ButtonAndContentContainer />
       </EditableContentContextProvider>
     </ContextMenuContextProvider>
   )
