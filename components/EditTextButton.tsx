@@ -160,7 +160,7 @@ export default function EditTextButton({
       const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
       
       // if at end of react component
-      if (range.startContainer === lastTextNode && range.startOffset > lastTextIndex) {
+      if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
         breakElementAtEnd(targetDiv, selection);
         return;
       }
@@ -206,7 +206,7 @@ export default function EditTextButton({
         const lastTextNode = getLastValidTextNode(textNodes);
         const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
     
-        if (range.startContainer === lastTextNode && range.startOffset > lastTextIndex) {
+        if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
           breakElementAtEnd(element, selection);
           return;
         }

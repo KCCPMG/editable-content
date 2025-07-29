@@ -310,56 +310,10 @@ function alternateAlternateBisect(boundingElement?: Node) {
 // if node is bad return its Children
 // if node is good return node
 
-const zwsRE = new RegExp(/\u200B/);
-
-function textNodeIsCushioned(textNode: Text) {
-  const content = textNode.textContent;
-  return !!(
-    !!content &&
-    content[0] === '\u200B' &&
-    content[content.length - 1] == '\u200B' &&
-    content.slice(1, content.length - 1).match(zwsRE) === null
-  );
-}
-
-
-function cushionTextNode(textNode: Text) {
-  if (!textNode.textContent) return;
-  const cleanedContent = textNode.textContent.replaceAll('\u200B', '');
-  textNode.textContent = '\u200B' + cleanedContent + '\u200B';
-}
-
-
-function resetTextNodesCushions(textNodes: Array<Text>) {
-  textNodes.forEach(tn => {
-    if (!textNodeIsCushioned(tn)) cushionTextNode(tn);
-  })
-}
 
 
 
-function getAllTextNodes(nodes: Array<Node>): Array<Node> {
-  const textNodes: Array<Node> = [];
-  
-  // let currentNode = node;
 
-  function descendNode(cn: Node) {
-    if (cn.nodeType === Node.TEXT_NODE) {
-      textNodes.push(cn);
-    }
-    if (cn.hasChildNodes()) {
-      for (let nextGeneration of Array.from(cn.childNodes)) {
-        descendNode(nextGeneration);
-      }
-    }
-  }
-
-  for (let currentNode of nodes) {
-    descendNode(currentNode);
-  }
-
-  return textNodes;
-}
 
 
 function cleanElementTypeFromSelection(elementName: string): void {

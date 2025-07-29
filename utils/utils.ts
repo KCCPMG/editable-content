@@ -1,6 +1,7 @@
 import { WrapperArgs } from "@/components";
 import React from "react";
 import { ReactElement } from "react";
+import { ZWS_RE } from "./constants";
 
 
 
@@ -39,6 +40,9 @@ export function resetSelectionToTextNodes(): Selection | null {
 
 
 export function resetRangeToTextNodes(range: Range) {
+
+  // console.log(range.startContainer, range.startContainer.nodeType !== Node.TEXT_NODE, range.endContainer.nodeType !== Node.TEXT_NODE);
+
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
     const startNode = range.startContainer.childNodes[range.startOffset];
     if (!startNode) return null;
@@ -388,13 +392,15 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
   if (!anchorNode || !focusNode) return;
   const range = selection.getRangeAt(0);
 
-  const limitingContainerRange = new Range();
-  // limitingContainerRange.setStart(limitingContainer, 0);
-  // limitingContainerRange.setEnd(limitingContainer, limitingContainer.childNodes.length - 1)
-  limitingContainerRange.setStartBefore(limitingContainer.childNodes[0]);
-  limitingContainerRange.setEndAfter(limitingContainer.childNodes[limitingContainer.childNodes.length-1])
-  const childNodes = getRangeChildNodes(limitingContainerRange, limitingContainer);
-  const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE);
+  // const limitingContainerRange = new Range();
+  // // limitingContainerRange.setStart(limitingContainer, 0);
+  // // limitingContainerRange.setEnd(limitingContainer, limitingContainer.childNodes.length - 1)
+  // limitingContainerRange.setStartBefore(limitingContainer.childNodes[0]);
+  // limitingContainerRange.setEndAfter(limitingContainer.childNodes[limitingContainer.childNodes.length-1])
+  // const childNodes = getRangeChildNodes(limitingContainerRange, limitingContainer);
+  // const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE);
+
+  const textNodes = getAllTextNodes([limitingContainer]);
 
 
   // range is collapsed
@@ -422,7 +428,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
             return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
           } 
           for (let i=content.length; i>0; i--) {
-            if (content[i] !== '\u200B') {
+            if (content[i-1] !== '\u200B') {
               return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
             }
           }
@@ -444,7 +450,13 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
             return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
           } 
           for (let i=content.length; i>0; i--) {
-            if (content[i] !== '\u200B') {
+            console.log({
+              "content.length": content.length,
+              "i": i,
+              "content[i-1]": content[i-1],
+              "content[i-1] === '\u200B'": content[i-1] === '\u200B',
+            })
+            if (content[i-1] !== '\u200B') {
               return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
             }
           }
@@ -901,6 +913,30 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
 
 
 
+export function getAllTextNodes(nodes: Array<Node>): Array<Text> {
+  const textNodes: Array<Text> = [];
+  
+  // let currentNode = node;
+
+  function descendNode(cn: Node) {
+    if (cn.nodeType === Node.TEXT_NODE) {
+      textNodes.push(cn as Text);
+    }
+    if (cn.hasChildNodes()) {
+      for (let nextGeneration of Array.from(cn.childNodes)) {
+        descendNode(nextGeneration);
+      }
+    }
+  }
+
+  for (let currentNode of nodes) {
+    descendNode(currentNode);
+  }
+
+  return textNodes;
+}
+
+
 export function getLastValidTextNode(textNodeArr: Array<Text>) {
   for (let i=textNodeArr.length-1; i>=0; i--) {
     const textNode = textNodeArr[i];
@@ -912,8 +948,18 @@ export function getLastValidTextNode(textNodeArr: Array<Text>) {
 
 export function getLastValidCharacterIndex(textNode: Text) {
   if (!textNode.textContent) return 0;
+  console.log("length:", textNode.textContent.length);
+  if (textNode.textContent[textNode.textContent.length -1] !== '\u200B') {
+    console.log("returning ", textNode.textContent.length);
+    return textNode.textContent.length;
+  }
+
+  // else
   for (let i=textNode.length-1; i--; i>=0) {
-    if (textNode.textContent[i].match("[^\u200B]")) return i+1;
+    if (textNode.textContent[i].match("[^\u200B]")) {
+      console.log("returning ", i+1);
+      return i+1;
+    }
   }
   return 0;
 }
@@ -922,4 +968,38 @@ export function getIsReactComponent(component: ReactElement) {
   if (!React.isValidElement(component)) return false;
   return (typeof component.type === "function" || 
     typeof component.type === "object");
+}
+
+
+export function textNodeIsCushioned(textNode: Text) {
+  const content = textNode.textContent;
+  if (!content) return false;
+  return !!(
+    content[0] === '\u200B' &&
+    content[content.length - 1] == '\u200B' &&
+    content.slice(1, content.length - 1).match(ZWS_RE) === null
+  );
+}
+
+
+export function cushionTextNode(textNode: Text) {
+  if (!textNode.textContent) return;
+  if (textNode.textContent[0] !== '\u200B') textNode.insertData(0, '\u200B');
+  if (textNode.textContent[textNode.textContent.length - 1] !== '\u200B') {
+    textNode.insertData(textNode.textContent.length, '\u200B');
+  }
+  for (let i=textNode.textContent.length-2; i>1; i--) {
+    if (textNode.textContent[i] === '\u200B') {
+      textNode.deleteData(i, 1);
+    }
+  } 
+  // const cleanedContent = textNode.textContent.replaceAll('\u200B', '');
+  // textNode.textContent = '\u200B' + cleanedContent + '\u200B';
+}
+
+
+export function resetTextNodesCushions(textNodes: Array<Text>) {
+  textNodes.forEach(tn => {
+    if (!textNodeIsCushioned(tn)) cushionTextNode(tn);
+  })
 }

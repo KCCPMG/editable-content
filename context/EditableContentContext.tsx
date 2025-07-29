@@ -1,10 +1,10 @@
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent } from "@/utils/utils";
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent, resetTextNodesCushions, getAllTextNodes, textNodeIsCushioned } from "@/utils/utils";
 import { EditableContentProps, EditTextButtonObject, WrapperInstructions, WrapperArgs } from "@/components";
 import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { renderToString } from "react-dom/server";
 import { v4 as uuidv4 } from 'uuid';
-import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
+import { PORTAL_CONTAINER_ID_PREFIX, ZWS_RE } from "@/utils/constants";
 
 
 
@@ -353,12 +353,26 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     // get all text nodes in contentRef.current, make sure 
     // that they begin and end with a zero width space
     // make sure they do not contain any other zero width spaces?
+    console.log(window.getSelection());
+
     if (contentRef.current) {
-      
+      const textNodes = getAllTextNodes([contentRef.current]);
+      textNodes.forEach(tn => {
+        if (!textNodeIsCushioned(tn)) {
+          console.log(tn, false);
+          const content = tn.textContent;
+          console.log("!!content", !!content);
+          console.log("content[0] === '\u200B", !!content && content[0] === '\u200B');
+          console.log("content[content.length - 1] == '\u200B'", !!content && content[content.length - 1] == '\u200B', content![content!.length-1], content!.charCodeAt(content!.length - 1));
+          console.log("content.slice(1, content.length - 1).match(ZWS_RE) === null", !!content && content.slice(1, content.length - 1).match(ZWS_RE) === null)
+        }
+      })
+      resetTextNodesCushions(textNodes);
     }
 
 
     // end
+    console.log(window.getSelection());
 
     if (hasSelection) resetSelectionToTextNodes();
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
