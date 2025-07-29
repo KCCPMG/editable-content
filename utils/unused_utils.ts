@@ -310,6 +310,31 @@ function alternateAlternateBisect(boundingElement?: Node) {
 // if node is bad return its Children
 // if node is good return node
 
+const zwsRE = new RegExp(/\u200B/);
+
+function textNodeIsCushioned(textNode) {
+  const content = textNode.textContent;
+  return !!(
+    content[0] === '\u200B' &&
+    content[content.length - 1] == '\u200B' &&
+    content.slice(1, content.length - 1).match(zwsRE) === null
+  );
+}
+
+
+function cushionTextNode(textNode) {
+  const cleanedContent = textNode.textContent.replaceAll('\u200B', '');
+  textNode.textContent = '\u200B' + cleanedContent + '\u200B';
+}
+
+
+function resetTextNodesCushions(textNodes) {
+  textNodes.forEach(tn => {
+    if (!textNodeIsCushioned(tn)) cushionTextNode(tn);
+  })
+}
+
+
 
 function getAllTextNodes(nodes: Array<Node>): Array<Node> {
   const textNodes: Array<Node> = [];

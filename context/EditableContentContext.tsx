@@ -349,6 +349,17 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
    * focus on contentRef
    */
   function updateContent() {
+
+    // get all text nodes in contentRef.current, make sure 
+    // that they begin and end with a zero width space
+    // make sure they do not contain any other zero width spaces?
+    if (contentRef.current) {
+      
+    }
+
+
+    // end
+
     if (hasSelection) resetSelectionToTextNodes();
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
     contentRef.current?.focus();

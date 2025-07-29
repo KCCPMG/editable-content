@@ -102,6 +102,7 @@ export default function EditTextButton({
       else if (!selected) {
         if (isReactComponent) {
           // if isReactComponent, can assert wrapperInstructions as ReactElement
+          console.log(wrapper, dataKey);
           const portalId = createContentPortal(wrapper, dataKey);
           if (selectCallback) {
             console.log("there's a selectCallback here");
@@ -294,7 +295,7 @@ export default function EditTextButton({
           setBeingClicked(true);
         }}
         onClick={() => { 
-          handleEditTextButtonClick() 
+          handleEditTextButtonClick();
           setBeingClicked(false);
         }}
         variant={selected ? 

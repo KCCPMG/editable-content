@@ -396,12 +396,41 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
   const childNodes = getRangeChildNodes(limitingContainerRange, limitingContainer);
   const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE);
 
+
   // range is collapsed
   if (direction === "none") {
+
+    let indexOfTextNode = textNodes.findIndex(tn => tn === anchorNode);
+
     if (moveDirection === "left") {
 
       if (anchorOffset > 0) {
-        selection.setBaseAndExtent(anchorNode, anchorOffset-1, anchorNode, anchorOffset-1);
+
+        for (let i=anchorOffset-1; i>0; i--) {
+          if (anchorNode.textContent && anchorNode.textContent[i] !== '\u200B') {
+            return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
+          }
+        }
+
+        // if hitting 0 and still no textContent
+        while (indexOfTextNode > 0) {
+          indexOfTextNode--;
+          const currentTextNode = textNodes[indexOfTextNode];
+          const content = currentTextNode.textContent;
+          if (!content) continue;
+          if (content === '\u200B\u200B') {
+            return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
+          } 
+          for (let i=content.length; i>0; i--) {
+            if (content[i-1] !== '\u200B') {
+              return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
+            }
+          }
+        }
+        return;
+
+        // old below
+        // selection.setBaseAndExtent(anchorNode, anchorOffset-1, anchorNode, anchorOffset-1);
       } 
       else {
 
@@ -416,8 +445,40 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
   
 
     } else if (moveDirection === "right") {
-      if (anchorOffset < (anchorNode?.textContent?.length || 0)) {
-        selection.setBaseAndExtent(anchorNode, anchorOffset+1, anchorNode, anchorOffset+1);
+
+      if (anchorNode.textContent && anchorOffset<anchorNode?.textContent?.length) {
+
+        console.log(anchorNode.textContent[anchorOffset], anchorNode.textContent[anchorOffset] !== '\u200B');
+        if (anchorNode.textContent[anchorOffset] !== '\u200B') {
+          return selection.setBaseAndExtent(anchorNode, anchorOffset+1, anchorNode, anchorOffset+1);
+        } 
+        else { // if hitting edge of text
+          console.log("hitting else");
+          for (let i=anchorOffset; i<=anchorNode?.textContent?.length; i++) {
+            if (anchorNode.textContent[i] !== '\u200B') {
+              console.log("setting anchorNode before", anchorNode.textContent[i])
+              return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
+            }
+          }
+
+          while (indexOfTextNode < textNodes.length) {
+            indexOfTextNode++;
+            const currentTextNode = textNodes[indexOfTextNode];
+            const content = currentTextNode.textContent;
+            if (!content) continue;
+            if (content === '\u200B\u200B') {
+              return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
+            }
+            for (let i=0; i<content.length; i++) {
+              if (content[i] !== '\u200B') {
+                return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
+              }
+            }
+          }
+        }
+
+        // old
+        // selection.setBaseAndExtent(anchorNode, anchorOffset+1, anchorNode, anchorOffset+1);
       }
       else {
 
