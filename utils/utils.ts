@@ -406,7 +406,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
 
       if (anchorOffset > 0) {
 
-        for (let i=anchorOffset-1; i>0; i--) {
+        for (let i=anchorOffset-1; i>=0; i--) {
           if (anchorNode.textContent && anchorNode.textContent[i] !== '\u200B') {
             return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
           }
@@ -422,7 +422,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
             return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
           } 
           for (let i=content.length; i>0; i--) {
-            if (content[i-1] !== '\u200B') {
+            if (content[i] !== '\u200B') {
               return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
             }
           }
@@ -434,17 +434,36 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
       } 
       else {
 
-        const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
+        // if hitting 0 and still no textContent
+        while (indexOfTextNode > 0) {
+          indexOfTextNode--;
+          const currentTextNode = textNodes[indexOfTextNode];
+          const content = currentTextNode.textContent;
+          if (!content) continue;
+          if (content === '\u200B\u200B') {
+            return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
+          } 
+          for (let i=content.length; i>0; i--) {
+            if (content[i] !== '\u200B') {
+              return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
+            }
+          }
+        }
+        return;
 
-        if (thisIndex > 0) {
-          const leftTextNode = textNodes[thisIndex - 1];
-          if (!leftTextNode) return;
-          selection.setBaseAndExtent(leftTextNode, leftTextNode.textContent?.length || 0, leftTextNode, leftTextNode.textContent?.length || 0);
-        } else return;
+        // const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
+
+        // if (thisIndex > 0) {
+        //   const leftTextNode = textNodes[thisIndex - 1];
+        //   if (!leftTextNode) return;
+        //   selection.setBaseAndExtent(leftTextNode, leftTextNode.textContent?.length || 0, leftTextNode, leftTextNode.textContent?.length || 0);
+        // } else return;
       }
   
 
     } else if (moveDirection === "right") {
+
+      // console.log("moving right from ", anchorNode, anchorOffset, anchorNode.textContent[anchorOffset]);
 
       if (anchorNode.textContent && anchorOffset<anchorNode?.textContent?.length) {
 
@@ -454,12 +473,14 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
         } 
         else { // if hitting edge of text
           console.log("hitting else");
-          for (let i=anchorOffset; i<=anchorNode?.textContent?.length; i++) {
-            if (anchorNode.textContent[i] !== '\u200B') {
+          for (let i=anchorOffset+1; i<=anchorNode?.textContent?.length; i++) {
+            if (anchorNode.textContent[i-1] !== '\u200B') {
               console.log("setting anchorNode before", anchorNode.textContent[i])
               return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
             }
           }
+
+          console.log("leaving this text node")
 
           while (indexOfTextNode < textNodes.length) {
             indexOfTextNode++;
@@ -471,6 +492,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
             }
             for (let i=0; i<content.length; i++) {
               if (content[i] !== '\u200B') {
+                console.log("setting anchorNode before", content);
                 return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
               }
             }
@@ -482,13 +504,29 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
       }
       else {
 
-        const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
+        while (indexOfTextNode < textNodes.length) {
+          indexOfTextNode++;
+          const currentTextNode = textNodes[indexOfTextNode];
+          const content = currentTextNode.textContent;
+          if (!content) continue;
+          if (content === '\u200B\u200B') {
+            return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
+          }
+          for (let i=0; i<content.length; i++) {
+            if (content[i] !== '\u200B') {
+              return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
+            }
+          }
+        }
 
-        if (thisIndex < textNodes.length - 1) {
-          const rightTextNode = textNodes[thisIndex + 1];
-          if (!rightTextNode) return;
-          selection.setBaseAndExtent(rightTextNode, 0, rightTextNode, 0);
-        } else return;
+
+        // const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
+
+        // if (thisIndex < textNodes.length - 1) {
+        //   const rightTextNode = textNodes[thisIndex + 1];
+        //   if (!rightTextNode) return;
+        //   selection.setBaseAndExtent(rightTextNode, 0, rightTextNode, 0);
+        // } else return;
       }
     }
 

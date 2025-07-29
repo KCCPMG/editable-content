@@ -312,9 +312,10 @@ function alternateAlternateBisect(boundingElement?: Node) {
 
 const zwsRE = new RegExp(/\u200B/);
 
-function textNodeIsCushioned(textNode) {
+function textNodeIsCushioned(textNode: Text) {
   const content = textNode.textContent;
   return !!(
+    !!content &&
     content[0] === '\u200B' &&
     content[content.length - 1] == '\u200B' &&
     content.slice(1, content.length - 1).match(zwsRE) === null
@@ -322,13 +323,14 @@ function textNodeIsCushioned(textNode) {
 }
 
 
-function cushionTextNode(textNode) {
+function cushionTextNode(textNode: Text) {
+  if (!textNode.textContent) return;
   const cleanedContent = textNode.textContent.replaceAll('\u200B', '');
   textNode.textContent = '\u200B' + cleanedContent + '\u200B';
 }
 
 
-function resetTextNodesCushions(textNodes) {
+function resetTextNodesCushions(textNodes: Array<Text>) {
   textNodes.forEach(tn => {
     if (!textNodeIsCushioned(tn)) cushionTextNode(tn);
   })
