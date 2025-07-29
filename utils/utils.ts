@@ -483,8 +483,11 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
           console.log("leaving this text node")
 
           while (indexOfTextNode < textNodes.length) {
+            console.log(indexOfTextNode, textNodes.length);
             indexOfTextNode++;
+            console.log(indexOfTextNode, textNodes.length);
             const currentTextNode = textNodes[indexOfTextNode];
+            if (!currentTextNode) continue;
             const content = currentTextNode.textContent;
             if (!content) continue;
             if (content === '\u200B\u200B') {
@@ -504,9 +507,16 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
       }
       else {
 
+        console.log("from the else block");
+        console.log(indexOfTextNode, textNodes.length);
+
+
         while (indexOfTextNode < textNodes.length) {
+          console.log(indexOfTextNode, textNodes.length);
           indexOfTextNode++;
+          console.log(indexOfTextNode, textNodes.length);
           const currentTextNode = textNodes[indexOfTextNode];
+          if (!currentTextNode) continue;
           const content = currentTextNode.textContent;
           if (!content) continue;
           if (content === '\u200B\u200B') {
@@ -518,6 +528,8 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
             }
           }
         }
+
+        return;
 
 
         // const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
@@ -531,17 +543,17 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
     }
 
     // handle check for zero width space character, recursion
-    if (
-      selection &&
-      selection.anchorNode &&
-      selection.anchorNode.textContent &&
-      (
-        selection?.anchorNode?.textContent[selection.anchorOffset] === "\u200B" ||
-        selection?.anchorNode?.textContent[selection.anchorOffset] === undefined 
-      )
-    ) {
-      moveSelection(selection, limitingContainer, moveDirection);
-    }
+    // if (
+    //   selection &&
+    //   selection.anchorNode &&
+    //   selection.anchorNode.textContent &&
+    //   (
+    //     selection?.anchorNode?.textContent[selection.anchorOffset] === "\u200B" ||
+    //     selection?.anchorNode?.textContent[selection.anchorOffset] === undefined 
+    //   )
+    // ) {
+    //   moveSelection(selection, limitingContainer, moveDirection);
+    // }
     return;
 
   }
