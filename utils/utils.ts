@@ -975,6 +975,7 @@ export function textNodeIsCushioned(textNode: Text) {
   const content = textNode.textContent;
   if (!content) return false;
   return !!(
+    content.length >= 2 &&
     content[0] === '\u200B' &&
     content[content.length - 1] == '\u200B' &&
     content.slice(1, content.length - 1).match(ZWS_RE) === null
@@ -984,6 +985,20 @@ export function textNodeIsCushioned(textNode: Text) {
 
 export function cushionTextNode(textNode: Text) {
   if (!textNode.textContent) return;
+
+  if (textNode.textContent.length === 0) {
+    textNode.insertData(0, '\u200B\u200B');
+    return;
+  }
+
+  if (textNode.textContent.length === 1) {
+    if (textNode.textContent[0] === '\u200B') {
+      textNode.insertData(1, '\u200B');
+      return;
+    }
+    // else continue
+  }
+
   if (textNode.textContent[0] !== '\u200B') textNode.insertData(0, '\u200B');
   if (textNode.textContent[textNode.textContent.length - 1] !== '\u200B') {
     textNode.insertData(textNode.textContent.length, '\u200B');

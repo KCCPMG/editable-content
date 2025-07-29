@@ -1,6 +1,6 @@
 import { ContextMenuContext, ContextMenuContextType, useContextMenuContext } from "@/context/ContextMenuContext";
 import { EditableContentContextType, useEditableContentContext } from "@/context/EditableContentContext";
-import { useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
+import { EditableLinkDialogContext, useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
 import { Container, Link, Box, Dialog, DialogTitle, Button, DialogActions, DialogContent, TextField } from "@mui/material";
 import { Dispatch, MutableRefObject, ReactElement, SetStateAction, useEffect, useRef, useState, useContext } from "react";
 
@@ -26,6 +26,7 @@ export default function EditableLink({href, children, portalId, key, getContext,
   const { updatePortalProps=undefined } = getContext ? getContext() : {};
 
   const menuContext = useContext(ContextMenuContext);
+  const editableLinkDialogContext = useContext(EditableLinkDialogContext);
 
 
   return (
@@ -47,7 +48,8 @@ export default function EditableLink({href, children, portalId, key, getContext,
               key: "option-2",
               children: "Change URL",
               onClick: (e) => {
-                setShowEditHrefDialog(true);
+                editableLinkDialogContext?.setPortalId(portalId);
+                // setShowEditHrefDialog(true);
                 menuContext.depopulateAndHideContextMenu();
               }
             }

@@ -1,4 +1,4 @@
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent, resetTextNodesCushions, getAllTextNodes, textNodeIsCushioned } from "@/utils/utils";
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent, resetTextNodesCushions, getAllTextNodes, textNodeIsCushioned, cushionTextNode } from "@/utils/utils";
 import { EditableContentProps, EditTextButtonObject, WrapperInstructions, WrapperArgs } from "@/components";
 import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -61,6 +61,10 @@ declare global {
     removePortal?: any;
     updateSelection?: any;
     dehydratedHTML?: any;
+    getAllTextNodes: any;
+    textNodeIsCushioned: (textNode: Text) => boolean;
+    cushionTextNode: (textNode: Text) => void;
+    resetTextNodesCushions: (textNodes: Array<Text>) => void;
   }
 }
 
@@ -168,7 +172,11 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     window.appendPortalToDiv = appendPortalToDiv,
     window.removePortal = removePortal,
     window.updateSelection = updateSelection,
-    window.dehydratedHTML = dehydratedHTML
+    window.dehydratedHTML = dehydratedHTML,
+    window.getAllTextNodes = getAllTextNodes,
+    window.textNodeIsCushioned = textNodeIsCushioned,
+    window.cushionTextNode = cushionTextNode,
+    window.resetTextNodesCushions = resetTextNodesCushions
   }, [])
 
   /**
@@ -434,7 +442,17 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     const selection = window.getSelection();
     if (!selection) return;
     const range = selection.getRangeAt(0);
-    const text = range.toString() || '\u200B';
+
+    // expanding assignment to allow insertion of other logic if need be
+    const text = (function() {
+      const rangeToString = range.toString();
+      if (rangeToString.length > 0) {
+        return rangeToString;
+      }
+      else {
+        return '\u200B\u200B';
+      }
+    }());
     const contents = range?.extractContents();
     range.insertNode(newDiv);
 

@@ -27,7 +27,7 @@ export type EditableLinkDialogContextType = {
   
 }
 
-const EditableLinkDialogContext = createContext<EditableLinkDialogContextType | null>(null);
+export const EditableLinkDialogContext = createContext<EditableLinkDialogContextType | null>(null);
 
 
 
