@@ -1,6 +1,8 @@
 import { useState, createContext, useContext, Dispatch, SetStateAction, useEffect, ReactElement } from "react";
 import { useEditableContentContext } from "./EditableContentContext";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
+import { getAllTextNodes, getLastValidCharacterIndex, getLastValidTextNode } from "@/utils/utils";
 // import EditHrefDialog from "@/components/TestComponents/EditHrefDialog";
 
 type EditLinkDialogContextProps = {
@@ -42,7 +44,6 @@ export function EditableLinkDialogContextProvider({children}: EditLinkDialogCont
 
   // populate and show dialog
   useEffect(function() {
-    console.log({portalId});
     if (portalId) {
       const foundPortal = portals.find(portal => portal.key === portalId);
       if (foundPortal) {
@@ -92,6 +93,28 @@ export function EditableLinkDialogContextProvider({children}: EditLinkDialogCont
     setHref("");
     setPortalId(undefined);
     setShowDialog(false);
+
+    // get portal div, set selection to end of text
+    const targetId = PORTAL_CONTAINER_ID_PREFIX + portalId;
+    const containingDiv = document.querySelector(`#${targetId}`);
+
+    console.log(targetId)
+
+    console.log(containingDiv);
+
+    if (containingDiv) {
+      const textNodes = getAllTextNodes([containingDiv]);
+      if (textNodes.length > 0) {
+        const targetText = getLastValidTextNode(textNodes);
+        const offset = getLastValidCharacterIndex(targetText);
+        const selection = window.getSelection();
+        if (selection) {
+          selection.setBaseAndExtent(targetText, offset, targetText, offset);
+        }
+      }
+
+    }
+
   }
 
 
