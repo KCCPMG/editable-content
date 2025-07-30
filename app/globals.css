@@ -30,4 +30,5 @@ body {
   border-top: 1px solid black;
   overflow-y: scroll;
   padding: 6px;
+  outline: none;
 }
