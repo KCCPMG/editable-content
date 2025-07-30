@@ -1018,3 +1018,25 @@ export function resetTextNodesCushions(textNodes: Array<Text>) {
     if (!textNodeIsCushioned(tn)) cushionTextNode(tn);
   })
 }
+
+
+/**
+ * Identify all text nodes which should be deleted because they 
+ * meet the following criteria:
+ * - Neither the first nor last text node
+ * - They are empty except for zero width spaces
+ * - They are direct descendents of the container
+ * - They are not in the current selection
+ */
+export function identifyBadTextNodes(textNodes: Array<Text>, parentContainer: Node) {
+  const selection = window?.getSelection() || null;
+
+  if (textNodes.length <= 2) return [];
+  else return textNodes.slice(1, textNodes.length-1).filter(tn => {
+    return (
+      tn.textContent === '\u200B\u200B' &&
+      tn.parentNode === parentContainer && 
+      (!(selection && selection.containsNode(tn)))
+    )
+  })
+}

@@ -1,4 +1,4 @@
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent, resetTextNodesCushions, getAllTextNodes, textNodeIsCushioned, cushionTextNode } from "@/utils/utils";
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent, resetTextNodesCushions, getAllTextNodes, textNodeIsCushioned, cushionTextNode, identifyBadTextNodes } from "@/utils/utils";
 import { EditableContentProps, EditTextButtonObject, WrapperInstructions, WrapperArgs } from "@/components";
 import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -376,6 +376,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
         }
       })
       resetTextNodesCushions(textNodes);
+      const badTextNodes = identifyBadTextNodes(textNodes, contentRef.current);
+      badTextNodes.forEach(btn => btn.remove());
     }
 
 
