@@ -946,21 +946,39 @@ export function getLastValidTextNode(textNodeArr: Array<Text>) {
 }
 
 
-export function getLastValidCharacterIndex(textNode: Text) {
+/**
+ * Look for place to put cursor at end of text node
+ * Finds last valid (non-zero width space) character in a text node,
+ * returns its index
+ * If text node is only zero width spaces, return 1
+ * If no text return 0
+ * @param textNode 
+ * @returns number
+ */
+export function getLastValidCharacterIndex(textNode: Text): number {
   if (!textNode.textContent) return 0;
-  console.log("length:", textNode.textContent.length);
-  if (textNode.textContent[textNode.textContent.length -1] !== '\u200B') {
+
+  const content = textNode.textContent;
+
+  // if node is cushioned but empty of valid characters
+  if (content.split("").every(ch => ch === '\u200B')) {
+    return 1;
+  }
+
+  // if last character is not zero width space, return full length
+  if (content[content.length - 1] !== '\u200B') {
     console.log("returning ", textNode.textContent.length);
     return textNode.textContent.length;
   }
 
-  // else
+  // else move backwards, return after last valid (non-zws) character
   for (let i=textNode.length-1; i--; i>=0) {
     if (textNode.textContent[i].match("[^\u200B]")) {
       console.log("returning ", i+1);
       return i+1;
     }
   }
+  // fallback
   return 0;
 }
 
