@@ -361,7 +361,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     // get all text nodes in contentRef.current, make sure 
     // that they begin and end with a zero width space
     // make sure they do not contain any other zero width spaces?
-    console.log(window.getSelection());
+    // console.log(window.getSelection());
 
     if (contentRef.current) {
       const textNodes = getAllTextNodes([contentRef.current]);
@@ -382,7 +382,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
 
 
     // end
-    console.log(window.getSelection());
+    // console.log(window.getSelection());
 
     if (hasSelection) resetSelectionToTextNodes();
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");

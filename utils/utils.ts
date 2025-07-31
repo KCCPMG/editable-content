@@ -705,7 +705,7 @@ export function selectionIsDescendentOfNode(selection: Selection, ancestorElemen
 
 
 /**
- * Creates a treewalker to walk a range, returns all nodes;
+ * Creates a TreeWalker to walk a range, returns all nodes;
  * siblings and children.
  * @param selection 
  * @param limitingContainer 

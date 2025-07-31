@@ -225,7 +225,6 @@ export default function EditableContent({className, disableNewLines }: EditableC
               !e.ctrlKey &&
               !e.metaKey
             ) {
-              // console.log("shift key and left")
               e.preventDefault();
               shiftSelection(selection, contentRef.current, "left");
             } 
@@ -251,7 +250,12 @@ export default function EditableContent({className, disableNewLines }: EditableC
               e.preventDefault();
               shiftSelection(selection, contentRef.current, "right");
             } 
-          }    
+          }   
+          
+          if (e.code === "Delete") {
+            console.log("delete")
+          }
+
         }}
         className={className}
         // style={divStyle ? divStyle : {
