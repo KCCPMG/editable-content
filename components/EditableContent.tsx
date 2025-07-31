@@ -1,6 +1,6 @@
 "use client"
 import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect } from "react";
-import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection, shiftSelection } from '@/utils/utils';
+import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection, shiftSelection, getSelectionDirection } from '@/utils/utils';
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
@@ -89,6 +89,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
         updateSelection();
       }
       else {
+        console.log("hello selection change here")
         handleSelectionChange();
       } 
     })
@@ -144,7 +145,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
       selection?.anchorNode?.nodeType !== Node.TEXT_NODE &&
       selection?.focusNode?.nodeType !== Node.TEXT_NODE
     ) {
-      // console.log("selectionHasTextNodes", selectionHasTextNodes(selection, contentRef.current));
+      console.log("selectionHasTextNodes", selectionHasTextNodes(selection, contentRef.current));
       if (selectionHasTextNodes(selection, contentRef.current)) {
         resetSelectionToTextNodes();
       } else {
@@ -159,6 +160,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
       }
     }
     else {
+      // resetSelectionToTextNodes();
       updateSelection();
     } 
   }
@@ -253,7 +255,22 @@ export default function EditableContent({className, disableNewLines }: EditableC
           }   
           
           if (e.code === "Delete") {
-            console.log("delete")
+            if (
+              !e.shiftKey &&
+              !e.altKey &&
+              !e.ctrlKey &&
+              !e.metaKey
+            ) {
+              console.log("delete");
+              // TODO: replace use of getSelectionDirection with something simpler 
+              const direction = getSelectionDirection(selection);
+              if (direction === "none"){
+                e.preventDefault();
+                shiftSelection(selection, contentRef.current, "right");
+                selection.getRangeAt(0).deleteContents();
+                updateContent();
+              }
+            }
           }
 
         }}

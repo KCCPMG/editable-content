@@ -32,8 +32,9 @@ export function resetSelectionToTextNodes(): Selection | null {
   selection = window.getSelection();
   if (!selection) return null;
 
-  selection.removeAllRanges();
-  selection.addRange(modifiedRange);
+  // this is causing an infinite loop if reset called on every selection
+  // selection.removeAllRanges(); 
+  // selection.addRange(modifiedRange);
 
   return selection;
 }
@@ -49,8 +50,38 @@ export function resetRangeToTextNodes(range: Range) {
     const tw = document.createTreeWalker(startNode);
     while (true) {
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
-        range.setStart(tw.currentNode, 0);
-        break;
+
+        const currentNode = tw.currentNode;
+        const content = currentNode.textContent;
+
+        if (!content || (content.length === 0)) {
+          console.log("first if");
+          range.setStart(currentNode, 0);
+          break;
+        }
+
+        // if purely cushioned node, place after first zero-width space
+        if (tw.currentNode.textContent?.split("").every(ch => ch === '\u200B')) {
+          console.log("second if");
+          range.setStart(tw.currentNode, 1);
+          break;
+        }
+
+        // otherwise place before first non-zero-width space
+        else {
+          for (let i=0; i<content.length; i++) {
+            console.log("third if");
+            if (content[i] !== '\u200B') {
+              range.setStart(currentNode, i);
+              break;
+            }
+          }
+
+        }
+
+        // original
+        // range.setStart(tw.currentNode, 0);
+        // break;
       } else {
         if (!tw.nextNode()) break;
       }
@@ -626,6 +657,7 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
     
     if (focusNode.textContent && focusOffset<focusNode.textContent.length) {
       for (let i=focusOffset+1; i<focusNode.textContent.length; i++) {
+        console.log({textNodes, indexOfTextNode, focusNode, i})
         if (focusNode.textContent[i] !== '\u200B') {
           return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
         }

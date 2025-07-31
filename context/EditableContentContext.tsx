@@ -367,12 +367,12 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       const textNodes = getAllTextNodes([contentRef.current]);
       textNodes.forEach(tn => {
         if (!textNodeIsCushioned(tn)) {
-          console.log(tn, false);
-          const content = tn.textContent;
-          console.log("!!content", !!content);
-          console.log("content[0] === '\u200B", !!content && content[0] === '\u200B');
-          console.log("content[content.length - 1] == '\u200B'", !!content && content[content.length - 1] == '\u200B', content![content!.length-1], content!.charCodeAt(content!.length - 1));
-          console.log("content.slice(1, content.length - 1).match(ZWS_RE) === null", !!content && content.slice(1, content.length - 1).match(ZWS_RE) === null)
+          // console.log(tn, false);
+          // const content = tn.textContent;
+          // console.log("!!content", !!content);
+          // console.log("content[0] === '\u200B", !!content && content[0] === '\u200B');
+          // console.log("content[content.length - 1] == '\u200B'", !!content && content[content.length - 1] == '\u200B', content![content!.length-1], content!.charCodeAt(content!.length - 1));
+          // console.log("content.slice(1, content.length - 1).match(ZWS_RE) === null", !!content && content.slice(1, content.length - 1).match(ZWS_RE) === null)
         }
       })
       resetTextNodesCushions(textNodes);
