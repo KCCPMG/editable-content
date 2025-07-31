@@ -1,6 +1,6 @@
 "use client"
 import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect } from "react";
-import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection } from '@/utils/utils';
+import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection, shiftSelection } from '@/utils/utils';
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
@@ -219,6 +219,16 @@ export default function EditableContent({className, disableNewLines }: EditableC
               e.preventDefault();
               moveSelection(selection, contentRef.current, "left");
             }
+            else if (              
+              e.shiftKey &&
+              !e.altKey &&
+              !e.ctrlKey &&
+              !e.metaKey
+            ) {
+              // console.log("shift key and left")
+              e.preventDefault();
+              shiftSelection(selection, contentRef.current, "left");
+            } 
           }
 
           if (e.code === "ArrowRight") {
@@ -231,6 +241,16 @@ export default function EditableContent({className, disableNewLines }: EditableC
               e.preventDefault();
               moveSelection(selection, contentRef.current, "right");
             }
+            else if (              
+              e.shiftKey &&
+              !e.altKey &&
+              !e.ctrlKey &&
+              !e.metaKey
+            ) {
+              // console.log("shift key and left")
+              e.preventDefault();
+              shiftSelection(selection, contentRef.current, "right");
+            } 
           }    
         }}
         className={className}

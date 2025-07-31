@@ -390,15 +390,6 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
   const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
   if (selection.rangeCount === 0) return;
   if (!anchorNode || !focusNode) return;
-  const range = selection.getRangeAt(0);
-
-  // const limitingContainerRange = new Range();
-  // // limitingContainerRange.setStart(limitingContainer, 0);
-  // // limitingContainerRange.setEnd(limitingContainer, limitingContainer.childNodes.length - 1)
-  // limitingContainerRange.setStartBefore(limitingContainer.childNodes[0]);
-  // limitingContainerRange.setEndAfter(limitingContainer.childNodes[limitingContainer.childNodes.length-1])
-  // const childNodes = getRangeChildNodes(limitingContainerRange, limitingContainer);
-  // const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE);
 
   const textNodes = getAllTextNodes([limitingContainer]);
 
@@ -570,10 +561,97 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
 
   }
 
+  else {
 
-  // currently only being called when selection is cursor, shift key will change this logic
-  // no implementation yet for uncollapsed selection
+    console.log(moveDirection, direction);
 
+    if (moveDirection === "left" && direction === "backward") {
+      selection.setBaseAndExtent(focusNode, focusOffset, focusNode, focusOffset);
+    } 
+    else if (moveDirection === "left" && direction === "forward") {
+      selection.setBaseAndExtent(anchorNode, anchorOffset, anchorNode, anchorOffset);
+    } 
+    else if (moveDirection === "right" && direction === "backward") {
+      selection.setBaseAndExtent(anchorNode, anchorOffset, anchorNode, anchorOffset);
+    } 
+    else if (moveDirection === "right" && direction === "forward") {
+      selection.setBaseAndExtent(focusNode, focusOffset, focusNode, focusOffset);
+    } 
+
+
+    // shiftSelection(selection, limitingContainer, moveDirection);
+    // selection.setBaseAndExtent(focusNode, focusOffset, focusNode, focusOffset);
+  }
+}
+
+
+export function shiftSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
+
+  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+  if (selection.rangeCount === 0) return;
+  if (!anchorNode || !focusNode) return;
+
+  const textNodes = getAllTextNodes([limitingContainer]);
+  let indexOfTextNode = textNodes.findIndex(tn => tn === focusNode);
+
+
+  if (moveDirection === "left") {
+    
+    if (focusOffset > 0) {
+      for (let i=focusOffset-1; i>0; i--) {
+        if (focusNode.textContent && focusNode.textContent[i] !== '\u200B') {
+          return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
+        }
+      }
+    }
+
+    indexOfTextNode--;
+
+    while (indexOfTextNode >= 0) {
+      const currentTextNode = textNodes[indexOfTextNode];
+      const content = currentTextNode.textContent;
+      console.log("new text node:", content);
+      if (!content) continue;
+
+      for (let i=content.length-1; i>=0; i--) {
+        console.log({textNodes, indexOfTextNode, currentTextNode, focusOffset: i});
+        if (content[i] !== '\u200B') {
+          return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
+        }
+      }
+      indexOfTextNode--;
+    }
+    return;
+  } else if (moveDirection==="right") {
+    
+    if (focusNode.textContent && focusOffset<focusNode.textContent.length) {
+      for (let i=focusOffset+1; i<focusNode.textContent.length; i++) {
+        if (focusNode.textContent[i] !== '\u200B') {
+          return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
+        }
+      }
+    }
+
+    indexOfTextNode++;
+
+    while (indexOfTextNode < textNodes.length) {
+      const currentTextNode = textNodes[indexOfTextNode];
+      const content = currentTextNode.textContent;
+      console.log("new text node:", content);
+      if (!content) continue;    
+      const stoppingPoint = (indexOfTextNode === (textNodes.length-1)) ?
+        content.length + 1 :
+        content.length;
+      for (let i=0; i<stoppingPoint; i++) {
+        if (content[i] !== '\u200B') {
+          return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
+        }
+      }
+      indexOfTextNode++;
+    }
+  
+  
+  }
 }
 
 
