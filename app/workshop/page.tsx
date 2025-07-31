@@ -27,7 +27,7 @@ export default function Page() {
 
   return (
     <ContextMenuContextProvider>
-      <EditableContentContextProvider
+      {/* <EditableContentContextProvider
         initialHTML={initialHTML}
         keyAndWrapperObjs={[
           {
@@ -76,9 +76,9 @@ export default function Page() {
           }
         ]}
         
-      >
-        <ButtonAndContentContainer />
-      </EditableContentContextProvider>
+      > */}
+        {/* <ButtonAndContentContainer /> */}
+      {/* </EditableContentContextProvider> */}
     </ContextMenuContextProvider>
   )
 

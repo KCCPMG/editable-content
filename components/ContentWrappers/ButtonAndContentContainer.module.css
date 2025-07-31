@@ -1,0 +1,10 @@
+.ButtonAndContentContainerEditableContent {
+  width: 100%;
+  height: 250px;
+  margin: auto;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  overflow-y: scroll;
+  padding: 6px;
+  outline: none;
+}

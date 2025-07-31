@@ -1,11 +1,20 @@
-import { Box, Divider, Typography } from "@mui/material";
+import { Box, Button, Divider, Typography } from "@mui/material";
 import EditableContent from "../EditableContent";
 import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import EditTextButton from "../EditTextButton";
+import ClearButton from "../ButtonsAndUI/ClearButton";
+import { Dispatch, SetStateAction } from "react";
+import styles from "./ButtonAndContentContainer.module.css";
 
 
-export default function ButtonAndContentContainer() {
+type ButtonAndContentContainerProps = {
+  setEditMode: Dispatch<SetStateAction<boolean>>
+}
+
+export default function ButtonAndContentContainer(
+  {setEditMode}: ButtonAndContentContainerProps
+) {
   return (
     <Box
       sx={{
@@ -121,8 +130,35 @@ export default function ButtonAndContentContainer() {
         </Box>
       </Box>
       <EditableContent 
-        className="button-and-content-container__editable-content" 
+        className={styles.ButtonAndContentContainerEditableContent}
       />
+      <Box
+        className="all-buttons-box"
+        sx={{ 
+          display: "flex",
+          flexDirection: "row",
+          gap: "4",
+          alignItems: "flex-start",
+          flexWrap: "wrap",
+          justifyContent: "right",
+          backgroundColor: "#fafaf1",
+          paddingTop: '2px',
+          marginRight: '-8px'
+          // internalPadding: "4px"
+        }} 
+      >
+        <ClearButton />
+        <Divider 
+          orientation="vertical" 
+          flexItem 
+          sx={{
+            margin: '4px'
+          }}
+        />   
+        <Button variant="text" onClick={() => setEditMode(false)}>
+          Render Text
+        </Button>
+      </Box>
     </Box>
   )
 }

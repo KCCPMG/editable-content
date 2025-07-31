@@ -13,7 +13,7 @@ export default function ClearButton() {
   }
 
   return (
-    <Button variant="outlined" onClick={clear}>
+    <Button variant="text" onClick={clear}>
       Clear
     </Button>
   )
