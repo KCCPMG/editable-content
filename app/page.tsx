@@ -78,19 +78,30 @@ export default function Page() {
     >
       <Typography variant="h2">Editable-Content</Typography>
       <p>
-        Welcome to editable-content! This tool is designed to give developers the ability to create rich-text editors which include React Components as elements.
+        Welcome to the <strong>Editable-Content</strong> demo! This tool is designed to give developers the ability to create rich-text editors which include React Components as elements.
       </p>
       <p>
-        As a demo, please feel free to play around with the editable div below. As you can see, there are two types of buttons: Standard Wrappers and Unbreakable Components.
+        As a demo, please feel free to play around with the editable text container below. It should work like a normal rich text field, but with one key distinction: there are two types of styling buttons: <strong>Standard Wrappers</strong> and <strong>Unbreakable Components.</strong>
       </p>
       <p>
-        Standard Wrappers work as you would normally expect from a word processor- when text is selected and the button is clicked, the selected text will take on that text decoration. Click the button again, and the selected text will lose that given text decoration. Text can have multiple standard wrappers at work, such as text which is in italics and in bold while inside of other text which is bold. When the cursor is in just one space, clicking the button will make future text from the cursor have that decoration, or lose that decoration if the button was already clicked.
+        <strong>Standard Wrappers</strong> work as you would normally expect from a word processor; when text is selected and the button is clicked, the selected text will take on that text style. Click the button again, and the selected text will lose that given text decoration. Text can have multiple standard wrappers at work, such as text which is in italics and in bold while inside of other text which is bold. When the cursor is in just one space, clicking the button will make future text from the cursor have that decoration, or lose that style if the button was already clicked.
       </p>
       <p>
-        Unbreakable Components are different: Unlike Standard Wrappers, no other decoration can &ldquo;nest&rdquo; within an Unbreakable Component, and an Unbreakable Component cannot be inside of any other decoration. Additionally, unbreakable components cannot be &ldquo;split&rdquo;, and so clicking the Wrapper Component&apos;s button again will cause the entire component to disappear, leaving only the text behind. The one exception to this is if the cursor is placed at the end of the text inside the Unbreakable Component, in which case the cursor will move out of the Unbreakable Component&apos;s text and back into plain text. All React Components are unbreakable.
+        <strong>Unbreakable Components</strong> are different: Unlike Standard Wrappers, <strong>no other style can &ldquo;nest&rdquo; within an Unbreakable Component, and an Unbreakable Component cannot be inside of any other decoration.</strong> From a user standpoint, this means two things:
+      </p>
+        <ul>
+          <li>
+            Unbreakable Components cannot be &ldquo;split&rdquo;, and so clicking the Unbreakable Component&apos;s button again will cause the entire component to disappear, leaving only the text behind, unless...
+          </li>
+          <li>
+            The cursor is placed at the end of the text inside the Unbreakable Component, in which case the cursor will move out of the Unbreakable Component&apos;s text and back into plain text. 
+          </li>
+        </ul> 
+      <p>
+        <strong>All React Components are unbreakable.</strong>
       </p>
       <p>
-        Lastly, take a look at some of what&apos;s below the EditableContent. There&apos;s a button to clear the contents, and there&apos;s also a &ldquo;Render Text&rdquo; button you can click so that you can go back and forth between Editable Text and a Rendered (and non-editable) version of what you&apos;ve written. If you want to take a look at some of the state changes going on under the hood, take a look at some of the accordion menus underneath.
+        Lastly, take a look at some of what&apos;s below the editable text container. There&apos;s a <strong>&ldquo;Clear&rdquo; button</strong> to clear the contents, as well as a <strong>&ldquo;Render Text&rdquo; button</strong> you can click. The Clear button will reset the content of the editable text container, and the Render Text button will make the content no longer editable. This means that a user can go back and forth between Editable Text and a Rendered (and non-editable) version of what they&apos;ve written. If you want to take a look at some of the state changes going on under the hood, take a look at some of the accordion menus underneath, which should give you an idea as to how as a developer, you can save and rehydrate user-created React data. When you're all done, click the <strong>NEXT</strong> button to head to the next example.
       </p>
       <EditableContentContextProvider
         keyAndWrapperObjs={[
