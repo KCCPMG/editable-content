@@ -386,7 +386,10 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     // end
     // console.log(window.getSelection());
 
-    if (hasSelection) resetSelectionToTextNodes();
+    if (hasSelection) {
+      console.log("reset selection in EditableContentContext updateContent");
+      resetSelectionToTextNodes();
+    }
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
     contentRef.current?.focus();
   }

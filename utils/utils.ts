@@ -65,6 +65,17 @@ export function resetRangeToTextNodes(range: Range) {
 
   // console.log(range.startContainer, range.startContainer.nodeType !== Node.TEXT_NODE, range.endContainer.nodeType !== Node.TEXT_NODE);
 
+  console.log("resetting range to text nodes");
+
+  const content = range.toString();
+  console.log({
+    content, 
+    "content.length": content.length,
+    "range.startContainer": range.startContainer,
+    "range.endContainer": range.endContainer
+  })
+  console.log({range});
+
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
     const startNode = range.startContainer.childNodes[range.startOffset];
     if (!startNode) return null;
@@ -92,11 +103,13 @@ export function resetRangeToTextNodes(range: Range) {
         else {
           for (let i=0; i<content.length; i++) {
             console.log("third if");
+            console.log(currentNode);
             if (content[i] !== '\u200B') {
               range.setStart(currentNode, i);
               break;
             }
           }
+          break;
 
         }
 
@@ -111,20 +124,24 @@ export function resetRangeToTextNodes(range: Range) {
 
   if (range.endContainer.nodeType !== Node.TEXT_NODE) {
 
+    console.log("sanity check 1");
     const commonAncestor = range.commonAncestorContainer;
 
     let lastTextNode = range.startContainer;
     const tw = document.createTreeWalker(commonAncestor);
     // advance to new start container
     while (tw.currentNode !== range.startContainer) {
+      console.log("sanity check 2");
       tw.nextNode();
     }
     while (range.isPointInRange(tw.currentNode, 0)) {
+      console.log("sanity check 3");
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
         lastTextNode = tw.currentNode;
       }  
       if (!tw.nextNode()) break; // advance tw, break loop if null
     }
+    console.log("sanity check 4");
     range.setEnd(lastTextNode, lastTextNode.textContent?.length || 0);
   }
 

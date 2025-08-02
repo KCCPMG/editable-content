@@ -89,7 +89,6 @@ export default function EditableContent({className, disableNewLines }: EditableC
         updateSelection();
       }
       else {
-        console.log("hello selection change here")
         handleSelectionChange();
       } 
     })
@@ -98,7 +97,6 @@ export default function EditableContent({className, disableNewLines }: EditableC
     return () => {
       document.removeEventListener('selectionchange', handleSelectionChange);
       contentRef.current = null;
-      console.log("teardown");
     }
 
   }, [contentRef])
@@ -113,7 +111,10 @@ export default function EditableContent({className, disableNewLines }: EditableC
     const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
 
     toDelete.forEach(td => promoteChildrenOfNode(td));
-    if (hasSelection) resetSelectionToTextNodes();
+    if (hasSelection) {
+      console.log("reset selection in portals useEffect");
+      resetSelectionToTextNodes();
+    }
 
 
     // TODO: Delete these once done testing
@@ -127,6 +128,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
     if (divToSetSelectionTo) {
       if (divToSetSelectionTo.childNodes.length > 0) {
         window.getSelection()?.setBaseAndExtent(divToSetSelectionTo, 0, divToSetSelectionTo, divToSetSelectionTo.childNodes.length);
+        console.log("reset selection in divToSetSelectionTo useEffect");
         resetSelectionToTextNodes();
         setDivToSetSelectionTo(null);
       }
@@ -178,7 +180,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
       console.log(!selectionHasTextNodes(selection, contentRef.current))
       if (!selectionHasTextNodes(selection, contentRef.current)) return;
 
-      // check if selection is fine
+      // check if selection is fine, if so, updateSelection (no reset)
       console.log((
         anchorNode.nodeType === Node.TEXT_NODE &&
         focusNode.nodeType === Node.TEXT_NODE &&
@@ -195,15 +197,14 @@ export default function EditableContent({className, disableNewLines }: EditableC
         return;
       }
 
-      // selection is not fine, reset selection
-      // else
+      // else - selection is not fine, reset selection
       console.log("should reset selection");
       console.log("result of resetSelectionToTextNodes:", resetSelectionToTextNodes());
       updateSelection();
       return;
 
     }
-    // else do nothing
+    // else - no selection or contentRef.current, do nothing
   }
 
 
