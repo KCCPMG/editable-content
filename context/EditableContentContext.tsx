@@ -1,4 +1,4 @@
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent, resetTextNodesCushions, getAllTextNodes, textNodeIsCushioned, cushionTextNode, identifyBadTextNodes } from "@/utils/utils";
+import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent, resetTextNodesCushions, getAllTextNodes, textNodeIsCushioned, cushionTextNode, identifyBadTextNodes, isValidTextEndpoint } from "@/utils/utils";
 import { EditableContentProps, EditTextButtonObject, WrapperInstructions, WrapperArgs } from "@/components";
 import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -65,6 +65,7 @@ declare global {
     textNodeIsCushioned: (textNode: Text) => boolean;
     cushionTextNode: (textNode: Text) => void;
     resetTextNodesCushions: (textNodes: Array<Text>) => void;
+    isValidTextEndpoint: any
   }
 }
 
@@ -176,7 +177,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     window.getAllTextNodes = getAllTextNodes,
     window.textNodeIsCushioned = textNodeIsCushioned,
     window.cushionTextNode = cushionTextNode,
-    window.resetTextNodesCushions = resetTextNodesCushions
+    window.resetTextNodesCushions = resetTextNodesCushions,
+    window.isValidTextEndpoint = isValidTextEndpoint
   }, [])
 
   /**

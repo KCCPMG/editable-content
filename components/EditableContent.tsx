@@ -1,6 +1,6 @@
 "use client"
 import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect } from "react";
-import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection, shiftSelection, getSelectionDirection } from '@/utils/utils';
+import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection, shiftSelection, getSelectionDirection, isValidTextEndpoint } from '@/utils/utils';
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
@@ -138,7 +138,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
    * if changes need to be made to selection, make those changes, 
    * otherwise update selection pieces of state
    */
-  function handleSelectionChange() {
+  function old_handleSelectionChange() {
     const selection = window.getSelection();
     if (selection && 
       contentRef.current && 
@@ -165,6 +165,46 @@ export default function EditableContent({className, disableNewLines }: EditableC
     } 
   }
 
+
+  function handleSelectionChange() {
+    const selection = window.getSelection();
+
+    if (selection && contentRef.current) {
+
+      const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
+
+      if (!anchorNode || !focusNode) return;
+
+      console.log(!selectionHasTextNodes(selection, contentRef.current))
+      if (!selectionHasTextNodes(selection, contentRef.current)) return;
+
+      // check if selection is fine
+      console.log((
+        anchorNode.nodeType === Node.TEXT_NODE &&
+        focusNode.nodeType === Node.TEXT_NODE &&
+        isValidTextEndpoint(anchorNode, anchorOffset, true) &&
+        isValidTextEndpoint(focusNode, focusOffset, true)
+      ))
+      if (
+        anchorNode.nodeType === Node.TEXT_NODE &&
+        focusNode.nodeType === Node.TEXT_NODE &&
+        isValidTextEndpoint(anchorNode, anchorOffset, true) &&
+        isValidTextEndpoint(focusNode, focusOffset, true)
+      ) {
+        updateSelection();
+        return;
+      }
+
+      // selection is not fine, reset selection
+      // else
+      console.log("should reset selection");
+      console.log("result of resetSelectionToTextNodes:", resetSelectionToTextNodes());
+      updateSelection();
+      return;
+
+    }
+    // else do nothing
+  }
 
 
   return (

@@ -17,6 +17,27 @@ export function setSelection(startContainer: Node, startOffset: number, endConta
 }
 
 
+export function isValidTextEndpoint(node: Node, offset: number, acceptEmptyCushionNodes: boolean = true) {
+  const content = node.textContent;
+
+  if (content===null) return false;
+
+  else if (offset > content.length) return false;
+
+  else if (content.split("").every(ch => ch === '/u200B')) {
+    if (!acceptEmptyCushionNodes) return false;
+    else {
+      if (offset > 0) return true;
+      else return false;
+    }
+  }
+
+  else if (content[offset] === '\u200B') return false;
+
+  else return true;
+
+}
+
 
 
 export function resetSelectionToTextNodes(): Selection | null {
@@ -630,7 +651,10 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
     
     if (focusOffset > 0) {
       for (let i=focusOffset-1; i>0; i--) {
-        if (focusNode.textContent && focusNode.textContent[i] !== '\u200B') {
+        // if (focusNode.textContent && focusNode.textContent[i] !== '\u200B') {
+        //   return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
+        // }
+        if (isValidTextEndpoint(focusNode, i)) {
           return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
         }
       }
@@ -646,7 +670,10 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
 
       for (let i=content.length-1; i>=0; i--) {
         console.log({textNodes, indexOfTextNode, currentTextNode, focusOffset: i});
-        if (content[i] !== '\u200B') {
+        // if (content[i] !== '\u200B') {
+        //   return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
+        // }
+        if (isValidTextEndpoint(currentTextNode, i)) {
           return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
         }
       }
@@ -658,9 +685,13 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
     if (focusNode.textContent && focusOffset<focusNode.textContent.length) {
       for (let i=focusOffset+1; i<focusNode.textContent.length; i++) {
         console.log({textNodes, indexOfTextNode, focusNode, i})
-        if (focusNode.textContent[i] !== '\u200B') {
+        // if (focusNode.textContent[i] !== '\u200B') {
+        //   return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
+        // }
+        if (isValidTextEndpoint(focusNode, i)) {
           return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
         }
+
       }
     }
 
@@ -675,7 +706,10 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
         content.length + 1 :
         content.length;
       for (let i=0; i<stoppingPoint; i++) {
-        if (content[i] !== '\u200B') {
+        // if (content[i] !== '\u200B') {
+        //   return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
+        // }
+        if (isValidTextEndpoint(currentTextNode, i)) {
           return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
         }
       }
