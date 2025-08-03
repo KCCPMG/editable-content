@@ -41,6 +41,26 @@ When declaring the PropTypes for your wrappers, make sure that any of these valu
 
 When passing props to your component in the return call, make sure to destructure `{...rest}` from your props, and then to pass `{...rest}` into the top level of the component. This will ensure that you can pass additional props through, and especially will pass through the `data-unbreakable` prop which is assigned behind the scenes.
 
+#### Marking Content for Exclusion
+
+There may be some times where you have some part of your component which you do not wish to include in the Dehydrated HTML. For example, in the propful-only demonstration of the demo, the clickCount number is rendered dynamically, but still read as text. Without taking any extra effort, every switch between EditableContent and RenderedContent would extract all of the text for repackaging *including the dynamically rendered clickCount*. This means that on every switch between EditableContent and RenderedContent, the prior count would be added as text to the content of the component's child, and after several switches, you would end up with something like this:
+```
+10 9 8 3 3 2 1 Propful Component
+```
+
+In order to avoid this, the clickCount is rendered inside of a span which has the attribute "data-exclude-from-dehydrated". This value is exported as the constant EXCLUDE_FROM_DEHYDRATED and can be passed to html like this:
+```
+  <span 
+    {...{[EXCLUDE_FROM_DEHYDRATED]: ""}}
+  >
+    {clickCount}&nbsp;
+  </span>
+
+```
+
+Doing this will mark the span as something which should be excluded from what is collected by `getDehydratedHTML` and keep the React child from being polluted by prior renders of dynamic content.
+
+
 #### A Note on Contexts used by wrappers
 
 When a wrapper is passed to the `keyAndWrapperObjs` array it is initially called as a function at that level, meaning it will not have access to any context initially. In order to use context, you can do one of two things. The first of which is to make all calls to context safe by using conditional logic, as below: 
