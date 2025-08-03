@@ -11,6 +11,8 @@ import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import RenderedContent from "@/components/RenderedContent";
 import NextPageLink from "@/components/LayoutComponents/NextPageLink";
 import { FormatBold, FormatItalic } from "@mui/icons-material";
+import { EditModeContextProvider } from "@/context/EditModeContext";
+import PropfulOnlyContent from "./PropfulOnlyContent";
 
 const initialHTML = `
 Normal Text 
@@ -26,7 +28,7 @@ Normal Text
 export default function Page() {
 
   const [componentBorderColor, setComponentBorderColor] = useState("Red");
-  const [editMode, setEditMode] = useState<boolean>(true);
+  // const [editMode, setEditMode] = useState<boolean>(true);
 
   return (
     <main>
@@ -37,120 +39,34 @@ export default function Page() {
       <p>
         The text that is already wrapped here is in a <strong>Propful Box</strong>. You can create more of these or create a <strong>Stateful Box</strong> for comparison. What you will see with the <strong>Propful Box</strong> is that in addition to the color persisting as it did in the previous example, the number of clicks will also persist when going back and forth between <strong>Edit Text</strong> and <strong>Render Text</strong>. You can also see the props that are passed to all elements by expanding the <strong>All Props</strong> display container at the bottom of the page. This display uses the <code>getAllPortalProps</code> function which is passed through the <code>EditableContentContext</code> and allows developers to extract props to save for future hydration.
       </p>
-      <EditableContentContextProvider
-        keyAndWrapperObjs={[
-          {
-            dataKey: "propful-only",
-            wrapper: <PropfulBox 
-              clickCount={0}
-              borderC={componentBorderColor} 
-            />
-          },
-          {
-            dataKey: "stateful-component",
-            wrapper: <StatefulBox />
-          },
-          {
-            dataKey: "strong",
-            wrapper: <strong></strong>
-          },
-          {
-            dataKey: "standard-italics",
-            wrapper: <i></i>
-          }
-        ]}
-        initialHTML={initialHTML}
-      >
-
-        {editMode && 
-          <Box>
-            <Box>
-              <h4>
-                Change Props For All Components
-              </h4>
-              <IncreaseColorButton 
-                componentBorderColor={componentBorderColor} 
-                setComponentBorderColor={setComponentBorderColor} 
+      <EditModeContextProvider initialEditMode={true}>
+        <EditableContentContextProvider
+          keyAndWrapperObjs={[
+            {
+              dataKey: "propful-only",
+              wrapper: <PropfulBox 
+                clickCount={0}
+                borderC={componentBorderColor} 
               />
-            </Box>
-            <Box 
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: "4",
-                alignItems: "flex-start",
-                flexWrap: "wrap",
-                justifyContent: "left"
-              }}
-            >
-              <Box
-                sx={{
-                  width: 'fit-content',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: 1
-                }}  
-              >
-                <h4>React Buttons</h4>
-                <Box>
-                  <EditTextButton
-                    isMUIButton={true}
-                    dataKey="propful-only"
-                  >
-                    Propful Box
-                  </EditTextButton>
-                  <EditTextButton
-                    isMUIButton={true}
-                    dataKey="stateful-component"
-                  >
-                    Stateful Box
-                  </EditTextButton>
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  width: 'fit-content',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: 1
-                }}  
-              >
-                <h4>Non-React Buttons</h4>
-                <Box>
-                  <EditTextButton
-                    isMUIButton={true}
-                    dataKey="strong"
-                  >
-                    <FormatBold />
-                  </EditTextButton>
-                  <EditTextButton
-                    isMUIButton={true}
-                    dataKey="standard-italics"
-                  >
-                    <FormatItalic />
-                  </EditTextButton>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-        }
-        {editMode ?
-          <EditableContent
-            className="default-editable-content"
-          /> :
-          <RenderedContent 
-            className="default-rendered-content"
-          />
-        }
-        <Button variant="outlined" onClick={() => setEditMode(!editMode)}>
-          {editMode ? "Render Text" : "Edit Text"}
-        </Button>
-        <Container>
-          <AllPropsDisplay show={true} />
-        </Container>
-      </EditableContentContextProvider>
+            },
+            {
+              dataKey: "stateful-component",
+              wrapper: <StatefulBox />
+            },
+            {
+              dataKey: "strong",
+              wrapper: <strong></strong>
+            },
+            {
+              dataKey: "standard-italics",
+              wrapper: <i></i>
+            }
+          ]}
+          initialHTML={initialHTML}
+        >
+          <PropfulOnlyContent />
+        </EditableContentContextProvider>
+      </EditModeContextProvider>
       <NextPageLink href="/styling-and-callbacks" />
     </main>
   )

@@ -135,7 +135,8 @@ export default function EditTextButton({
 
     if (!targetDiv) return;
 
-    const key = targetDiv.getAttribute('id')?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
+    const id  = targetDiv.getAttribute('id')
+    const key = id?.split(PORTAL_CONTAINER_ID_PREFIX)[1];
 
     if (!key || key.length === 0) return;
 
