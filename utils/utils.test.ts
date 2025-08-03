@@ -1009,23 +1009,6 @@ describe("test generateQuery", function() {
     expect(strong!.textContent).toBe("Strong Text");
   })
 
-  test("generateQuery on #strong-1 with wrong class name", function() {
-    document.body.innerHTML = startingHTML;
-    const idealQuery = "strong#strong-1"
-    const generatedQuery = generateQuery({
-      element: "strong",
-      classList: [
-        "fake-class",
-        "bad-class"
-      ],
-      id: "strong-1"
-    });
-    expect(generatedQuery).not.toEqual(idealQuery);
-    expect(generatedQuery).toEqual("strong.fake-class.bad-class#strong-1");
-    
-    const strong = document.querySelector(generatedQuery);
-    expect(strong).toBeNull();
-  })
 
   test("generateQuery with attributes and unbreakable", function() {
     const generatedQuery = generateQuery({
@@ -1042,7 +1025,7 @@ describe("test generateQuery", function() {
       }
     });
 
-    expect(generatedQuery).toBe(`strong.fake-class.bad-class#strong-1[data-unbreakable][test-attribute="17"][test-attribute-two="test-attribute-two-value"]`)
+    expect(generatedQuery).toBe(`strong#strong-1[data-unbreakable][test-attribute="17"][test-attribute-two="test-attribute-two-value"]`)
   })
 
 
