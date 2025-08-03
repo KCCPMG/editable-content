@@ -123,7 +123,7 @@ export type EditableContentContextType = {
   assignContentRef: (newRef: HTMLDivElement) => void,
 }
 
-const EditableContentContext = createContext<EditableContentContextType | null>(null);
+export const EditableContentContext = createContext<EditableContentContextType | null>(null);
 
 
 
