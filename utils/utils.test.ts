@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { setSelection, wrapInElement, unwrapSelectionFromQuery, unwrapRangeFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode, selectionIsCoveredBy, generateQuery, createWrapper, getSelectionChildNodes, resetSelectionToTextNodes, getRangeChildNodes } from './utils';
+import { setSelection, wrapInElement, unwrapSelectionFromQuery, unwrapRangeFromQuery, deleteEmptyElementsByQuery, nodeIsDescendentOf, selectionIsDescendentOfNode, selectionIsCoveredBy, generateQuery, createWrapper, getSelectionChildNodes, resetSelectionToTextNodes, getRangeChildNodes, resetRangeToTextNodes } from './utils';
 
 
 const startingHTML = 
@@ -231,6 +231,70 @@ describe("test getRangeChildNodes", function() {
     expect(nodes[1]).toBe(firstItalics);
     expect(nodes[2]).toBe(firstItalicsText);
     expect(nodes.length).toBe(3);
+  })
+
+
+  test("get nodes in propful-only example", function() {
+    const customHTML = `<div id="portal-container-12345" data-button-key="propful-only"><div class="MuiBox-root css-1otupa8" data-bk="propful-only" data-unbreakable=""><span data-exclude-from-dehydrated="">​6​​ ​</span>​Propful Component​</div></div>`
+    const customHTMLAsNode = new DOMParser()
+      .parseFromString(customHTML, "text/html")
+      .body;
+
+    const expectedContainingDiv = customHTMLAsNode.childNodes[0];
+    // confirm correct div
+    expect(expectedContainingDiv.nodeType).toBe(Node.ELEMENT_NODE);
+
+    // type confirmed
+    const containingDiv = expectedContainingDiv as Element;
+    expect(containingDiv.tagName).toBe('DIV');
+    expect(containingDiv.getAttribute('id')).toBe('portal-container-12345');
+
+    const childrenRange = new Range();
+    childrenRange.setStart(containingDiv, 0);
+    childrenRange.setEnd(containingDiv, containingDiv.childNodes.length);
+
+    expect(childrenRange.toString()).toBe(`​6​​ ​​Propful Component​`);
+    
+    const nodes = getRangeChildNodes(childrenRange, customHTMLAsNode);
+
+    expect(nodes.length).toBe(4);
+
+    expect(nodes[0].nodeType).toBe(Node.ELEMENT_NODE);
+    expect((nodes[0] as Element).className).toBe("MuiBox-root css-1otupa8")
+    expect(nodes[0].textContent).toBe(`​6​​ ​​Propful Component​`);
+
+    expect(nodes[1].nodeType).toBe(Node.ELEMENT_NODE);
+    expect((nodes[1] as Element).tagName).toBe('SPAN');
+    expect(nodes[1].textContent).toBe(`​6​​ ​`);
+
+    expect(nodes[2].nodeType).toBe(Node.TEXT_NODE);
+    expect(nodes[2].textContent).toBe(`​6​​ ​`);
+
+    expect(nodes[3].nodeType).toBe(Node.TEXT_NODE);
+    expect(nodes[3].textContent).toBe(`​Propful Component​`);
+
+    resetRangeToTextNodes(childrenRange);
+    expect(childrenRange.toString()).toBe(`​6​​ ​​Propful Component​`);
+
+    const resetNodes = getRangeChildNodes(childrenRange, customHTMLAsNode);
+
+    expect(resetNodes.length).toBe(3);
+
+    // expect(resetNodes[0].nodeType).toBe(Node.ELEMENT_NODE);
+    // expect((resetNodes[0] as Element).className).toBe("MuiBox-root css-1otupa8")
+    // expect(resetNodes[0].textContent).toBe(`​6​​ ​​Propful Component​`);
+
+    expect(resetNodes[0].nodeType).toBe(Node.ELEMENT_NODE);
+    expect((resetNodes[0] as Element).tagName).toBe('SPAN');
+    expect(resetNodes[0].textContent).toBe(`​6​​ ​`);
+
+    expect(resetNodes[2].nodeType).toBe(Node.TEXT_NODE);
+    expect(resetNodes[2].textContent).toBe(`​6​​ ​`);
+
+    expect(resetNodes[3].nodeType).toBe(Node.TEXT_NODE);
+    expect(resetNodes[3].textContent).toBe(`​Propful Component​`);
+
+
   })
 
 })

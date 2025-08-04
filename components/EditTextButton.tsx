@@ -3,7 +3,7 @@ import { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, 
 import { WrapperArgs } from "./";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
-import { generateQuery, getButtonStatus, unwrapSelectionFromQuery, createWrapper, wrapInElement, getAncestorNode, resetSelectionToTextNodes, resetRangeToTextNodes, getRangeChildNodes, getLastValidTextNode, getLastValidCharacterIndex, getRangeLowestAncestorElement, moveSelection, getIsReactComponent} from "@/utils/utils";
+import { generateQuery, getButtonStatus, unwrapSelectionFromQuery, createWrapper, wrapInElement, getAncestorNode, resetSelectionToTextNodes, resetRangeToTextNodes, getRangeChildNodes, getLastValidTextNode, getLastValidCharacterIndex, getRangeLowestAncestorElement, moveSelection, getIsReactComponent, getAllTextNodes} from "@/utils/utils";
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
 
 type htmlSelectCallback = (wrapper: HTMLElement) => void
@@ -153,12 +153,20 @@ export default function EditTextButton({
       childrenRange.setStart(targetDiv, 0);
       childrenRange.setEnd(targetDiv, targetDiv.childNodes.length)
       
-      resetRangeToTextNodes(childrenRange);
-      const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
-      const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
+      // resetRangeToTextNodes(childrenRange);
+      // const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
+      // const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
+
+      const textNodes = getAllTextNodes([targetDiv]);
+      
     
       const lastTextNode = getLastValidTextNode(textNodes);
       const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
+
+      console.log(textNodes);
+      console.log(lastTextNode, lastTextIndex);
+
+      console.log(range.startContainer, range.startOffset, range.endContainer, range.endOffset);
       
       // if at end of react component
       if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
