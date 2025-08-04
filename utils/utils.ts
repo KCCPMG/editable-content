@@ -16,10 +16,21 @@ export function setSelection(startContainer: Node, startOffset: number, endConta
   return selection;
 }
 
-
+/**
+ * Takes a node, and an offset, as would come from a range's startContainer and 
+ * startOffset or its endContainer and endOffset, also takes a boolean which 
+ * determines whether cushion nodes (every character is a zero-width space) are 
+ * acceptable. 
+ * @param node 
+ * @param offset 
+ * @param acceptEmptyCushionNodes 
+ * @returns 
+ */
 export function isValidTextEndpoint(node: Node, offset: number, acceptEmptyCushionNodes: boolean = true) {
+  
+  if (node.nodeType !== Node.TEXT_NODE) return false;
+  
   const content = node.textContent;
-
   if (content===null) return false;
 
   else if (offset > content.length) return false;
@@ -38,6 +49,25 @@ export function isValidTextEndpoint(node: Node, offset: number, acceptEmptyCushi
 
 }
 
+
+
+/** WORK IN PROGRESS
+ * 
+ * @param content 
+ * @param initialOffset 
+ */
+export function getNearestValidOffset(content: string, initialOffset: number) {
+  for (let i=1; i<content.length; i++) {
+    if (
+      (initialOffset - i) >= 0 &&
+      content[initialOffset - 1] !== '\u200B' 
+    ) {
+      return initialOffset - i + 1;
+    } else {
+      initialOffset + i
+    }
+  }
+}
 
 
 export function resetSelectionToTextNodes(): Selection | null {
@@ -67,7 +97,7 @@ export function resetRangeToTextNodes(range: Range) {
 
   console.log("resetting range to text nodes");
 
-  const collapsed = range.collapsed;
+  const collapsed: boolean = range.collapsed;
 
 
   console.log({range});
@@ -104,6 +134,7 @@ export function resetRangeToTextNodes(range: Range) {
               range.setStart(currentNode, i);
               break;
             }
+          console.log("this should never hit");
           }
           break;
 
@@ -183,10 +214,12 @@ export function resetRangeToTextNodes(range: Range) {
 
   console.log("after setting start", range.startContainer, range.startOffset);
 
+  // if this range is meant to be collapsed, collapse to start
   if (collapsed) {
     range.setEnd(range.startContainer, range.startOffset);
   }
 
+  // otherwise find correct distinct end
   else if (range.endContainer.nodeType !== Node.TEXT_NODE) {
 
     console.log("sanity check 1");

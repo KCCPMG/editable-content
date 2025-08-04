@@ -177,16 +177,16 @@ export default function EditableContent({className, disableNewLines }: EditableC
 
       if (!anchorNode || !focusNode) return;
 
-      console.log(!selectionHasTextNodes(selection, contentRef.current))
+      // console.log(!selectionHasTextNodes(selection, contentRef.current))
       if (!selectionHasTextNodes(selection, contentRef.current)) return;
 
       // check if selection is fine, if so, updateSelection (no reset)
-      console.log((
-        anchorNode.nodeType === Node.TEXT_NODE &&
-        focusNode.nodeType === Node.TEXT_NODE &&
-        isValidTextEndpoint(anchorNode, anchorOffset, true) &&
-        isValidTextEndpoint(focusNode, focusOffset, true)
-      ))
+      // console.log((
+      //   anchorNode.nodeType === Node.TEXT_NODE &&
+      //   focusNode.nodeType === Node.TEXT_NODE &&
+      //   isValidTextEndpoint(anchorNode, anchorOffset, true) &&
+      //   isValidTextEndpoint(focusNode, focusOffset, true)
+      // ))
       if (
         anchorNode.nodeType === Node.TEXT_NODE &&
         focusNode.nodeType === Node.TEXT_NODE &&
