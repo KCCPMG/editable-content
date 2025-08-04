@@ -67,13 +67,9 @@ export function resetRangeToTextNodes(range: Range) {
 
   console.log("resetting range to text nodes");
 
-  const content = range.toString();
-  console.log({
-    content, 
-    "content.length": content.length,
-    "range.startContainer": range.startContainer,
-    "range.endContainer": range.endContainer
-  })
+  const collapsed = range.collapsed;
+
+
   console.log({range});
 
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
@@ -120,9 +116,78 @@ export function resetRangeToTextNodes(range: Range) {
         if (!tw.nextNode()) break;
       }
     }
+  } else {
+
+    const currentNode = range.startContainer;
+    const content = currentNode.textContent;
+
+    console.log("startContainer is text node");    
+
+    if (!content || (content.length === 0)) {
+      console.log("first if");
+      range.setStart(currentNode, 0);
+    }
+
+    // if it's fine, leave it
+    // effectively does nothing except divert from later else ifs
+    else if (
+      content[range.startOffset] &&
+      content[range.startOffset] !== '\u200B'
+    ) {
+      range.setStart(currentNode, range.startOffset);
+    }
+
+    // if purely cushioned node, place after first zero-width space
+    else if (currentNode.textContent?.split("").every(ch => ch === '\u200B')) {
+      console.log("second if");
+      range.setStart(currentNode, 1);
+    }
+
+    // go outwards from startOffset to find nearest non-zws
+    else for (let i=1; i<content.length; i++) {
+      console.log("last for loop ", i);
+      if (
+        range.startOffset - i >= 0 &&
+        content[range.startOffset - i] !== '\u200B'
+      ) {
+        range.setStart(currentNode, range.startOffset-i+1);
+        break;
+      } else if (
+        range.startOffset <= content.length &&
+        content[range.startOffset + i]
+      ) {
+        range.setStart(currentNode, range.startOffset+i-1);
+        break;
+      }
+    }
+
+
+    // otherwise place before first non-zero-width space
+    // else {
+    //   for (let i=0; i<content.length; i++) {
+    //     console.log("third if");
+    //     console.log(currentNode);
+    //     if (content[i] !== '\u200B') {
+    //       range.setStart(currentNode, i);
+    //       break;
+    //     }
+    //   }
+
+    // }
+
+    // original
+    // range.setStart(tw.currentNode, 0);
+    // break;
+      
   }
 
-  if (range.endContainer.nodeType !== Node.TEXT_NODE) {
+  console.log("after setting start", range.startContainer, range.startOffset);
+
+  if (collapsed) {
+    range.setEnd(range.startContainer, range.startOffset);
+  }
+
+  else if (range.endContainer.nodeType !== Node.TEXT_NODE) {
 
     console.log("sanity check 1");
     const commonAncestor = range.commonAncestorContainer;

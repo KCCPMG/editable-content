@@ -170,6 +170,7 @@ export default function EditTextButton({
       
       // if at end of react component
       if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
+        console.log("should break element at end");
         breakElementAtEnd(targetDiv, selection);
         return;
       }
@@ -251,17 +252,22 @@ export default function EditTextButton({
   }
 
   function breakElementAtEnd(targetElement: Element, selection: Selection) {
+    console.log("in breakElementAtEnd");
     if (!contentRef.current) return;
 
     const childrenRange = new Range();
 
     childrenRange.setStart(targetElement, 0);
-    childrenRange.setEnd(targetElement, targetElement.childNodes.length)
+    childrenRange.setEnd(targetElement, targetElement.childNodes.length);
 
-    resetRangeToTextNodes(childrenRange);
-    const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
-    const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
-    const range = selection.getRangeAt(0);
+    // resetRangeToTextNodes(childrenRange);
+    // const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
+    // const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
+    // const range = selection.getRangeAt(0);
+
+    const textNodes = getAllTextNodes([targetElement]);
+
+    console.log("right before moveSelection right in breakElementAtEnd")
 
     moveSelection(selection, contentRef?.current, "right");
     
