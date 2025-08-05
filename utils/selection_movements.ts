@@ -1,0 +1,501 @@
+export function setSelection(startContainer: Node, startOffset: number, endContainer: Node, endOffset: number) {
+  const range = new Range();
+  range.setStart(startContainer, startOffset);
+  range.setEnd(endContainer, endOffset);
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);      
+
+  return selection;
+}
+
+
+
+/** WORK IN PROGRESS
+ * 
+ * @param content 
+ * @param initialOffset 
+ */
+export function getNearestValidOffset(content: string, initialOffset: number) {
+  for (let i=1; i<content.length; i++) {
+    if (
+      (initialOffset - i) >= 0 &&
+      content[initialOffset - 1] !== '\u200B' 
+    ) {
+      return initialOffset - i + 1;
+    } else {
+      initialOffset + i
+    }
+  }
+}
+
+
+export function resetSelectionToTextNodes(): Selection | null {
+  let selection = window.getSelection();
+  if (!selection) return selection;
+
+  const range = selection.getRangeAt(0);
+  const originalStartContainer = range.startContainer;
+  
+  const modifiedRange = resetRangeToTextNodes(range);
+  if (!modifiedRange) return null;
+
+  selection = window.getSelection();
+  if (!selection) return null;
+
+  // this is causing an infinite loop if reset called on every selection
+  // selection.removeAllRanges(); 
+  // selection.addRange(modifiedRange);
+
+  return selection;
+}
+
+
+export function resetRangeToTextNodes(range: Range) {
+
+  // console.log(range.startContainer, range.startContainer.nodeType !== Node.TEXT_NODE, range.endContainer.nodeType !== Node.TEXT_NODE);
+
+  console.log("resetting range to text nodes");
+
+  const collapsed: boolean = range.collapsed;
+
+
+  console.log({range});
+
+  if (range.startContainer.nodeType !== Node.TEXT_NODE) {
+    const startNode = range.startContainer.childNodes[range.startOffset];
+    if (!startNode) return null;
+    const tw = document.createTreeWalker(startNode);
+    while (true) {
+      if (tw.currentNode.nodeType === Node.TEXT_NODE) {
+
+        const currentNode = tw.currentNode;
+        const content = currentNode.textContent;
+
+        if (!content || (content.length === 0)) {
+          console.log("first if");
+          range.setStart(currentNode, 0);
+          break;
+        }
+
+        // if purely cushioned node, place after first zero-width space
+        if (tw.currentNode.textContent?.split("").every(ch => ch === '\u200B')) {
+          console.log("second if");
+          range.setStart(tw.currentNode, 1);
+          break;
+        }
+
+        // otherwise place before first non-zero-width space
+        else {
+          for (let i=0; i<content.length; i++) {
+            console.log("third if");
+            console.log(currentNode);
+            if (content[i] !== '\u200B') {
+              range.setStart(currentNode, i);
+              break;
+            }
+          console.log("this should never hit");
+          }
+          break;
+
+        }
+
+        // original
+        // range.setStart(tw.currentNode, 0);
+        // break;
+      } else {
+        if (!tw.nextNode()) break;
+      }
+    }
+  } else {
+
+    const currentNode = range.startContainer;
+    const content = currentNode.textContent;
+
+    console.log("startContainer is text node");    
+
+    if (!content || (content.length === 0)) {
+      console.log("first if");
+      range.setStart(currentNode, 0);
+    }
+
+    // if it's fine, leave it
+    // effectively does nothing except divert from later else ifs
+    else if (
+      content[range.startOffset] &&
+      content[range.startOffset] !== '\u200B'
+    ) {
+      range.setStart(currentNode, range.startOffset);
+    }
+
+    // if purely cushioned node, place after first zero-width space
+    else if (currentNode.textContent?.split("").every(ch => ch === '\u200B')) {
+      console.log("second if");
+      range.setStart(currentNode, 1);
+    }
+
+    // go outwards from startOffset to find nearest non-zws
+    else for (let i=1; i<content.length; i++) {
+      console.log("last for loop ", i);
+      if (
+        range.startOffset - i >= 0 &&
+        content[range.startOffset - i] !== '\u200B'
+      ) {
+        range.setStart(currentNode, range.startOffset-i+1);
+        break;
+      } else if (
+        range.startOffset <= content.length &&
+        content[range.startOffset + i]
+      ) {
+        range.setStart(currentNode, range.startOffset+i-1);
+        break;
+      }
+    }
+
+
+    // otherwise place before first non-zero-width space
+    // else {
+    //   for (let i=0; i<content.length; i++) {
+    //     console.log("third if");
+    //     console.log(currentNode);
+    //     if (content[i] !== '\u200B') {
+    //       range.setStart(currentNode, i);
+    //       break;
+    //     }
+    //   }
+
+    // }
+
+    // original
+    // range.setStart(tw.currentNode, 0);
+    // break;
+      
+  }
+
+  console.log("after setting start", range.startContainer, range.startOffset);
+
+  // if this range is meant to be collapsed, collapse to start
+  if (collapsed) {
+    range.setEnd(range.startContainer, range.startOffset);
+  }
+
+  // otherwise find correct distinct end
+  else if (range.endContainer.nodeType !== Node.TEXT_NODE) {
+
+    console.log("sanity check 1");
+    const commonAncestor = range.commonAncestorContainer;
+
+    let lastTextNode = range.startContainer;
+    const tw = document.createTreeWalker(commonAncestor);
+    // advance to new start container
+    while (tw.currentNode !== range.startContainer) {
+      console.log("sanity check 2");
+      tw.nextNode();
+    }
+    while (range.isPointInRange(tw.currentNode, 0)) {
+      console.log("sanity check 3");
+      if (tw.currentNode.nodeType === Node.TEXT_NODE) {
+        lastTextNode = tw.currentNode;
+      }  
+      if (!tw.nextNode()) break; // advance tw, break loop if null
+    }
+    console.log("sanity check 4");
+    range.setEnd(lastTextNode, lastTextNode.textContent?.length || 0);
+  }
+
+  return range;
+}
+
+
+
+export function moveSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
+
+  const direction = getSelectionDirection(selection);
+  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+  if (selection.rangeCount === 0) return;
+  if (!anchorNode || !focusNode) return;
+
+  const textNodes = getAllTextNodes([limitingContainer]);
+
+
+  // range is collapsed
+  if (direction === "none") {
+
+    let indexOfTextNode = textNodes.findIndex(tn => tn === anchorNode);
+
+    if (moveDirection === "left") {
+
+      if (anchorOffset > 0) {
+
+        for (let i=anchorOffset-1; i>=0; i--) {
+          if (anchorNode.textContent && anchorNode.textContent[i] !== '\u200B') {
+            return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
+          }
+        }
+
+        // if hitting 0 and still no textContent
+        while (indexOfTextNode > 0) {
+          indexOfTextNode--;
+          const currentTextNode = textNodes[indexOfTextNode];
+          const content = currentTextNode.textContent;
+          if (!content) continue;
+          if (content === '\u200B\u200B') {
+            return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
+          } 
+          for (let i=content.length; i>0; i--) {
+            if (content[i-1] !== '\u200B') {
+              return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
+            }
+          }
+        }
+        return;
+
+        // old below
+        // selection.setBaseAndExtent(anchorNode, anchorOffset-1, anchorNode, anchorOffset-1);
+      } 
+      else {
+
+        // if hitting 0 and still no textContent
+        while (indexOfTextNode > 0) {
+          indexOfTextNode--;
+          const currentTextNode = textNodes[indexOfTextNode];
+          const content = currentTextNode.textContent;
+          if (!content) continue;
+          if (content === '\u200B\u200B') {
+            return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
+          } 
+          for (let i=content.length; i>0; i--) {
+            console.log({
+              "content.length": content.length,
+              "i": i,
+              "content[i-1]": content[i-1],
+              "content[i-1] === '\u200B'": content[i-1] === '\u200B',
+            })
+            if (content[i-1] !== '\u200B') {
+              return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
+            }
+          }
+        }
+        return;
+
+        // const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
+
+        // if (thisIndex > 0) {
+        //   const leftTextNode = textNodes[thisIndex - 1];
+        //   if (!leftTextNode) return;
+        //   selection.setBaseAndExtent(leftTextNode, leftTextNode.textContent?.length || 0, leftTextNode, leftTextNode.textContent?.length || 0);
+        // } else return;
+      }
+  
+
+    } else if (moveDirection === "right") {
+
+      // console.log("moving right from ", anchorNode, anchorOffset, anchorNode.textContent[anchorOffset]);
+
+      if (anchorNode.textContent && anchorOffset<anchorNode?.textContent?.length) {
+
+        console.log(anchorNode.textContent[anchorOffset], anchorNode.textContent[anchorOffset] !== '\u200B');
+        if (anchorNode.textContent[anchorOffset] !== '\u200B') {
+          return selection.setBaseAndExtent(anchorNode, anchorOffset+1, anchorNode, anchorOffset+1);
+        } 
+        else { // if hitting edge of text
+          console.log("hitting else");
+          for (let i=anchorOffset+1; i<=anchorNode?.textContent?.length; i++) {
+            if (anchorNode.textContent[i-1] !== '\u200B') {
+              console.log("setting anchorNode before", anchorNode.textContent[i])
+              return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
+            }
+          }
+
+          console.log("leaving this text node")
+
+          while (indexOfTextNode < textNodes.length) {
+            console.log(indexOfTextNode, textNodes.length);
+            indexOfTextNode++;
+            console.log(indexOfTextNode, textNodes.length);
+            const currentTextNode = textNodes[indexOfTextNode];
+            if (!currentTextNode) continue;
+            const content = currentTextNode.textContent;
+            if (!content) continue;
+            if (content === '\u200B\u200B') {
+              return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
+            }
+            for (let i=0; i<content.length; i++) {
+              if (content[i] !== '\u200B') {
+                console.log("setting anchorNode before", content);
+                return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
+              }
+            }
+          }
+        }
+
+        // old
+        // selection.setBaseAndExtent(anchorNode, anchorOffset+1, anchorNode, anchorOffset+1);
+      }
+      else {
+
+        console.log("from the else block");
+        console.log(indexOfTextNode, textNodes.length);
+
+
+        while (indexOfTextNode < textNodes.length) {
+          console.log(indexOfTextNode, textNodes.length);
+          indexOfTextNode++;
+          console.log(indexOfTextNode, textNodes.length);
+          const currentTextNode = textNodes[indexOfTextNode];
+          if (!currentTextNode) continue;
+          const content = currentTextNode.textContent;
+          if (!content) continue;
+          if (content === '\u200B\u200B') {
+            return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
+          }
+          for (let i=0; i<content.length; i++) {
+            if (content[i] !== '\u200B') {
+              return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
+            }
+          }
+        }
+
+        return;
+
+
+        // const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
+
+        // if (thisIndex < textNodes.length - 1) {
+        //   const rightTextNode = textNodes[thisIndex + 1];
+        //   if (!rightTextNode) return;
+        //   selection.setBaseAndExtent(rightTextNode, 0, rightTextNode, 0);
+        // } else return;
+      }
+    }
+
+    // handle check for zero width space character, recursion
+    // if (
+    //   selection &&
+    //   selection.anchorNode &&
+    //   selection.anchorNode.textContent &&
+    //   (
+    //     selection?.anchorNode?.textContent[selection.anchorOffset] === "\u200B" ||
+    //     selection?.anchorNode?.textContent[selection.anchorOffset] === undefined 
+    //   )
+    // ) {
+    //   moveSelection(selection, limitingContainer, moveDirection);
+    // }
+    return;
+
+  }
+
+  else {
+
+    console.log(moveDirection, direction);
+
+    if (moveDirection === "left" && direction === "backward") {
+      selection.setBaseAndExtent(focusNode, focusOffset, focusNode, focusOffset);
+    } 
+    else if (moveDirection === "left" && direction === "forward") {
+      selection.setBaseAndExtent(anchorNode, anchorOffset, anchorNode, anchorOffset);
+    } 
+    else if (moveDirection === "right" && direction === "backward") {
+      selection.setBaseAndExtent(anchorNode, anchorOffset, anchorNode, anchorOffset);
+    } 
+    else if (moveDirection === "right" && direction === "forward") {
+      selection.setBaseAndExtent(focusNode, focusOffset, focusNode, focusOffset);
+    } 
+
+
+    // shiftSelection(selection, limitingContainer, moveDirection);
+    // selection.setBaseAndExtent(focusNode, focusOffset, focusNode, focusOffset);
+  }
+}
+
+
+
+export function shiftSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
+
+  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+  if (selection.rangeCount === 0) return;
+  if (!anchorNode || !focusNode) return;
+
+  const textNodes = getAllTextNodes([limitingContainer]);
+  let indexOfTextNode = textNodes.findIndex(tn => tn === focusNode);
+
+
+  if (moveDirection === "left") {
+    
+    if (focusOffset > 0) {
+      for (let i=focusOffset-1; i>0; i--) {
+        // if (focusNode.textContent && focusNode.textContent[i] !== '\u200B') {
+        //   return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
+        // }
+        if (isValidTextEndpoint(focusNode, i)) {
+          return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
+        }
+      }
+    }
+
+    indexOfTextNode--;
+
+    while (indexOfTextNode >= 0) {
+      const currentTextNode = textNodes[indexOfTextNode];
+      const content = currentTextNode.textContent;
+      console.log("new text node:", content);
+      if (!content) continue;
+
+      for (let i=content.length-1; i>=0; i--) {
+        console.log({textNodes, indexOfTextNode, currentTextNode, focusOffset: i});
+        // if (content[i] !== '\u200B') {
+        //   return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
+        // }
+        if (isValidTextEndpoint(currentTextNode, i)) {
+          return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
+        }
+      }
+      indexOfTextNode--;
+    }
+    return;
+  } else if (moveDirection==="right") {
+    
+    if (focusNode.textContent && focusOffset<focusNode.textContent.length) {
+      for (let i=focusOffset+1; i<focusNode.textContent.length; i++) {
+        console.log({textNodes, indexOfTextNode, focusNode, i})
+        // if (focusNode.textContent[i] !== '\u200B') {
+        //   return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
+        // }
+        if (isValidTextEndpoint(focusNode, i)) {
+          return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
+        }
+
+      }
+    }
+
+    indexOfTextNode++;
+
+    while (indexOfTextNode < textNodes.length) {
+      const currentTextNode = textNodes[indexOfTextNode];
+      const content = currentTextNode.textContent;
+      console.log("new text node:", content);
+      if (!content) continue;    
+      const stoppingPoint = (indexOfTextNode === (textNodes.length-1)) ?
+        content.length + 1 :
+        content.length;
+      for (let i=0; i<stoppingPoint; i++) {
+        // if (content[i] !== '\u200B') {
+        //   return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
+        // }
+        if (isValidTextEndpoint(currentTextNode, i)) {
+          return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
+        }
+      }
+      indexOfTextNode++;
+    }
+  
+  
+  }
+}
+
+
+export function resetTextNodesCushions(textNodes: Array<Text>) {
+  textNodes.forEach(tn => {
+    if (!textNodeIsCushioned(tn)) cushionTextNode(tn);
+  })
+}
