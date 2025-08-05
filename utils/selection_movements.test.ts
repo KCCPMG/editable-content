@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+import {describe, expect, jest, test, beforeEach} from '@jest/globals';
 import { setSelection, resetSelectionToTextNodes } from "./selection_movements";
 import { mdnDocPageHTML } from "./test_constants";
 

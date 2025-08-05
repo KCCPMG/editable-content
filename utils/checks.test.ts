@@ -1,7 +1,10 @@
-import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy } from "./checks";
+/**
+ * @jest-environment jsdom
+ */
+import {describe, expect, jest, test, beforeEach} from '@jest/globals';
+import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf } from "./checks";
 import { setSelection, resetRangeToTextNodes } from "./selection_movements";
 import { startingHTML, alternateHTML } from "./test_constants";
-import { nodeIsDescendentOf } from "./unused_utils";
 
 
 
@@ -39,6 +42,7 @@ describe("test nodeIsDescendentOf", function() {
 
   })
 })
+
 
 describe("test getAncestorNode", function() {
   // TODO

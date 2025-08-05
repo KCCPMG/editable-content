@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+import {describe, expect, jest, test, beforeEach} from '@jest/globals';
 import { wrapInElement, deleteEmptyElementsByQuery, unwrapSelectionFromQuery, unwrapRangeFromQuery, generateQuery, createWrapper } from "./dom_operations";
 import { setSelection } from "./selection_movements";
 import { startingHTML, alternateHTMLwithUnbreakable, alternateHTML } from "./test_constants";
