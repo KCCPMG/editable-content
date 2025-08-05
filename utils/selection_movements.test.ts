@@ -3,8 +3,11 @@
  */
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
 import { setSelection, resetSelectionToTextNodes } from "./selection_movements";
-import { mdnDocPageHTML } from "./test_constants";
+import { startingHTML, mdnDocPageHTML } from "./test_constants";
 
+
+// before all
+document.body.innerHTML = startingHTML;
 
 
 describe("test setSelection", function() {

@@ -70,9 +70,8 @@ describe("test wrapInElement", function() {
 
 
   test("wraps text in element but leaves unbreakable tag outside", function() {
+
     document.body.innerHTML = alternateHTMLwithUnbreakable;
-
-
 
     const underline = document.querySelector("u");
     const lastItalics = document.querySelector("div > i");
@@ -102,7 +101,7 @@ describe("test wrapInElement", function() {
         <strong>
           Fourth Strong Text 
           <i>Italics In Fourth Strong Text </i>
-          <u>Underline</u>
+          <u>Underlin</u>
         </strong>
         <a>
           <strong>

@@ -39,12 +39,12 @@ export function resetRangeToTextNodes(range: Range) {
 
   // console.log(range.startContainer, range.startContainer.nodeType !== Node.TEXT_NODE, range.endContainer.nodeType !== Node.TEXT_NODE);
 
-  console.log("resetting range to text nodes");
+  // console.log("resetting range to text nodes");
 
   const collapsed: boolean = range.collapsed;
 
 
-  console.log({range});
+  // console.log({range});
 
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
     const startNode = range.startContainer.childNodes[range.startOffset];
@@ -57,14 +57,14 @@ export function resetRangeToTextNodes(range: Range) {
         const content = currentNode.textContent;
 
         if (!content || (content.length === 0)) {
-          console.log("first if");
+          // console.log("first if");
           range.setStart(currentNode, 0);
           break;
         }
 
         // if purely cushioned node, place after first zero-width space
         if (tw.currentNode.textContent?.split("").every(ch => ch === '\u200B')) {
-          console.log("second if");
+          // console.log("second if");
           range.setStart(tw.currentNode, 1);
           break;
         }
@@ -72,8 +72,8 @@ export function resetRangeToTextNodes(range: Range) {
         // otherwise place before first non-zero-width space
         else {
           for (let i=0; i<content.length; i++) {
-            console.log("third if");
-            console.log(currentNode);
+            // console.log("third if");
+            // console.log(currentNode);
             if (content[i] !== '\u200B') {
               range.setStart(currentNode, i);
               break;
@@ -96,7 +96,7 @@ export function resetRangeToTextNodes(range: Range) {
     const currentNode = range.startContainer;
     const content = currentNode.textContent;
 
-    console.log("startContainer is text node");    
+    // console.log("startContainer is text node");    
 
     if (!content || (content.length === 0)) {
       console.log("first if");
@@ -114,13 +114,13 @@ export function resetRangeToTextNodes(range: Range) {
 
     // if purely cushioned node, place after first zero-width space
     else if (currentNode.textContent?.split("").every(ch => ch === '\u200B')) {
-      console.log("second if");
+      // console.log("second if");
       range.setStart(currentNode, 1);
     }
 
     // go outwards from startOffset to find nearest non-zws
     else for (let i=1; i<content.length; i++) {
-      console.log("last for loop ", i);
+      // console.log("last for loop ", i);
       if (
         range.startOffset - i >= 0 &&
         content[range.startOffset - i] !== '\u200B'
@@ -156,7 +156,7 @@ export function resetRangeToTextNodes(range: Range) {
       
   }
 
-  console.log("after setting start", range.startContainer, range.startOffset);
+  // console.log("after setting start", range.startContainer, range.startOffset);
 
   // if this range is meant to be collapsed, collapse to start
   if (collapsed) {
@@ -166,24 +166,24 @@ export function resetRangeToTextNodes(range: Range) {
   // otherwise find correct distinct end
   else if (range.endContainer.nodeType !== Node.TEXT_NODE) {
 
-    console.log("sanity check 1");
+    // console.log("sanity check 1");
     const commonAncestor = range.commonAncestorContainer;
 
     let lastTextNode = range.startContainer;
     const tw = document.createTreeWalker(commonAncestor);
     // advance to new start container
     while (tw.currentNode !== range.startContainer) {
-      console.log("sanity check 2");
+      // console.log("sanity check 2");
       tw.nextNode();
     }
     while (range.isPointInRange(tw.currentNode, 0)) {
-      console.log("sanity check 3");
+      // console.log("sanity check 3");
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
         lastTextNode = tw.currentNode;
       }  
       if (!tw.nextNode()) break; // advance tw, break loop if null
     }
-    console.log("sanity check 4");
+    // console.log("sanity check 4");
     range.setEnd(lastTextNode, lastTextNode.textContent?.length || 0);
   }
 
@@ -283,7 +283,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
           return selection.setBaseAndExtent(anchorNode, anchorOffset+1, anchorNode, anchorOffset+1);
         } 
         else { // if hitting edge of text
-          console.log("hitting else");
+          // console.log("hitting else");
           for (let i=anchorOffset+1; i<=anchorNode?.textContent?.length; i++) {
             if (anchorNode.textContent[i-1] !== '\u200B') {
               console.log("setting anchorNode before", anchorNode.textContent[i])
@@ -291,7 +291,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
             }
           }
 
-          console.log("leaving this text node")
+          // console.log("leaving this text node");
 
           while (indexOfTextNode < textNodes.length) {
             console.log(indexOfTextNode, textNodes.length);
@@ -306,7 +306,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
             }
             for (let i=0; i<content.length; i++) {
               if (content[i] !== '\u200B') {
-                console.log("setting anchorNode before", content);
+                // console.log("setting anchorNode before", content);
                 return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
               }
             }
@@ -318,7 +318,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
       }
       else {
 
-        console.log("from the else block");
+        // console.log("from the else block");
         console.log(indexOfTextNode, textNodes.length);
 
 
@@ -422,7 +422,7 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
     while (indexOfTextNode >= 0) {
       const currentTextNode = textNodes[indexOfTextNode];
       const content = currentTextNode.textContent;
-      console.log("new text node:", content);
+      // console.log("new text node:", content);
       if (!content) continue;
 
       for (let i=content.length-1; i>=0; i--) {
@@ -457,7 +457,7 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
     while (indexOfTextNode < textNodes.length) {
       const currentTextNode = textNodes[indexOfTextNode];
       const content = currentTextNode.textContent;
-      console.log("new text node:", content);
+      // console.log("new text node:", content);
       if (!content) continue;    
       const stoppingPoint = (indexOfTextNode === (textNodes.length-1)) ?
         content.length + 1 :
