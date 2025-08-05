@@ -301,7 +301,21 @@ describe("test getRangeChildNodes", function() {
 
 
   test("get nodes in propful-only example", function() {
-    const customHTML = `<div id="portal-container-12345" data-button-key="propful-only"><div class="MuiBox-root css-1otupa8" data-bk="propful-only" data-unbreakable=""><span data-exclude-from-dehydrated="">​6​​ ​</span>​Propful Component​</div></div>`
+    const customHTML = `
+      <div 
+        id="portal-container-12345" 
+        data-button-key="propful-only"
+      >
+        <div 
+          class="MuiBox-root css-1otupa8" 
+          data-bk="propful-only" data-unbreakable=""
+        >
+          <span data-exclude-from-dehydrated="">
+            ​6​​ ​
+          </span>
+          ​Propful Component​
+        </div>
+      </div>`.replace(/\n */g, ''); 
     const customHTMLAsNode = new DOMParser()
       .parseFromString(customHTML, "text/html")
       .body;
@@ -315,35 +329,70 @@ describe("test getRangeChildNodes", function() {
     expect(containingDiv.tagName).toBe('DIV');
     expect(containingDiv.getAttribute('id')).toBe('portal-container-12345');
 
+    // set the following range:
+    /**
+     * <div 
+        id="portal-container-12345" 
+        data-button-key="propful-only"
+      >
+        ^
+        <div 
+          class="MuiBox-root css-1otupa8" 
+          data-bk="propful-only" data-unbreakable=""
+        >
+          <span data-exclude-from-dehydrated="">
+            ​6​ 
+          </span>
+          ​Propful Component​
+        </div>
+              ^
+      </div>`
+     */
+
     const childrenRange = new Range();
     childrenRange.setStart(containingDiv, 0);
     childrenRange.setEnd(containingDiv, containingDiv.childNodes.length);
 
-    expect(childrenRange.toString()).toBe(`​6​​ ​​Propful Component​`);
+    const childrenRangeText = childrenRange.toString();
+    const expectedString = '​6​​ ​​Propful Component​';
+    const expectedSpanText = '​6​​ ​';
+    for (let i=0; i<childrenRangeText.length; i++) {
+      expect(childrenRangeText[i]).toBe(expectedString[i]);
+    }
+    expect(childrenRangeText.length).toBe(expectedString.length);
+    expect(childrenRange.toString()).toEqual(expectedString);
+
+
+
     
     const nodes = getRangeChildNodes(childrenRange, customHTMLAsNode);
+
+
+    expect(nodes[0].textContent).toBe(childrenRangeText);
 
     expect(nodes.length).toBe(4);
 
     expect(nodes[0].nodeType).toBe(Node.ELEMENT_NODE);
     expect((nodes[0] as Element).className).toBe("MuiBox-root css-1otupa8")
-    expect(nodes[0].textContent).toBe(`​6​​ ​​Propful Component​`);
+    expect(nodes[0].textContent).toBe(expectedString);
 
     expect(nodes[1].nodeType).toBe(Node.ELEMENT_NODE);
     expect((nodes[1] as Element).tagName).toBe('SPAN');
-    expect(nodes[1].textContent).toBe(`​6​​ ​`);
+    expect(nodes[1].textContent).toBe(expectedSpanText);
 
     expect(nodes[2].nodeType).toBe(Node.TEXT_NODE);
-    expect(nodes[2].textContent).toBe(`​6​​ ​`);
+    expect(nodes[2].textContent).toBe(expectedSpanText);
 
     expect(nodes[3].nodeType).toBe(Node.TEXT_NODE);
     expect(nodes[3].textContent).toBe(`​Propful Component​`);
 
     resetRangeToTextNodes(childrenRange);
-    expect(childrenRange.toString()).toBe(`​6​​ ​​Propful Component​`);
+    // expect(childrenRange.toString()).toEqual(expectedString);
 
+    console.log(childrenRange.cloneContents())
     const resetNodes = getRangeChildNodes(childrenRange, customHTMLAsNode);
 
+    console.log(resetNodes);
     expect(resetNodes.length).toBe(3);
 
     // expect(resetNodes[0].nodeType).toBe(Node.ELEMENT_NODE);

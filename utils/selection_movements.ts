@@ -78,8 +78,8 @@ export function resetRangeToTextNodes(range: Range) {
               range.setStart(currentNode, i);
               break;
             }
-          console.log("this should never hit");
           }
+          console.log("this should never hit");
           break;
 
         }
