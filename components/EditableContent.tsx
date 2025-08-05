@@ -1,9 +1,11 @@
 "use client"
 import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect } from "react";
-import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection, shiftSelection, getSelectionDirection, isValidTextEndpoint } from '@/utils/utils';
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
+import { moveSelection, resetSelectionToTextNodes, shiftSelection } from "@/utils/selection_movements";
+import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection } from "@/utils/checks";
+import { promoteChildrenOfNode } from "@/utils/dom_operations";
 
 
 export default function EditableContent({className, disableNewLines }: EditableContentProps) {

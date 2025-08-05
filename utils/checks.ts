@@ -1,5 +1,6 @@
 import React from "react";
 import { ReactElement } from "react";
+import { ZWS_RE } from "./constants";
 
 
 /**
@@ -296,7 +297,7 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
     return status;
   }
 
-  // might be unneccessary
+  // might be unnecessary
   if (!(limitingContainer instanceof Element)) {
     status.enabled = false;
     status.selected = false;

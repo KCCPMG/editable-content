@@ -1,8 +1,8 @@
 "use client"
 import React, { useEffect, useLayoutEffect } from "react";
-import { selectionIsDescendentOfNode,  resetSelectionToTextNodes, selectionHasTextNodes,   promoteChildrenOfNode, moveSelection } from '@/utils/utils';
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
+import { promoteChildrenOfNode } from "@/utils/dom_operations";
 
 
 export default function RenderedContent({className}: EditableContentProps) {

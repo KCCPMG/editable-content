@@ -3,8 +3,10 @@ import { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, 
 import { WrapperArgs } from "./";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
-import { generateQuery, getButtonStatus, unwrapSelectionFromQuery, createWrapper, wrapInElement, getAncestorNode, resetSelectionToTextNodes, resetRangeToTextNodes, getRangeChildNodes, getLastValidTextNode, getLastValidCharacterIndex, getRangeLowestAncestorElement, moveSelection, getIsReactComponent, getAllTextNodes} from "@/utils/utils";
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
+import { getAllTextNodes, getAncestorNode, getButtonStatus, getIsReactComponent, getLastValidCharacterIndex, getLastValidTextNode, getRangeChildNodes, getRangeLowestAncestorElement } from "@/utils/checks";
+import { generateQuery, unwrapSelectionFromQuery, createWrapper, wrapInElement } from "@/utils/dom_operations";
+import { resetRangeToTextNodes, resetSelectionToTextNodes, moveSelection } from "@/utils/selection_movements";
 
 type htmlSelectCallback = (wrapper: HTMLElement) => void
 type reactSelectCallback = (wrapper: ReactElement<any, string | JSXElementConstructor<any>>, portalId: string | undefined) => void

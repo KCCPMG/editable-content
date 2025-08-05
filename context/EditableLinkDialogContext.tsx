@@ -2,7 +2,7 @@ import { useState, createContext, useContext, Dispatch, SetStateAction, useEffec
 import { useEditableContentContext } from "./EditableContentContext";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
-import { getAllTextNodes, getLastValidCharacterIndex, getLastValidTextNode } from "@/utils/utils";
+import { getAllTextNodes, getLastValidTextNode, getLastValidCharacterIndex } from "@/utils/checks";
 // import EditHrefDialog from "@/components/TestComponents/EditHrefDialog";
 
 type EditLinkDialogContextProps = {

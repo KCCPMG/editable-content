@@ -3,7 +3,8 @@ import React, { useEffect, useLayoutEffect } from "react";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { Paper, Typography, Button } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
-import { promoteChildrenOfNode } from "@/utils/utils";
+import { promoteChildrenOfNode } from "@/utils/dom_operations";
+
 
 
 type RenderedContentContainerProps = {

@@ -1,3 +1,6 @@
+import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned } from "./checks";
+import { cushionTextNode } from "./dom_operations";
+
 export function setSelection(startContainer: Node, startOffset: number, endContainer: Node, endOffset: number) {
   const range = new Range();
   range.setStart(startContainer, startOffset);

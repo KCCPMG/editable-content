@@ -1,10 +1,13 @@
-import { wrapInElement, selectionIsDescendentOfNode, generateQuery, selectionIsCoveredBy, createWrapper, unwrapSelectionFromQuery, resetSelectionToTextNodes, resetRangeToTextNodes, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, promoteChildrenOfNode, deleteEmptyElements, setSelection, moveSelection, getRangeChildNodes, getAncestorNode, getLastValidCharacterIndex, getLastValidTextNode, getIsReactComponent, resetTextNodesCushions, getAllTextNodes, textNodeIsCushioned, cushionTextNode, identifyBadTextNodes, isValidTextEndpoint } from "@/utils/utils";
+
 import { EditableContentProps, EditTextButtonObject, WrapperInstructions, WrapperArgs } from "@/components";
 import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { renderToString } from "react-dom/server";
 import { v4 as uuidv4 } from 'uuid';
 import { EXCLUDE_FROM_DEHYDRATED, PORTAL_CONTAINER_ID_PREFIX, ZWS_RE } from "@/utils/constants";
+import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getAllTextNodes, textNodeIsCushioned, isValidTextEndpoint, identifyBadTextNodes, getIsReactComponent } from "@/utils/checks";
+import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements, cushionTextNode } from "@/utils/dom_operations";
+import { resetSelectionToTextNodes, setSelection, moveSelection, resetTextNodesCushions } from "@/utils/selection_movements";
 
 
 
