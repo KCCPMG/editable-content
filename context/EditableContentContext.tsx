@@ -68,7 +68,7 @@ declare global {
     textNodeIsCushioned: (textNode: Text) => boolean;
     cushionTextNode: (textNode: Text) => void;
     resetTextNodesCushions: (textNodes: Array<Text>) => void;
-    isValidTextEndpoint: any
+    isValidTextEndpoint: any,
   }
 }
 
@@ -181,7 +181,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     window.textNodeIsCushioned = textNodeIsCushioned,
     window.cushionTextNode = cushionTextNode,
     window.resetTextNodesCushions = resetTextNodesCushions,
-    window.isValidTextEndpoint = isValidTextEndpoint
+    window.isValidTextEndpoint = isValidTextEndpoint,
+    window.getRangeChildNodes = getRangeChildNodes
   }, [])
 
   /**

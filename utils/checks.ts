@@ -174,11 +174,17 @@ export function getSelectionChildNodes(selection: Selection, limitingContainer: 
 }
 
 
+/**
+ * Returns all nodes (elements and text) which descend from a 
+ * limitingContainer node and begin and/or end within the given
+ * range
+ * @param range 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function getRangeChildNodes(range: Range, limitingContainer: Node): Array<Node> {
-  // assumes that startNode and endNode are text
 
   const { startContainer, startOffset, endContainer, endOffset } = range;
-
 
   const startNode = startContainer.hasChildNodes() ?
     startContainer.childNodes[startOffset] :
