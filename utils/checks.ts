@@ -37,6 +37,26 @@ export function isValidTextEndpoint(node: Node, offset: number, acceptEmptyCushi
 }
 
 
+/** WORK IN PROGRESS
+ * 
+ * @param content 
+ * @param initialOffset 
+ */
+export function getNearestValidOffset(content: string, initialOffset: number) {
+  for (let i=1; i<content.length; i++) {
+    if (
+      (initialOffset - i) >= 0 &&
+      content[initialOffset - 1] !== '\u200B' 
+    ) {
+      return initialOffset - i + 1;
+    } else {
+      initialOffset + i
+    }
+  }
+}
+
+
+
 
 export function nodeIsDescendentOf(node: Node, query: string, limitingContainer: Node) {
   let parentNode = node.parentNode;

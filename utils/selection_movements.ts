@@ -14,25 +14,6 @@ export function setSelection(startContainer: Node, startOffset: number, endConta
 
 
 
-/** WORK IN PROGRESS
- * 
- * @param content 
- * @param initialOffset 
- */
-export function getNearestValidOffset(content: string, initialOffset: number) {
-  for (let i=1; i<content.length; i++) {
-    if (
-      (initialOffset - i) >= 0 &&
-      content[initialOffset - 1] !== '\u200B' 
-    ) {
-      return initialOffset - i + 1;
-    } else {
-      initialOffset + i
-    }
-  }
-}
-
-
 export function resetSelectionToTextNodes(): Selection | null {
   let selection = window.getSelection();
   if (!selection) return selection;
