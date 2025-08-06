@@ -434,7 +434,7 @@ export function getLastValidTextNode(textNodeArr: Array<Text>) {
  * @param textNode 
  * @returns number
  */
-export function getLastValidCharacterIndex(textNode: Text): number {
+export function getLastValidCharacterIndex(textNode: Text, maxOffset?: number): number {
   if (!textNode.textContent) return 0;
 
   const content = textNode.textContent;
@@ -445,18 +445,29 @@ export function getLastValidCharacterIndex(textNode: Text): number {
   }
 
   // if last character is not zero width space, return full length
-  if (content[content.length - 1] !== '\u200B') {
-    console.log("returning ", textNode.textContent.length);
-    return textNode.textContent.length;
-  }
+  // else if (content[content.length - 1] !== '\u200B') {
+  //   console.log("returning ", textNode.textContent.length);
+  //   return textNode.textContent.length;
+  // }
 
   // else move backwards, return after last valid (non-zws) character
-  for (let i=textNode.length-1; i--; i>=0) {
-    if (textNode.textContent[i].match("[^\u200B]")) {
-      console.log("returning ", i+1);
-      return i+1;
+  else {
+    
+    console.log(maxOffset);
+
+    const startingIndex = (maxOffset !== undefined) ?
+      Math.min(maxOffset, textNode.textContent.length) :
+      textNode.textContent.length;
+
+
+    for (let i=startingIndex; i--; i>=0) {
+      if (textNode.textContent[i].match("[^\u200B]")) {
+        // console.log("returning ", i+1);
+        return i+1;
+      }
     }
   }
+
   // fallback
   return 0;
 }

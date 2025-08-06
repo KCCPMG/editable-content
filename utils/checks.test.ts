@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf } from "./checks";
+import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf, getLastValidCharacterIndex } from "./checks";
 import { setSelection, resetRangeToTextNodes } from "./selection_movements";
 import { startingHTML, alternateHTML } from "./test_constants";
 
@@ -589,7 +589,31 @@ describe("test getLastValidTextNode", function() {
 
 
 describe("test getLastValidCharacterIndex", function() {
-  // TODO
+
+  test("given text node with all valid characters, returns length", function() {  
+    const textNode = new Text("abcde abcdefghijk");
+    expect(getLastValidCharacterIndex(textNode)).toBe(textNode.textContent!.length);
+  })
+
+  test("given text node with all valid characters when last character is space, returns length", function() {    
+    const textNode = new Text("abcde abcdefghijk  ");
+    expect(getLastValidCharacterIndex(textNode)).toBe(textNode.textContent!.length);
+  })
+
+  test("given text node with invalid character at end, returns length-1", function() {
+    const textNode = new Text("abcde abcdefghijk  \u200B");
+    expect(getLastValidCharacterIndex(textNode)).toBe(textNode.textContent!.length-1);
+  })
+
+})
+
+describe("test getLastValidCharacterIndex with max offset", function() {
+
+  test("given text node with all valid characters, returns floor", function() {  
+    const textNode = new Text("abcde abcdefghijk");
+    expect(getLastValidCharacterIndex(textNode, 8)).toBe(8);
+  })
+
 })
 
 
