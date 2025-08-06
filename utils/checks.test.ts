@@ -389,7 +389,6 @@ describe("test getRangeChildNodes", function() {
     resetRangeToTextNodes(childrenRange);
     // expect(childrenRange.toString()).toEqual(expectedString);
 
-    console.log(childrenRange.cloneContents())
     const resetNodes = getRangeChildNodes(childrenRange, customHTMLAsNode);
 
     console.log(resetNodes);

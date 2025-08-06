@@ -68,7 +68,7 @@ declare global {
     textNodeIsCushioned: (textNode: Text) => boolean;
     cushionTextNode: (textNode: Text) => void;
     resetTextNodesCushions: (textNodes: Array<Text>) => void;
-    isValidTextEndpoint: any,
+    isValidTextEndpoint: any
   }
 }
 
@@ -123,7 +123,7 @@ export type EditableContentContextType = {
   updateSelection: () => void,
   dehydratedHTML: string,
   resetPortalContainers: () => void,
-  assignContentRef: (newRef: HTMLDivElement) => void,
+  assignContentRef: (newRef: HTMLDivElement) => void
 }
 
 export const EditableContentContext = createContext<EditableContentContextType | null>(null);
@@ -182,7 +182,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     window.cushionTextNode = cushionTextNode,
     window.resetTextNodesCushions = resetTextNodesCushions,
     window.isValidTextEndpoint = isValidTextEndpoint,
-    window.getRangeChildNodes = getRangeChildNodes
+    window.getRangeChildNodes = getRangeChildNodes,
+    window.moveSelection = moveSelection
   }, [])
 
   /**
@@ -378,19 +379,11 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
 
     if (contentRef.current) {
       const textNodes = getAllTextNodes([contentRef.current]);
-      textNodes.forEach(tn => {
-        if (!textNodeIsCushioned(tn)) {
-          // console.log(tn, false);
-          // const content = tn.textContent;
-          // console.log("!!content", !!content);
-          // console.log("content[0] === '\u200B", !!content && content[0] === '\u200B');
-          // console.log("content[content.length - 1] == '\u200B'", !!content && content[content.length - 1] == '\u200B', content![content!.length-1], content!.charCodeAt(content!.length - 1));
-          // console.log("content.slice(1, content.length - 1).match(ZWS_RE) === null", !!content && content.slice(1, content.length - 1).match(ZWS_RE) === null)
-        }
-      })
+
       resetTextNodesCushions(textNodes);
       const badTextNodes = identifyBadTextNodes(textNodes, contentRef.current);
       badTextNodes.forEach(btn => btn.remove());
+      deleteEmptyElements(contentRef.current);
     }
 
 

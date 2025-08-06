@@ -27,7 +27,14 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
   const query = generateQueryFromElement(element);
 
   const contents = range.extractContents();
-  const childNodes = contents.childNodes
+  const childNodes = contents.childNodes;
+
+  /**
+   * If there are nodes inside of the selection which already
+   * match the query of the wrapper that we will apply, promote the
+   * contents of those nodes out of their individual wrappers before 
+   * the new wrapper is applied to all contents
+   */
   const targetedNodes = Array.from(childNodes).filter(cn => {
     return (cn instanceof Element && cn.matches(query));
   });
@@ -46,10 +53,10 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
   range.setEndAfter(element);
 
   if (range.toString().length === 0) {
-    const textNode = document.createTextNode('\u200B');
+    const textNode = document.createTextNode('\u200B\u200B');
     element.append(textNode);
-    range.setStart(textNode, 0);
-    range.setEnd(textNode, textNode.length);
+    range.setStart(textNode, 1);
+    range.setEnd(textNode, 1);
     selection.removeAllRanges();
     selection.addRange(range);
   }
@@ -98,8 +105,18 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
 
   }
 
-  deleteEmptyElements(limitingContainer);
-  resetSelectionToTextNodes();
+  // deleteEmptyElements(limitingContainer); - moving to updateContent
+  
+  resetSelectionToTextNodes(); // make sure we're in text nodes
+
+  if (range.startContainer.nodeType === Node.TEXT_NODE) {
+    range.setStartBefore(range.startContainer);
+  }
+
+  if (range.endContainer.nodeType === Node.TEXT_NODE) {
+    range.setEndAfter(range.endContainer);
+  }
+
 }
 
 
