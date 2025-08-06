@@ -444,30 +444,47 @@ export function getLastValidCharacterIndex(textNode: Text, maxOffset?: number): 
     return 1;
   }
 
-  // if last character is not zero width space, return full length
-  // else if (content[content.length - 1] !== '\u200B') {
-  //   console.log("returning ", textNode.textContent.length);
-  //   return textNode.textContent.length;
-  // }
-
-  // else move backwards, return after last valid (non-zws) character
-  else {
-    
-    console.log(maxOffset);
-
-    const startingIndex = (maxOffset !== undefined) ?
-      Math.min(maxOffset, textNode.textContent.length) :
-      textNode.textContent.length;
-
-
-    for (let i=startingIndex; i--; i>=0) {
-      if (textNode.textContent[i].match("[^\u200B]")) {
+  else if (maxOffset !== undefined) {
+    for (let i=maxOffset; i>=0; i--) {
+      if (
+        textNode.textContent[i] && 
+        textNode.textContent[i].match("[^\u200B]")
+      ) {
         // console.log("returning ", i+1);
-        return i+1;
+        return i;
       }
     }
+    return 0;
+  }
+  // else {
+
+  //   const startingIndex = (maxOffset !== undefined) ?
+  //     Math.min(maxOffset, textNode.textContent.length+1) :
+  //     textNode.textContent.length;
+
+
+  //   for (let i=startingIndex; i>=0; i--) {
+  //     if (maxOffset === 3) console.log(startingIndex, i, textNode.textContent[i]);
+  //     if (textNode.textContent[i] && textNode.textContent[i].match("[^\u200B]")) {
+  //       // console.log("returning ", i+1);
+  //       return i+1;
+  //     }
+  //   }
+  // }
+
+
+  // if last character is not zero width space, return full length
+  else if (content[content.length - 1] !== '\u200B') {
+    return textNode.textContent.length;
   }
 
+  // else move backwards, return after last valid (non-zws) character
+  for (let i=textNode.length-1; i>=0; i--) {
+    if (textNode.textContent[i].match("[^\u200B]")) {
+      console.log("returning ", i+1);
+      return i+1;
+    }
+  }
   // fallback
   return 0;
 }
