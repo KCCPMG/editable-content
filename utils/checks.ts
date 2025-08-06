@@ -426,13 +426,24 @@ export function getLastValidTextNode(textNodeArr: Array<Text>) {
 
 
 /**
- * Look for place to put cursor at end of text node
- * Finds last valid (non-zero width space) character in a text node,
- * returns its index
- * If text node is only zero width spaces, return 1
- * If no text return 0
+ * Looks for the last acceptable place in a cursor to put a text node,
+ * and returns its index. If a maxOffset is included, the maxOffset will
+ * be the highest possible number returned, meaning the function will
+ * search backwards from that index. If there is no maxOffset returned,
+ * the highest potential index would be the length of the text node + 1,
+ * meaning after all of the contents of the text node. 
+ * - If a text node has no text content, returns 0
+ * - If a text node is fully cushioned but otherwise empty, returns 1 (after
+ *   one zero-width space and before all others)
+ * - If a maxOffset is provided, returns the highest index equal to or less 
+ *   than that maxOffset provided that textNode.textContent[index] is equal
+ *   to a valid character (non-zero-width space)
+ * - Otherwise returns one GREATER than the last index where 
+ *   textNode.textContent[index] equal to a valid character, ie. AFTER the last
+ *   valid character
  * @param textNode 
- * @returns number
+ * @param maxOffset 
+ * @returns 
  */
 export function getLastValidCharacterIndex(textNode: Text, maxOffset?: number): number {
   if (!textNode.textContent) return 0;
@@ -456,22 +467,6 @@ export function getLastValidCharacterIndex(textNode: Text, maxOffset?: number): 
     }
     return 0;
   }
-  // else {
-
-  //   const startingIndex = (maxOffset !== undefined) ?
-  //     Math.min(maxOffset, textNode.textContent.length+1) :
-  //     textNode.textContent.length;
-
-
-  //   for (let i=startingIndex; i>=0; i--) {
-  //     if (maxOffset === 3) console.log(startingIndex, i, textNode.textContent[i]);
-  //     if (textNode.textContent[i] && textNode.textContent[i].match("[^\u200B]")) {
-  //       // console.log("returning ", i+1);
-  //       return i+1;
-  //     }
-  //   }
-  // }
-
 
   // if last character is not zero width space, return full length
   else if (content[content.length - 1] !== '\u200B') {
