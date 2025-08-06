@@ -605,6 +605,27 @@ describe("test getLastValidCharacterIndex", function() {
     expect(getLastValidCharacterIndex(textNode)).toBe(textNode.textContent!.length-1);
   })
 
+  test("edge case, empty cushion", function() {
+    const textNode = new Text("\u200B\u200B\u200B\u200B\u200B");
+    expect(getLastValidCharacterIndex(textNode)).toBe(1);
+  })
+
+  test("edge case, single zero-width space", function() {
+    const textNode = new Text("\u200B");
+    expect(getLastValidCharacterIndex(textNode)).toBe(1);
+  })
+
+  test("edge case, empty text", function() {
+    const textNode = new Text("");
+    expect(getLastValidCharacterIndex(textNode)).toBe(0);
+  })
+
+  test("edge case, no text", function() {
+    const textNode = new Text();
+    expect(getLastValidCharacterIndex(textNode)).toBe(0);
+  })
+
+
 })
 
 describe("test getLastValidCharacterIndex with max offset", function() {
@@ -629,6 +650,13 @@ describe("test getLastValidCharacterIndex with max offset", function() {
     const textNode = new Text("abcde abcdefghijk");
     const textLength = textNode.textContent!.length;
     expect(getLastValidCharacterIndex(textNode, 100)).toBe(textLength-1);
+  })
+
+  test("returns correct index if maxOffset is on or after zero-width space", function() {
+    const textNode = new Text("abcde \u200B\u200Babcde");
+    expect(getLastValidCharacterIndex(textNode, 6)).toBe(5);
+    expect(getLastValidCharacterIndex(textNode, 7)).toBe(5);
+    expect(getLastValidCharacterIndex(textNode, 8)).toBe(8);
   })
 
 })
