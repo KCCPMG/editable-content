@@ -665,6 +665,89 @@ describe("test getLastValidCharacterIndex with max offset", function() {
 })
 
 
+describe("test getLastValidCharacterIndex with acceptEmptyCushions as false", function() {
+
+  test("returns -1 on empty cushioned node", function() {
+    const textNode = new Text("\u200B\u200B");
+    expect(getLastValidCharacterIndex(textNode, false)).toBe(-1);
+  })
+
+
+  test("returns -1 on node with only one character, zero-width", function() {
+    const textNode = new Text("\u200B")
+    expect(getLastValidCharacterIndex(textNode, false)).toBe(-1);
+  })
+
+  test("returns -1 on node with empty string", function() {
+    const textNode = new Text("");
+    expect(getLastValidCharacterIndex(textNode, false)).toBe(-1);
+  })
+  
+
+  test("returns -1 on node with no content", function() {
+    const textNode = new Text();
+    expect(getLastValidCharacterIndex(textNode, false)).toBe(-1);
+  })
+
+  test("returns -1 when only zero-width-spaces up to maxOffset", function() {
+    const textNode = new Text("\u200B\u200B abcde");
+    expect(getLastValidCharacterIndex(textNode, false, 1)).toBe(-1)
+  })
+
+
+  test("returns correct index if maxOffset is on or after zero-width space", function() {
+    const textNode = new Text("abcde \u200B\u200Babcde");
+
+    expect(getLastValidCharacterIndex(textNode, false, 6)).toBe(5);
+    expect(getLastValidCharacterIndex(textNode, false, 7)).toBe(5);
+    expect(getLastValidCharacterIndex(textNode, false, 8)).toBe(8);
+  })
+
+
+  // repeat prior tests with acceptEmptyCushionNodes set to false
+  // first suite
+  test("given text node with all valid characters, returns length", function() {  
+    const textNode = new Text("abcde abcdefghijk");
+    expect(getLastValidCharacterIndex(textNode, false)).toBe(textNode.textContent!.length);
+  })
+
+  test("given text node with all valid characters when last character is space, returns length", function() {    
+    const textNode = new Text("abcde abcdefghijk  ");
+    expect(getLastValidCharacterIndex(textNode, false)).toBe(textNode.textContent!.length);
+  })
+
+  test("given text node with invalid character at end, returns length-1", function() {
+    const textNode = new Text("abcde abcdefghijk  \u200B");
+    expect(getLastValidCharacterIndex(textNode, false)).toBe(textNode.textContent!.length-1);
+  })
+
+  test("edge case, single zero-width space", function() {
+    const textNode = new Text("\u200B");
+    expect(getLastValidCharacterIndex(textNode)).toBe(1);
+  })
+
+  // second suite
+  test("given text node with all valid characters and maxOffset, returns maxOffset", function() {  
+    const textNode = new Text("abcde abcdefghijk");
+    expect(getLastValidCharacterIndex(textNode, false, 8)).toBe(8);
+  })
+
+  test("given text node with invalid characters short of maxOffset, returns maxOffset", function() {
+    const textNode = new Text("\u200B\u200B\u200Babcde abcdefghijk");
+    expect(textNode.textContent![3]).toBe("a");
+    expect(getLastValidCharacterIndex(textNode, false, 3)).toBe(3);
+  })
+
+  test("given text node with maxOffset greater than content length, returns content length - 1", function() {
+    const textNode = new Text("abcde abcdefghijk");
+    const textLength = textNode.textContent!.length;
+    expect(getLastValidCharacterIndex(textNode, false, 100)).toBe(textLength-1);
+  })
+
+
+}) 
+
+
 describe("test getIsReactComponent", function() {
   // TODO
 })

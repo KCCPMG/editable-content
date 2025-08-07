@@ -446,7 +446,10 @@ export function getLastValidTextNode(textNodeArr: Array<Text>) {
  * @returns 
  */
 export function getLastValidCharacterIndex(textNode: Text, acceptEmptyCushionNodes: boolean = true, maxOffset?: number): number {
-  if (!textNode.textContent) return 0;
+  if (!textNode.textContent) {
+    if (acceptEmptyCushionNodes) return 0;
+    else return -1;
+  }
 
   const content = textNode.textContent;
 
@@ -466,7 +469,8 @@ export function getLastValidCharacterIndex(textNode: Text, acceptEmptyCushionNod
         return i;
       }
     }
-    return 0;
+    if (acceptEmptyCushionNodes) return 0;
+    else return -1;
   }
 
   // if last character is not zero width space, return full length
