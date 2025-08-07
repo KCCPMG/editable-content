@@ -13,11 +13,15 @@ beforeAll(function() {
 })
 
 
-function compareSelection(selection: Selection, expAnchorNode: Node, expAnchorOffset: number, expFocusNode: Node, expFocusOffset: number) {
+function compareSelection(selection: Selection, expAnchorNode: Node, expAnchorOffset: number, expFocusNode?: Node, expFocusOffset?: number) {
   expect(selection.anchorNode).toBe(expAnchorNode);
   expect(selection.anchorOffset).toBe(expAnchorOffset);
-  expect(selection.focusNode).toBe(expFocusNode);
-  expect(selection.focusOffset).toBe(expFocusOffset);
+  if (expFocusNode) {
+    expect(selection.focusNode).toBe(expFocusNode);
+  } else expect(selection.focusNode).toBe(expAnchorNode);
+  if (expFocusOffset) {
+    expect(selection.focusOffset).toBe(expFocusOffset);
+  } else expect(selection.focusOffset).toBe(expAnchorOffset);
 }
 
 
@@ -211,10 +215,52 @@ describe("test moveSelection", function() {
   
   test("move selection left", function() {
     const selection = window.getSelection();
+
+    // set after final character (zero-width space) in last text node
     selection!.setBaseAndExtent(secondStrongFourthText, 21, secondStrongFourthText, 21);
     compareSelection(selection!, secondStrongFourthText, 21, secondStrongFourthText, 21);
+
+    // should skip 1 zero-width space
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 19, secondStrongFourthText, 19);
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 18);
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 17);
+    // text spot check
+    expect(selection?.getRangeAt(0).toString()).toBe(" ");
+
+    // next move should skip two zero-width spaces
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 14);
+    // text spot check
+    expect(selection?.getRangeAt(0).toString()).toBe("");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 13);
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 12);
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 11);
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 10);
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 9);
+    // text spot check
+    expect(selection?.getRangeAt(0).toString()).toBe(" ");
+
+    // next move should skip one zero-width space
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 7);
+    // text spot check
+    expect(selection?.getRangeAt(0).toString()).toBe("u200B");
     
-    // experimental_moveSelection
   })
 
 
