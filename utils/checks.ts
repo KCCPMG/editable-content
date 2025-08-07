@@ -430,14 +430,14 @@ export function getLastValidTextNode(textNodeArr: Array<Text>) {
  * and returns its index. If a maxOffset is included, the maxOffset will
  * be the highest possible number returned, meaning the function will
  * search backwards from that index. If there is no maxOffset returned,
- * the highest potential index would be the length of the text node + 1,
+ * the highest potential index would be the length of the text node,
  * meaning after all of the contents of the text node. 
  * - If a text node has no text content, returns 0
  * - If a text node is fully cushioned but otherwise empty, returns 1 (after
  *   one zero-width space and before all others)
  * - If a maxOffset is provided, returns the highest index equal to or less 
  *   than that maxOffset provided that textNode.textContent[index] is equal
- *   to a valid character (non-zero-width space)
+ *   to a valid character (non-zero-width space *on at least one side*)
  * - Otherwise returns one GREATER than the last index where 
  *   textNode.textContent[index] equal to a valid character, ie. AFTER the last
  *   valid character
@@ -462,8 +462,14 @@ export function getLastValidCharacterIndex(textNode: Text, acceptEmptyCushionNod
   else if (maxOffset !== undefined) {
     for (let i=maxOffset; i>=0; i--) {
       if (
-        textNode.textContent[i] && 
-        textNode.textContent[i].match("[^\u200B]")
+        (
+          textNode.textContent[i] && 
+          textNode.textContent[i].match("[^\u200B]")
+        ) ||
+        (
+          textNode.textContent[i-1] && 
+          textNode.textContent[i-1].match("[^\u200B]")
+        )
       ) {
         // console.log("returning ", i+1);
         return i;

@@ -645,20 +645,20 @@ describe("test getLastValidCharacterIndex with max offset", function() {
     expect(getLastValidCharacterIndex(textNode, true, 3)).toBe(3);
   })
 
-  test("given text node with maxOffset greater than content length, returns content length - 1", function() {
+  test("given text node with maxOffset greater than content length, returns content length, indicating cursor can be placed at end of text", function() {
     const textNode = new Text("abcde abcdefghijk");
     const textLength = textNode.textContent!.length;
-    expect(getLastValidCharacterIndex(textNode, true, 100)).toBe(textLength-1);
+    expect(getLastValidCharacterIndex(textNode, true, 100)).toBe(textLength);
   })
 
   test("returns correct index if maxOffset is on or after zero-width space", function() {
     const textNode = new Text("abcde \u200B\u200Babcde");
-    expect(getLastValidCharacterIndex(textNode, true, 6)).toBe(5);
-    expect(getLastValidCharacterIndex(textNode, true, 7)).toBe(5);
+    expect(getLastValidCharacterIndex(textNode, true, 6)).toBe(6);
+    expect(getLastValidCharacterIndex(textNode, true, 7)).toBe(6);
     expect(getLastValidCharacterIndex(textNode, true, 8)).toBe(8);
 
-    expect(getLastValidCharacterIndex(textNode, false, 6)).toBe(5);
-    expect(getLastValidCharacterIndex(textNode, false, 7)).toBe(5);
+    expect(getLastValidCharacterIndex(textNode, false, 6)).toBe(6);
+    expect(getLastValidCharacterIndex(textNode, false, 7)).toBe(6);
     expect(getLastValidCharacterIndex(textNode, false, 8)).toBe(8);
   })
 
@@ -698,8 +698,8 @@ describe("test getLastValidCharacterIndex with acceptEmptyCushions as false", fu
   test("returns correct index if maxOffset is on or after zero-width space", function() {
     const textNode = new Text("abcde \u200B\u200Babcde");
 
-    expect(getLastValidCharacterIndex(textNode, false, 6)).toBe(5);
-    expect(getLastValidCharacterIndex(textNode, false, 7)).toBe(5);
+    expect(getLastValidCharacterIndex(textNode, false, 6)).toBe(6);
+    expect(getLastValidCharacterIndex(textNode, false, 7)).toBe(6);
     expect(getLastValidCharacterIndex(textNode, false, 8)).toBe(8);
   })
 
@@ -738,10 +738,10 @@ describe("test getLastValidCharacterIndex with acceptEmptyCushions as false", fu
     expect(getLastValidCharacterIndex(textNode, false, 3)).toBe(3);
   })
 
-  test("given text node with maxOffset greater than content length, returns content length - 1", function() {
+  test("given text node with maxOffset greater than content length, returns content length, indicating cursor can be placed at end of text node", function() {
     const textNode = new Text("abcde abcdefghijk");
     const textLength = textNode.textContent!.length;
-    expect(getLastValidCharacterIndex(textNode, false, 100)).toBe(textLength-1);
+    expect(getLastValidCharacterIndex(textNode, false, 100)).toBe(textLength);
   })
 
 
