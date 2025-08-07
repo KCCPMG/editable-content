@@ -625,38 +625,41 @@ describe("test getLastValidCharacterIndex", function() {
     expect(getLastValidCharacterIndex(textNode)).toBe(0);
   })
 
-
 })
 
 describe("test getLastValidCharacterIndex with max offset", function() {
 
   test("given text node with all valid characters and maxOffset, returns maxOffset", function() {  
     const textNode = new Text("abcde abcdefghijk");
-    expect(getLastValidCharacterIndex(textNode, 8)).toBe(8);
+    expect(getLastValidCharacterIndex(textNode, true, 8)).toBe(8);
   })
 
   test("given text node with invalid characters up to maxOffset, returns 0", function() {
     const textNode = new Text("\u200B\u200B\u200Babcde abcdefghijk");
-    expect(getLastValidCharacterIndex(textNode, 2)).toBe(0);
+    expect(getLastValidCharacterIndex(textNode, true, 2)).toBe(0);
   })
 
   test("given text node with invalid characters short of maxOffset, returns maxOffset", function() {
     const textNode = new Text("\u200B\u200B\u200Babcde abcdefghijk");
     expect(textNode.textContent![3]).toBe("a");
-    expect(getLastValidCharacterIndex(textNode, 3)).toBe(3);
+    expect(getLastValidCharacterIndex(textNode, true, 3)).toBe(3);
   })
 
   test("given text node with maxOffset greater than content length, returns content length - 1", function() {
     const textNode = new Text("abcde abcdefghijk");
     const textLength = textNode.textContent!.length;
-    expect(getLastValidCharacterIndex(textNode, 100)).toBe(textLength-1);
+    expect(getLastValidCharacterIndex(textNode, true, 100)).toBe(textLength-1);
   })
 
   test("returns correct index if maxOffset is on or after zero-width space", function() {
     const textNode = new Text("abcde \u200B\u200Babcde");
-    expect(getLastValidCharacterIndex(textNode, 6)).toBe(5);
-    expect(getLastValidCharacterIndex(textNode, 7)).toBe(5);
-    expect(getLastValidCharacterIndex(textNode, 8)).toBe(8);
+    expect(getLastValidCharacterIndex(textNode, true, 6)).toBe(5);
+    expect(getLastValidCharacterIndex(textNode, true, 7)).toBe(5);
+    expect(getLastValidCharacterIndex(textNode, true, 8)).toBe(8);
+
+    expect(getLastValidCharacterIndex(textNode, false, 6)).toBe(5);
+    expect(getLastValidCharacterIndex(textNode, false, 7)).toBe(5);
+    expect(getLastValidCharacterIndex(textNode, false, 8)).toBe(8);
   })
 
 })

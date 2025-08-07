@@ -445,14 +445,15 @@ export function getLastValidTextNode(textNodeArr: Array<Text>) {
  * @param maxOffset 
  * @returns 
  */
-export function getLastValidCharacterIndex(textNode: Text, maxOffset?: number): number {
+export function getLastValidCharacterIndex(textNode: Text, acceptEmptyCushionNodes: boolean = true, maxOffset?: number): number {
   if (!textNode.textContent) return 0;
 
   const content = textNode.textContent;
 
   // if node is cushioned but empty of valid characters
   if (content.split("").every(ch => ch === '\u200B')) {
-    return 1;
+    if (acceptEmptyCushionNodes) return 1;
+    else return -1;
   }
 
   else if (maxOffset !== undefined) {
@@ -481,7 +482,7 @@ export function getLastValidCharacterIndex(textNode: Text, maxOffset?: number): 
     }
   }
   // fallback
-  return 0;
+  return -1;
 }
 
 
