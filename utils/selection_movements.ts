@@ -1,4 +1,4 @@
-import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned } from "./checks";
+import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned, getLastValidCharacterIndex } from "./checks";
 import { cushionTextNode } from "./dom_operations";
 
 export function setSelection(startContainer: Node, startOffset: number, endContainer: Node, endOffset: number) {
@@ -230,6 +230,86 @@ export function experimental_resetRangeToTextNodes(range: Range) {
   return range;
 }
 
+
+/**
+ * Move selection to jump over zero-width spaces within same text node or if 
+ * next text node in moveDirection is a sibling. 
+ * @param selection 
+ * @param limitingContainer 
+ * @param moveDirection 
+ * @returns 
+ */
+export function experimental_moveSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
+  
+  const direction = getSelectionDirection(selection);
+  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+  if (selection.rangeCount === 0) return;
+  if (!anchorNode || !focusNode) return;
+
+  const textNodes = getAllTextNodes([limitingContainer]); 
+  if (!(anchorNode instanceof Text)) resetSelectionToTextNodes();
+
+  // range is collapsed
+  if (direction === "none") {
+
+    let indexOfTextNode = textNodes.findIndex(tn => tn === anchorNode);
+    let currentNode = anchorNode;
+
+    if (moveDirection === "left") {
+
+      if (anchorOffset > 0) {
+        // for (let i=anchorOffset-1; i>=0; i--) {
+        //   if (anchorNode.textContent && anchorNode.textContent[i] !== '\u200B') {
+        //     return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
+        //   }
+        // }
+        const newIndex = getLastValidCharacterIndex(currentNode as Text, true, anchorOffset-1);
+
+        if (newIndex >= 0) {
+          return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+        } else {
+
+          while (true) {
+
+            indexOfTextNode--;
+            if (indexOfTextNode < 0) return;
+  
+            // determine if is direct sibling
+            const isDirectSibling = (textNodes[indexOfTextNode] === currentNode.previousSibling);
+  
+            currentNode = textNodes[indexOfTextNode];
+
+            if (isDirectSibling) {
+              const newIndex = getLastValidCharacterIndex(currentNode as Text, false);
+              if (newIndex >= 0) {
+                return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+              } else continue;
+
+            } else {
+              const newIndex = getLastValidCharacterIndex(currentNode as Text, true);
+              if (newIndex >= 0) {
+                return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+              } else continue;
+            } 
+
+          }
+
+
+
+        }
+
+        // need to traverse backwards
+        // indexOfTextNode--;
+        // if (textNodes[indexOfTextNode] === currentNode.previousSibling)
+
+
+
+      }
+
+    }
+
+  }
+}
 
 
 export function moveSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
