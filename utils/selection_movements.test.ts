@@ -2,8 +2,9 @@
  * @jest-environment jsdom
  */
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { setSelection, resetSelectionToTextNodes } from "./selection_movements";
+import { setSelection, resetSelectionToTextNodes, experimental_moveSelection } from "./selection_movements";
 import { startingHTML, mdnDocPageHTML } from "./test_constants";
+import { getAllTextNodes } from './checks';
 
 
 // before all
@@ -145,7 +146,49 @@ describe("test resetRangeToTextNodes", function() {
 
 
 describe("test moveSelection", function() {
-  // TODO
+
+  // before all
+  const htmlAsNode = `
+    <div class="limiting-container">
+      <strong>\u200BStrong Text\u200B<strong>
+    
+    
+    
+    </div>
+  `
+
+  const limitingContainer = document.createElement("div");
+
+  const strong = document.createElement("strong");
+  const strongText = document.createTextNode("\u200BStrong Text\u200B");
+  strong.append(strongText);
+  limitingContainer.append(strong);
+
+  const afterStrongTextNode = new Text("\u200B This is text after strong\u200B");
+  limitingContainer.append(afterStrongTextNode);
+
+  const afterStrongSiblingTextNode = new Text("\u200B This is more text\u200B");
+  limitingContainer.appendChild(afterStrongSiblingTextNode);
+
+  // do more
+
+
+
+
+  test("confirm all nodes are what they should be", function() {
+
+    const textNodes = getAllTextNodes([limitingContainer]);
+    expect(textNodes.length).toBe(3);
+    // do more
+  })
+  
+  // test("", function() {
+  //   const selection = window.getSelection();
+  //   selection!.setBaseAndExtent()
+  //   experimental_moveSelection
+  // })
+
+
 })
 
 
