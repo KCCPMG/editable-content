@@ -8,7 +8,17 @@ import { getAllTextNodes } from './checks';
 
 
 // before all
-document.body.innerHTML = startingHTML;
+beforeAll(function() {
+  document.body.innerHTML = startingHTML;
+})
+
+
+function compareSelection(selection: Selection, expAnchorNode: Node, expAnchorOffset: number, expFocusNode: Node, expFocusOffset: number) {
+  expect(selection.anchorNode).toBe(expAnchorNode);
+  expect(selection.anchorOffset).toBe(expAnchorOffset);
+  expect(selection.focusNode).toBe(expFocusNode);
+  expect(selection.focusOffset).toBe(expFocusOffset);
+}
 
 
 describe("test setSelection", function() {
@@ -175,7 +185,10 @@ describe("test moveSelection", function() {
   secondStrong.append(secondStrongThirdText);
   secondStrong.append(secondStrongFourthText);
 
-
+  beforeAll(function() {
+    document.body.innerHTML = '';
+    document.body.append(limitingContainer);
+  })
 
   test("confirm all nodes are what and where they should be", function() {
 
@@ -196,11 +209,18 @@ describe("test moveSelection", function() {
     expect(limitingContainer.childNodes.length).toBe(4);
   })
   
-  // test("", function() {
-  //   const selection = window.getSelection();
-  //   selection!.setBaseAndExtent()
-  //   experimental_moveSelection
-  // })
+  test("move selection left", function() {
+    const selection = window.getSelection();
+    selection!.setBaseAndExtent(secondStrongFourthText, 21, secondStrongFourthText, 21);
+    compareSelection(selection!, secondStrongFourthText, 21, secondStrongFourthText, 21);
+    
+    // experimental_moveSelection
+  })
+
+
+  afterAll(function() {
+    document.body.innerHTML = startingHTML;
+  })
 
 
 })
