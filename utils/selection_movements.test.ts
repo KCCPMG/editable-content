@@ -145,22 +145,14 @@ describe("test resetRangeToTextNodes", function() {
 })
 
 
+// using experimental_moveSelection
 describe("test moveSelection", function() {
 
   // before all
-  const htmlAsNode = `
-    <div class="limiting-container">
-      <strong>\u200BStrong Text\u200B<strong>
-    
-    
-    
-    </div>
-  `
-
   const limitingContainer = document.createElement("div");
 
   const strong = document.createElement("strong");
-  const strongText = document.createTextNode("\u200BStrong Text\u200B");
+  const strongText = new Text("\u200BStrong Text\u200B");
   strong.append(strongText);
   limitingContainer.append(strong);
 
@@ -170,16 +162,38 @@ describe("test moveSelection", function() {
   const afterStrongSiblingTextNode = new Text("\u200B This is more text\u200B");
   limitingContainer.appendChild(afterStrongSiblingTextNode);
 
-  // do more
+  const secondStrong = document.createElement("strong");
+  limitingContainer.append(secondStrong);
+
+  const secondStrongFirstText = new Text();
+  const secondStrongSecondText = new Text("abc\u200B");
+  const secondStrongThirdText = new Text("\u200B\u200B")
+  const secondStrongFourthText = new Text("\u200B  test \u200B hello\u200B\u200B   \u200B");
+
+  secondStrong.append(secondStrongFirstText);
+  secondStrong.append(secondStrongSecondText);
+  secondStrong.append(secondStrongThirdText);
+  secondStrong.append(secondStrongFourthText);
 
 
 
-
-  test("confirm all nodes are what they should be", function() {
+  test("confirm all nodes are what and where they should be", function() {
 
     const textNodes = getAllTextNodes([limitingContainer]);
-    expect(textNodes.length).toBe(3);
-    // do more
+    expect(textNodes.length).toBe(7);
+    const totalTextContent = "\u200BStrong Text\u200B\u200B This is text after strong\u200B\u200B This is more text\u200Babc\u200B\u200B\u200B\u200B  test \u200B hello\u200B\u200B   \u200B";
+    expect(textNodes.map(tn => tn.textContent).join("")).toBe(totalTextContent);
+    expect(limitingContainer.textContent).toBe(totalTextContent);
+
+    expect(limitingContainer.childNodes.length).toBe(4);
+    expect(limitingContainer.childNodes[0].nodeName).toBe("STRONG");
+    expect(limitingContainer.childNodes[0].childNodes.length).toBe(1);
+
+    expect(limitingContainer.childNodes[1].nodeType).toBe(Node.TEXT_NODE);
+    expect(limitingContainer.childNodes[2].nodeType).toBe(Node.TEXT_NODE);
+
+    expect(limitingContainer.childNodes[3].nodeName).toBe("STRONG");
+    expect(limitingContainer.childNodes.length).toBe(4);
   })
   
   // test("", function() {
