@@ -1,4 +1,5 @@
 import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned, getLastValidCharacterIndex } from "./checks";
+import { ZWS_RE } from "./constants";
 import { cushionTextNode } from "./dom_operations";
 
 export function setSelection(startContainer: Node, startOffset: number, endContainer: Node, endOffset: number) {
@@ -236,6 +237,8 @@ export function experimental_resetRangeToTextNodes(range: Range) {
  * next text node in moveDirection is a sibling. 
  * -If moving left, character to the right must be non-zero-width space, 
  *  and 0 is an acceptable value (assuming not breaking other rules)
+ * -If moving right, character to the left must be non-zero-width space,
+ *  and textContent.length is an acceptable value
  * @param selection 
  * @param limitingContainer 
  * @param moveDirection 
@@ -323,6 +326,16 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         }
 
       }
+    }
+
+    else if (moveDirection === "right") {
+
+      if (anchorOffset < anchorNode.textContent!.length) {
+        const newIndex = anchorNode.textContent?.slice(anchorOffset).match(ZWS_RE);
+
+
+      }
+
     }
 
   }
