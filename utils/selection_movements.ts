@@ -7,7 +7,7 @@ export function setSelection(startContainer: Node, startOffset: number, endConta
   range.setEnd(endContainer, endOffset);
   const selection = window.getSelection();
   selection?.removeAllRanges();
-  selection?.addRange(range);      
+  selection?.addRange(range);
 
   return selection;
 }
@@ -20,7 +20,7 @@ export function resetSelectionToTextNodes(): Selection | null {
 
   const range = selection.getRangeAt(0);
   const originalStartContainer = range.startContainer;
-  
+
   const modifiedRange = resetRangeToTextNodes(range);
   if (!modifiedRange) return null;
 
@@ -65,7 +65,7 @@ export function resetRangeToTextNodes(range: Range) {
     while (range.isPointInRange(tw.currentNode, 0)) {
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
         lastTextNode = tw.currentNode;
-      }  
+      }
       if (!tw.nextNode()) break; // advance tw, break loop if null
     }
     range.setEnd(lastTextNode, lastTextNode.textContent?.length || 0);
@@ -111,7 +111,7 @@ export function experimental_resetRangeToTextNodes(range: Range) {
 
         // otherwise place before first non-zero-width space
         else {
-          for (let i=0; i<content.length; i++) {
+          for (let i = 0; i < content.length; i++) {
             // console.log("third if");
             // console.log(currentNode);
             if (content[i] !== '\u200B') {
@@ -159,19 +159,19 @@ export function experimental_resetRangeToTextNodes(range: Range) {
     }
 
     // go outwards from startOffset to find nearest non-zws
-    else for (let i=1; i<content.length; i++) {
+    else for (let i = 1; i < content.length; i++) {
       // console.log("last for loop ", i);
       if (
         range.startOffset - i >= 0 &&
         content[range.startOffset - i] !== '\u200B'
       ) {
-        range.setStart(currentNode, range.startOffset-i+1);
+        range.setStart(currentNode, range.startOffset - i + 1);
         break;
       } else if (
         range.startOffset <= content.length &&
         content[range.startOffset + i]
       ) {
-        range.setStart(currentNode, range.startOffset+i-1);
+        range.setStart(currentNode, range.startOffset + i - 1);
         break;
       }
     }
@@ -193,7 +193,7 @@ export function experimental_resetRangeToTextNodes(range: Range) {
     // original
     // range.setStart(tw.currentNode, 0);
     // break;
-      
+
   }
 
   // console.log("after setting start", range.startContainer, range.startOffset);
@@ -220,7 +220,7 @@ export function experimental_resetRangeToTextNodes(range: Range) {
       // console.log("sanity check 3");
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
         lastTextNode = tw.currentNode;
-      }  
+      }
       if (!tw.nextNode()) break; // advance tw, break loop if null
     }
     // console.log("sanity check 4");
@@ -242,13 +242,13 @@ export function experimental_resetRangeToTextNodes(range: Range) {
  * @returns 
  */
 export function experimental_moveSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
-  
+
   const direction = getSelectionDirection(selection);
-  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+  const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
   if (selection.rangeCount === 0) return;
   if (!anchorNode || !focusNode) return;
 
-  const textNodes = getAllTextNodes([limitingContainer]); 
+  const textNodes = getAllTextNodes([limitingContainer]);
   if (!(anchorNode instanceof Text)) resetSelectionToTextNodes();
 
   // range is collapsed
@@ -265,49 +265,66 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         //     return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
         //   }
         // }
-        const newIndex = getLastValidCharacterIndex(currentNode as Text, true, anchorOffset-1);
+        const newIndex = getLastValidCharacterIndex(currentNode as Text, true, anchorOffset - 1);
+
+        console.log(newIndex);
 
         if (newIndex >= 0) {
           // if this is skipping a zero-width space node, place cursor on left side of valid character
           if (
-            ((anchorOffset - newIndex) > 1) ||
+            ((anchorOffset - newIndex) > 1) || // this check may be redundant
             currentNode.textContent![newIndex] === '\u200B'
           ) {
-            return selection.setBaseAndExtent(currentNode, newIndex-1, currentNode, newIndex-1);
+            if (newIndex !== 0) {
+              return selection.setBaseAndExtent(currentNode, newIndex - 1, currentNode, newIndex - 1);
+            }
+            // else continue, exit if block, go to while loop
           }
           else {
             return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
           }
-        } else {
+        }
+        // else 
 
-          while (true) {
+        while (true) {
 
-            indexOfTextNode--;
-            if (indexOfTextNode < 0) return;
-  
-            // determine if is direct sibling
-            const isDirectSibling = (textNodes[indexOfTextNode] === currentNode.previousSibling);
-  
-            currentNode = textNodes[indexOfTextNode];
+          indexOfTextNode--;
+          if (indexOfTextNode < 0) return;
 
-            if (isDirectSibling) {
-              const newIndex = getLastValidCharacterIndex(currentNode as Text, false);
-              if (newIndex >= 0) {
+          // determine if is direct sibling
+          const isDirectSibling = (textNodes[indexOfTextNode] === currentNode.previousSibling);
+
+          currentNode = textNodes[indexOfTextNode];
+
+          if (isDirectSibling) {
+            const newIndex = getLastValidCharacterIndex(currentNode as Text, false);
+            if (newIndex >= 0) {
+              // if this is skipping a zero-width space node, place cursor on left side of valid character
+              if (
+                ((anchorOffset - newIndex) > 1) || // this check may be redundant
+                currentNode.textContent![newIndex] === '\u200B'
+              ) {
+                if (newIndex !== 0) {
+                  return selection.setBaseAndExtent(currentNode, newIndex - 1, currentNode, newIndex - 1);
+                }
+                // else continue, exit if block, go to while loop
+              }
+              else {
                 return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
-              } else continue;
-
-            } else {
-              const newIndex = getLastValidCharacterIndex(currentNode as Text, true);
-              if (newIndex >= 0) {
-                return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
-              } else continue;
-            } 
-
+              }
+            }
+          } else {
+            const newIndex = getLastValidCharacterIndex(currentNode as Text, true);
+            if (newIndex >= 0) {
+              return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+            } else continue;
           }
 
-
-
         }
+
+
+
+
 
         // need to traverse backwards
         // indexOfTextNode--;
@@ -326,7 +343,7 @@ export function experimental_moveSelection(selection: Selection, limitingContain
 export function moveSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
 
   const direction = getSelectionDirection(selection);
-  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+  const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
   if (selection.rangeCount === 0) return;
   if (!anchorNode || !focusNode) return;
 
@@ -342,7 +359,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
 
       if (anchorOffset > 0) {
 
-        for (let i=anchorOffset-1; i>=0; i--) {
+        for (let i = anchorOffset - 1; i >= 0; i--) {
           if (anchorNode.textContent && anchorNode.textContent[i] !== '\u200B') {
             return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
           }
@@ -356,9 +373,9 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
           if (!content) continue;
           if (content === '\u200B\u200B') {
             return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
-          } 
-          for (let i=content.length; i>0; i--) {
-            if (content[i-1] !== '\u200B') {
+          }
+          for (let i = content.length; i > 0; i--) {
+            if (content[i - 1] !== '\u200B') {
               return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
             }
           }
@@ -367,7 +384,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
 
         // old below
         // selection.setBaseAndExtent(anchorNode, anchorOffset-1, anchorNode, anchorOffset-1);
-      } 
+      }
       else {
 
         // if hitting 0 and still no textContent
@@ -378,15 +395,15 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
           if (!content) continue;
           if (content === '\u200B\u200B') {
             return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
-          } 
-          for (let i=content.length; i>0; i--) {
+          }
+          for (let i = content.length; i > 0; i--) {
             console.log({
               "content.length": content.length,
               "i": i,
-              "content[i-1]": content[i-1],
-              "content[i-1] === '\u200B'": content[i-1] === '\u200B',
+              "content[i-1]": content[i - 1],
+              "content[i-1] === '\u200B'": content[i - 1] === '\u200B',
             })
-            if (content[i-1] !== '\u200B') {
+            if (content[i - 1] !== '\u200B') {
               return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
             }
           }
@@ -401,22 +418,22 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
         //   selection.setBaseAndExtent(leftTextNode, leftTextNode.textContent?.length || 0, leftTextNode, leftTextNode.textContent?.length || 0);
         // } else return;
       }
-  
+
 
     } else if (moveDirection === "right") {
 
       // console.log("moving right from ", anchorNode, anchorOffset, anchorNode.textContent[anchorOffset]);
 
-      if (anchorNode.textContent && anchorOffset<anchorNode?.textContent?.length) {
+      if (anchorNode.textContent && anchorOffset < anchorNode?.textContent?.length) {
 
         console.log(anchorNode.textContent[anchorOffset], anchorNode.textContent[anchorOffset] !== '\u200B');
         if (anchorNode.textContent[anchorOffset] !== '\u200B') {
-          return selection.setBaseAndExtent(anchorNode, anchorOffset+1, anchorNode, anchorOffset+1);
-        } 
+          return selection.setBaseAndExtent(anchorNode, anchorOffset + 1, anchorNode, anchorOffset + 1);
+        }
         else { // if hitting edge of text
           // console.log("hitting else");
-          for (let i=anchorOffset+1; i<=anchorNode?.textContent?.length; i++) {
-            if (anchorNode.textContent[i-1] !== '\u200B') {
+          for (let i = anchorOffset + 1; i <= anchorNode?.textContent?.length; i++) {
+            if (anchorNode.textContent[i - 1] !== '\u200B') {
               console.log("setting anchorNode before", anchorNode.textContent[i])
               return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
             }
@@ -435,7 +452,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
             if (content === '\u200B\u200B') {
               return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
             }
-            for (let i=0; i<content.length; i++) {
+            for (let i = 0; i < content.length; i++) {
               if (content[i] !== '\u200B') {
                 // console.log("setting anchorNode before", content);
                 return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
@@ -464,7 +481,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
           if (content === '\u200B\u200B') {
             return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
           }
-          for (let i=0; i<content.length; i++) {
+          for (let i = 0; i < content.length; i++) {
             if (content[i] !== '\u200B') {
               return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
             }
@@ -506,16 +523,16 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
 
     if (moveDirection === "left" && direction === "backward") {
       selection.setBaseAndExtent(focusNode, focusOffset, focusNode, focusOffset);
-    } 
+    }
     else if (moveDirection === "left" && direction === "forward") {
       selection.setBaseAndExtent(anchorNode, anchorOffset, anchorNode, anchorOffset);
-    } 
+    }
     else if (moveDirection === "right" && direction === "backward") {
       selection.setBaseAndExtent(anchorNode, anchorOffset, anchorNode, anchorOffset);
-    } 
+    }
     else if (moveDirection === "right" && direction === "forward") {
       selection.setBaseAndExtent(focusNode, focusOffset, focusNode, focusOffset);
-    } 
+    }
 
 
     // shiftSelection(selection, limitingContainer, moveDirection);
@@ -527,7 +544,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
 
 export function shiftSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
 
-  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+  const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
   if (selection.rangeCount === 0) return;
   if (!anchorNode || !focusNode) return;
 
@@ -536,9 +553,9 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
 
 
   if (moveDirection === "left") {
-    
+
     if (focusOffset > 0) {
-      for (let i=focusOffset-1; i>0; i--) {
+      for (let i = focusOffset - 1; i > 0; i--) {
         // if (focusNode.textContent && focusNode.textContent[i] !== '\u200B') {
         //   return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
         // }
@@ -556,8 +573,8 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
       // console.log("new text node:", content);
       if (!content) continue;
 
-      for (let i=content.length-1; i>=0; i--) {
-        console.log({textNodes, indexOfTextNode, currentTextNode, focusOffset: i});
+      for (let i = content.length - 1; i >= 0; i--) {
+        console.log({ textNodes, indexOfTextNode, currentTextNode, focusOffset: i });
         // if (content[i] !== '\u200B') {
         //   return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
         // }
@@ -568,11 +585,11 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
       indexOfTextNode--;
     }
     return;
-  } else if (moveDirection==="right") {
-    
-    if (focusNode.textContent && focusOffset<focusNode.textContent.length) {
-      for (let i=focusOffset+1; i<focusNode.textContent.length; i++) {
-        console.log({textNodes, indexOfTextNode, focusNode, i})
+  } else if (moveDirection === "right") {
+
+    if (focusNode.textContent && focusOffset < focusNode.textContent.length) {
+      for (let i = focusOffset + 1; i < focusNode.textContent.length; i++) {
+        console.log({ textNodes, indexOfTextNode, focusNode, i })
         // if (focusNode.textContent[i] !== '\u200B') {
         //   return selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, i);
         // }
@@ -589,11 +606,11 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
       const currentTextNode = textNodes[indexOfTextNode];
       const content = currentTextNode.textContent;
       // console.log("new text node:", content);
-      if (!content) continue;    
-      const stoppingPoint = (indexOfTextNode === (textNodes.length-1)) ?
+      if (!content) continue;
+      const stoppingPoint = (indexOfTextNode === (textNodes.length - 1)) ?
         content.length + 1 :
         content.length;
-      for (let i=0; i<stoppingPoint; i++) {
+      for (let i = 0; i < stoppingPoint; i++) {
         // if (content[i] !== '\u200B') {
         //   return selection.setBaseAndExtent(anchorNode, anchorOffset, currentTextNode, i);
         // }
@@ -603,8 +620,8 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
       }
       indexOfTextNode++;
     }
-  
-  
+
+
   }
 }
 

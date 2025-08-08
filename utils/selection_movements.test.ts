@@ -304,6 +304,19 @@ describe("test moveSelection", function() {
     compareSelection(selection!, secondStrongFourthText, 1);
     checkText(selection!, " ");
 
+    // going to prior text node, should skip node entirely as it is a direct sibling without valid characters, go to secondStrongSecondText
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongSecondText, 2);
+    checkText(selection!, "c");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongSecondText, 1);
+    checkText(selection!, "b");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongSecondText, 0);
+    checkText(selection!, "a");
+
 
     
   })
