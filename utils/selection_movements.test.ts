@@ -577,6 +577,16 @@ describe("test moveSelection", function() {
     moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 5, "n");
     moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 6, "g");
 
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 7, " ");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 8, "T");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 9, "e");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 10, "x");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 11, "t");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 12, "\u200B");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 2, "T");
+
 
   })
   

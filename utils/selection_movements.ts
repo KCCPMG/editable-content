@@ -294,7 +294,7 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         if (indexOfTextNode < 0) return;
 
         // determine if is direct sibling
-        const isDirectSibling = (textNodes[indexOfTextNode] === currentNode.previousSibling);
+        const isDirectSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
 
         currentNode = textNodes[indexOfTextNode];
 
@@ -335,15 +335,13 @@ export function experimental_moveSelection(selection: Selection, limitingContain
 
       if (currentNode.textContent) {
         if (anchorOffset < currentNode.textContent!.length) {
-
           
           // find first non-zero-width space character
           const reMatch = currentNode
             .textContent
             .slice(anchorOffset)
             .match(/[^\u200B]/);
-            
-            console.log(reMatch);
+
             
           if (reMatch && reMatch.index !== undefined) {
             const newIndex = reMatch.index + anchorOffset + 1;
@@ -351,17 +349,40 @@ export function experimental_moveSelection(selection: Selection, limitingContain
           }
 
           // else, go into next text node
-
-
-
-          // for (let i=anchorOffset; i <= currentNode.textContent?.length; i++) {
-  
-          // }
-          // const newIndex = anchorOffset + anchorNode.textContent?.slice(anchorOffset).match(/^\u200B;/);
-  
-  
-        
         }
+        // else, go into next text node
+      }
+      // else, go into next text node
+
+      while (indexOfTextNode < textNodes.length) {
+
+        indexOfTextNode++;
+        if (indexOfTextNode >= textNodes.length) return;
+
+        // determine if is direct sibling
+        const isDirectSibling = (textNodes[indexOfTextNode] === anchorNode.nextSibling);
+
+        currentNode = textNodes[indexOfTextNode];
+
+        if (isDirectSibling) {
+
+        } else {
+
+          // if is fully cushioned node
+
+          // find first non-zero-width space character
+          const reMatch = currentNode
+            .textContent
+            .match(/[^\u200B]/);
+
+            
+          if (reMatch && reMatch.index !== undefined) {
+            const newIndex = reMatch.index + anchorOffset + 1;
+            return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+          }
+        }
+
+
       }
 
     }
