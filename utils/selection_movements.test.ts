@@ -178,11 +178,11 @@ describe("test moveSelection", function() {
   strong.append(strongText);
   limitingContainer.append(strong);
 
-  const afterStrongTextNode = new Text("\u200B This is text after strong\u200B");
-  limitingContainer.append(afterStrongTextNode);
+  const rootFirstTextNode = new Text("\u200B This is text after strong\u200B");
+  limitingContainer.append(rootFirstTextNode);
 
-  const afterStrongSiblingTextNode = new Text("\u200B This is more text\u200B");
-  limitingContainer.appendChild(afterStrongSiblingTextNode);
+  const rootSecondTextNode = new Text("\u200B This is more text\u200B");
+  limitingContainer.appendChild(rootSecondTextNode);
 
   const secondStrong = document.createElement("strong");
   limitingContainer.append(secondStrong);
@@ -317,9 +317,19 @@ describe("test moveSelection", function() {
     compareSelection(selection!, secondStrongSecondText, 0);
     checkText(selection!, "a");
 
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 19);
+    checkText(selection!, "\u200B");
+  })
+  
+  // test("isolate", function() {
+
+  //   // const selection = window.getSelection();
+
+  //   // selection?.setBaseAndExtent(secondStrongSecondText, 0, secondStrongSecondText, 0)
 
     
-  })
+  // })
 
 
   afterAll(function() {

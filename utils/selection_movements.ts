@@ -260,83 +260,74 @@ export function experimental_moveSelection(selection: Selection, limitingContain
     if (moveDirection === "left") {
 
       if (anchorOffset > 0) {
-        // for (let i=anchorOffset-1; i>=0; i--) {
-        //   if (anchorNode.textContent && anchorNode.textContent[i] !== '\u200B') {
-        //     return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
-        //   }
-        // }
-        const newIndex = getLastValidCharacterIndex(currentNode as Text, true, anchorOffset - 1);
 
-        console.log(newIndex);
+        const newIndex = getLastValidCharacterIndex(currentNode as Text, true, anchorOffset - 1);
 
         if (newIndex >= 0) {
           // if this is skipping a zero-width space node, place cursor on left side of valid character
           if (
-            ((anchorOffset - newIndex) > 1) || // this check may be redundant
+            // ((anchorOffset - newIndex) > 1) || // this check may be redundant
             currentNode.textContent![newIndex] === '\u200B'
           ) {
             if (newIndex !== 0) {
+              // valid character, set cursor to left of character
               return selection.setBaseAndExtent(currentNode, newIndex - 1, currentNode, newIndex - 1);
             }
-            // else continue, exit if block, go to while loop
+            // else - continue, exit if block, go to while loop
           }
           else {
             return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
           }
         }
-        // else 
+      }
+      // else 
 
-        while (true) {
+      while (true) {
 
-          indexOfTextNode--;
-          if (indexOfTextNode < 0) return;
+        indexOfTextNode--;
+        if (indexOfTextNode < 0) return;
 
-          // determine if is direct sibling
-          const isDirectSibling = (textNodes[indexOfTextNode] === currentNode.previousSibling);
+        // determine if is direct sibling
+        const isDirectSibling = (textNodes[indexOfTextNode] === currentNode.previousSibling);
 
-          currentNode = textNodes[indexOfTextNode];
+        currentNode = textNodes[indexOfTextNode];
 
-          if (isDirectSibling) {
-            const newIndex = getLastValidCharacterIndex(currentNode as Text, false);
-            if (newIndex >= 0) {
-              // if this is skipping a zero-width space node, place cursor on left side of valid character
-              if (
-                ((anchorOffset - newIndex) > 1) || // this check may be redundant
-                currentNode.textContent![newIndex] === '\u200B'
-              ) {
-                if (newIndex !== 0) {
-                  return selection.setBaseAndExtent(currentNode, newIndex - 1, currentNode, newIndex - 1);
-                }
-                // else continue, exit if block, go to while loop
+        console.log("currentNode", currentNode);
+        console.log("new node", textNodes[indexOfTextNode]);
+        console.log("isDirectSibling", isDirectSibling);
+
+        if (isDirectSibling) {
+          const newIndex = getLastValidCharacterIndex(currentNode as Text, false);
+          if (newIndex >= 0) {
+            // if this is skipping a zero-width space node, place cursor on left side of valid character
+            if (
+              ((anchorOffset - newIndex) > 1) || // this check may be redundant
+              currentNode.textContent![newIndex] === '\u200B'
+            ) {
+              if (newIndex !== 0) {
+                return selection.setBaseAndExtent(currentNode, newIndex - 1, currentNode, newIndex - 1);
               }
-              else {
-                return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
-              }
+              // else continue, exit if block, go to while loop
             }
-          } else {
-            const newIndex = getLastValidCharacterIndex(currentNode as Text, true);
-            if (newIndex >= 0) {
+            else {
               return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
-            } else continue;
+            }
           }
+        } else {
 
+          const newIndex = getLastValidCharacterIndex(currentNode as Text, true);
+          console.log({ newIndex })
+          if (newIndex >= 0) {
+            return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+          } else continue;
         }
 
-
-
-
-
-        // need to traverse backwards
-        // indexOfTextNode--;
-        // if (textNodes[indexOfTextNode] === currentNode.previousSibling)
-
-
-
       }
-
     }
 
   }
+
+
 }
 
 
