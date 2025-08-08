@@ -319,7 +319,7 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         } else {
 
           const newIndex = getLastValidCharacterIndex(currentNode as Text, true);
-          console.log({ newIndex })
+          // console.log({ newIndex })
           if (newIndex >= 0) {
             return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
           } else continue;
@@ -343,6 +343,8 @@ export function experimental_moveSelection(selection: Selection, limitingContain
             .slice(anchorOffset)
             .match(/[^\u200B]/);
 
+
+          console.log(!!reMatch, reMatch);
             
           if (reMatch && reMatch.index !== undefined) {
             const newIndex = reMatch.index + anchorOffset + 1;
@@ -357,23 +359,33 @@ export function experimental_moveSelection(selection: Selection, limitingContain
 
       while (indexOfTextNode < textNodes.length) {
 
+        console.log("indexOfTextNode before incrementing", indexOfTextNode);
+
         indexOfTextNode++;
         if (indexOfTextNode >= textNodes.length) return;
 
         // determine if is sibling
         const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
 
+        
         currentNode = textNodes[indexOfTextNode];
         if (!(currentNode instanceof Text)) return; // narrow type
+        
+        console.log(
+          "indexOfTextNode:", indexOfTextNode, 
+          "\ncurrentNode:", currentNode.textContent,
+          "\nisSibling", isSibling
+        )
 
-        if (isSibling) {
+        if (isSibling && currentNode.textContent !== null) {
           const reMatch = currentNode
-          .textContent
-          .slice(anchorOffset)
-          .match(/[^\u200B]/);
+            .textContent
+            .match(/[^\u200B]/);
+
+          console.log(!!reMatch, reMatch);
           
           if (reMatch && reMatch.index !== undefined) {
-            const newIndex = reMatch.index + anchorOffset + 1;
+            const newIndex = reMatch.index + 1;
             return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
           }
           
@@ -390,7 +402,10 @@ export function experimental_moveSelection(selection: Selection, limitingContain
           }
 
           // if is fully cushioned node
-          if (currentNode.textContent.split("").every(ch => ch === '\u200B')) {
+          if (
+            currentNode.textContent !== null && 
+            currentNode.textContent.split("").every(ch => ch === '\u200B')
+          ) {
             return selection.setBaseAndExtent(currentNode, 1, currentNode, 1);
           }
 
@@ -398,14 +413,16 @@ export function experimental_moveSelection(selection: Selection, limitingContain
            * else - find first non-zero-width space character as above, but 
            * place cursor *before* first valid character
            */
-          const reMatch = currentNode
-            .textContent
-            .match(/[^\u200B]/);
-
-            
-          if (reMatch && reMatch.index !== undefined) {
-            const newIndex = reMatch.index;
-            return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+          if (currentNode.textContent) {
+            const reMatch = currentNode
+              .textContent
+              .match(/[^\u200B]/);
+  
+              
+            if (reMatch && reMatch.index !== undefined) {
+              const newIndex = reMatch.index;
+              return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+            }
           }
         }
 
