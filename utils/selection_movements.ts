@@ -293,12 +293,12 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         indexOfTextNode--;
         if (indexOfTextNode < 0) return;
 
-        // determine if is direct sibling
-        const isDirectSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
+        // determine if is sibling
+        const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
 
         currentNode = textNodes[indexOfTextNode];
 
-        if (isDirectSibling) {
+        if (isSibling) {
           const newIndex = getLastValidCharacterIndex(currentNode as Text, false);
           if (newIndex >= 0) {
             // if this is skipping a zero-width space node, place cursor on left side of valid character
@@ -359,25 +359,42 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         indexOfTextNode++;
         if (indexOfTextNode >= textNodes.length) return;
 
-        // determine if is direct sibling
-        const isDirectSibling = (textNodes[indexOfTextNode] === anchorNode.nextSibling);
+        // determine if is sibling
+        const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
 
         currentNode = textNodes[indexOfTextNode];
+        if (!(currentNode instanceof Text)) return; // narrow type
 
-        if (isDirectSibling) {
+        if (isSibling) {
 
         } else {
 
-          // if is fully cushioned node
+          // if empty text
+          if (currentNode.textContent === "") {
+            return selection.setBaseAndExtent(currentNode, 0, currentNode, 0);
+          }
 
-          // find first non-zero-width space character
+          // if only character is zero-width space
+          if (currentNode.textContent === "\u200B") {
+            return selection.setBaseAndExtent(currentNode, 1, currentNode, 1);
+          }
+
+          // if is fully cushioned node
+          if (currentNode.textContent.split("").every(ch => ch === '\u200B')) {
+            return selection.setBaseAndExtent(currentNode, 1, currentNode, 1);
+          }
+
+          /**
+           * else - find first non-zero-width space character as above, but 
+           * place cursor *before* first valid character
+           */
           const reMatch = currentNode
             .textContent
             .match(/[^\u200B]/);
 
             
           if (reMatch && reMatch.index !== undefined) {
-            const newIndex = reMatch.index + anchorOffset + 1;
+            const newIndex = reMatch.index;
             return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
           }
         }
