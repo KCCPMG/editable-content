@@ -320,6 +320,236 @@ describe("test moveSelection", function() {
     experimental_moveSelection(selection!, limitingContainer, "left");
     compareSelection(selection!, rootSecondTextNode, 19);
     checkText(selection!, "\u200B");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 18);
+    checkText(selection!, "t");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 17);
+    checkText(selection!, "x");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 16);
+    checkText(selection!, "e");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 15);
+    checkText(selection!, "t");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 14);
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 13);
+    checkText(selection!, "e");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 12);
+    checkText(selection!, "r");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 11);
+    checkText(selection!, "o");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 10);
+    checkText(selection!, "m");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 9);
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 8);
+    checkText(selection!, "s");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 7);
+    checkText(selection!, "i");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 6);
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 5);
+    checkText(selection!, "s");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 4);
+    checkText(selection!, "i");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 3);
+    checkText(selection!, "h");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 2);
+    checkText(selection!, "T");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootSecondTextNode, 1);
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 26);
+    checkText(selection!, "g");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 25);
+    checkText(selection!, "n");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 24);
+    checkText(selection!, "o");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 23);
+    checkText(selection!, "r");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 22);
+    checkText(selection!, "t");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 21);
+    checkText(selection!, "s");
+    
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 20);
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 19);
+    checkText(selection!, "r");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 18);
+    checkText(selection!, "e");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 17);
+    checkText(selection!, "t");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 16);
+    checkText(selection!, "f");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 15);
+    checkText(selection!, "a");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 14);
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 13);
+    checkText(selection!, "t");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 12);
+    checkText(selection!, "x");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 11);
+    checkText(selection!, "e");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 10);
+    checkText(selection!, "t");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 9);
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 8);
+    checkText(selection!, "s");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 7);
+    checkText(selection!, "i");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 6);
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 5);
+    checkText(selection!, "s");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 4);
+    checkText(selection!, "i");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 3);
+    checkText(selection!, "h");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 2);
+    checkText(selection!, "T");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, rootFirstTextNode, 1);
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 12);
+    checkText(selection!, "\u200B");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 11);
+    checkText(selection!, "t");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 10);
+    checkText(selection!, "x");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 9);
+    checkText(selection!, "e");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 8);
+    checkText(selection!, "T");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 7);
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 6);
+    checkText(selection!, "g");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 5);
+    checkText(selection!, "n");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 4);
+    checkText(selection!, "o");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 3);
+    checkText(selection!, "r");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 2);
+    checkText(selection!, "t");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 1);
+    checkText(selection!, "S");
+
+    // Nowhere else to go, should stay in place
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, strongText, 1);
+    checkText(selection!, "S");
+
   })
   
   // test("isolate", function() {
