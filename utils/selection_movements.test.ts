@@ -7,12 +7,6 @@ import { startingHTML, mdnDocPageHTML } from "./test_constants";
 import { getAllTextNodes } from './checks';
 
 
-// before all
-beforeAll(function() {
-  document.body.innerHTML = startingHTML;
-})
-
-
 function compareSelection(selection: Selection, expAnchorNode: Node, expAnchorOffset: number, expFocusNode?: Node, expFocusOffset?: number) {
   expect(selection.anchorNode).toBe(expAnchorNode);
   expect(selection.anchorOffset).toBe(expAnchorOffset);
@@ -23,6 +17,20 @@ function compareSelection(selection: Selection, expAnchorNode: Node, expAnchorOf
     expect(selection.focusOffset).toBe(expFocusOffset);
   } else expect(selection.focusOffset).toBe(expAnchorOffset);
 }
+
+
+function checkText(selection: Selection, character: string) {
+  expect(selection.anchorNode!.textContent![selection.anchorOffset]).toBe(character);
+}
+
+
+// before all
+beforeAll(function() {
+  document.body.innerHTML = startingHTML;
+})
+
+
+
 
 
 describe("test setSelection", function() {
@@ -216,50 +224,87 @@ describe("test moveSelection", function() {
   test("move selection left", function() {
     const selection = window.getSelection();
 
+    expect(secondStrongFourthText.textContent!.length).toBe(21);
+    expect(secondStrongFourthText)
+
     // set after final character (zero-width space) in last text node
     selection!.setBaseAndExtent(secondStrongFourthText, 21, secondStrongFourthText, 21);
     compareSelection(selection!, secondStrongFourthText, 21, secondStrongFourthText, 21);
 
     // should skip 1 zero-width space
+    // experimental_moveSelection(selection!, limitingContainer, "left");
+    // compareSelection(selection!, secondStrongFourthText, 20);
+    // checkText(selection!, "\u200B");
+
+
     experimental_moveSelection(selection!, limitingContainer, "left");
-    compareSelection(selection!, secondStrongFourthText, 19, secondStrongFourthText, 19);
+    compareSelection(selection!, secondStrongFourthText, 19);
 
     experimental_moveSelection(selection!, limitingContainer, "left");
     compareSelection(selection!, secondStrongFourthText, 18);
-
+    
     experimental_moveSelection(selection!, limitingContainer, "left");
     compareSelection(selection!, secondStrongFourthText, 17);
     // text spot check
-    expect(selection?.getRangeAt(0).toString()).toBe(" ");
+    checkText(selection!, " ");
 
     // next move should skip two zero-width spaces
     experimental_moveSelection(selection!, limitingContainer, "left");
     compareSelection(selection!, secondStrongFourthText, 14);
     // text spot check
-    expect(selection?.getRangeAt(0).toString()).toBe("");
+    checkText(selection!, "o");
 
     experimental_moveSelection(selection!, limitingContainer, "left");
     compareSelection(selection!, secondStrongFourthText, 13);
+    checkText(selection!, "l");
 
     experimental_moveSelection(selection!, limitingContainer, "left");
     compareSelection(selection!, secondStrongFourthText, 12);
+    checkText(selection!, "l");
 
     experimental_moveSelection(selection!, limitingContainer, "left");
     compareSelection(selection!, secondStrongFourthText, 11);
+    checkText(selection!, "e");
 
     experimental_moveSelection(selection!, limitingContainer, "left");
     compareSelection(selection!, secondStrongFourthText, 10);
+    checkText(selection!, "h");
 
     experimental_moveSelection(selection!, limitingContainer, "left");
     compareSelection(selection!, secondStrongFourthText, 9);
     // text spot check
-    expect(selection?.getRangeAt(0).toString()).toBe(" ");
+    checkText(selection!, " ");
 
     // next move should skip one zero-width space
     experimental_moveSelection(selection!, limitingContainer, "left");
     compareSelection(selection!, secondStrongFourthText, 7);
-    // text spot check
-    expect(selection?.getRangeAt(0).toString()).toBe("u200B");
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 6);
+    checkText(selection!, "t");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 5);
+    checkText(selection!, "s");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 4);
+    checkText(selection!, "e");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 3);
+    checkText(selection!, "t");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 2);
+    checkText(selection!, " ");
+
+    experimental_moveSelection(selection!, limitingContainer, "left");
+    compareSelection(selection!, secondStrongFourthText, 1);
+    checkText(selection!, " ");
+
+
     
   })
 

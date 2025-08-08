@@ -234,6 +234,8 @@ export function experimental_resetRangeToTextNodes(range: Range) {
 /**
  * Move selection to jump over zero-width spaces within same text node or if 
  * next text node in moveDirection is a sibling. 
+ * -If moving left, character to the right must be non-zero-width space, 
+ *  and 0 is an acceptable value (assuming not breaking other rules)
  * @param selection 
  * @param limitingContainer 
  * @param moveDirection 
@@ -266,7 +268,16 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         const newIndex = getLastValidCharacterIndex(currentNode as Text, true, anchorOffset-1);
 
         if (newIndex >= 0) {
-          return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+          // if this is skipping a zero-width space node, place cursor on left side of valid character
+          if (
+            ((anchorOffset - newIndex) > 1) ||
+            currentNode.textContent![newIndex] === '\u200B'
+          ) {
+            return selection.setBaseAndExtent(currentNode, newIndex-1, currentNode, newIndex-1);
+          }
+          else {
+            return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+          }
         } else {
 
           while (true) {
