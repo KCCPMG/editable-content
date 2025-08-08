@@ -231,7 +231,8 @@ export function experimental_resetRangeToTextNodes(range: Range) {
   return range;
 }
 
-
+// TODO: Better pair move left and move right logic
+// TODO: Write getFirstValidIndex in utils/checks.ts, invoke here
 /**
  * Move selection to jump over zero-width spaces within same text node or if 
  * next text node in moveDirection is a sibling. 
@@ -366,7 +367,16 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         if (!(currentNode instanceof Text)) return; // narrow type
 
         if (isSibling) {
-
+          const reMatch = currentNode
+          .textContent
+          .slice(anchorOffset)
+          .match(/[^\u200B]/);
+          
+          if (reMatch && reMatch.index !== undefined) {
+            const newIndex = reMatch.index + anchorOffset + 1;
+            return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+          }
+          
         } else {
 
           // if empty text

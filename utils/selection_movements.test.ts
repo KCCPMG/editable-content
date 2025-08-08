@@ -587,6 +587,51 @@ describe("test moveSelection", function() {
 
     moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 1, " ");
 
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 2, "T");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 3, "h");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 4, "i");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 5, "s");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 6, " ");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 7, "i");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 8, "s");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 9, " ");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 10, "t");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 11, "e");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 12, "x");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 13, "t");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 14, " ");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 15, "a");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 16, "f");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 17, "t");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 18, "e");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 19, "r");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 20, " ");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 21, "s");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 22, "t");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 23, "r");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 24, "o");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 25, "n");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 26, "g");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, 27, "\u200B");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootSecondTextNode, , "");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootSecondTextNode, , "");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootSecondTextNode, , "");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootSecondTextNode, , "");
+
+
+
+    // moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", rootFirstTextNode, , "");
+
 
   })
   
