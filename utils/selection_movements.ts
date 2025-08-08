@@ -260,6 +260,10 @@ export function experimental_moveSelection(selection: Selection, limitingContain
     let indexOfTextNode = textNodes.findIndex(tn => tn === anchorNode);
     let currentNode = anchorNode;
 
+    /**
+     * If moving left, character to the right must be non-zero-width space, 
+     * and 0 is an acceptable value (assuming not breaking other rules)
+     */
     if (moveDirection === "left") {
 
       if (anchorOffset > 0) {
@@ -269,7 +273,6 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         if (newIndex >= 0) {
           // if this is skipping a zero-width space node, place cursor on left side of valid character
           if (
-            // ((anchorOffset - newIndex) > 1) || // this check may be redundant
             currentNode.textContent![newIndex] === '\u200B'
           ) {
             if (newIndex !== 0) {
@@ -294,10 +297,6 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         const isDirectSibling = (textNodes[indexOfTextNode] === currentNode.previousSibling);
 
         currentNode = textNodes[indexOfTextNode];
-
-        console.log("currentNode", currentNode);
-        console.log("new node", textNodes[indexOfTextNode]);
-        console.log("isDirectSibling", isDirectSibling);
 
         if (isDirectSibling) {
           const newIndex = getLastValidCharacterIndex(currentNode as Text, false);
@@ -328,12 +327,41 @@ export function experimental_moveSelection(selection: Selection, limitingContain
       }
     }
 
+    /**
+     * If moving right, character to the left must be non-zero-width space,
+     * and textContent.length is an acceptable value
+     */
     else if (moveDirection === "right") {
 
-      if (anchorOffset < anchorNode.textContent!.length) {
-        const newIndex = anchorNode.textContent?.slice(anchorOffset).match(ZWS_RE);
+      if (currentNode.textContent) {
+        if (anchorOffset < currentNode.textContent!.length) {
+
+          
+          // find first non-zero-width space character
+          const reMatch = currentNode
+            .textContent
+            .slice(anchorOffset)
+            .match(/[^\u200B]/);
+            
+            console.log(reMatch);
+            
+          if (reMatch && reMatch.index !== undefined) {
+            const newIndex = reMatch.index + anchorOffset + 1;
+            return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+          }
+
+          // else, go into next text node
 
 
+
+          // for (let i=anchorOffset; i <= currentNode.textContent?.length; i++) {
+  
+          // }
+          // const newIndex = anchorOffset + anchorNode.textContent?.slice(anchorOffset).match(/^\u200B;/);
+  
+  
+        
+        }
       }
 
     }

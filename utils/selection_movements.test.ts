@@ -570,14 +570,17 @@ describe("test moveSelection", function() {
     selection!.setBaseAndExtent(strongText, 1, strongText, 1);
     compareSelection(selection!, strongText, 1, strongText, 1);
     checkText(selection!, "S");
+
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 2, "t");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 3, "r");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 4, "o");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 5, "n");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "right", strongText, 6, "g");
+
+
   })
   
   // test("isolate", function() {
-
-  //   // const selection = window.getSelection();
-
-  //   // selection?.setBaseAndExtent(secondStrongSecondText, 0, secondStrongSecondText, 0)
-
     
   // })
 

@@ -487,7 +487,7 @@ export function getLastValidCharacterIndex(textNode: Text, acceptEmptyCushionNod
   // else move backwards, return after last valid (non-zws) character
   for (let i=textNode.length-1; i>=0; i--) {
     if (textNode.textContent[i].match("[^\u200B]")) {
-      console.log("returning ", i+1);
+      // console.log("returning ", i+1);
       return i+1;
     }
   }
