@@ -24,6 +24,13 @@ function checkText(selection: Selection, character: string) {
 }
 
 
+function moveAndCompareSelectionCheckText(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right", expAnchorNode: Node, expAnchorOffset: number, character: string) {
+  experimental_moveSelection(selection, limitingContainer, moveDirection);
+  expect(selection?.anchorNode).toBe(expAnchorNode);
+  expect(selection?.anchorOffset).toBe(expAnchorOffset);
+  expect(selection?.anchorNode!.textContent![selection.anchorOffset]).toBe(character);
+}
+
 // before all
 beforeAll(function() {
   document.body.innerHTML = startingHTML;
@@ -541,15 +548,28 @@ describe("test moveSelection", function() {
     compareSelection(selection!, strongText, 2);
     checkText(selection!, "t");
 
-    experimental_moveSelection(selection!, limitingContainer, "left");
-    compareSelection(selection!, strongText, 1);
-    checkText(selection!, "S");
+    // experimental_moveSelection(selection!, limitingContainer, "left");
+    // compareSelection(selection!, strongText, 1);
+    // checkText(selection!, "S");
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "left", strongText, 1, "S");
 
     // Nowhere else to go, should stay in place
     experimental_moveSelection(selection!, limitingContainer, "left");
     compareSelection(selection!, strongText, 1);
     checkText(selection!, "S");
 
+    moveAndCompareSelectionCheckText(selection!, limitingContainer, "left", strongText, 1, "S");
+
+  })
+  
+  
+  test("move selection right", function() {
+    const selection = window.getSelection();
+    
+    // set before first 
+    selection!.setBaseAndExtent(strongText, 1, strongText, 1);
+    compareSelection(selection!, strongText, 1, strongText, 1);
+    checkText(selection!, "S");
   })
   
   // test("isolate", function() {
@@ -560,7 +580,6 @@ describe("test moveSelection", function() {
 
     
   // })
-
 
   afterAll(function() {
     document.body.innerHTML = startingHTML;
