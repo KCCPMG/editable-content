@@ -24,14 +24,14 @@ function checkText(selection: Selection, character: string) {
 }
 
 
-function moveAndCompareSelectionCheckText(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right", expAnchorNode: Node, expAnchorOffset: number, character: string) {
+function moveAndCompareSelectionCheckText(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right", expAnchorNode: Node, expAnchorOffset: number, character?: string) {
   experimental_moveSelection(selection, limitingContainer, moveDirection);
   if (moveDirection === "right") {
     console.log("textContent: ", selection.anchorNode?.textContent, "anchorOffset: ", selection.anchorOffset, "character: ", selection?.anchorNode!.textContent![selection.anchorOffset])
   }
   expect(selection?.anchorNode).toBe(expAnchorNode);
   expect(selection?.anchorOffset).toBe(expAnchorOffset);
-  expect(selection?.anchorNode!.textContent![selection.anchorOffset]).toBe(character);
+  if (character) expect(selection?.anchorNode!.textContent![selection.anchorOffset]).toBe(character);
 }
 
 // before all
@@ -645,7 +645,48 @@ describe("test moveSelection", function() {
     moveAndCompareSelectionCheckText(selection!, LC, "right", rootSecondTextNode, 12, "r");
     moveAndCompareSelectionCheckText(selection!, LC, "right", rootSecondTextNode, 13, "e");
 
-    // moveAndCompareSelectionCheckText(selection!, LC, "right", rootSecondTextNode, , "");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", rootSecondTextNode, 14, " ");
+
+    moveAndCompareSelectionCheckText(selection!, LC, "right", rootSecondTextNode, 15, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", rootSecondTextNode, 16, "e");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", rootSecondTextNode, 17, "x");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", rootSecondTextNode, 18, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", rootSecondTextNode, 19, "\u200B");
+
+    // go into empty text node because it is not a sibling
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFirstText, 0, undefined);
+
+    // secondStrongSecondText "abc\u200B", should skip first character due to being siblings
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongSecondText, 1, "b");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongSecondText, 2, "c");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongSecondText, 3, "\u200B");
+
+    // skip secondStrongThirdText because it is empty and a sibling
+
+    // secondStrongFourthText "\u200B  test \u200B hello\u200B\u200B   \u200B", skip first space, only zws in between last position and space
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 2, " ");
+
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 3, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 4, "e");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 5, "s");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 6, "t");
+
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 7, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 8, "\u200B");
+
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 10, "h");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 11, "e");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 12, "l");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 13, "l");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 14, "o");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 15, "\u200B");
+
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 18, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 19, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 20, "\u200B");
+
+    // moving right again should have no effect
+    moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 20, "\u200B");
 
 
   })
