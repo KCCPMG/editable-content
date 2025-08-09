@@ -342,9 +342,6 @@ export function experimental_moveSelection(selection: Selection, limitingContain
             .textContent
             .slice(anchorOffset)
             .match(/[^\u200B]/);
-
-
-          console.log(!!reMatch, reMatch);
             
           if (reMatch && reMatch.index !== undefined) {
             const newIndex = reMatch.index + anchorOffset + 1;
@@ -359,30 +356,18 @@ export function experimental_moveSelection(selection: Selection, limitingContain
 
       while (indexOfTextNode < textNodes.length) {
 
-        console.log("indexOfTextNode before incrementing", indexOfTextNode);
-
         indexOfTextNode++;
         if (indexOfTextNode >= textNodes.length) return;
 
         // determine if is sibling
         const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
-
-        
         currentNode = textNodes[indexOfTextNode];
         if (!(currentNode instanceof Text)) return; // narrow type
-        
-        console.log(
-          "indexOfTextNode:", indexOfTextNode, 
-          "\ncurrentNode:", currentNode.textContent,
-          "\nisSibling", isSibling
-        )
 
         if (isSibling && currentNode.textContent !== null) {
           const reMatch = currentNode
             .textContent
             .match(/[^\u200B]/);
-
-          console.log(!!reMatch, reMatch);
           
           if (reMatch && reMatch.index !== undefined) {
             const newIndex = reMatch.index + 1;

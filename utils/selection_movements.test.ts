@@ -26,9 +26,6 @@ function checkText(selection: Selection, character: string) {
 
 function moveAndCompareSelectionCheckText(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right", expAnchorNode: Node, expAnchorOffset: number, character?: string) {
   experimental_moveSelection(selection, limitingContainer, moveDirection);
-  if (moveDirection === "right") {
-    console.log("textContent: ", selection.anchorNode?.textContent, "anchorOffset: ", selection.anchorOffset, "character: ", selection?.anchorNode!.textContent![selection.anchorOffset])
-  }
   expect(selection?.anchorNode).toBe(expAnchorNode);
   expect(selection?.anchorOffset).toBe(expAnchorOffset);
   if (character) expect(selection?.anchorNode!.textContent![selection.anchorOffset]).toBe(character);
