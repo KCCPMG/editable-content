@@ -1,4 +1,4 @@
-import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned, getLastValidCharacterIndex } from "./checks";
+import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes } from "./checks";
 import { ZWS_RE } from "./constants";
 import { cushionTextNode } from "./dom_operations";
 
@@ -255,6 +255,9 @@ export function experimental_moveSelection(selection: Selection, limitingContain
   const textNodes = getAllTextNodes([limitingContainer]);
   if (!(anchorNode instanceof Text)) resetSelectionToTextNodes();
 
+  // if still not text, return
+  if (!(anchorNode instanceof Text)) return;
+
   // range is collapsed
   if (direction === "none") {
 
@@ -295,7 +298,8 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         if (indexOfTextNode < 0) return;
 
         // determine if is sibling
-        const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
+        // const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
+        const isSibling = areUninterruptedSiblingTextNodes(anchorNode, textNodes[indexOfTextNode])
 
         currentNode = textNodes[indexOfTextNode];
 
@@ -360,7 +364,8 @@ export function experimental_moveSelection(selection: Selection, limitingContain
         if (indexOfTextNode >= textNodes.length) return;
 
         // determine if is sibling
-        const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
+        // const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
+        const isSibling = areUninterruptedSiblingTextNodes(anchorNode, textNodes[indexOfTextNode])
         currentNode = textNodes[indexOfTextNode];
         if (!(currentNode instanceof Text)) return; // narrow type
 

@@ -6,7 +6,7 @@ import { renderToString } from "react-dom/server";
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
 import { getAllTextNodes, getAncestorNode, getButtonStatus, getIsReactComponent, getLastValidCharacterIndex, getLastValidTextNode, getRangeChildNodes, getRangeLowestAncestorElement } from "@/utils/checks";
 import { generateQuery, unwrapSelectionFromQuery, createWrapper, wrapInElement } from "@/utils/dom_operations";
-import { resetRangeToTextNodes, resetSelectionToTextNodes, moveSelection } from "@/utils/selection_movements";
+import { resetRangeToTextNodes, resetSelectionToTextNodes, moveSelection, experimental_moveSelection } from "@/utils/selection_movements";
 
 type htmlSelectCallback = (wrapper: HTMLElement) => void
 type reactSelectCallback = (wrapper: ReactElement<any, string | JSXElementConstructor<any>>, portalId: string | undefined) => void
@@ -271,7 +271,8 @@ export default function EditTextButton({
 
     console.log("right before moveSelection right in breakElementAtEnd")
 
-    moveSelection(selection, contentRef?.current, "right");
+    // moveSelection(selection, contentRef?.current, "right");
+    experimental_moveSelection(selection, contentRef.current, "right");
     
     // get new selection, make sure it starts with zero width space
     // if not, add it, put selection after zero width space)
