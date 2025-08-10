@@ -1,30 +1,30 @@
 /**
  * @jest-environment jsdom
  */
-import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf, getLastValidCharacterIndex } from "./checks";
+import { describe, expect, jest, test, beforeEach } from '@jest/globals';
+import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes } from "./checks";
 import { setSelection, resetRangeToTextNodes } from "./selection_movements";
 import { startingHTML, alternateHTML } from "./test_constants";
 
 
 
-describe("test isValidTextEndpoint", function() {
+describe("test isValidTextEndpoint", function () {
   // TODO
 })
 
 
-describe("test getNearestValidOffset", function() {
+describe("test getNearestValidOffset", function () {
   // TODO
 })
 
 
-describe("test nodeIsDescendentOf", function() {
+describe("test nodeIsDescendentOf", function () {
 
   beforeEach(() => {
     document.body.innerHTML = startingHTML;
   })
 
-  test("test ancestors of italics-2", function() {
+  test("test ancestors of italics-2", function () {
     const italics = document.querySelector("i#italics-2");
     const limitingContainer = document.querySelector("div");
 
@@ -33,7 +33,7 @@ describe("test nodeIsDescendentOf", function() {
 
     expect(nodeIsDescendentOf(italics!, "strong#strong-2", limitingContainer!)).toBe(true);
     expect(nodeIsDescendentOf(italics!, "strong", limitingContainer!)).toBe(true);
-    
+
     expect(nodeIsDescendentOf(italics!, "div", limitingContainer!)).toBe(false);
     expect(nodeIsDescendentOf(italics!, "i#italics-1", limitingContainer!)).toBe(false);
     expect(nodeIsDescendentOf(italics!, "i", limitingContainer!)).toBe(false);
@@ -44,38 +44,38 @@ describe("test nodeIsDescendentOf", function() {
 })
 
 
-describe("test getAncestorNode", function() {
+describe("test getAncestorNode", function () {
   // TODO
 })
 
 
-describe("test getRangeLowestAncestorElement", function() {
+describe("test getRangeLowestAncestorElement", function () {
   // TODO
 })
 
 
-describe("test getNodeLowestAncestorElement", function() {
+describe("test getNodeLowestAncestorElement", function () {
   // TODO
 })
 
 
-describe("test getSelectionDirection", function() {
+describe("test getSelectionDirection", function () {
   // TODO
 })
 
 
-describe("test nodeIsDescendentOfNode", function() {
+describe("test nodeIsDescendentOfNode", function () {
   // TODO
 })
 
 
-describe("test selectionIsDescendentOfNode", function() {
+describe("test selectionIsDescendentOfNode", function () {
 
   beforeEach(() => {
     document.body.innerHTML = startingHTML;
   })
-  
-  test("test selection is descendent of node", function() {
+
+  test("test selection is descendent of node", function () {
     const div = document.querySelector("div");
     const strong = document.querySelector("strong#strong-1");
     const textNode = strong!.childNodes[0];
@@ -105,7 +105,7 @@ describe("test selectionIsDescendentOfNode", function() {
   })
 
 
-  test("selection is split across nodes", function() {
+  test("selection is split across nodes", function () {
     const div = document.querySelector("div");
     const strong = document.querySelector("strong#strong-1");
     const strongTextNode = strong!.childNodes[0];
@@ -143,15 +143,15 @@ describe("test selectionIsDescendentOfNode", function() {
 })
 
 
-describe("test getSelectionChildNodes", function() {
+describe("test getSelectionChildNodes", function () {
   beforeEach(() => {
     document.body.innerHTML = startingHTML;
   })
 
-  test("Check selection across elements", function() {
+  test("Check selection across elements", function () {
     const strong = document.querySelector("strong#strong-1");
 
-    const limitingContainer = document.querySelector("div") 
+    const limitingContainer = document.querySelector("div")
     const orphanTextNode = limitingContainer?.childNodes[2];
 
     expect(strong).not.toBeNull();
@@ -175,7 +175,7 @@ describe("test getSelectionChildNodes", function() {
 })
 
 
-describe("test getRangeChildNodes", function() {
+describe("test getRangeChildNodes", function () {
 
   const htmlAsNode = new DOMParser()
     .parseFromString(startingHTML, "text/html").body;
@@ -198,7 +198,7 @@ describe("test getRangeChildNodes", function() {
 
 
 
-  test("make sure nodes are what they should be", function() {
+  test("make sure nodes are what they should be", function () {
     expect(firstStrong.textContent).toBe("Strong Text");
     expect(firstStrong.nodeType).toBe(Node.ELEMENT_NODE);
     expect((firstStrong as Element).tagName).toBe("STRONG");
@@ -228,15 +228,15 @@ describe("test getRangeChildNodes", function() {
     expect((secondStrongFirstItalics as Element).tagName).toBe("I");
 
     expect(secondStrongFirstItalicsText.textContent).toBe("Strong and Italics Text");
-    expect(secondStrongFirstItalicsText.nodeType).toBe(Node.TEXT_NODE);   
+    expect(secondStrongFirstItalicsText.nodeType).toBe(Node.TEXT_NODE);
 
     expect(secondStrongSecondText.textContent).toBe("More Strong Text");
-    expect(secondStrongSecondText.nodeType).toBe(Node.TEXT_NODE);   
+    expect(secondStrongSecondText.nodeType).toBe(Node.TEXT_NODE);
 
 
-  }) 
+  })
 
-  test("get nodes covering text within strongText", function() {
+  test("get nodes covering text within strongText", function () {
     const range = new Range();
     range.setStart(firstStrongText, 0);
     range.setEnd(firstStrongText, 11);
@@ -246,7 +246,7 @@ describe("test getRangeChildNodes", function() {
     expect(nodes[0].textContent).toBe("Strong Text");
   })
 
-  test("get nodes covering text across nodes", function() {
+  test("get nodes covering text across nodes", function () {
     const range = new Range();
     range.setStart(firstStrongText, 7);
     range.setEnd(orphanText, 6);
@@ -263,7 +263,7 @@ describe("test getRangeChildNodes", function() {
     expect(nodes.length).toBe(4);
   })
 
-  test("get nodes when range starts in non-text node", function() {
+  test("get nodes when range starts in non-text node", function () {
     const range = new Range();
     range.setStart(containingDiv, 1);
     range.setEnd(orphanText, 6);
@@ -275,7 +275,7 @@ describe("test getRangeChildNodes", function() {
     expect(nodes.length).toBe(3);
   })
 
-  test("get nodes when range ends in non-text node", function() {
+  test("get nodes when range ends in non-text node", function () {
     const range = new Range();
     range.setStart(containingDiv, 1);
     range.setEnd(containingDiv, 3);
@@ -287,7 +287,7 @@ describe("test getRangeChildNodes", function() {
     expect(nodes.length).toBe(3);
   })
 
-  test("get nodes when range ends in non-text node 2", function() {
+  test("get nodes when range ends in non-text node 2", function () {
     const range = new Range();
     range.setStart(firstStrongText, 2);
     range.setEnd(containingDiv, 2);
@@ -300,7 +300,7 @@ describe("test getRangeChildNodes", function() {
   })
 
 
-  test("get nodes in propful-only example", function() {
+  test("get nodes in propful-only example", function () {
     const customHTML = `
       <div 
         id="portal-container-12345" 
@@ -315,7 +315,7 @@ describe("test getRangeChildNodes", function() {
           </span>
           ​Propful Component​
         </div>
-      </div>`.replace(/\n */g, ''); 
+      </div>`.replace(/\n */g, '');
     const customHTMLAsNode = new DOMParser()
       .parseFromString(customHTML, "text/html")
       .body;
@@ -341,9 +341,9 @@ describe("test getRangeChildNodes", function() {
           data-bk="propful-only" data-unbreakable=""
         >
           <span data-exclude-from-dehydrated="">
-            ​6​ 
+             6​ 
           </span>
-          ​Propful Component​
+           Propful Component​
         </div>
               ^
       </div>`
@@ -356,7 +356,7 @@ describe("test getRangeChildNodes", function() {
     const childrenRangeText = childrenRange.toString();
     const expectedString = '​6​​ ​​Propful Component​';
     const expectedSpanText = '​6​​ ​';
-    for (let i=0; i<childrenRangeText.length; i++) {
+    for (let i = 0; i < childrenRangeText.length; i++) {
       expect(childrenRangeText[i]).toBe(expectedString[i]);
     }
     expect(childrenRangeText.length).toBe(expectedString.length);
@@ -364,7 +364,7 @@ describe("test getRangeChildNodes", function() {
 
 
 
-    
+
     const nodes = getRangeChildNodes(childrenRange, customHTMLAsNode);
 
 
@@ -414,14 +414,14 @@ describe("test getRangeChildNodes", function() {
 })
 
 
-describe("test selectionIsCoveredBy", function() {
+describe("test selectionIsCoveredBy", function () {
 
   beforeEach(() => {
     document.body.innerHTML = startingHTML;
   });
-  
 
-  test("selection is covered by - 1", function() {
+
+  test("selection is covered by - 1", function () {
     const limitingContainer = document.querySelector("div");
 
     const strong = document.querySelector("strong#strong-2");
@@ -439,7 +439,7 @@ describe("test selectionIsCoveredBy", function() {
     expect(selectionIsCoveredBy(selection!, "i", limitingContainer!)).toBe(false);
   })
 
-  test("selection is covered by - 2", function() {
+  test("selection is covered by - 2", function () {
     const limitingContainer = document.querySelector("div");
 
     const strong = document.querySelector("strong#strong-1");
@@ -458,17 +458,17 @@ describe("test selectionIsCoveredBy", function() {
     expect(selectionIsCoveredBy(selection!, "strong#strong-1", limitingContainer!)).toBe(false);
     expect(selectionIsCoveredBy(selection!, "i#italics-1", limitingContainer!)).toBe(false);
   })
-  
+
 })
 
 
-describe("test selectionIsCoveredBy - alternate HTML", function() {
+describe("test selectionIsCoveredBy - alternate HTML", function () {
 
-  beforeEach(function() {
+  beforeEach(function () {
     document.body.innerHTML = alternateHTML;
   });
 
-  test("selection in range of siblings of same type", function() {
+  test("selection in range of siblings of same type", function () {
     const limitingContainer = document.querySelector("div");
     expect(limitingContainer).not.toBeNull();
 
@@ -492,7 +492,7 @@ describe("test selectionIsCoveredBy - alternate HTML", function() {
 
   })
 
-  test("range of siblings contains element children", function() {
+  test("range of siblings contains element children", function () {
 
     const limitingContainer = document.querySelector("div");
     expect(limitingContainer).not.toBeNull();
@@ -517,14 +517,14 @@ describe("test selectionIsCoveredBy - alternate HTML", function() {
 
   })
 
-  test("range set within element", function() {
+  test("range set within element", function () {
     const limitingContainer = document.querySelector("div");
     expect(limitingContainer).not.toBeNull();
 
     const firstStrong = document.querySelector("strong:nth-of-type(1)");
-    
+
     expect(firstStrong).not.toBeNull();
-    
+
     const firstStrongText = firstStrong!.childNodes[0];
 
     expect(firstStrongText).not.toBeNull();
@@ -533,13 +533,13 @@ describe("test selectionIsCoveredBy - alternate HTML", function() {
     expect(selectionIsCoveredBy(selection!, 'strong', limitingContainer!)).toBe(true);
   })
 
-  test("across siblings which are not of same type", function() {
+  test("across siblings which are not of same type", function () {
     const limitingContainer = document.querySelector("div");
     expect(limitingContainer).not.toBeNull();
 
     const fourthStrong = document.querySelector("strong:nth-of-type(4)");
     const sixthStrong = document.querySelector("strong:nth-of-type(6)");
-    
+
     expect(fourthStrong).not.toBeNull();
     expect(sixthStrong).not.toBeNull();
 
@@ -558,100 +558,100 @@ describe("test selectionIsCoveredBy - alternate HTML", function() {
 })
 
 
-describe("test selectionHasTextNodes", function() {
+describe("test selectionHasTextNodes", function () {
   // TODO
 })
 
 
-describe("test selectionContainsOnlyText", function() {
+describe("test selectionContainsOnlyText", function () {
   // TODO
 })
 
 
-describe("test selectionContainsNoUnbreakables", function() {
+describe("test selectionContainsNoUnbreakables", function () {
   // TODO
 })
 
 
-describe("test getButtonStatus", function() {
+describe("test getButtonStatus", function () {
   // TODO
 })
 
 
-describe("test getAllTextNodes", function() {
+describe("test getAllTextNodes", function () {
   // TODO
 })
 
 
-describe("test getLastValidTextNode", function() {
+describe("test getLastValidTextNode", function () {
   // TODO
 })
 
 
-describe("test getLastValidCharacterIndex", function() {
+describe("test getLastValidCharacterIndex", function () {
 
-  test("given text node with all valid characters, returns length", function() {  
+  test("given text node with all valid characters, returns length", function () {
     const textNode = new Text("abcde abcdefghijk");
     expect(getLastValidCharacterIndex(textNode)).toBe(textNode.textContent!.length);
   })
 
-  test("given text node with all valid characters when last character is space, returns length", function() {    
+  test("given text node with all valid characters when last character is space, returns length", function () {
     const textNode = new Text("abcde abcdefghijk  ");
     expect(getLastValidCharacterIndex(textNode)).toBe(textNode.textContent!.length);
   })
 
-  test("given text node with invalid character at end, returns length-1", function() {
+  test("given text node with invalid character at end, returns length-1", function () {
     const textNode = new Text("abcde abcdefghijk  \u200B");
-    expect(getLastValidCharacterIndex(textNode)).toBe(textNode.textContent!.length-1);
+    expect(getLastValidCharacterIndex(textNode)).toBe(textNode.textContent!.length - 1);
   })
 
-  test("edge case, empty cushion", function() {
+  test("edge case, empty cushion", function () {
     const textNode = new Text("\u200B\u200B\u200B\u200B\u200B");
     expect(getLastValidCharacterIndex(textNode)).toBe(1);
   })
 
-  test("edge case, single zero-width space", function() {
+  test("edge case, single zero-width space", function () {
     const textNode = new Text("\u200B");
     expect(getLastValidCharacterIndex(textNode)).toBe(1);
   })
 
-  test("edge case, empty text", function() {
+  test("edge case, empty text", function () {
     const textNode = new Text("");
     expect(getLastValidCharacterIndex(textNode)).toBe(0);
   })
 
-  test("edge case, no text", function() {
+  test("edge case, no text", function () {
     const textNode = new Text();
     expect(getLastValidCharacterIndex(textNode)).toBe(0);
   })
 
 })
 
-describe("test getLastValidCharacterIndex with max offset", function() {
+describe("test getLastValidCharacterIndex with max offset", function () {
 
-  test("given text node with all valid characters and maxOffset, returns maxOffset", function() {  
+  test("given text node with all valid characters and maxOffset, returns maxOffset", function () {
     const textNode = new Text("abcde abcdefghijk");
     expect(getLastValidCharacterIndex(textNode, true, 8)).toBe(8);
   })
 
-  test("given text node with invalid characters up to maxOffset, returns 0", function() {
+  test("given text node with invalid characters up to maxOffset, returns 0", function () {
     const textNode = new Text("\u200B\u200B\u200Babcde abcdefghijk");
     expect(getLastValidCharacterIndex(textNode, true, 2)).toBe(0);
   })
 
-  test("given text node with invalid characters short of maxOffset, returns maxOffset", function() {
+  test("given text node with invalid characters short of maxOffset, returns maxOffset", function () {
     const textNode = new Text("\u200B\u200B\u200Babcde abcdefghijk");
     expect(textNode.textContent![3]).toBe("a");
     expect(getLastValidCharacterIndex(textNode, true, 3)).toBe(3);
   })
 
-  test("given text node with maxOffset greater than content length, returns content length, indicating cursor can be placed at end of text", function() {
+  test("given text node with maxOffset greater than content length, returns content length, indicating cursor can be placed at end of text", function () {
     const textNode = new Text("abcde abcdefghijk");
     const textLength = textNode.textContent!.length;
     expect(getLastValidCharacterIndex(textNode, true, 100)).toBe(textLength);
   })
 
-  test("returns correct index if maxOffset is on or after zero-width space", function() {
+  test("returns correct index if maxOffset is on or after zero-width space", function () {
     const textNode = new Text("abcde \u200B\u200Babcde");
     expect(getLastValidCharacterIndex(textNode, true, 6)).toBe(6);
     expect(getLastValidCharacterIndex(textNode, true, 7)).toBe(6);
@@ -665,37 +665,37 @@ describe("test getLastValidCharacterIndex with max offset", function() {
 })
 
 
-describe("test getLastValidCharacterIndex with acceptEmptyCushions as false", function() {
+describe("test getLastValidCharacterIndex with acceptEmptyCushions as false", function () {
 
-  test("returns -1 on empty cushioned node", function() {
+  test("returns -1 on empty cushioned node", function () {
     const textNode = new Text("\u200B\u200B");
     expect(getLastValidCharacterIndex(textNode, false)).toBe(-1);
   })
 
 
-  test("returns -1 on node with only one character, zero-width", function() {
+  test("returns -1 on node with only one character, zero-width", function () {
     const textNode = new Text("\u200B")
     expect(getLastValidCharacterIndex(textNode, false)).toBe(-1);
   })
 
-  test("returns -1 on node with empty string", function() {
+  test("returns -1 on node with empty string", function () {
     const textNode = new Text("");
     expect(getLastValidCharacterIndex(textNode, false)).toBe(-1);
   })
-  
 
-  test("returns -1 on node with no content", function() {
+
+  test("returns -1 on node with no content", function () {
     const textNode = new Text();
     expect(getLastValidCharacterIndex(textNode, false)).toBe(-1);
   })
 
-  test("returns -1 when only zero-width-spaces up to maxOffset", function() {
+  test("returns -1 when only zero-width-spaces up to maxOffset", function () {
     const textNode = new Text("\u200B\u200B abcde");
     expect(getLastValidCharacterIndex(textNode, false, 1)).toBe(-1)
   })
 
 
-  test("returns correct index if maxOffset is on or after zero-width space", function() {
+  test("returns correct index if maxOffset is on or after zero-width space", function () {
     const textNode = new Text("abcde \u200B\u200Babcde");
 
     expect(getLastValidCharacterIndex(textNode, false, 6)).toBe(6);
@@ -706,58 +706,136 @@ describe("test getLastValidCharacterIndex with acceptEmptyCushions as false", fu
 
   // repeat prior tests with acceptEmptyCushionNodes set to false
   // first suite
-  test("given text node with all valid characters, returns length", function() {  
+  test("given text node with all valid characters, returns length", function () {
     const textNode = new Text("abcde abcdefghijk");
     expect(getLastValidCharacterIndex(textNode, false)).toBe(textNode.textContent!.length);
   })
 
-  test("given text node with all valid characters when last character is space, returns length", function() {    
+  test("given text node with all valid characters when last character is space, returns length", function () {
     const textNode = new Text("abcde abcdefghijk  ");
     expect(getLastValidCharacterIndex(textNode, false)).toBe(textNode.textContent!.length);
   })
 
-  test("given text node with invalid character at end, returns length-1", function() {
+  test("given text node with invalid character at end, returns length-1", function () {
     const textNode = new Text("abcde abcdefghijk  \u200B");
-    expect(getLastValidCharacterIndex(textNode, false)).toBe(textNode.textContent!.length-1);
+    expect(getLastValidCharacterIndex(textNode, false)).toBe(textNode.textContent!.length - 1);
   })
 
-  test("edge case, single zero-width space", function() {
+  test("edge case, single zero-width space", function () {
     const textNode = new Text("\u200B");
     expect(getLastValidCharacterIndex(textNode)).toBe(1);
   })
 
   // second suite
-  test("given text node with all valid characters and maxOffset, returns maxOffset", function() {  
+  test("given text node with all valid characters and maxOffset, returns maxOffset", function () {
     const textNode = new Text("abcde abcdefghijk");
     expect(getLastValidCharacterIndex(textNode, false, 8)).toBe(8);
   })
 
-  test("given text node with invalid characters short of maxOffset, returns maxOffset", function() {
+  test("given text node with invalid characters short of maxOffset, returns maxOffset", function () {
     const textNode = new Text("\u200B\u200B\u200Babcde abcdefghijk");
     expect(textNode.textContent![3]).toBe("a");
     expect(getLastValidCharacterIndex(textNode, false, 3)).toBe(3);
   })
 
-  test("given text node with maxOffset greater than content length, returns content length, indicating cursor can be placed at end of text node", function() {
+  test("given text node with maxOffset greater than content length, returns content length, indicating cursor can be placed at end of text node", function () {
     const textNode = new Text("abcde abcdefghijk");
     const textLength = textNode.textContent!.length;
     expect(getLastValidCharacterIndex(textNode, false, 100)).toBe(textLength);
   })
 
 
-}) 
+})
 
 
-describe("test getIsReactComponent", function() {
+describe("test areUninterruptedSiblingTextNodes", function () {
+
+  const LC = document.createElement("div");
+
+  const strong = document.createElement("strong");
+  const strongText = new Text("\u200BStrong Text\u200B");
+  strong.append(strongText);
+  LC.append(strong);
+
+  const rootFirstTextNode = new Text("\u200B This is text after strong\u200B");
+  LC.append(rootFirstTextNode);
+
+  const rootSecondTextNode = new Text("\u200B This is more text\u200B");
+  LC.appendChild(rootSecondTextNode);
+
+  const secondStrong = document.createElement("strong");
+  LC.append(secondStrong);
+
+  const secondStrongFirstText = new Text();
+  const secondStrongSecondText = new Text("abc\u200B");
+
+  const secondStrongBreak = document.createElement("br");
+
+  const secondStrongThirdText = new Text("\u200B\u200B")
+  const secondStrongFourthText = new Text("\u200B  test \u200B hello\u200B\u200B   \u200B");
+
+  secondStrong.append(secondStrongFirstText);
+  secondStrong.append(secondStrongSecondText);
+  secondStrong.append(secondStrongBreak);
+  secondStrong.append(secondStrongThirdText);
+  secondStrong.append(secondStrongFourthText);
+
+  beforeAll(function () {
+    document.body.innerHTML = '';
+    document.body.append(LC);
+  })
+
+
+  test("correctly identify uninterrupted siblings", function () {
+    expect(areUninterruptedSiblingTextNodes(secondStrongFirstText, secondStrongSecondText)).toBe(true);
+    expect(areUninterruptedSiblingTextNodes(secondStrongThirdText, secondStrongFourthText)).toBe(true);
+    expect(areUninterruptedSiblingTextNodes(rootFirstTextNode, rootSecondTextNode)).toBe(true);
+
+    // test in reverse order
+    expect(areUninterruptedSiblingTextNodes(secondStrongSecondText, secondStrongFirstText)).toBe(true);
+    expect(areUninterruptedSiblingTextNodes(secondStrongFourthText, secondStrongThirdText)).toBe(true);
+    expect(areUninterruptedSiblingTextNodes(rootSecondTextNode, rootFirstTextNode)).toBe(true);
+
+  })
+
+  test("correctly identify when siblings are interrupted", function() {
+    expect(areUninterruptedSiblingTextNodes(secondStrongFirstText, secondStrongThirdText)).toBe(false);
+    expect(areUninterruptedSiblingTextNodes(secondStrongFirstText, secondStrongFourthText)).toBe(false);
+    expect(areUninterruptedSiblingTextNodes(secondStrongSecondText, secondStrongThirdText)).toBe(false);
+    expect(areUninterruptedSiblingTextNodes(secondStrongSecondText, secondStrongFourthText)).toBe(false);
+
+    // test in reverse order
+    expect(areUninterruptedSiblingTextNodes(secondStrongThirdText, secondStrongFirstText)).toBe(false);
+    expect(areUninterruptedSiblingTextNodes(secondStrongFourthText, secondStrongFirstText)).toBe(false);
+    expect(areUninterruptedSiblingTextNodes(secondStrongThirdText, secondStrongSecondText)).toBe(false);
+    expect(areUninterruptedSiblingTextNodes(secondStrongFourthText, secondStrongSecondText)).toBe(false);
+  })
+
+  test("reject on non-text node", function() {
+    const typeBrokenBreak = secondStrongBreak as unknown as Text
+    expect(areUninterruptedSiblingTextNodes(secondStrongSecondText, typeBrokenBreak)).toBe(false);
+
+    // test in reverse order
+    expect(areUninterruptedSiblingTextNodes(typeBrokenBreak, secondStrongSecondText)).toBe(false);
+  })
+
+  afterAll(function () {
+    document.body.innerHTML = startingHTML;
+  })
+
+})
+
+
+describe("test getIsReactComponent", function () {
   // TODO
 })
 
 
-describe("test textNodeIsCushioned", function() {
+describe("test textNodeIsCushioned", function () {
   // TODO
 })
 
 
-describe("test identifyBadTextNodes", function() {
+describe("test identifyBadTextNodes", function () {
   // TODO
 })
