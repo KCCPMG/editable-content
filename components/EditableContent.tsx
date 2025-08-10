@@ -3,7 +3,7 @@ import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect } from "
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
-import { moveSelection, resetSelectionToTextNodes, shiftSelection } from "@/utils/selection_movements";
+import { experimental_moveSelection, moveSelection, resetSelectionToTextNodes, shiftSelection } from "@/utils/selection_movements";
 import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection } from "@/utils/checks";
 import { promoteChildrenOfNode } from "@/utils/dom_operations";
 
@@ -262,7 +262,8 @@ export default function EditableContent({className, disableNewLines }: EditableC
               !e.metaKey
             ) {
               e.preventDefault();
-              moveSelection(selection, contentRef.current, "left");
+              // moveSelection(selection, contentRef.current, "left");
+              experimental_moveSelection(selection, contentRef.current, "left");
             }
             else if (              
               e.shiftKey &&
@@ -283,7 +284,8 @@ export default function EditableContent({className, disableNewLines }: EditableC
               !e.metaKey
             ) {
               e.preventDefault();
-              moveSelection(selection, contentRef.current, "right");
+              // moveSelection(selection, contentRef.current, "right");
+              experimental_moveSelection(selection, contentRef.current, "right");
             }
             else if (              
               e.shiftKey &&

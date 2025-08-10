@@ -495,6 +495,32 @@ export function getLastValidCharacterIndex(textNode: Text, acceptEmptyCushionNod
   return -1;
 }
 
+/**
+ * Takes two text nodes and determines if they are uninterrupted siblings, 
+ * meaning they have the same parent and there are no non-text nodes between them
+ * @param node1 
+ * @param node2 
+ */
+export function areUninterruptedSiblingTextNodes(node1: Text, node2: Text): boolean {
+  if (node1.parentNode !== node2.parentNode) return false;
+  const parentNode = node1.parentNode;
+  if (parentNode === null) return false;
+
+
+  const node1Index = Array.from(parentNode.childNodes).findIndex(node => node === node1);
+  const node2Index = Array.from(parentNode.childNodes).findIndex(node => node === node2);
+
+  const lowerNodeIndex = Math.min(node1Index, node2Index);
+  const higherNodeIndex = Math.max(node1Index, node2Index);
+
+  // go through range of siblings, including both text nodes, verify unbroken string of text
+  for (let i=lowerNodeIndex; i<=higherNodeIndex; i++) {
+    if (parentNode.childNodes[i].nodeType !== Node.TEXT_NODE) return false;
+  }
+  // else 
+  return true;
+}
+
 
 
 export function getIsReactComponent(component: ReactElement) {
