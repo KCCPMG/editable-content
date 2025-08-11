@@ -212,8 +212,8 @@ export default function EditableContent({className, disableNewLines }: EditableC
       }
 
       // else - selection is not fine, reset selection
-      console.log("should reset selection");
-      console.log("result of resetSelectionToTextNodes:", resetSelectionToTextNodes());
+      // console.log("should reset selection");
+      // console.log("result of resetSelectionToTextNodes:", resetSelectionToTextNodes());
       updateSelection();
       return;
 
@@ -251,6 +251,26 @@ export default function EditableContent({className, disableNewLines }: EditableC
             
             selection.removeAllRanges();
             selection.addRange(range);  
+            
+            // Keep selection in view given by container's scroll position 
+            console.log("range.getBoundingClientRect()", range.getBoundingClientRect());
+            const brRange = new Range();
+            brRange.setStartBefore(br);
+            brRange.setEndAfter(br);
+            
+            const brRect = brRange.getBoundingClientRect();
+            console.log("brRange.getBoundingClientRect()", brRect);
+            console.log({
+              "contentRef.current.scrollTop": contentRef.current.scrollTop, 
+              "contentRef.current.scrollOffset": contentRef.current.offsetTop 
+            })
+            br.scrollIntoView({
+              behavior: "instant",
+              block: "nearest"
+            });
+            // console.log(contentRef.current)
+
+
             updateContent(); 
           }
 
