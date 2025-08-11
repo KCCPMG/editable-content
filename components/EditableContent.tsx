@@ -1,5 +1,5 @@
 "use client"
-import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect } from "react";
+import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
@@ -103,13 +103,19 @@ export default function EditableContent({className, disableNewLines }: EditableC
 
   }, [contentRef])
 
+  const [safeToUpdateInUseEffect, setSafeToUpdateInUseEffect] = useState<boolean>(false);
+
   // on portal change
   useEffect(() => {
     // console.log("post-sanity check check on portals")
     
     // clean up divs which no longer contain a portal
     if (!contentRef.current) return;
-    updateContent();
+    
+    // if (!safeToUpdateInUseEffect.current) updateContent();
+    // else safeToUpdateInUseEffect.current = true;
+    
+    
     const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
 
     toDelete.forEach(td => promoteChildrenOfNode(td));
@@ -137,6 +143,12 @@ export default function EditableContent({className, disableNewLines }: EditableC
     }
   }, [divToSetSelectionTo])
 
+
+  // run on initial render to unlock future runs of updateContent on portals changes
+  // but to prevent it from running right away
+  useEffect(function() {
+    setSafeToUpdateInUseEffect(true);
+  }, [])
 
   /**
    * if changes need to be made to selection, make those changes, 
