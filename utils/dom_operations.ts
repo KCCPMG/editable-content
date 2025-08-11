@@ -1,5 +1,5 @@
 import { WrapperArgs } from "@/components";
-import { getAncestorNode, getRangeChildNodes } from "./checks";
+import { getAncestorNode, getRangeChildNodes, textNodeIsCushioned } from "./checks";
 import { resetSelectionToTextNodes } from "./selection_movements";
 
 
@@ -363,4 +363,8 @@ export function cushionTextNode(textNode: Text) {
   // textNode.textContent = '\u200B' + cleanedContent + '\u200B';
 }
 
-
+export function resetTextNodesCushions(textNodes: Array<Text>) {
+  textNodes.forEach(tn => {
+    if (!textNodeIsCushioned(tn)) cushionTextNode(tn);
+  })
+}

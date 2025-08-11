@@ -713,8 +713,3 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
 }
 
 
-export function resetTextNodesCushions(textNodes: Array<Text>) {
-  textNodes.forEach(tn => {
-    if (!textNodeIsCushioned(tn)) cushionTextNode(tn);
-  })
-}
