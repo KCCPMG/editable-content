@@ -272,7 +272,19 @@ export default function EditTextButton({
     console.log("right before moveSelection right in breakElementAtEnd")
 
     // moveSelection(selection, contentRef?.current, "right");
-    experimental_moveSelection(selection, contentRef.current, "right");
+    if (targetElement.nextSibling && targetElement.nextSibling.nodeType===Node.TEXT_NODE) {
+      experimental_moveSelection(selection, contentRef.current, "right");
+    }
+    else {
+      const newEmptyTextNode = new Text('\u200B\u200B');
+      if (targetElement.nextSibling) {
+        contentRef.current.insertBefore(newEmptyTextNode, targetElement.nextSibling);
+      }
+      else {
+        contentRef.current.append(newEmptyTextNode);
+      }
+      window.getSelection()?.setBaseAndExtent(newEmptyTextNode, 1, newEmptyTextNode, 1);
+    }
     
     // get new selection, make sure it starts with zero width space
     // if not, add it, put selection after zero width space)
