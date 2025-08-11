@@ -333,12 +333,27 @@ export function createWrapper({element, classList, id, unbreakable, attributes, 
   return wrapper;
 }
 
-
+/**
+ * Given a text node, cushions it correctly.
+ * If the text node's content is of 0 length, adds two zero-width spaces
+ * If the next node's content is of 1 length and one character is a zero-width
+ * space, adds another zero-width space
+ * Otherwise adds zero-width space to beginning and end of text node's content,
+ * after determining if it is necessary in each case
+ * @param textNode 
+ * @returns 
+ */
 export function cushionTextNode(textNode: Text) {
   if (!textNode.textContent) return;
 
+  console.log("cushionTextNode");
+  console.log("cushionTextNode textContent:");
+  console.log(JSON.stringify(textNode.textContent));
+  console.log("text node length", textNode.textContent.length);
+
   if (textNode.textContent.length === 0) {
     textNode.insertData(0, '\u200B\u200B');
+    console.log("cushioning 0-length textContent, length now:", textNode.textContent.length);
     return;
   }
 

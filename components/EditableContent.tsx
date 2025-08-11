@@ -5,30 +5,30 @@ import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
 import { experimental_moveSelection, moveSelection, resetSelectionToTextNodes, shiftSelection } from "@/utils/selection_movements";
 import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection } from "@/utils/checks";
-import { promoteChildrenOfNode } from "@/utils/dom_operations";
+import { cushionTextNode, promoteChildrenOfNode } from "@/utils/dom_operations";
 
 
-export default function EditableContent({className, disableNewLines }: EditableContentProps) {
+export default function EditableContent({ className, disableNewLines }: EditableContentProps) {
 
   const {
-    contentRef, 
-    contentRefCurrentInnerHTML, 
+    contentRef,
+    contentRefCurrentInnerHTML,
     setContentRefCurrentInnerHTML,
-    selectionToString, 
+    selectionToString,
     setSelectionToString,
-    selectionAnchorNode, 
+    selectionAnchorNode,
     setSelectionAnchorNode,
-    selectionAnchorOffset, 
+    selectionAnchorOffset,
     setSelectionAnchorOffset,
-    selectionFocusNode, 
+    selectionFocusNode,
     setSelectionFocusNode,
-    selectionFocusOffset, 
+    selectionFocusOffset,
     setSelectionFocusOffset,
-    hasSelection, 
+    hasSelection,
     setHasSelection,
-    portals, 
+    portals,
     setPortals,
-    divToSetSelectionTo, 
+    divToSetSelectionTo,
     setDivToSetSelectionTo,
     appendPortalToDiv,
     updateSelection,
@@ -70,9 +70,9 @@ export default function EditableContent({className, disableNewLines }: EditableC
       // load react portals
       const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
       if (portals.length === 0) {
-        console.log("should add", reactContainerDivs.length,"portals");
+        console.log("should add", reactContainerDivs.length, "portals");
         reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
-      } 
+      }
       else {
         console.log("should reset portal containers");
         resetPortalContainers();
@@ -80,11 +80,11 @@ export default function EditableContent({className, disableNewLines }: EditableC
 
       setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
     }
-    
+
     // assign event listeners
     document.addEventListener('selectionchange', (e) => {
       const selection = window.getSelection();
-      if (!selection || 
+      if (!selection ||
         !contentRef.current ||
         !selectionIsDescendentOfNode(selection, contentRef.current)
       ) {
@@ -92,7 +92,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
       }
       else {
         handleSelectionChange();
-      } 
+      }
     })
 
     // teardown
@@ -108,14 +108,14 @@ export default function EditableContent({className, disableNewLines }: EditableC
   // on portal change
   useEffect(() => {
     // console.log("post-sanity check check on portals")
-    
+
     // clean up divs which no longer contain a portal
     if (!contentRef.current) return;
-    
+
     // if (!safeToUpdateInUseEffect.current) updateContent();
     // else safeToUpdateInUseEffect.current = true;
-    
-    
+
+
     const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
 
     toDelete.forEach(td => promoteChildrenOfNode(td));
@@ -146,7 +146,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
 
   // run on initial render to unlock future runs of updateContent on portals changes
   // but to prevent it from running right away
-  useEffect(function() {
+  useEffect(function () {
     setSafeToUpdateInUseEffect(true);
   }, [])
 
@@ -156,8 +156,8 @@ export default function EditableContent({className, disableNewLines }: EditableC
    */
   function old_handleSelectionChange() {
     const selection = window.getSelection();
-    if (selection && 
-      contentRef.current && 
+    if (selection &&
+      contentRef.current &&
       selection?.anchorNode?.nodeType !== Node.TEXT_NODE &&
       selection?.focusNode?.nodeType !== Node.TEXT_NODE
     ) {
@@ -178,7 +178,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
     else {
       // resetSelectionToTextNodes();
       updateSelection();
-    } 
+    }
   }
 
 
@@ -232,37 +232,75 @@ export default function EditableContent({className, disableNewLines }: EditableC
         onFocus={() => { setHasSelection(true) }}
         onBlur={(e) => { setHasSelection(false) }}
         onKeyDown={(e) => {
-          const selection = window.getSelection(); 
+          const selection = window.getSelection();
           if (!selection || selection.rangeCount === 0 || !contentRef.current) return;
           const range = selection.getRangeAt(0);
 
           if (e.code === "Enter") {
             e.preventDefault();
             if (disableNewLines) return;
+
+            // begin content and selection logic
+            // range.extractContents();
+
+            // const br = document.createElement("br");
+            // const textNode = document.createTextNode('\u200B\u200B');
+            // range.insertNode(textNode);
+            // range.insertNode(br);
+
+            // range.setStart(textNode, 1);
+            // range.collapse();
+
+            // selection.removeAllRanges();
+            // selection.addRange(range); 
+
+            const clonedRange = range.cloneRange();
+
+            console.log(clonedRange);
+
+            const br = document.createElement('br')
             range.extractContents();
-            
-            const br = document.createElement("br");
-            const textNode = document.createTextNode('\u200B\u200B');
-            range.insertNode(textNode);
             range.insertNode(br);
-            
-            range.setStart(textNode, 1);
-            range.collapse();
-            
-            selection.removeAllRanges();
-            selection.addRange(range);  
-            
+
+            // recushion prior node
+            if (range.startContainer instanceof Text) {
+              cushionTextNode(range.startContainer);
+            }
+
+            console.log(!!(br.nextSibling));
+            console.log(br.nextSibling instanceof Text);
+
+            if (br.nextSibling && br.nextSibling instanceof Text) {
+              console.log(br.nextSibling);
+            }
+
+
+            if (!(br.nextSibling) || !(br.nextSibling instanceof Text)) {
+              console.log("inserting adjacent text")
+              br.insertAdjacentText("afterend", "\u200B\u200B");
+            }
+
+            console.log(br.nextSibling instanceof Text);
+
+            // this should always be true, prior if logic creates text node if it does not exist
+            if (br.nextSibling! instanceof Text) {
+              cushionTextNode(br.nextSibling);
+              range.setStart(br.nextSibling, 1);
+              range.collapse();
+            }
+            // end content and selection logic 
+
             // Keep selection in view given by container's scroll position 
             console.log("range.getBoundingClientRect()", range.getBoundingClientRect());
             const brRange = new Range();
             brRange.setStartBefore(br);
             brRange.setEndAfter(br);
-            
+
             const brRect = brRange.getBoundingClientRect();
             console.log("brRange.getBoundingClientRect()", brRect);
             console.log({
-              "contentRef.current.scrollTop": contentRef.current.scrollTop, 
-              "contentRef.current.scrollOffset": contentRef.current.offsetTop 
+              "contentRef.current.scrollTop": contentRef.current.scrollTop,
+              "contentRef.current.scrollOffset": contentRef.current.offsetTop
             })
             br.scrollIntoView({
               behavior: "instant",
@@ -271,10 +309,10 @@ export default function EditableContent({className, disableNewLines }: EditableC
             // console.log(contentRef.current)
 
 
-            updateContent(); 
+            updateContent();
           }
 
-          if (e.code === "Space") { 
+          if (e.code === "Space") {
             e.preventDefault();
             const spaceNode = document.createTextNode("\u0020\u200B");
             range.extractContents();
@@ -297,7 +335,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
               // moveSelection(selection, contentRef.current, "left");
               experimental_moveSelection(selection, contentRef.current, "left");
             }
-            else if (              
+            else if (
               e.shiftKey &&
               !e.altKey &&
               !e.ctrlKey &&
@@ -305,7 +343,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
             ) {
               e.preventDefault();
               shiftSelection(selection, contentRef.current, "left");
-            } 
+            }
           }
 
           if (e.code === "ArrowRight") {
@@ -319,7 +357,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
               // moveSelection(selection, contentRef.current, "right");
               experimental_moveSelection(selection, contentRef.current, "right");
             }
-            else if (              
+            else if (
               e.shiftKey &&
               !e.altKey &&
               !e.ctrlKey &&
@@ -328,9 +366,9 @@ export default function EditableContent({className, disableNewLines }: EditableC
               // console.log("shift key and left")
               e.preventDefault();
               shiftSelection(selection, contentRef.current, "right");
-            } 
-          }   
-          
+            }
+          }
+
           if (e.code === "Delete") {
             if (
               !e.shiftKey &&
@@ -341,7 +379,7 @@ export default function EditableContent({className, disableNewLines }: EditableC
               console.log("delete");
               // TODO: replace use of getSelectionDirection with something simpler 
               const direction = getSelectionDirection(selection);
-              if (direction === "none"){
+              if (direction === "none") {
                 e.preventDefault();
                 shiftSelection(selection, contentRef.current, "right");
                 selection.getRangeAt(0).deleteContents();
@@ -352,13 +390,13 @@ export default function EditableContent({className, disableNewLines }: EditableC
 
         }}
         className={className}
-        // style={divStyle ? divStyle : {
-        //   width: "100%",
-        //   height: "150px",
-        //   margin: "auto",
-        //   border: "2px solid black",
-        //   overflowY: "scroll"
-        // }}
+      // style={divStyle ? divStyle : {
+      //   width: "100%",
+      //   height: "150px",
+      //   margin: "auto",
+      //   border: "2px solid black",
+      //   overflowY: "scroll"
+      // }}
       >
       </div>
       {portals}
