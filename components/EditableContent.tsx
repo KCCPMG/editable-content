@@ -240,24 +240,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
             e.preventDefault();
             if (disableNewLines) return;
 
-            // begin content and selection logic
-            // range.extractContents();
-
-            // const br = document.createElement("br");
-            // const textNode = document.createTextNode('\u200B\u200B');
-            // range.insertNode(textNode);
-            // range.insertNode(br);
-
-            // range.setStart(textNode, 1);
-            // range.collapse();
-
-            // selection.removeAllRanges();
-            // selection.addRange(range); 
-
-            const clonedRange = range.cloneRange();
-
-            console.log(clonedRange);
-
+            // else continue
             const br = document.createElement('br')
             range.extractContents();
             range.insertNode(br);
@@ -267,28 +250,16 @@ export default function EditableContent({ className, disableNewLines }: Editable
               cushionTextNode(range.startContainer);
             }
 
-            console.log(!!(br.nextSibling));
-            console.log(br.nextSibling instanceof Text);
-
-            if (br.nextSibling && br.nextSibling instanceof Text) {
-              console.log(br.nextSibling);
-            }
-
-
             if (!(br.nextSibling) || !(br.nextSibling instanceof Text)) {
-              console.log("inserting adjacent text")
               br.insertAdjacentText("afterend", "\u200B\u200B");
             }
 
-            console.log("br.nextSibling instanceof Text", br.nextSibling instanceof Text);
-
-            // this should always be true, prior if logic creates text node if it does not exist
+            // this should always be true, text node should exist to begin with or is created above
             if (br.nextSibling! instanceof Text) {
               cushionTextNode(br.nextSibling);
               range.setStart(br.nextSibling, 1);
               range.collapse();
             }
-            // end content and selection logic 
 
             // Keep selection in view given by container's scroll position 
             console.log("range.getBoundingClientRect()", range.getBoundingClientRect());

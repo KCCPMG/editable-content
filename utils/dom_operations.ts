@@ -346,21 +346,14 @@ export function createWrapper({element, classList, id, unbreakable, attributes, 
 export function cushionTextNode(textNode: Text) {
   if (!(textNode instanceof Text)) return;
 
-  console.log("cushionTextNode");
-  console.log("cushionTextNode textContent:");
-  console.log(JSON.stringify(textNode.textContent));
-  console.log("text node length", textNode.textContent.length);
-
   if (textNode.textContent.length === 0) {
     textNode.insertData(0, '\u200B\u200B');
-    console.log("cushioning 0-length textContent, length now:", textNode.textContent.length);
     return;
   }
 
   if (textNode.textContent.length === 1) {
     if (textNode.textContent[0] === '\u200B') {
       textNode.insertData(1, '\u200B');
-      console.log("cushioning 1-length textContent, length now:", textNode.textContent.length)
       return;
     }
     // else continue
@@ -375,8 +368,7 @@ export function cushionTextNode(textNode: Text) {
       textNode.deleteData(i, 1);
     }
   } 
-  // const cleanedContent = textNode.textContent.replaceAll('\u200B', '');
-  // textNode.textContent = '\u200B' + cleanedContent + '\u200B';
+
 }
 
 export function resetTextNodesCushions(textNodes: Array<Text>) {
