@@ -280,7 +280,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
               br.insertAdjacentText("afterend", "\u200B\u200B");
             }
 
-            console.log(br.nextSibling instanceof Text);
+            console.log("br.nextSibling instanceof Text", br.nextSibling instanceof Text);
 
             // this should always be true, prior if logic creates text node if it does not exist
             if (br.nextSibling! instanceof Text) {

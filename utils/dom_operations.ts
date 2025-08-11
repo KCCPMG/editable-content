@@ -344,7 +344,7 @@ export function createWrapper({element, classList, id, unbreakable, attributes, 
  * @returns 
  */
 export function cushionTextNode(textNode: Text) {
-  if (!textNode.textContent) return;
+  if (!(textNode instanceof Text)) return;
 
   console.log("cushionTextNode");
   console.log("cushionTextNode textContent:");
@@ -360,6 +360,7 @@ export function cushionTextNode(textNode: Text) {
   if (textNode.textContent.length === 1) {
     if (textNode.textContent[0] === '\u200B') {
       textNode.insertData(1, '\u200B');
+      console.log("cushioning 1-length textContent, length now:", textNode.textContent.length)
       return;
     }
     // else continue
