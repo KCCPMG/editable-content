@@ -239,325 +239,114 @@ describe("test moveSelection", function() {
     compareSelection(selection!, secondStrongFourthText, 21, secondStrongFourthText, 21);
 
     // should skip 1 zero-width space
-    // experimental_moveSelection(selection!, LC, "left");
-    // compareSelection(selection!, secondStrongFourthText, 20);
-    // checkText(selection!, "\u200B");
-
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 19);
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 18);
-    
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 17);
-    // text spot check
-    checkText(selection!, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 19, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 18, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 17, " ");
 
     // next move should skip two zero-width spaces
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 14);
-    // text spot check
-    checkText(selection!, "o");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 13);
-    checkText(selection!, "l");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 12);
-    checkText(selection!, "l");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 11);
-    checkText(selection!, "e");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 10);
-    checkText(selection!, "h");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 9);
-    // text spot check
-    checkText(selection!, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 14, "o");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 13, "l");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 12, "l");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 11, "e");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 10, "h");
+    
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 9, " ");
 
     // next move should skip one zero-width space
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 7);
-    checkText(selection!, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 7, " ");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 6);
-    checkText(selection!, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 6, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 5, "s");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 4, "e");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 3, "t");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 5);
-    checkText(selection!, "s");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 4);
-    checkText(selection!, "e");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 3);
-    checkText(selection!, "t");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 2);
-    checkText(selection!, " ");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongFourthText, 1);
-    checkText(selection!, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 2, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 1, " ");
 
     // going to prior text node, should skip node entirely as it is a direct sibling without valid characters, go to secondStrongSecondText
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongSecondText, 2);
-    checkText(selection!, "c");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongSecondText, 2, "c");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongSecondText, 1, "b");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongSecondText, 0, "a");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongSecondText, 1);
-    checkText(selection!, "b");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 19, "\u200B");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 18, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 17, "x");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 16, "e");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 15, "t");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, secondStrongSecondText, 0);
-    checkText(selection!, "a");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 14, " ");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 19);
-    checkText(selection!, "\u200B");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 13, "e");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 12, "r");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 11, "o");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 10, "m");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 18);
-    checkText(selection!, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 9, " ");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 17);
-    checkText(selection!, "x");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 8, "s");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 7, "i");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 16);
-    checkText(selection!, "e");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 6, " ");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 15);
-    checkText(selection!, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 5, "s");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 4, "i");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 3, "h");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 2, "T");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 14);
-    checkText(selection!, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootSecondTextNode, 1, " ");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 13);
-    checkText(selection!, "e");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 12);
-    checkText(selection!, "r");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 11);
-    checkText(selection!, "o");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 10);
-    checkText(selection!, "m");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 9);
-    checkText(selection!, " ");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 8);
-    checkText(selection!, "s");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 7);
-    checkText(selection!, "i");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 6);
-    checkText(selection!, " ");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 5);
-    checkText(selection!, "s");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 4);
-    checkText(selection!, "i");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 3);
-    checkText(selection!, "h");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 2);
-    checkText(selection!, "T");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootSecondTextNode, 1);
-    checkText(selection!, " ");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 26);
-    checkText(selection!, "g");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 25);
-    checkText(selection!, "n");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 24);
-    checkText(selection!, "o");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 23);
-    checkText(selection!, "r");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 22);
-    checkText(selection!, "t");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 21);
-    checkText(selection!, "s");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 26, "g");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 25, "n");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 24, "o");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 23, "r");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 22, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 21, "s");
     
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 20);
-    checkText(selection!, " ");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 20, " ");
 
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 19);
-    checkText(selection!, "r");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 18);
-    checkText(selection!, "e");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 17);
-    checkText(selection!, "t");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 16);
-    checkText(selection!, "f");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 15);
-    checkText(selection!, "a");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 14);
-    checkText(selection!, " ");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 13);
-    checkText(selection!, "t");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 12);
-    checkText(selection!, "x");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 11);
-    checkText(selection!, "e");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 10);
-    checkText(selection!, "t");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 9);
-    checkText(selection!, " ");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 8);
-    checkText(selection!, "s");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 7);
-    checkText(selection!, "i");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 6);
-    checkText(selection!, " ");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 5);
-    checkText(selection!, "s");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 4);
-    checkText(selection!, "i");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 3);
-    checkText(selection!, "h");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 2);
-    checkText(selection!, "T");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, rootFirstTextNode, 1);
-    checkText(selection!, " ");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 12);
-    checkText(selection!, "\u200B");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 11);
-    checkText(selection!, "t");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 10);
-    checkText(selection!, "x");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 9);
-    checkText(selection!, "e");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 8);
-    checkText(selection!, "T");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 7);
-    checkText(selection!, " ");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 6);
-    checkText(selection!, "g");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 5);
-    checkText(selection!, "n");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 4);
-    checkText(selection!, "o");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 3);
-    checkText(selection!, "r");
-
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 2);
-    checkText(selection!, "t");
-
-    // experimental_moveSelection(selection!, LC, "left");
-    // compareSelection(selection!, strongText, 1);
-    // checkText(selection!, "S");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 19, "r");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 18, "e");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 17, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 16, "f");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 15, "a");
+    
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 14, " ");
+    
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 13, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 12, "x");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 11, "e");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 10, "t");
+    
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 9, " ");
+    
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 8, "s");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 7, "i");
+    
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 6, " ");
+    
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 5, "s");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 4, "i");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 3, "h");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 2, "T");
+    
+    moveAndCompareSelectionCheckText(selection!, LC, "left", rootFirstTextNode, 1, " ");
+    
+    moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 12, "\u200B");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 11, "t");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 10, "x");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 9, "e");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 8, "T");
+    
+    moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 7, " ");
+    
+    moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 6, "g");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 5, "n");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 4, "o");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 3, "r");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 2, "t");
     moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 1, "S");
 
     // Nowhere else to go, should stay in place
-    experimental_moveSelection(selection!, LC, "left");
-    compareSelection(selection!, strongText, 1);
-    checkText(selection!, "S");
-
     moveAndCompareSelectionCheckText(selection!, LC, "left", strongText, 1, "S");
 
   })
@@ -623,7 +412,6 @@ describe("test moveSelection", function() {
 
     moveAndCompareSelectionCheckText(selection!, LC, "right", rootFirstTextNode, 27, "\u200B");
 
-
     // rootSecondTextNode - "\u200B This is more text\u200B"
     moveAndCompareSelectionCheckText(selection!, LC, "right", rootSecondTextNode, 2, "T");
     moveAndCompareSelectionCheckText(selection!, LC, "right", rootSecondTextNode, 3, "h");
@@ -685,15 +473,8 @@ describe("test moveSelection", function() {
     // moving right again should have no effect
     moveAndCompareSelectionCheckText(selection!, LC, "right", secondStrongFourthText, 20, "\u200B");
 
-
   })
   
-  // test("isolate", function() {
-  //   const selection = window.getSelection();
-  //   selection?.setBaseAndExtent(rootFirstTextNode, 27, rootFirstTextNode, 27);
-    
-  // })
-
   afterAll(function() {
     document.body.innerHTML = startingHTML;
   })
