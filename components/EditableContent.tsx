@@ -262,24 +262,13 @@ export default function EditableContent({ className, disableNewLines }: Editable
             }
 
             // Keep selection in view given by container's scroll position 
-            // console.log("range.getBoundingClientRect()", range.getBoundingClientRect());
             const brRange = new Range();
             brRange.setStartBefore(br);
             brRange.setEndAfter(br);
 
             const brRect = brRange.getBoundingClientRect();
             const lcRect = contentRef.current.getBoundingClientRect();
-            // console.log("brRange.getBoundingClientRect()", brRect);
-            // console.log({
-            //   "contentRef.current.scrollTop": contentRef.current.scrollTop,
-            //   "contentRef.current.offsetTop": contentRef.current.offsetTop
-            // })
-            /**
-             * range.getBoundingClientRect().height
-             * range.getBoundingClientRect().top
-             * contentRef.current.getBoundingClientRect().height
-             * contentRef.current.getBoundingClientRect().top
-             */
+
 
             if (
               brRect.top >= lcRect.top &&
@@ -292,35 +281,15 @@ export default function EditableContent({ className, disableNewLines }: Editable
             } else {
               console.log("not in range");
               if ( brRect.top < lcRect.top) {
-                // contentRef.current.scroll(0, brRect.top - lcRect.top);
-                console.log(brRect.top);
-                contentRef.current.scroll(0, brRect.top);
+                console.log("lcRect.top ", lcRect.top); 
+                console.log("lcRect.scrollTop ", contentRef.current.scrollTop)
+                console.log("brRect.top", brRect.top);
+                console.log(contentRef.current.scrollTop - (lcRect.top - brRect.top));
+
+                contentRef.current.scroll(0, contentRef.current.scrollTop - (lcRect.top - brRect.top));
+
               }
             }
-
-            // begin scratch
-
-            // const fakeRange = window.getSelection()?.getRangeAt(0);
-            // const rangeRect = fakeRange?.getBoundingClientRect();
-
-            // const lcRect = limitingContainer.getBoundingClientRect();
-
-            // console.log({
-            //   "rangeRect.top": rangeRect.top,
-            //   "rangeRect.height": rangeRect.height,
-            //   "lcRect.top": lcRect.top,
-            //   "lcRect.height": lcRect.height
-            // })
-
-
-            // end scratch
-
-            // br.scrollIntoView({
-            //   behavior: "instant",
-            //   block: "nearest"
-            // });
-            // console.log(contentRef.current)
-
 
             updateContent();
           }
