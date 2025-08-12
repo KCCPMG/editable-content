@@ -53,30 +53,30 @@ export default function SelectionDisplay({show}: SelectionToStringDisplayProps) 
 function stringRepresentationOfNode(node: Node | null) {
   if (!node) return "null"
   else if (node.nodeType === Node.TEXT_NODE) {
-    return `Text Node: &quot;${node.textContent}&quot;`
+    return `Text Node: \"${node.textContent}\"`
   }
   else if (node.nodeType === Node.ELEMENT_NODE) {
-    return `Text Node: &quot;${(node as Element).outerHTML}&quot;`
+    return `Element Node: \"${(node as Element).outerHTML}\"`
   }
   else if (node.nodeType === Node.ATTRIBUTE_NODE) {
-    return `Attribute Node: &quot;${node.textContent}&quot;`
+    return `Attribute Node: \"${node.textContent}\"`
   }
   else if (node.nodeType === Node.CDATA_SECTION_NODE) {
-    return `CDATA Section Node: &quot;${node.textContent}&quot;`
+    return `CDATA Section Node: \"${node.textContent}\"`
   }
   else if (node.nodeType === Node.PROCESSING_INSTRUCTION_NODE) {
-    return `Processing Instruction Node: &quot;${node.textContent}&quot;`
+    return `Processing Instruction Node: \"${node.textContent}\"`
   }
   else if (node.nodeType === Node.COMMENT_NODE) {
-    return `Comment Node: &quot;${node.textContent}&quot;`
+    return `Comment Node: \"${node.textContent}\"`
   }
   else if (node.nodeType === Node.DOCUMENT_NODE) {
-    return `Document Node: &quot;${node.textContent}&quot;`
+    return `Document Node: \"${node.textContent}\"`
   }
   else if (node.nodeType === Node.DOCUMENT_TYPE_NODE) {
-    return `Document Type Node: &quot;${node.textContent}&quot;`
+    return `Document Type Node: \"${node.textContent}\"`
   }
   else if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-    return `Document Fragment Node: &quot;${node.textContent}&quot;`
+    return `Document Fragment Node: \"${node.textContent}\"`
   }
 }
