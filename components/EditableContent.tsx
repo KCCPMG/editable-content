@@ -262,27 +262,63 @@ export default function EditableContent({ className, disableNewLines }: Editable
             }
 
             // Keep selection in view given by container's scroll position 
-            console.log("range.getBoundingClientRect()", range.getBoundingClientRect());
+            // console.log("range.getBoundingClientRect()", range.getBoundingClientRect());
             const brRange = new Range();
             brRange.setStartBefore(br);
             brRange.setEndAfter(br);
 
             const brRect = brRange.getBoundingClientRect();
-            console.log("brRange.getBoundingClientRect()", brRect);
-            console.log({
-              "contentRef.current.scrollTop": contentRef.current.scrollTop,
-              "contentRef.current.offsetTop": contentRef.current.offsetTop
-            })
+            const lcRect = contentRef.current.getBoundingClientRect();
+            // console.log("brRange.getBoundingClientRect()", brRect);
+            // console.log({
+            //   "contentRef.current.scrollTop": contentRef.current.scrollTop,
+            //   "contentRef.current.offsetTop": contentRef.current.offsetTop
+            // })
             /**
              * range.getBoundingClientRect().height
              * range.getBoundingClientRect().top
              * contentRef.current.getBoundingClientRect().height
              * contentRef.current.getBoundingClientRect().top
              */
-            br.scrollIntoView({
-              behavior: "instant",
-              block: "nearest"
-            });
+
+            if (
+              brRect.top >= lcRect.top &&
+              brRect.top <= (lcRect.top + lcRect.height) &&
+              (brRect.top + brRect.height) >= lcRect.top &&
+              (brRect.top + brRect.height) <= (lcRect.top + lcRect.height)
+            ) {
+              // do nothing
+              console.log("in range");
+            } else {
+              console.log("not in range");
+              if ( brRect.top < lcRect.top) {
+                // contentRef.current.scroll(0, brRect.top - lcRect.top);
+                console.log(brRect.top);
+                contentRef.current.scroll(0, brRect.top);
+              }
+            }
+
+            // begin scratch
+
+            // const fakeRange = window.getSelection()?.getRangeAt(0);
+            // const rangeRect = fakeRange?.getBoundingClientRect();
+
+            // const lcRect = limitingContainer.getBoundingClientRect();
+
+            // console.log({
+            //   "rangeRect.top": rangeRect.top,
+            //   "rangeRect.height": rangeRect.height,
+            //   "lcRect.top": lcRect.top,
+            //   "lcRect.height": lcRect.height
+            // })
+
+
+            // end scratch
+
+            // br.scrollIntoView({
+            //   behavior: "instant",
+            //   block: "nearest"
+            // });
             // console.log(contentRef.current)
 
 
