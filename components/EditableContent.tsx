@@ -230,7 +230,13 @@ export default function EditableContent({ className, disableNewLines }: Editable
         spellCheck={false}
         onInput={updateContent}
         onFocus={() => { setHasSelection(true) }}
-        onBlur={(e) => { setHasSelection(false) }}
+        // onBlur={(e) => { setHasSelection(false) }}
+        onBlurCapture={(e) => {
+          console.log("e.relatedTarget", e.relatedTarget);
+          if (!e.relatedTarget || e.relatedTarget.tagName !== 'BUTTON') {
+            setHasSelection(false)
+          }
+        }}
         onKeyDown={(e) => {
           const selection = window.getSelection();
           if (!selection || selection.rangeCount === 0 || !contentRef.current) return;

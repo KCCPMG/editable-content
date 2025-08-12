@@ -37,14 +37,18 @@ export function resetSelectionToTextNodes(): Selection | null {
 
 export function resetRangeToTextNodes(range: Range) {
 
+  console.log("resetRangeToTextNodes");
+
   // console.log(range.startContainer, range.startContainer.nodeType !== Node.TEXT_NODE, range.endContainer.nodeType !== Node.TEXT_NODE);
 
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
+    console.log("range.startContainer not text node")
     const startNode = range.startContainer.childNodes[range.startOffset];
     if (!startNode) return null;
     const tw = document.createTreeWalker(startNode);
     while (true) {
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
+        console.log("found text node:", tw.currentNode)
         range.setStart(tw.currentNode, 0);
         break;
       } else {
@@ -72,6 +76,11 @@ export function resetRangeToTextNodes(range: Range) {
     range.setEnd(lastTextNode, lastTextNode.textContent?.length || 0);
   }
 
+  // console.log("range should be: ");
+  // console.log("range.startContainer: ", range.startContainer);
+  // console.log("range.startOffset: ", range.startOffset);
+  // console.log("range.endContainer: ", range.endContainer);
+  // console.log("range.endOffset: ", range.endOffset);
   return range;
 }
 

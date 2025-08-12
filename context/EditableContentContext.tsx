@@ -389,6 +389,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
 
     // end
     // console.log(window.getSelection());
+    console.log("hasSelection", hasSelection)
 
     if (hasSelection) {
       // console.log("reset selection in EditableContentContext updateContent");
@@ -398,6 +399,10 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     contentRef.current?.focus();
   }
 
+  useEffect(function() {
+    // console.log("hasSelection is changing to ", hasSelection)
+    // if (hasSelection) resetSelectionToTextNodes();
+  }, [hasSelection])
 
   /**
    * Clone react component with child text. If this is the first time this 
