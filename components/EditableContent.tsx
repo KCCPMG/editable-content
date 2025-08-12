@@ -271,8 +271,14 @@ export default function EditableContent({ className, disableNewLines }: Editable
             console.log("brRange.getBoundingClientRect()", brRect);
             console.log({
               "contentRef.current.scrollTop": contentRef.current.scrollTop,
-              "contentRef.current.scrollOffset": contentRef.current.offsetTop
+              "contentRef.current.offsetTop": contentRef.current.offsetTop
             })
+            /**
+             * range.getBoundingClientRect().height
+             * range.getBoundingClientRect().top
+             * contentRef.current.getBoundingClientRect().height
+             * contentRef.current.getBoundingClientRect().top
+             */
             br.scrollIntoView({
               behavior: "instant",
               block: "nearest"
