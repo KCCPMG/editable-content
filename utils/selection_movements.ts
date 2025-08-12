@@ -258,6 +258,15 @@ export function experimental_moveSelection(selection: Selection, limitingContain
   // if still not text, return
   if (!(anchorNode instanceof Text)) return;
 
+  // range is not collapsed
+  if (direction !== "none") {
+    if (moveDirection === "right") {
+      return selection.collapseToEnd();
+    } else if (moveDirection === "left") {
+      return selection.collapseToStart();
+    }
+  }
+
   // range is collapsed
   if (direction === "none") {
 
