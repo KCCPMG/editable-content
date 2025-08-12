@@ -268,10 +268,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
 
             // this should be collapsed
             const rangeRect = range.getBoundingClientRect();
-
-            // const brRect = brRange.getBoundingClientRect();
             const lcRect = contentRef.current.getBoundingClientRect();
-
 
             if (
               rangeRect.top >= lcRect.top &&
@@ -279,22 +276,18 @@ export default function EditableContent({ className, disableNewLines }: Editable
               (rangeRect.top + rangeRect.height) >= lcRect.top &&
               (rangeRect.top + rangeRect.height) <= (lcRect.top + lcRect.height)
             ) {
-              // do nothing
-              console.log("in range");
+              // do nothing, range is visible within current lc scroll
             } else {
-              console.log("not in range");
+
+              // range is above current lc scroll window
               if ( rangeRect.top < lcRect.top) {
-                console.log("lcRect.top ", lcRect.top); 
-                console.log("lcRect.scrollTop ", contentRef.current.scrollTop)
-                console.log("rangeRect.top", rangeRect.top);
+                // targetOffset is distance between rangeRect and where it should be
                 const targetOffset = lcRect.top - rangeRect.top;
-                console.log(contentRef.current.scrollTop - targetOffset);
-
                 contentRef.current.scroll(0, contentRef.current.scrollTop - targetOffset);
-
-              } else if (
-                (rangeRect.top + rangeRect.height) >= (lcRect.top + lcRect.height)
-              ) {
+              } 
+              // range is below current lc scroll window
+              else if ((rangeRect.top + rangeRect.height) >= (lcRect.top + lcRect.height)) {
+                // targetOffset is distance between rangeRect and where it should be
                 const targetOffset = (rangeRect.top + rangeRect.height) - (lcRect.top + lcRect.height);
                 contentRef.current.scroll(0, contentRef.current.scrollTop + targetOffset);
               }
