@@ -266,28 +266,37 @@ export default function EditableContent({ className, disableNewLines }: Editable
             brRange.setStartBefore(br);
             brRange.setEndAfter(br);
 
-            const brRect = brRange.getBoundingClientRect();
+            // this should be collapsed
+            const rangeRect = range.getBoundingClientRect();
+
+            // const brRect = brRange.getBoundingClientRect();
             const lcRect = contentRef.current.getBoundingClientRect();
 
 
             if (
-              brRect.top >= lcRect.top &&
-              brRect.top <= (lcRect.top + lcRect.height) &&
-              (brRect.top + brRect.height) >= lcRect.top &&
-              (brRect.top + brRect.height) <= (lcRect.top + lcRect.height)
+              rangeRect.top >= lcRect.top &&
+              rangeRect.top <= (lcRect.top + lcRect.height) &&
+              (rangeRect.top + rangeRect.height) >= lcRect.top &&
+              (rangeRect.top + rangeRect.height) <= (lcRect.top + lcRect.height)
             ) {
               // do nothing
               console.log("in range");
             } else {
               console.log("not in range");
-              if ( brRect.top < lcRect.top) {
+              if ( rangeRect.top < lcRect.top) {
                 console.log("lcRect.top ", lcRect.top); 
                 console.log("lcRect.scrollTop ", contentRef.current.scrollTop)
-                console.log("brRect.top", brRect.top);
-                console.log(contentRef.current.scrollTop - (lcRect.top - brRect.top));
+                console.log("rangeRect.top", rangeRect.top);
+                const targetOffset = lcRect.top - rangeRect.top;
+                console.log(contentRef.current.scrollTop - targetOffset);
 
-                contentRef.current.scroll(0, contentRef.current.scrollTop - (lcRect.top - brRect.top));
+                contentRef.current.scroll(0, contentRef.current.scrollTop - targetOffset);
 
+              } else if (
+                (rangeRect.top + rangeRect.height) >= (lcRect.top + lcRect.height)
+              ) {
+                const targetOffset = (rangeRect.top + rangeRect.height) - (lcRect.top + lcRect.height);
+                contentRef.current.scroll(0, contentRef.current.scrollTop + targetOffset);
               }
             }
 
