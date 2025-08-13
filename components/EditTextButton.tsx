@@ -35,7 +35,21 @@ export default function EditTextButton({
 }: EditTextButtonProps
 ) {
 
-  const { hasSelection, setHasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef, updateContent, createContentPortal, portals, removePortal } = useEditableContentContext();
+  const { 
+    contextInstanceId,
+    hasSelection, 
+    setHasSelection, 
+    selectionAnchorNode, 
+    selectionAnchorOffset, 
+    selectionFocusNode, 
+    selectionFocusOffset, 
+    keyAndWrapperObjs, 
+    contentRef, 
+    updateContent, 
+    createContentPortal, 
+    portals, 
+    removePortal 
+  } = useEditableContentContext();
 
 
   const [selected, setSelected] = useState<boolean>(false);
@@ -341,6 +355,7 @@ export default function EditTextButton({
           (deselectedVariant || "outlined")
         }
         // Only pass valid MUI Button props here
+        data-context-id={contextInstanceId}
         {...(remainderProps as React.ComponentProps<typeof Button>)}
       >
         {children}
@@ -348,6 +363,7 @@ export default function EditTextButton({
       <button
         disabled={!enabled}
         onClick={() => { handleEditTextButtonClick() }}
+        data-context-id={contextInstanceId}
         // id={id}
         // className={classList?.join(" ")}
         {...remainderProps}

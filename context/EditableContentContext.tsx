@@ -93,6 +93,7 @@ type EditableContentContextProviderProps = {
 
 // this is a replacement for EditableContent's state in all cases
 export type EditableContentContextType = {
+  contextInstanceId: string,
   contentRef: MutableRefObject<HTMLDivElement | null>,
   contentRefCurrentInnerHTML: string,
   setContentRefCurrentInnerHTML: Dispatch<SetStateAction<string>>,
@@ -133,6 +134,7 @@ export const EditableContentContext = createContext<EditableContentContextType |
 
 export function EditableContentContextProvider({children, keyAndWrapperObjs, initialHTML, initialProps}: EditableContentContextProviderProps) {
 
+  const contextInstanceId = uuidv4();
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
   const [selectionToString, setSelectionToString] = useState<string>("");
@@ -400,7 +402,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   }
 
   useEffect(function() {
-    // console.log("hasSelection is changing to ", hasSelection)
+    console.log("hasSelection is changing to ", hasSelection)
     // if (hasSelection) resetSelectionToTextNodes();
   }, [hasSelection])
 
@@ -534,6 +536,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
 
   return (
     <EditableContentContext.Provider value={{
+      contextInstanceId,
       contentRef,
       contentRefCurrentInnerHTML, 
       setContentRefCurrentInnerHTML,

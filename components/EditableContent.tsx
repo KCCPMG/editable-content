@@ -11,6 +11,7 @@ import { cushionTextNode, promoteChildrenOfNode } from "@/utils/dom_operations";
 export default function EditableContent({ className, disableNewLines }: EditableContentProps) {
 
   const {
+    contextInstanceId,
     contentRef,
     contentRefCurrentInnerHTML,
     setContentRefCurrentInnerHTML,
@@ -233,7 +234,11 @@ export default function EditableContent({ className, disableNewLines }: Editable
         // onBlur={(e) => { setHasSelection(false) }}
         onBlurCapture={(e) => {
           console.log("e.relatedTarget", e.relatedTarget);
-          if (!e.relatedTarget || e.relatedTarget.tagName !== 'BUTTON') {
+          if (
+            !e.relatedTarget || 
+            e.relatedTarget.tagName !== 'BUTTON' || 
+            e.relatedTarget.getAttribute('data-context-id') !== contextInstanceId
+          ) {
             setHasSelection(false)
           }
         }}
