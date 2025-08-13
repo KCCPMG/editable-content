@@ -5,7 +5,7 @@ import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
 import { getAllTextNodes, getAncestorNode, getButtonStatus, getIsReactComponent, getLastValidCharacterIndex, getLastValidTextNode, getRangeChildNodes, getRangeLowestAncestorElement } from "@/utils/checks";
-import { generateQuery, unwrapSelectionFromQuery, createWrapper, wrapInElement } from "@/utils/dom_operations";
+import { generateQuery, unwrapSelectionFromQuery, createWrapper, wrapInElement, cushionTextNode } from "@/utils/dom_operations";
 import { resetRangeToTextNodes, resetSelectionToTextNodes, moveSelection, experimental_moveSelection } from "@/utils/selection_movements";
 
 type htmlSelectCallback = (wrapper: HTMLElement) => void
@@ -132,11 +132,20 @@ export default function EditTextButton({
         } else if (!isReactComponent) {
           const wrapper = createWrapper(wrapperArgs, document);
           wrapInElement(selection, wrapper, contentRef.current!);
+          
+          // make sure all text nodes are cushioned, reset range to include ZWSs
+          const textNodes = getAllTextNodes([wrapper]);
+          textNodes.forEach(tn => cushionTextNode(tn));
+          const range = window.getSelection()?.getRangeAt(0);
+          range?.setStart(textNodes[0], 0);
+          const lastTextNode = textNodes[textNodes.length - 1];
+          range?.setEnd(lastTextNode, lastTextNode.length);
+
           updateContent();
           if (selectCallback) {
             (selectCallback as htmlSelectCallback)(wrapper);
           }
-          const range = window.getSelection()?.getRangeAt(0);
+
         }
 
       }

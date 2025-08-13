@@ -388,11 +388,6 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       deleteEmptyElements(contentRef.current);
     }
 
-
-    // end
-    // console.log(window.getSelection());
-    console.log("hasSelection", hasSelection)
-
     if (hasSelection) {
       // console.log("reset selection in EditableContentContext updateContent");
       resetSelectionToTextNodes();

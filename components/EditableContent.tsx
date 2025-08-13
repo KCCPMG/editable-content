@@ -232,7 +232,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
         onInput={updateContent}
         onFocus={() => { setHasSelection(true) }}
         onBlurCapture={(e) => {
-          console.log("e.relatedTarget", e.relatedTarget);
           if (
             !e.relatedTarget || 
             e.relatedTarget.tagName !== 'BUTTON' || 
@@ -240,6 +239,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
           ) {
             setHasSelection(false);
           }
+          // else, relatedTarget is button, retain hasSelection as true
         }}
         onKeyDown={(e) => {
           const selection = window.getSelection();

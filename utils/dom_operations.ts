@@ -27,6 +27,21 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
   const query = generateQueryFromElement(element);
 
   const contents = range.extractContents();
+
+  // if empty text nodes left behind, delete
+  if (range.startContainer && range.startContainer.nodeType === Node.TEXT_NODE) {
+    if (range.startContainer.textContent === "") {
+      range.startContainer.parentNode?.removeChild(range.startContainer);
+    }
+  }
+
+  if (range.endContainer && range.endContainer.nodeType === Node.TEXT_NODE) {
+    if (range.endContainer.textContent === "") {
+      range.endContainer.parentNode?.removeChild(range.endContainer);
+    }
+  }
+
+
   const childNodes = contents.childNodes;
 
   /**
@@ -344,7 +359,7 @@ export function createWrapper({element, classList, id, unbreakable, attributes, 
  * @returns 
  */
 export function cushionTextNode(textNode: Text) {
-  if (!(textNode instanceof Text)) return;
+  if (!(textNode instanceof Text) || textNode.textContent === null) return;
 
   if (textNode.textContent.length === 0) {
     textNode.insertData(0, '\u200B\u200B');
