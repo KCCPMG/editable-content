@@ -570,10 +570,42 @@ type searchCombinedTextArgumentObject = {
   returnAfterMatch?: boolean,
   returnIndexOffset?: number,
   getLast?: boolean,
+  startFrom?: {
+    textNode: Text,
+    nodeOffset: number
+  } | null,
   upTo?: {
     textNode: Text,
     nodeOffset: number
   } | null
+}
+
+
+function getMatch(str: string, sourceString: string, startOffset: number, endOffset: number, getLast: boolean) {
+
+  const safeRe = new RegExp(sourceString, 'g');
+  const gen = str.matchAll(safeRe);
+  
+  let last: null | RegExpExecArray = null;
+
+  while (true) {
+    let current = gen.next();
+    if (current === null) break;
+    if (
+      current.value &&
+      current.value.index >= startOffset && 
+      current.value.index <= endOffset
+    ) {
+      if (getLast) {
+        last = current.value;
+      }
+      else return current.value;
+    }
+  } 
+
+  return last;
+
+
 }
 
 
@@ -585,14 +617,15 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     returnAfterMatch=false,
     returnIndexOffset=0,
     getLast=false,
+    startFrom=null,
     upTo=null 
   } = argumentObject;
 
-  // remove global flag from re
-  const safeRe = new RegExp(re.source, re.flags.replace('g', ''));
-
+  
+  // set up string
   const combinedString = textNodes.map(tn => tn.textContent).join("");
 
+  // set up intervals array
   const intervals: Array<number> = [];
   let lastInterval = 0;
   textNodes.forEach(tn => {
@@ -605,6 +638,37 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     intervals.push(lastInterval);
   });
 
+
+  // declare characterIndex
+  let characterIndex = 0;
+
+  // set up start from 
+  let lastIndex = 0;
+  if (startFrom) {
+    const startingIndex = textNodes.findIndex(tn => tn === startFrom.textNode);
+    if (startingIndex === -1) {
+      return null;
+    } 
+    if (
+      startFrom.textNode.textContent === null ||
+      startFrom.nodeOffset < 0 || 
+      startFrom.nodeOffset > startFrom.textNode.textContent.length
+    ) {
+      return null;
+    }
+
+    // else - safe to proceed
+    lastIndex = intervals[startingIndex] + startFrom.nodeOffset;
+  }
+
+  // set up re
+  // remove global flag from re
+  const safeRe = new RegExp( re.source,  re.flags.replace('g', ''));
+
+  
+
+
+  // find re
   const combinedStringMatch = combinedString.match(safeRe);
 
   if (!combinedStringMatch || combinedStringMatch.index === undefined) {
