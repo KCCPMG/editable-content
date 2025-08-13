@@ -590,7 +590,7 @@ export function searchCombinedText(textNodes: Array<Text>, re: RegExp) {
     const stringLengthPriorToTextNode = (textNodeIndex > 0) ? intervals[textNodeIndex - 1] : 0
     return { 
       currentNode: textNodes[textNodeIndex],
-      newIndex: combinedStringMatch.index - stringLengthPriorToTextNode
+      offset: combinedStringMatch.index - stringLengthPriorToTextNode
     }
   }
 
