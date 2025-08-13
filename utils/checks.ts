@@ -610,7 +610,7 @@ export function getReMatch(str: string, sourceString: string, startOffset: numbe
 
 type searchCombinedTextArgumentObject = {
   textNodes: Array<Text>,
-  re: RegExp,
+  reSource: string,
   returnAfterMatch?: boolean,
   returnIndexOffset?: number,
   getLast?: boolean,
@@ -628,7 +628,7 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
 
   const { 
     textNodes, 
-    re, 
+    reSource, 
     returnAfterMatch=false,
     returnIndexOffset=0,
     getLast=false,
@@ -657,8 +657,11 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
   // declare characterIndex
   let characterIndex = 0;
 
-  // set up start from 
-  let lastIndex = 0;
+  // initialize start and end offsets
+  let startOffset = 0;
+  let endOffset = combinedString.length;
+
+  // narrow start offset
   if (startFrom) {
     const startingIndex = textNodes.findIndex(tn => tn === startFrom.textNode);
     if (startingIndex === -1) {
@@ -673,18 +676,19 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     }
 
     // else - safe to proceed
-    lastIndex = intervals[startingIndex] + startFrom.nodeOffset;
+    startOffset = intervals[startingIndex] + startFrom.nodeOffset;
   }
 
   // set up re
   // remove global flag from re
-  const safeRe = new RegExp( re.source,  re.flags.replace('g', ''));
+  // const safeRe = new RegExp( re.source,  re.flags.replace('g', ''));
 
   
 
 
   // find re
-  const combinedStringMatch = combinedString.match(safeRe);
+  // const combinedStringMatch = combinedString.match(safeRe);
+  const combinedStringMatch = getReMatch(combinedString, reSource, startOffset, endOffset, getLast);
 
   if (!combinedStringMatch || combinedStringMatch.index === undefined) {
     return null;
