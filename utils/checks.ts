@@ -14,11 +14,11 @@ import { ZWS_RE } from "./constants";
  * @returns 
  */
 export function isValidTextEndpoint(node: Node, offset: number, acceptEmptyCushionNodes: boolean = true) {
-  
+
   if (node.nodeType !== Node.TEXT_NODE) return false;
-  
+
   const content = node.textContent;
-  if (content===null) return false;
+  if (content === null) return false;
 
   else if (offset > content.length) return false;
 
@@ -43,10 +43,10 @@ export function isValidTextEndpoint(node: Node, offset: number, acceptEmptyCushi
  * @param initialOffset 
  */
 export function getNearestValidOffset(content: string, initialOffset: number) {
-  for (let i=1; i<content.length; i++) {
+  for (let i = 1; i < content.length; i++) {
     if (
       (initialOffset - i) >= 0 &&
-      content[initialOffset - 1] !== '\u200B' 
+      content[initialOffset - 1] !== '\u200B'
     ) {
       return initialOffset - i + 1;
     } else {
@@ -108,7 +108,7 @@ function getNodeLowestAncestorElement(node: Node): Element | null {
 export function getSelectionDirection(selection: Selection | null) {
   if (!selection) return "none";
   if (selection.rangeCount === 0) return "none";
-  
+
   const range = selection.getRangeAt(0);
 
   if (selection.anchorNode === selection.focusNode) {
@@ -143,7 +143,7 @@ export function selectionIsDescendentOfNode(selection: Selection, ancestorElemen
     !!selection.anchorNode &&
     !!selection.focusNode &&
     (
-      nodeIsDescendentOfNode(selection.anchorNode, ancestorElement) || 
+      nodeIsDescendentOfNode(selection.anchorNode, ancestorElement) ||
       selection.anchorNode === ancestorElement
     ) &&
     (
@@ -162,13 +162,13 @@ export function selectionIsDescendentOfNode(selection: Selection, ancestorElemen
  * @returns 
  */
 export function getSelectionChildNodes(selection: Selection, limitingContainer: Node): Array<Node> {
-  if (!selection || 
-    !selection.anchorNode || 
+  if (!selection ||
+    !selection.anchorNode ||
     !selection.focusNode ||
     !(limitingContainer.contains(selection.anchorNode)) ||
     !(limitingContainer.contains(selection.focusNode))
   ) return [];
-  
+
   const range = selection.getRangeAt(0);
   return getRangeChildNodes(range, limitingContainer);
 }
@@ -188,20 +188,20 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
 
   const startNode = startContainer.hasChildNodes() ?
     startContainer.childNodes[startOffset] :
-    startContainer 
+    startContainer
 
   const endNode = endContainer.hasChildNodes() ?
-    endContainer.childNodes[Math.max(0, endOffset-1)] : // [Math.max(0, endOffset-1)]
-    endContainer 
+    endContainer.childNodes[Math.max(0, endOffset - 1)] : // [Math.max(0, endOffset-1)]
+    endContainer
 
 
-  const tw = startNode === endNode ? 
-    document.createTreeWalker(startNode) : 
+  const tw = startNode === endNode ?
+    document.createTreeWalker(startNode) :
     document.createTreeWalker(limitingContainer);
 
   // const tw = document.createTreeWalker(limitingContainer);
 
-  const childNodes:Array<Node> = [];
+  const childNodes: Array<Node> = [];
   let inRange = false;
 
   while (true) {
@@ -227,7 +227,7 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
       if (currentNode == endNode) {
         if (currentNode.nodeType === Node.TEXT_NODE) {
           childNodes.push(currentNode);
-        } 
+        }
         else {
           childNodes.push(currentNode);
 
@@ -267,8 +267,8 @@ export function selectionIsCoveredBy(selection: Selection, query: string, limiti
 
   const nodes = getSelectionChildNodes(selection, limitingContainer);
   const textNodes = nodes
-  .filter(n => n.nodeType === Node.TEXT_NODE);
-   
+    .filter(n => n.nodeType === Node.TEXT_NODE);
+
   return textNodes.every(tn => nodeIsDescendentOf(tn, query, limitingContainer));
 
 }
@@ -283,10 +283,10 @@ export function selectionHasTextNodes(selection: Selection, limitingContainer: E
 export function selectionContainsOnlyText(selection: Selection, limitingContainer: Node, query: string) {
   const childNodes = getSelectionChildNodes(selection, limitingContainer);
   return (
-    childNodes.every(cn => cn.nodeType === Node.TEXT_NODE) && 
+    childNodes.every(cn => cn.nodeType === Node.TEXT_NODE) &&
     (
       childNodes.every(cn => (
-        cn.parentNode instanceof Element && 
+        cn.parentNode instanceof Element &&
         cn.parentNode.matches(query)
       )) ||
       childNodes.every(cn => cn.parentNode === limitingContainer)
@@ -335,12 +335,12 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
     status.selected = false;
     return status;
   }
-  
+
   const childNodes = getSelectionChildNodes(selection, limitingContainer);
   if (selection.rangeCount === 0) {
     status.enabled = false;
     status.selected = false;
-    return status;   
+    return status;
   }
   const range = selection.getRangeAt(0)
 
@@ -354,7 +354,7 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
         status.enabled = true;
         status.selected = false;
         return status;
-      } 
+      }
       else if (rangeCommonElementAncestor && (
         rangeCommonElementAncestor.matches(query)) ||
         nodeIsDescendentOf(rangeCommonElementAncestor!, query, limitingContainer)
@@ -362,7 +362,7 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
         status.enabled = true;
         status.selected = true;
         return status;
-      } 
+      }
       else {
         status.enabled = false;
         status.selected = false;
@@ -394,7 +394,7 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
 
 export function getAllTextNodes(nodes: Array<Node>): Array<Text> {
   const textNodes: Array<Text> = [];
-  
+
   // let currentNode = node;
 
   function descendNode(cn: Node) {
@@ -417,10 +417,10 @@ export function getAllTextNodes(nodes: Array<Node>): Array<Text> {
 
 
 export function getLastValidTextNode(textNodeArr: Array<Text>) {
-  for (let i=textNodeArr.length-1; i>=0; i--) {
+  for (let i = textNodeArr.length - 1; i >= 0; i--) {
     const textNode = textNodeArr[i];
     if (textNode.textContent?.match("[^\u200B]")) return textNode;
-  } 
+  }
   return textNodeArr[0];
 }
 
@@ -460,15 +460,15 @@ export function getLastValidCharacterIndex(textNode: Text, acceptEmptyCushionNod
   }
 
   else if (maxOffset !== undefined) {
-    for (let i=maxOffset; i>=0; i--) {
+    for (let i = maxOffset; i >= 0; i--) {
       if (
         (
-          textNode.textContent[i] && 
+          textNode.textContent[i] &&
           textNode.textContent[i].match("[^\u200B]")
         ) ||
         (
-          textNode.textContent[i-1] && 
-          textNode.textContent[i-1].match("[^\u200B]")
+          textNode.textContent[i - 1] &&
+          textNode.textContent[i - 1].match("[^\u200B]")
         )
       ) {
         // console.log("returning ", i+1);
@@ -485,10 +485,10 @@ export function getLastValidCharacterIndex(textNode: Text, acceptEmptyCushionNod
   }
 
   // else move backwards, return after last valid (non-zws) character
-  for (let i=textNode.length-1; i>=0; i--) {
+  for (let i = textNode.length - 1; i >= 0; i--) {
     if (textNode.textContent[i].match("[^\u200B]")) {
       // console.log("returning ", i+1);
-      return i+1;
+      return i + 1;
     }
   }
   // fallback
@@ -514,7 +514,7 @@ export function areUninterruptedSiblingTextNodes(node1: Text, node2: Text): bool
   const higherNodeIndex = Math.max(node1Index, node2Index);
 
   // go through range of siblings, including both text nodes, verify unbroken string of text
-  for (let i=lowerNodeIndex; i<=higherNodeIndex; i++) {
+  for (let i = lowerNodeIndex; i <= higherNodeIndex; i++) {
     if (parentNode.childNodes[i].nodeType !== Node.TEXT_NODE) return false;
   }
   // else 
@@ -525,7 +525,7 @@ export function areUninterruptedSiblingTextNodes(node1: Text, node2: Text): bool
 
 export function getIsReactComponent(component: ReactElement) {
   if (!React.isValidElement(component)) return false;
-  return (typeof component.type === "function" || 
+  return (typeof component.type === "function" ||
     typeof component.type === "object");
 }
 
@@ -554,11 +554,106 @@ export function identifyBadTextNodes(textNodes: Array<Text>, parentContainer: No
   const selection = window?.getSelection() || null;
 
   if (textNodes.length <= 2) return [];
-  else return textNodes.slice(1, textNodes.length-1).filter(tn => {
+  else return textNodes.slice(1, textNodes.length - 1).filter(tn => {
     return (
       tn.textContent === '\u200B\u200B' &&
-      tn.parentNode === parentContainer && 
+      tn.parentNode === parentContainer &&
       (!(selection && selection.containsNode(tn)))
     )
   })
+}
+
+
+export function getNextRightEndpoint(textNodes: Array<Text>, startingIndexOfTextNode: number, startingOffset: number) {
+
+  let indexOfTextNode = startingIndexOfTextNode;
+  let offset = startingOffset;
+
+  // index check
+  if (
+    indexOfTextNode < 0 ||
+    indexOfTextNode >= textNodes.length
+  ) {
+    return;
+  }
+
+  let currentNode = textNodes[indexOfTextNode];
+
+  if (currentNode.textContent) {
+    if (offset < currentNode.textContent.length) {
+
+      // find first non-zero-width space character
+      const reMatch = currentNode
+        .textContent
+        .slice(offset)
+        .match(/[^\u200B]/);
+
+      if (reMatch && reMatch.index !== undefined) {
+        const newIndex = reMatch.index + offset + 1;
+        return { currentNode, newIndex }
+      }
+    }
+  }
+
+  // else
+  while (indexOfTextNode < textNodes.length) {
+
+    indexOfTextNode++;
+    if (indexOfTextNode >= textNodes.length) return;
+
+    // determine if is sibling
+    // const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
+    const isSibling = areUninterruptedSiblingTextNodes(currentNode, textNodes[indexOfTextNode])
+    currentNode = textNodes[indexOfTextNode];
+    if (!(currentNode instanceof Text)) return; // narrow type
+
+    if (isSibling && currentNode.textContent !== null) {
+      const reMatch = currentNode
+        .textContent
+        .match(/[^\u200B]/);
+      
+      if (reMatch && reMatch.index !== undefined) {
+        const newIndex = reMatch.index + 1;
+        return { currentNode, newIndex };
+      }
+    } else {
+
+      // if empty text
+      if (currentNode.textContent === "") {
+        return { currentNode, newIndex: 0 };
+      }
+
+      // if only character is zero-width space
+      if (currentNode.textContent === "\u200B") {
+        return { currentNode, newIndex: 1 };
+      }
+
+      // if is fully cushioned node
+      if (
+        currentNode.textContent !== null &&
+        currentNode.textContent.split("").every(ch => ch === "\u200B")
+      ) {
+        return { currentNode, newIndex: 1 };
+      }
+
+      /**
+       * else - find first non-zero-width space character as above, but 
+       * place cursor *before* first valid character
+       */
+      if (currentNode.textContent) {
+        const reMatch = currentNode
+          .textContent
+          .match(/[^\u200B]/);
+          
+        if (reMatch && reMatch.index !== undefined) {
+          const newIndex = reMatch.index;
+          return { currentNode, newIndex}
+        }
+      }
+
+
+    }
+
+  }
+
 }

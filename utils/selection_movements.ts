@@ -1,4 +1,4 @@
-import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes } from "./checks";
+import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getNextRightEndpoint } from "./checks";
 import { ZWS_RE } from "./constants";
 import { cushionTextNode } from "./dom_operations";
 
@@ -37,18 +37,18 @@ export function resetSelectionToTextNodes(): Selection | null {
 
 export function resetRangeToTextNodes(range: Range) {
 
-  console.log("resetRangeToTextNodes");
+  // console.log("resetRangeToTextNodes");
 
   // console.log(range.startContainer, range.startContainer.nodeType !== Node.TEXT_NODE, range.endContainer.nodeType !== Node.TEXT_NODE);
 
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
-    console.log("range.startContainer not text node")
+    // console.log("range.startContainer not text node")
     const startNode = range.startContainer.childNodes[range.startOffset];
     if (!startNode) return null;
     const tw = document.createTreeWalker(startNode);
     while (true) {
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
-        console.log("found text node:", tw.currentNode)
+        // console.log("found text node:", tw.currentNode)
         range.setStart(tw.currentNode, 0);
         break;
       } else {
@@ -351,86 +351,93 @@ export function experimental_moveSelection(selection: Selection, limitingContain
      */
     else if (moveDirection === "right") {
 
-      if (currentNode.textContent) {
-        if (anchorOffset < currentNode.textContent!.length) {
-          
-          // find first non-zero-width space character
-          const reMatch = currentNode
-            .textContent
-            .slice(anchorOffset)
-            .match(/[^\u200B]/);
-            
-          if (reMatch && reMatch.index !== undefined) {
-            const newIndex = reMatch.index + anchorOffset + 1;
-            return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
-          }
-
-          // else, go into next text node
-        }
-        // else, go into next text node
+      const endpoint = getNextRightEndpoint(textNodes, indexOfTextNode, anchorOffset);
+      if (endpoint) {
+        const {currentNode, newIndex} = endpoint;
+        return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
       }
-      // else, go into next text node
+      else return;
 
-      while (indexOfTextNode < textNodes.length) {
-
-        indexOfTextNode++;
-        if (indexOfTextNode >= textNodes.length) return;
-
-        // determine if is sibling
-        // const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
-        const isSibling = areUninterruptedSiblingTextNodes(anchorNode, textNodes[indexOfTextNode])
-        currentNode = textNodes[indexOfTextNode];
-        if (!(currentNode instanceof Text)) return; // narrow type
-
-        if (isSibling && currentNode.textContent !== null) {
-          const reMatch = currentNode
-            .textContent
-            .match(/[^\u200B]/);
+      // if (currentNode.textContent) {
+      //   if (anchorOffset < currentNode.textContent!.length) {
           
-          if (reMatch && reMatch.index !== undefined) {
-            const newIndex = reMatch.index + 1;
-            return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
-          }
+      //     // find first non-zero-width space character
+      //     const reMatch = currentNode
+      //       .textContent
+      //       .slice(anchorOffset)
+      //       .match(/[^\u200B]/);
+            
+      //     if (reMatch && reMatch.index !== undefined) {
+      //       const newIndex = reMatch.index + anchorOffset + 1;
+      //       return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+      //     }
+
+      //     // else, go into next text node
+      //   }
+      //   // else, go into next text node
+      // }
+      // // else, go into next text node
+
+      // while (indexOfTextNode < textNodes.length) {
+
+      //   indexOfTextNode++;
+      //   if (indexOfTextNode >= textNodes.length) return;
+
+      //   // determine if is sibling
+      //   // const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
+      //   const isSibling = areUninterruptedSiblingTextNodes(anchorNode, textNodes[indexOfTextNode])
+      //   currentNode = textNodes[indexOfTextNode];
+      //   if (!(currentNode instanceof Text)) return; // narrow type
+
+      //   if (isSibling && currentNode.textContent !== null) {
+      //     const reMatch = currentNode
+      //       .textContent
+      //       .match(/[^\u200B]/);
           
-        } else {
+      //     if (reMatch && reMatch.index !== undefined) {
+      //       const newIndex = reMatch.index + 1;
+      //       return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+      //     }
+          
+      //   } else {
 
-          // if empty text
-          if (currentNode.textContent === "") {
-            return selection.setBaseAndExtent(currentNode, 0, currentNode, 0);
-          }
+      //     // if empty text
+      //     if (currentNode.textContent === "") {
+      //       return selection.setBaseAndExtent(currentNode, 0, currentNode, 0);
+      //     }
 
-          // if only character is zero-width space
-          if (currentNode.textContent === "\u200B") {
-            return selection.setBaseAndExtent(currentNode, 1, currentNode, 1);
-          }
+      //     // if only character is zero-width space
+      //     if (currentNode.textContent === "\u200B") {
+      //       return selection.setBaseAndExtent(currentNode, 1, currentNode, 1);
+      //     }
 
-          // if is fully cushioned node
-          if (
-            currentNode.textContent !== null && 
-            currentNode.textContent.split("").every(ch => ch === '\u200B')
-          ) {
-            return selection.setBaseAndExtent(currentNode, 1, currentNode, 1);
-          }
+      //     // if is fully cushioned node
+      //     if (
+      //       currentNode.textContent !== null && 
+      //       currentNode.textContent.split("").every(ch => ch === '\u200B')
+      //     ) {
+      //       return selection.setBaseAndExtent(currentNode, 1, currentNode, 1);
+      //     }
 
-          /**
-           * else - find first non-zero-width space character as above, but 
-           * place cursor *before* first valid character
-           */
-          if (currentNode.textContent) {
-            const reMatch = currentNode
-              .textContent
-              .match(/[^\u200B]/);
+      //     /**
+      //      * else - find first non-zero-width space character as above, but 
+      //      * place cursor *before* first valid character
+      //      */
+      //     if (currentNode.textContent) {
+      //       const reMatch = currentNode
+      //         .textContent
+      //         .match(/[^\u200B]/);
   
               
-            if (reMatch && reMatch.index !== undefined) {
-              const newIndex = reMatch.index;
-              return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
-            }
-          }
-        }
+      //       if (reMatch && reMatch.index !== undefined) {
+      //         const newIndex = reMatch.index;
+      //         return selection.setBaseAndExtent(currentNode, newIndex, currentNode, newIndex);
+      //       }
+      //     }
+      //   }
 
 
-      }
+      // }
 
     }
 
