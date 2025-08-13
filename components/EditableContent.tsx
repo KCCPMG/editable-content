@@ -231,7 +231,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
         spellCheck={false}
         onInput={updateContent}
         onFocus={() => { setHasSelection(true) }}
-        // onBlur={(e) => { setHasSelection(false) }}
         onBlurCapture={(e) => {
           console.log("e.relatedTarget", e.relatedTarget);
           if (
@@ -239,7 +238,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
             e.relatedTarget.tagName !== 'BUTTON' || 
             e.relatedTarget.getAttribute('data-context-id') !== contextInstanceId
           ) {
-            setHasSelection(false)
+            setHasSelection(false);
           }
         }}
         onKeyDown={(e) => {

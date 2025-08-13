@@ -137,12 +137,6 @@ export default function EditTextButton({
             (selectCallback as htmlSelectCallback)(wrapper);
           }
           const range = window.getSelection()?.getRangeAt(0);
-          console.log("should be done");
-          console.log("range should be: ");
-          console.log("range.startContainer: ", range!.startContainer);
-          console.log("range.startOffset: ", range!.startOffset);
-          console.log("range.endContainer: ", range!.endContainer);
-          console.log("range.endOffset: ", range!.endOffset);
         }
 
       }

@@ -76,11 +76,6 @@ export function resetRangeToTextNodes(range: Range) {
     range.setEnd(lastTextNode, lastTextNode.textContent?.length || 0);
   }
 
-  // console.log("range should be: ");
-  // console.log("range.startContainer: ", range.startContainer);
-  // console.log("range.startOffset: ", range.startOffset);
-  // console.log("range.endContainer: ", range.endContainer);
-  // console.log("range.endOffset: ", range.endOffset);
   return range;
 }
 
