@@ -586,7 +586,7 @@ export function searchCombinedText(textNodes: Array<Text>, re: RegExp) {
     return null;
   }
   else {
-    const textNodeIndex = intervals.findIndex(i => i >= combinedStringMatch.index!);
+    const textNodeIndex = intervals.findIndex(i => i > combinedStringMatch.index!);
     const stringLengthPriorToTextNode = (textNodeIndex > 0) ? intervals[textNodeIndex - 1] : 0
     return { 
       currentNode: textNodes[textNodeIndex],
