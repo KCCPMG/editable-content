@@ -990,6 +990,53 @@ describe("test searchCombinedText", function () {
   })
 
 
+    test("returns correct node and index with returnIndexOffset", function() {
+    const textNodes = getAllTextNodes([LC]);
+
+    let result = searchCombinedText({textNodes, re: /Strong Text/, returnIndexOffset: 2});
+    expect(result?.currentNode).toBe(strongText);
+    expect(result?.offset).toBe(3);
+
+    result = searchCombinedText({textNodes, re: / Text/, returnIndexOffset: 2});
+    expect(result?.currentNode).toBe(strongText);
+    expect(result?.offset).toBe(9);
+
+    result = searchCombinedText({textNodes, re: /\u200B\u200B/, returnIndexOffset: 2});
+    expect(result?.currentNode).toBe(rootFirstTextNode);
+    expect(result?.offset).toBe(1);    
+
+    result = searchCombinedText({textNodes, re: /i/, returnIndexOffset: 2});
+    expect(result?.currentNode).toBe(rootFirstTextNode);
+    expect(result?.offset).toBe(6);
+
+    result = searchCombinedText({textNodes, re: /strong/, returnIndexOffset: 2});
+    expect(result?.currentNode).toBe(rootFirstTextNode);
+    expect(result?.offset).toBe(23);
+
+    result = searchCombinedText({textNodes, re: /more text/, returnIndexOffset: 2});
+    expect(result?.currentNode).toBe(rootSecondTextNode);
+    expect(result?.offset).toBe(12);
+
+    result = searchCombinedText({textNodes, re: /abc\u200B/, returnIndexOffset: 2});
+    expect(result?.currentNode).toBe(secondStrongSecondText);
+    expect(result?.offset).toBe(2);
+
+    result = searchCombinedText({textNodes, re: /[^\u200B]{3}[\u200B]{3}/, returnIndexOffset: 2});
+    expect(result?.currentNode).toBe(secondStrongSecondText);
+    expect(result?.offset).toBe(2);
+
+    result = searchCombinedText({textNodes, re: /\u200B{3} /, returnIndexOffset: 2});
+    expect(result?.currentNode).toBe(secondStrongThirdText);
+    expect(result?.offset).toBe(2);
+
+    result = searchCombinedText({textNodes, re: /\u200B   \u200B/, returnIndexOffset: 2});
+    expect(result?.currentNode).toBe(secondStrongFourthText);
+    expect(result?.offset).toBe(18);
+
+    result = searchCombinedText({textNodes, re: /\u200B\u200B \u200B\u200B/, returnIndexOffset: 2});
+    expect(result).toBe(null);
+  })
+
 
 })
 
