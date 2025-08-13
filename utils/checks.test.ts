@@ -957,7 +957,7 @@ describe("test searchCombinedText", function () {
     expect(result?.currentNode).toBe(rootFirstTextNode);
     expect(result?.offset).toBe(1);    
 
-    result = searchCombinedText({textNodes, re: /i/, returnAfterMatch: true});
+    result = searchCombinedText({textNodes, re: /i/g, returnAfterMatch: true});
     expect(result?.currentNode).toBe(rootFirstTextNode);
     expect(result?.offset).toBe(5);
 

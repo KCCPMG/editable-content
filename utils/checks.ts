@@ -588,6 +588,9 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     upTo=null 
   } = argumentObject;
 
+  // remove global flag from re
+  const safeRe = new RegExp(re.source, re.flags.replace('g', ''));
+
   const combinedString = textNodes.map(tn => tn.textContent).join("");
 
   const intervals: Array<number> = [];
@@ -602,7 +605,7 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     intervals.push(lastInterval);
   });
 
-  const combinedStringMatch = combinedString.match(re);
+  const combinedStringMatch = combinedString.match(safeRe);
 
   if (!combinedStringMatch || combinedStringMatch.index === undefined) {
     return null;
