@@ -564,6 +564,61 @@ export function identifyBadTextNodes(textNodes: Array<Text>, parentContainer: No
 }
 
 
+export function searchCombinedText(textNodes: Array<Text>, re: RegExp) {
+
+  const combinedString = textNodes.map(tn => tn.textContent).join("");
+
+  const intervals: Array<number> = [];
+  let lastInterval = 0;
+  textNodes.forEach(tn => {
+    if (tn.textContent === null) {
+      lastInterval += 0;
+    }
+    else {
+      lastInterval += tn.textContent.length;
+    }
+    intervals.push(lastInterval);
+  });
+
+  const combinedStringMatch = combinedString.match(re);
+
+  if (!combinedStringMatch || combinedStringMatch.index === undefined) {
+    return null;
+  }
+  else {
+    const textNodeIndex = intervals.findIndex(i => i >= combinedStringMatch.index!);
+    const stringLengthPriorToTextNode = (textNodeIndex > 0) ? intervals[textNodeIndex - 1] : 0
+    return { 
+      currentNode: textNodes[textNodeIndex],
+      newIndex: combinedStringMatch.index - stringLengthPriorToTextNode
+    }
+  }
+
+
+}
+
+
+export function getNextLeftEndpoint(textNodes: Array<Text>, startingIndexOfTextNode: number, startingOffset: number) {
+
+  let indexOfTextNode = startingIndexOfTextNode;
+  let offset = startingOffset;
+
+  // index check
+  if (
+    indexOfTextNode < 0 ||
+    indexOfTextNode >= textNodes.length
+  ) {
+    return;
+  }
+
+  let currentNode = textNodes[indexOfTextNode];
+
+  if (currentNode.textContent) {
+
+  }
+}
+
+
 export function getNextRightEndpoint(textNodes: Array<Text>, startingIndexOfTextNode: number, startingOffset: number) {
 
   let indexOfTextNode = startingIndexOfTextNode;
@@ -611,7 +666,7 @@ export function getNextRightEndpoint(textNodes: Array<Text>, startingIndexOfText
       const reMatch = currentNode
         .textContent
         .match(/[^\u200B]/);
-      
+
       if (reMatch && reMatch.index !== undefined) {
         const newIndex = reMatch.index + 1;
         return { currentNode, newIndex };
@@ -644,10 +699,10 @@ export function getNextRightEndpoint(textNodes: Array<Text>, startingIndexOfText
         const reMatch = currentNode
           .textContent
           .match(/[^\u200B]/);
-          
+
         if (reMatch && reMatch.index !== undefined) {
           const newIndex = reMatch.index;
-          return { currentNode, newIndex}
+          return { currentNode, newIndex }
         }
       }
 
