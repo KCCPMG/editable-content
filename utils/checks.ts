@@ -564,6 +564,50 @@ export function identifyBadTextNodes(textNodes: Array<Text>, parentContainer: No
 }
 
 
+
+
+/**
+ * Returns full match object for found regular expression using generator 
+ * created by matchAll and global flag, takes as necessary inputs numbers
+ * representing start and end of search range, and boolean for getLast. If
+ * getLast is true, will return the last occurrence fitting all criteria, 
+ * otherwise returns first occurrence
+ * @param str 
+ * @param sourceString 
+ * @param startOffset 
+ * @param endOffset 
+ * @param getLast 
+ * @returns 
+ */
+export function getReMatch(str: string, sourceString: string, startOffset: number, endOffset: number, getLast: boolean): null | RegExpExecArray {
+
+  const safeRe = new RegExp(sourceString, 'g');
+  const gen = str.matchAll(safeRe);
+  
+  let last: null | RegExpExecArray = null;
+
+  while (true) {
+    let current = gen.next();
+    if (current.done === true) break;
+    if (
+      current.value &&
+      current.value.index >= startOffset && 
+      current.value.index <= endOffset
+    ) {
+      if (getLast) {
+        last = current.value;
+        continue;
+      }
+      else return current.value;
+    }
+  } 
+
+  return last;
+
+
+}
+
+
 type searchCombinedTextArgumentObject = {
   textNodes: Array<Text>,
   re: RegExp,
@@ -579,35 +623,6 @@ type searchCombinedTextArgumentObject = {
     nodeOffset: number
   } | null
 }
-
-
-function getMatch(str: string, sourceString: string, startOffset: number, endOffset: number, getLast: boolean) {
-
-  const safeRe = new RegExp(sourceString, 'g');
-  const gen = str.matchAll(safeRe);
-  
-  let last: null | RegExpExecArray = null;
-
-  while (true) {
-    let current = gen.next();
-    if (current === null) break;
-    if (
-      current.value &&
-      current.value.index >= startOffset && 
-      current.value.index <= endOffset
-    ) {
-      if (getLast) {
-        last = current.value;
-      }
-      else return current.value;
-    }
-  } 
-
-  return last;
-
-
-}
-
 
 export function searchCombinedText(argumentObject: searchCombinedTextArgumentObject) {
 

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
-import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getAllTextNodes, searchCombinedText } from "./checks";
+import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getAllTextNodes, searchCombinedText, getReMatch } from "./checks";
 import { setSelection, resetRangeToTextNodes } from "./selection_movements";
 import { startingHTML, alternateHTML } from "./test_constants";
 
@@ -841,6 +841,47 @@ describe("test textNodeIsCushioned", function () {
 describe("test identifyBadTextNodes", function () {
   // TODO
 })
+
+
+describe("test getReMatch", function() {
+  
+  const testString = "loolooloolloooooool";
+
+  test("getReMatch gives correct match on unconstrained search", function() {
+    let match = getReMatch(testString, "ooll", 0, testString.length, false);
+    expect(match).toBeTruthy();
+    expect(match!.index).toBe(7);
+  })
+
+  test("getReMatch gives correct match with starting position", function() {
+    let match = getReMatch(testString, "ool", 5, testString.length, false);
+    expect(match).toBeTruthy();
+    expect(match!.index).toBe(7);
+
+    match = getReMatch(testString, "ool", 7, testString.length, false);
+    expect(match).toBeTruthy();
+    expect(match!.index).toBe(7);
+  })
+
+  test("getReMatch gives correct match with getLast", function() {
+    let match = getReMatch(testString, "ol", 5, testString.length, true);
+    expect(match).toBeTruthy();
+    expect(match!.index).toBe(testString.length-2);
+  })
+
+  test("getReMatch gives correct match with getLast and endOffset", function() {
+    let match = getReMatch(testString, "o", 5, testString.length-3, true);
+    expect(match).toBeTruthy();
+    expect(match!.index).toBe(testString.length-3);
+  })
+
+  test("getReMatch returns null when not found", function() {
+    let match = getReMatch(testString, "x", 5, testString.length, true);
+    expect(match).not.toBeTruthy();
+  })
+
+})
+
 
 describe("test searchCombinedText", function () {
   // before all
