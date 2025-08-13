@@ -566,13 +566,27 @@ export function identifyBadTextNodes(textNodes: Array<Text>, parentContainer: No
 
 type searchCombinedTextArgumentObject = {
   textNodes: Array<Text>,
-  re: RegExp
+  re: RegExp,
+  returnAfterMatch?: boolean,
+  returnIndexOffset?: number,
+  getLast?: boolean,
+  upTo?: {
+    textNode: Text,
+    nodeOffset: number
+  } | null
 }
 
 
 export function searchCombinedText(argumentObject: searchCombinedTextArgumentObject) {
 
-  const { textNodes, re } = argumentObject;
+  const { 
+    textNodes, 
+    re, 
+    returnAfterMatch=false,
+    returnIndexOffset=0,
+    getLast=false,
+    upTo=null 
+  } = argumentObject;
 
   const combinedString = textNodes.map(tn => tn.textContent).join("");
 
@@ -594,11 +608,21 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     return null;
   }
   else {
-    const textNodeIndex = intervals.findIndex(i => i > combinedStringMatch.index!);
+
+    const characterIndex = combinedStringMatch.index +
+      ((returnAfterMatch) ? combinedStringMatch[0].length : 0) +
+      returnIndexOffset;
+
+    // conditions which indicate an after position should default to prior text node in case of ambiguity
+    const textNodeIndex = returnAfterMatch || returnIndexOffset > 0 ?
+      intervals.findIndex(i => i >= characterIndex) :
+      intervals.findIndex(i => i > characterIndex);
+
+    if (textNodeIndex === -1) return null;
     const stringLengthPriorToTextNode = (textNodeIndex > 0) ? intervals[textNodeIndex - 1] : 0
     return { 
       currentNode: textNodes[textNodeIndex],
-      offset: combinedStringMatch.index - stringLengthPriorToTextNode
+      offset: characterIndex - stringLengthPriorToTextNode
     }
   }
 

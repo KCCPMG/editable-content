@@ -894,7 +894,7 @@ describe("test searchCombinedText", function () {
     expect(combinedText).toBe("\u200BStrong Text\u200B\u200B This is text after strong\u200B\u200B This is more text\u200Babc\u200B\u200B\u200B\u200B  test \u200B hello\u200B\u200B   \u200B")
   })
 
-  test("returns correct node and index", function() {
+  test("returns correct node and index with only required properties", function() {
     const textNodes = getAllTextNodes([LC]);
 
     let result = searchCombinedText({textNodes, re: /Strong Text/});
@@ -939,9 +939,58 @@ describe("test searchCombinedText", function () {
 
     result = searchCombinedText({textNodes, re: /\u200B\u200B \u200B\u200B/});
     expect(result).toBe(null);
-
-
   })
+
+
+  test("returns correct node and index with returnAfterMatch: true", function() {
+    const textNodes = getAllTextNodes([LC]);
+
+    let result = searchCombinedText({textNodes, re: /Strong Text/, returnAfterMatch: true});
+    expect(result?.currentNode).toBe(strongText);
+    expect(result?.offset).toBe(12);
+
+    result = searchCombinedText({textNodes, re: / Text/, returnAfterMatch: true});
+    expect(result?.currentNode).toBe(strongText);
+    expect(result?.offset).toBe(12);
+
+    result = searchCombinedText({textNodes, re: /\u200B\u200B/, returnAfterMatch: true});
+    expect(result?.currentNode).toBe(rootFirstTextNode);
+    expect(result?.offset).toBe(1);    
+
+    result = searchCombinedText({textNodes, re: /i/, returnAfterMatch: true});
+    expect(result?.currentNode).toBe(rootFirstTextNode);
+    expect(result?.offset).toBe(5);
+
+    result = searchCombinedText({textNodes, re: /strong/, returnAfterMatch: true});
+    expect(result?.currentNode).toBe(rootFirstTextNode);
+    expect(result?.offset).toBe(27);
+
+    result = searchCombinedText({textNodes, re: /more text/, returnAfterMatch: true});
+    expect(result?.currentNode).toBe(rootSecondTextNode);
+    expect(result?.offset).toBe(19);
+
+    result = searchCombinedText({textNodes, re: /abc\u200B/, returnAfterMatch: true, getLast: true});
+    expect(result?.currentNode).toBe(secondStrongSecondText);
+    expect(result?.offset).toBe(4);
+
+    result = searchCombinedText({textNodes, re: /[^\u200B]{3}[\u200B]{3}/, returnAfterMatch: true});
+    expect(result?.currentNode).toBe(secondStrongThirdText);
+    expect(result?.offset).toBe(2);
+
+    result = searchCombinedText({textNodes, re: /\u200B{3} /, returnAfterMatch: true});
+    expect(result?.currentNode).toBe(secondStrongFourthText);
+    expect(result?.offset).toBe(2);
+
+    result = searchCombinedText({textNodes, re: /\u200B   \u200B/, returnAfterMatch: true});
+    expect(result?.currentNode).toBe(secondStrongFourthText);
+    expect(result?.offset).toBe(21);
+
+    result = searchCombinedText({textNodes, re: /\u200B\u200B \u200B\u200B/, returnAfterMatch: true});
+    expect(result).toBe(null);
+  })
+
+
+
 })
 
 describe("test getNextLeftEndpoint", function () {
