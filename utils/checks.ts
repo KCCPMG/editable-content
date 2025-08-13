@@ -564,7 +564,15 @@ export function identifyBadTextNodes(textNodes: Array<Text>, parentContainer: No
 }
 
 
-export function searchCombinedText(textNodes: Array<Text>, re: RegExp) {
+type searchCombinedTextArgumentObject = {
+  textNodes: Array<Text>,
+  re: RegExp
+}
+
+
+export function searchCombinedText(argumentObject: searchCombinedTextArgumentObject) {
+
+  const { textNodes, re } = argumentObject;
 
   const combinedString = textNodes.map(tn => tn.textContent).join("");
 
