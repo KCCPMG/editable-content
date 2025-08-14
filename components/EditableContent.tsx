@@ -3,8 +3,8 @@ import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect, useRef,
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
-import { experimental_moveSelection, moveSelection, resetSelectionToTextNodes, shiftSelection } from "@/utils/selection_movements";
-import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection, getAllTextNodes, searchCombinedText } from "@/utils/checks";
+import { experimental_moveSelection, moveSelection, resetRangeToTextNodes, resetSelectionToTextNodes, shiftSelection } from "@/utils/selection_movements";
+import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection, getAllTextNodes, searchCombinedText, getLastValidCharacterIndex } from "@/utils/checks";
 import { cushionTextNode, promoteChildrenOfNode } from "@/utils/dom_operations";
 
 
@@ -430,11 +430,43 @@ export default function EditableContent({ className, disableNewLines }: Editable
                 }
               });
 
-              
               if (leftEndpoint) {
                 range.setStart(leftEndpoint?.currentNode, leftEndpoint.offset);
+                
+                // handle break to only delete one break at a time
+                const rangeCopy = range.cloneRange();
+                const contents = rangeCopy.cloneContents();
+                const breaks = Array.from(contents.querySelectorAll("br"));
+
+                if (breaks.length > 0) {
+                  console.log("\nbreaks.length > 0,", breaks.length, "\n")
+                  const breakToDelete = breaks[breaks.length - 1];
+                  console.log(breakToDelete);
+                  
+                  let textNodeIndex = allTextNodes.findIndex(tn => tn === range.endContainer);
+                  console.log(range.startContainer, range.endContainer);
+                  console.log(textNodeIndex);
+
+                  while (textNodeIndex > 0) {
+                    
+                    const currentTextNode = allTextNodes[textNodeIndex];
+                    console.log(currentTextNode.textContent, currentTextNode.compareDocumentPosition(breakToDelete) === 2)
+                    if (currentTextNode.compareDocumentPosition(breakToDelete) === 2) {
+                      const currentTextNodeOffset = getLastValidCharacterIndex(currentTextNode)
+                      range.setStart(currentTextNode, currentTextNodeOffset);
+                      console.log("should start range at:", currentTextNode, currentTextNodeOffset);
+                      break;
+                    }
+                    textNodeIndex--;
+                  }
+
+                  // range.setStartBefore(breaks[breaks.length - 1]);
+                }
+                
+
                 range.extractContents();
                 range.collapse(true);
+                console.log(range);
 
               }
               updateContent();
