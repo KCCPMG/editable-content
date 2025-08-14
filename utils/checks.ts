@@ -663,8 +663,8 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
 
   // narrow start offset
   if (startFrom) {
-    const startingIndex = textNodes.findIndex(tn => tn === startFrom.textNode);
-    if (startingIndex === -1) {
+    const startingIndex = textNodes.findIndex(tn => tn === startFrom.textNode) - 1;
+    if (startingIndex === -2) {
       return null;
     } 
     if (
@@ -676,7 +676,9 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     }
 
     // else - safe to proceed
-    startOffset = intervals[startingIndex] + startFrom.nodeOffset;
+    startOffset = (startingIndex === -1 ? 0 : intervals[startingIndex]) 
+      + startFrom.nodeOffset;
+    console.log(startOffset);
   }
 
   // set up re
