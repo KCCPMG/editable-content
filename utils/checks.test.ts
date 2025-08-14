@@ -843,17 +843,17 @@ describe("test identifyBadTextNodes", function () {
 })
 
 
-describe("test getReMatch", function() {
-  
+describe("test getReMatch", function () {
+
   const testString = "loolooloolloooooool";
 
-  test("getReMatch gives correct match on unconstrained search", function() {
+  test("getReMatch gives correct match on unconstrained search", function () {
     let match = getReMatch(testString, "ooll", 0, testString.length, false);
     expect(match).toBeTruthy();
     expect(match!.index).toBe(7);
   })
 
-  test("getReMatch gives correct match with starting position", function() {
+  test("getReMatch gives correct match with starting position", function () {
     let match = getReMatch(testString, "ool", 5, testString.length, false);
     expect(match).toBeTruthy();
     expect(match!.index).toBe(7);
@@ -863,19 +863,19 @@ describe("test getReMatch", function() {
     expect(match!.index).toBe(7);
   })
 
-  test("getReMatch gives correct match with getLast", function() {
+  test("getReMatch gives correct match with getLast", function () {
     let match = getReMatch(testString, "ol", 5, testString.length, true);
     expect(match).toBeTruthy();
-    expect(match!.index).toBe(testString.length-2);
+    expect(match!.index).toBe(testString.length - 2);
   })
 
-  test("getReMatch gives correct match with getLast and endOffset", function() {
-    let match = getReMatch(testString, "o", 5, testString.length-3, true);
+  test("getReMatch gives correct match with getLast and endOffset", function () {
+    let match = getReMatch(testString, "o", 5, testString.length - 3, true);
     expect(match).toBeTruthy();
-    expect(match!.index).toBe(testString.length-3);
+    expect(match!.index).toBe(testString.length - 3);
   })
 
-  test("getReMatch returns null when not found", function() {
+  test("getReMatch returns null when not found", function () {
     let match = getReMatch(testString, "x", 5, testString.length, true);
     expect(match).not.toBeTruthy();
   })
@@ -927,7 +927,7 @@ describe("test searchCombinedText", function () {
    * secondStrongFourthText - "\u200B  test \u200B hello\u200B\u200B   \u200B"
    */
 
-  test("make sure combined text is what it's supposed to be", function() {
+  test("make sure combined text is what it's supposed to be", function () {
     const textNodes = getAllTextNodes([LC]);
     expect(textNodes.length).toBe(7);
     const combinedText = textNodes.map(tn => tn.textContent).join("");
@@ -935,255 +935,336 @@ describe("test searchCombinedText", function () {
     expect(combinedText).toBe("\u200BStrong Text\u200B\u200B This is text after strong\u200B\u200B This is more text\u200Babc\u200B\u200B\u200B\u200B  test \u200B hello\u200B\u200B   \u200B")
   })
 
-  test("returns correct node and index with only required properties", function() {
+  test("returns correct node and index with only required properties", function () {
     const textNodes = getAllTextNodes([LC]);
 
-    let result = searchCombinedText({textNodes, reSource: "Strong Text"});
+    let result = searchCombinedText({ textNodes, reSource: "Strong Text" });
     expect(result?.currentNode).toBe(strongText);
     expect(result?.offset).toBe(1);
 
-    result = searchCombinedText({textNodes, reSource: " Text"});
+    result = searchCombinedText({ textNodes, reSource: " Text" });
     expect(result?.currentNode).toBe(strongText);
     expect(result?.offset).toBe(7);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B\u200B"});
+    result = searchCombinedText({ textNodes, reSource: "\u200B\u200B" });
     expect(result?.currentNode).toBe(strongText);
-    expect(result?.offset).toBe(12);    
+    expect(result?.offset).toBe(12);
 
-    result = searchCombinedText({textNodes, reSource: "i"});
+    result = searchCombinedText({ textNodes, reSource: "i" });
     expect(result?.currentNode).toBe(rootFirstTextNode);
     expect(result?.offset).toBe(4);
 
-    result = searchCombinedText({textNodes, reSource: "strong"});
+    result = searchCombinedText({ textNodes, reSource: "strong" });
     expect(result?.currentNode).toBe(rootFirstTextNode);
     expect(result?.offset).toBe(21);
 
-    result = searchCombinedText({textNodes, reSource: "more text"});
+    result = searchCombinedText({ textNodes, reSource: "more text" });
     expect(result?.currentNode).toBe(rootSecondTextNode);
     expect(result?.offset).toBe(10);
 
-    result = searchCombinedText({textNodes, reSource: "abc\u200B"});
+    result = searchCombinedText({ textNodes, reSource: "abc\u200B" });
     expect(result?.currentNode).toBe(secondStrongSecondText);
     expect(result?.offset).toBe(0);
 
-    result = searchCombinedText({textNodes, reSource: "[^\u200B]{3}[\u200B]{3}"});
+    result = searchCombinedText({ textNodes, reSource: "[^\u200B]{3}[\u200B]{3}" });
     expect(result?.currentNode).toBe(secondStrongSecondText);
     expect(result?.offset).toBe(0);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B{3} "});
+    result = searchCombinedText({ textNodes, reSource: "\u200B{3} " });
     expect(result?.currentNode).toBe(secondStrongThirdText);
     expect(result?.offset).toBe(0);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B   \u200B"});
+    result = searchCombinedText({ textNodes, reSource: "\u200B   \u200B" });
     expect(result?.currentNode).toBe(secondStrongFourthText);
     expect(result?.offset).toBe(16);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B\u200B \u200B\u200B"});
+    result = searchCombinedText({ textNodes, reSource: "\u200B\u200B \u200B\u200B" });
     expect(result).toBe(null);
   })
 
 
-  test("returns correct node and index with returnAfterMatch: true", function() {
+  test("returns correct node and index with returnAfterMatch: true", function () {
     const textNodes = getAllTextNodes([LC]);
 
-    let result = searchCombinedText({textNodes, reSource: "Strong Text", returnAfterMatch: true});
+    let result = searchCombinedText({ textNodes, reSource: "Strong Text", returnAfterMatch: true });
     expect(result?.currentNode).toBe(strongText);
     expect(result?.offset).toBe(12);
 
-    result = searchCombinedText({textNodes, reSource: " Text", returnAfterMatch: true});
+    result = searchCombinedText({ textNodes, reSource: " Text", returnAfterMatch: true });
     expect(result?.currentNode).toBe(strongText);
     expect(result?.offset).toBe(12);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B\u200B", returnAfterMatch: true});
+    result = searchCombinedText({ textNodes, reSource: "\u200B\u200B", returnAfterMatch: true });
     expect(result?.currentNode).toBe(rootFirstTextNode);
-    expect(result?.offset).toBe(1);    
+    expect(result?.offset).toBe(1);
 
-    result = searchCombinedText({textNodes, reSource: "i", returnAfterMatch: true});
+    result = searchCombinedText({ textNodes, reSource: "i", returnAfterMatch: true });
     expect(result?.currentNode).toBe(rootFirstTextNode);
     expect(result?.offset).toBe(5);
 
-    result = searchCombinedText({textNodes, reSource: "strong", returnAfterMatch: true});
+    result = searchCombinedText({ textNodes, reSource: "strong", returnAfterMatch: true });
     expect(result?.currentNode).toBe(rootFirstTextNode);
     expect(result?.offset).toBe(27);
 
-    result = searchCombinedText({textNodes, reSource: "more text", returnAfterMatch: true});
+    result = searchCombinedText({ textNodes, reSource: "more text", returnAfterMatch: true });
     expect(result?.currentNode).toBe(rootSecondTextNode);
     expect(result?.offset).toBe(19);
 
-    result = searchCombinedText({textNodes, reSource: "abc\u200B", returnAfterMatch: true, getLast: true});
+    result = searchCombinedText({ textNodes, reSource: "abc\u200B", returnAfterMatch: true, getLast: true });
     expect(result?.currentNode).toBe(secondStrongSecondText);
     expect(result?.offset).toBe(4);
 
-    result = searchCombinedText({textNodes, reSource: "[^\u200B]{3}[\u200B]{3}", returnAfterMatch: true});
+    result = searchCombinedText({ textNodes, reSource: "[^\u200B]{3}[\u200B]{3}", returnAfterMatch: true });
     expect(result?.currentNode).toBe(secondStrongThirdText);
     expect(result?.offset).toBe(2);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B{3} ", returnAfterMatch: true});
+    result = searchCombinedText({ textNodes, reSource: "\u200B{3} ", returnAfterMatch: true });
     expect(result?.currentNode).toBe(secondStrongFourthText);
     expect(result?.offset).toBe(2);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B   \u200B", returnAfterMatch: true});
+    result = searchCombinedText({ textNodes, reSource: "\u200B   \u200B", returnAfterMatch: true });
     expect(result?.currentNode).toBe(secondStrongFourthText);
     expect(result?.offset).toBe(21);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B\u200B \u200B\u200B", returnAfterMatch: true});
+    result = searchCombinedText({ textNodes, reSource: "\u200B\u200B \u200B\u200B", returnAfterMatch: true });
     expect(result).toBe(null);
   })
 
 
-  test("returns correct node and index with returnIndexOffset", function() {
+  test("returns correct node and index with returnIndexOffset", function () {
     const textNodes = getAllTextNodes([LC]);
 
-    let result = searchCombinedText({textNodes, reSource: "Strong Text", returnIndexOffset: 2});
+    let result = searchCombinedText({ textNodes, reSource: "Strong Text", returnIndexOffset: 2 });
     expect(result?.currentNode).toBe(strongText);
     expect(result?.offset).toBe(3);
 
-    result = searchCombinedText({textNodes, reSource: " Text", returnIndexOffset: 2});
+    result = searchCombinedText({ textNodes, reSource: " Text", returnIndexOffset: 2 });
     expect(result?.currentNode).toBe(strongText);
     expect(result?.offset).toBe(9);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B\u200B", returnIndexOffset: 2});
+    result = searchCombinedText({ textNodes, reSource: "\u200B\u200B", returnIndexOffset: 2 });
     expect(result?.currentNode).toBe(rootFirstTextNode);
-    expect(result?.offset).toBe(1);    
+    expect(result?.offset).toBe(1);
 
-    result = searchCombinedText({textNodes, reSource: "i", returnIndexOffset: 2});
+    result = searchCombinedText({ textNodes, reSource: "i", returnIndexOffset: 2 });
     expect(result?.currentNode).toBe(rootFirstTextNode);
     expect(result?.offset).toBe(6);
 
-    result = searchCombinedText({textNodes, reSource: "strong", returnIndexOffset: 2});
+    result = searchCombinedText({ textNodes, reSource: "strong", returnIndexOffset: 2 });
     expect(result?.currentNode).toBe(rootFirstTextNode);
     expect(result?.offset).toBe(23);
 
-    result = searchCombinedText({textNodes, reSource: "more text", returnIndexOffset: 2});
+    result = searchCombinedText({ textNodes, reSource: "more text", returnIndexOffset: 2 });
     expect(result?.currentNode).toBe(rootSecondTextNode);
     expect(result?.offset).toBe(12);
 
-    result = searchCombinedText({textNodes, reSource: "abc\u200B", returnIndexOffset: 2});
+    result = searchCombinedText({ textNodes, reSource: "abc\u200B", returnIndexOffset: 2 });
     expect(result?.currentNode).toBe(secondStrongSecondText);
     expect(result?.offset).toBe(2);
 
-    result = searchCombinedText({textNodes, reSource: "[^\u200B]{3}[\u200B]{3}", returnIndexOffset: 2});
+    result = searchCombinedText({ textNodes, reSource: "[^\u200B]{3}[\u200B]{3}", returnIndexOffset: 2 });
     expect(result?.currentNode).toBe(secondStrongSecondText);
     expect(result?.offset).toBe(2);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B{3} ", returnIndexOffset: 2});
+    result = searchCombinedText({ textNodes, reSource: "\u200B{3} ", returnIndexOffset: 2 });
     expect(result?.currentNode).toBe(secondStrongThirdText);
     expect(result?.offset).toBe(2);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B   \u200B", returnIndexOffset: 2});
+    result = searchCombinedText({ textNodes, reSource: "\u200B   \u200B", returnIndexOffset: 2 });
     expect(result?.currentNode).toBe(secondStrongFourthText);
     expect(result?.offset).toBe(18);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B\u200B \u200B\u200B", returnIndexOffset: 2});
+    result = searchCombinedText({ textNodes, reSource: "\u200B\u200B \u200B\u200B", returnIndexOffset: 2 });
     expect(result).toBe(null);
   })
 
-  test("returns correct node and index using getLast", function() {
+  test("returns correct node and index using getLast", function () {
     const textNodes = getAllTextNodes([LC]);
 
-    let result = searchCombinedText({textNodes, reSource: "Strong Text", getLast: true});
+    let result = searchCombinedText({ textNodes, reSource: "Strong Text", getLast: true });
     expect(result?.currentNode).toBe(strongText);
     expect(result?.offset).toBe(1);
 
-    result = searchCombinedText({textNodes, reSource: " Text", getLast: true});
+    result = searchCombinedText({ textNodes, reSource: " Text", getLast: true });
     expect(result?.currentNode).toBe(strongText);
     expect(result?.offset).toBe(7);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B\u200B", getLast: true});
+    result = searchCombinedText({ textNodes, reSource: "\u200B\u200B", getLast: true });
     expect(result?.currentNode).toBe(secondStrongFourthText);
-    expect(result?.offset).toBe(15);    
+    expect(result?.offset).toBe(15);
 
-    result = searchCombinedText({textNodes, reSource: "i", getLast: true});
+    result = searchCombinedText({ textNodes, reSource: "i", getLast: true });
     expect(result?.currentNode).toBe(rootSecondTextNode);
     expect(result?.offset).toBe(7);
 
-    result = searchCombinedText({textNodes, reSource: "strong", getLast: true});
+    result = searchCombinedText({ textNodes, reSource: "strong", getLast: true });
     expect(result?.currentNode).toBe(rootFirstTextNode);
     expect(result?.offset).toBe(21);
 
-    result = searchCombinedText({textNodes, reSource: "more text", getLast: true});
+    result = searchCombinedText({ textNodes, reSource: "more text", getLast: true });
     expect(result?.currentNode).toBe(rootSecondTextNode);
     expect(result?.offset).toBe(10);
 
-    result = searchCombinedText({textNodes, reSource: "abc\u200B", getLast: true});
+    result = searchCombinedText({ textNodes, reSource: "abc\u200B", getLast: true });
     expect(result?.currentNode).toBe(secondStrongSecondText);
     expect(result?.offset).toBe(0);
 
-    result = searchCombinedText({textNodes, reSource: "[^\u200B]{3}[\u200B]{3}", getLast: true});
+    result = searchCombinedText({ textNodes, reSource: "[^\u200B]{3}[\u200B]{3}", getLast: true });
     expect(result?.currentNode).toBe(secondStrongSecondText);
     expect(result?.offset).toBe(0);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B{3} ", getLast: true});
+    result = searchCombinedText({ textNodes, reSource: "\u200B{3} ", getLast: true });
     expect(result?.currentNode).toBe(secondStrongThirdText);
     expect(result?.offset).toBe(0);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B   \u200B", getLast: true});
+    result = searchCombinedText({ textNodes, reSource: "\u200B   \u200B", getLast: true });
     expect(result?.currentNode).toBe(secondStrongFourthText);
     expect(result?.offset).toBe(16);
 
-    result = searchCombinedText({textNodes, reSource: "\u200B\u200B \u200B\u200B", getLast: true});
+    result = searchCombinedText({ textNodes, reSource: "\u200B\u200B \u200B\u200B", getLast: true });
     expect(result).toBe(null);
 
-    result = searchCombinedText({textNodes, reSource: "e", getLast: true});
+    result = searchCombinedText({ textNodes, reSource: "e", getLast: true });
     expect(result?.currentNode).toBe(secondStrongFourthText);
     expect(result?.offset).toBe(11);
   })
 
-  test("returns correct node and index with startFrom", function() {
+  test("returns correct node and index with startFrom", function () {
     const textNodes = getAllTextNodes([LC]);
 
-    let result = searchCombinedText({textNodes, reSource: "Strong Text", startFrom: {
-      textNode: strongText,
-      nodeOffset: 0
-    }});
+    let result = searchCombinedText({
+      textNodes, reSource: "Strong Text", startFrom: {
+        textNode: strongText,
+        nodeOffset: 0
+      }
+    });
     expect(result?.currentNode).toBe(strongText);
     expect(result?.offset).toBe(1);
 
-    result = searchCombinedText({textNodes, reSource: " Text", startFrom: {
-      textNode: strongText,
-      nodeOffset: 0
-    }});
+    result = searchCombinedText({
+      textNodes, reSource: " Text", startFrom: {
+        textNode: strongText,
+        nodeOffset: 0
+      }
+    });
     expect(result?.currentNode).toBe(strongText);
     expect(result?.offset).toBe(7);
 
-    result = searchCombinedText({textNodes, reSource: " This is", startFrom: {
-      textNode: rootFirstTextNode,
-      nodeOffset: 1
-    }})
+    result = searchCombinedText({
+      textNodes, reSource: " This is", startFrom: {
+        textNode: rootFirstTextNode,
+        nodeOffset: 1
+      }
+    })
     expect(result?.currentNode).toBe(rootFirstTextNode);
     expect(result?.offset).toBe(1);
 
-    result = searchCombinedText({textNodes, reSource: " This is", startFrom: {
-      textNode: rootFirstTextNode,
-      nodeOffset: 2
-    }})
+    result = searchCombinedText({
+      textNodes, reSource: " This is", startFrom: {
+        textNode: rootFirstTextNode,
+        nodeOffset: 2
+      }
+    })
     expect(result?.currentNode).toBe(rootSecondTextNode);
     expect(result?.offset).toBe(1);
 
-    result = searchCombinedText({textNodes, reSource: "  ", startFrom: {
-      textNode: secondStrongFourthText,
-      nodeOffset: 2
-    }})
+    result = searchCombinedText({
+      textNodes, reSource: "  ", startFrom: {
+        textNode: secondStrongFourthText,
+        nodeOffset: 2
+      }
+    })
     expect(result?.currentNode).toBe(secondStrongFourthText);
     expect(result?.offset).toBe(17);
 
     // returns null on invalid text node
-    result = searchCombinedText({textNodes, reSource: "\u200B", startFrom: {
-      textNode: new Text("\u200B"),
-      nodeOffset: 0
-    }});
+    result = searchCombinedText({
+      textNodes, reSource: "\u200B", startFrom: {
+        textNode: new Text("\u200B"),
+        nodeOffset: 0
+      }
+    });
     expect(result).toBe(null);
 
     // returns null on offset long than length of text node
-    result = searchCombinedText({textNodes, reSource: "\u200B", startFrom: {
-      textNode: strongText,
-      nodeOffset: 14
-    }});
+    result = searchCombinedText({
+      textNodes, reSource: "\u200B", startFrom: {
+        textNode: strongText,
+        nodeOffset: 14
+      }
+    });
     expect(result).toBe(null);
   })
 
-  test("returns correct node and index with upTo", function() {
-    // TODO
+  test("returns correct node and index with upTo", function () {
+    const textNodes = getAllTextNodes([LC]);
+
+    let result = searchCombinedText({
+      textNodes, reSource: "Strong Text", upTo: {
+        textNode: rootSecondTextNode,
+        nodeOffset: 0
+      }
+    });
+    expect(result?.currentNode).toBe(strongText);
+    expect(result?.offset).toBe(1);
+
+    // return null when upTo boundary is set before occurrence of text
+    result = searchCombinedText({
+      textNodes, reSource: " Text", upTo: {
+        textNode: strongText,
+        nodeOffset: 6
+      }
+    });
+    expect(result).toBe(null);
+
+    // return when upTo boundary is right at end of sought pattern
+    result = searchCombinedText({
+      textNodes, reSource: " Text", upTo: {
+        textNode: strongText,
+        nodeOffset: 7
+      }
+    });
+    expect(result?.currentNode).toBe(strongText);
+    expect(result?.offset).toBe(7);
+
+    // returns null on invalid text node
+    result = searchCombinedText({
+      textNodes, reSource: "\u200B", upTo: {
+        textNode: new Text("\u200B"),
+        nodeOffset: 0
+      }
+    });
+    expect(result).toBe(null);
+
+    // returns null on offset long than length of text node
+    result = searchCombinedText({
+      textNodes, reSource: "\u200B", upTo: {
+        textNode: strongText,
+        nodeOffset: 14
+      }
+    });
+    expect(result).toBe(null);
+
+  })
+
+  test("get correct offset with all properties populated", function () {
+    const textNodes = getAllTextNodes([LC]);
+
+    let result = searchCombinedText({
+      textNodes, 
+      reSource: "\u200B", 
+      startFrom: {
+        textNode: rootSecondTextNode,
+        nodeOffset: 9
+      },
+      upTo: {
+        textNode: secondStrongFourthText,
+        nodeOffset: 5
+      },
+      getLast: true
+    });
+    expect(result?.currentNode).toBe(secondStrongFourthText);
+    expect(result?.offset).toBe(0);
   })
 
 })

@@ -678,18 +678,30 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     // else - safe to proceed
     startOffset = (startingIndex === -1 ? 0 : intervals[startingIndex]) 
       + startFrom.nodeOffset;
-    console.log(startOffset);
   }
 
-  // set up re
-  // remove global flag from re
-  // const safeRe = new RegExp( re.source,  re.flags.replace('g', ''));
 
-  
+  // narrow end offset
+  if (upTo) {
+    const endingIndex = textNodes.findIndex(tn => tn === upTo.textNode) - 1;
+    if (endingIndex === -2) {
+      return null;
+    } 
+    if (
+      upTo.textNode.textContent === null ||
+      upTo.nodeOffset < 0 || 
+      upTo.nodeOffset > upTo.textNode.textContent.length
+    ) {
+      return null;
+    }
+
+    // else - safe to proceed
+    endOffset = (endingIndex === -1 ? 0 : intervals[endingIndex]) 
+      + upTo.nodeOffset;
+  }
 
 
   // find re
-  // const combinedStringMatch = combinedString.match(safeRe);
   const combinedStringMatch = getReMatch(combinedString, reSource, startOffset, endOffset, getLast);
 
   if (!combinedStringMatch || combinedStringMatch.index === undefined) {
