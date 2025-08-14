@@ -678,7 +678,7 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     } 
     if (
       startFrom.textNode.textContent === null ||
-      startFrom.nodeOffset < 0 || 
+      // startFrom.nodeOffset < 0 || 
       startFrom.nodeOffset > startFrom.textNode.textContent.length
     ) {
       return null;
@@ -698,7 +698,7 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     } 
     if (
       upTo.textNode.textContent === null ||
-      upTo.nodeOffset < 0 || 
+      // upTo.nodeOffset < 0 || 
       upTo.nodeOffset > upTo.textNode.textContent.length
     ) {
       return null;
