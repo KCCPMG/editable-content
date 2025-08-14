@@ -624,6 +624,19 @@ type searchCombinedTextArgumentObject = {
   } | null
 }
 
+/**
+ * Takes an object for its argument which includes a string, an array of text nodes
+ * to be combined into a single string for the re. A start node and offset can be
+ * specified, as can an end node and offset, and getLast can be used to return the
+ * last occurrence in the range rather than the first. The function returns null if 
+ * not found, or it returns an object with the text node and offset within that
+ * text node corresponding to the start of the re. If the 'returnAfterMatch'
+ * property is set to true, returns the value after the found re, alternatively
+ * a number can be specified for returnIndexOffset, which will return the node
+ * and offset which is that many characters after the start of the found re.
+ * @param argumentObject 
+ * @returns 
+ */
 export function searchCombinedText(argumentObject: searchCombinedTextArgumentObject) {
 
   const { 
@@ -652,10 +665,6 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     }
     intervals.push(lastInterval);
   });
-
-
-  // declare characterIndex
-  let characterIndex = 0;
 
   // initialize start and end offsets
   let startOffset = 0;
@@ -725,7 +734,6 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
       offset: characterIndex - stringLengthPriorToTextNode
     }
   }
-
 
 }
 
