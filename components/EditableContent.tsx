@@ -4,7 +4,7 @@ import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
 import { experimental_moveSelection, moveSelection, resetSelectionToTextNodes, shiftSelection } from "@/utils/selection_movements";
-import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection } from "@/utils/checks";
+import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection, getAllTextNodes, searchCombinedText } from "@/utils/checks";
 import { cushionTextNode, promoteChildrenOfNode } from "@/utils/dom_operations";
 
 
@@ -379,6 +379,65 @@ export default function EditableContent({ className, disableNewLines }: Editable
                 selection.getRangeAt(0).deleteContents();
                 updateContent();
               }
+            }
+          }
+
+          if (e.code === "Backspace") {
+            console.log("backspace");
+            if (range.toString().length === 0) {
+
+              e.preventDefault();
+
+              if (!(range.startContainer instanceof Text)) {
+                console.log("range.startContainer is not instance of text")
+                console.log(range.startContainer);
+                return null;
+              }
+
+              const allTextNodes = getAllTextNodes([contentRef.current]);
+              // let textNode = range.startContainer;
+              // let offset = range.startOffset;
+
+              // if (offset === 0) {
+              //   const textNodeIndex = allTextNodes.findIndex(tn => tn === textNode) - 1;
+              //   if (textNodeIndex < 0) return;
+              //   else {
+              //     textNode = allTextNodes[textNodeIndex];
+              //     offset = textNode.textContent.length;
+              //   }
+              // }
+
+              const leftEndpoint = searchCombinedText({
+                textNodes: allTextNodes,
+                reSource: "[^\u200B]",
+                getLast: true,
+                upTo: {
+                  textNode: range.startContainer,
+                  nodeOffset: range.startOffset - 1
+                }
+
+              })
+
+
+              console.log({
+                start: {
+                  currentNode: range.startContainer.textContent,
+                  offset: range.startOffset
+                },
+                leftEndpoint: {
+                  currentNode: leftEndpoint?.currentNode.textContent,
+                  offset: leftEndpoint?.offset
+                }
+              });
+
+              
+              if (leftEndpoint) {
+                range.setStart(leftEndpoint?.currentNode, leftEndpoint.offset);
+                range.extractContents();
+                range.collapse(true);
+
+              }
+              updateContent();
             }
           }
 
