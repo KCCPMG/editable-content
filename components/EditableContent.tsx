@@ -3,7 +3,7 @@ import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect, useRef,
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
-import { experimental_moveSelection, moveSelection, resetRangeToTextNodes, resetSelectionToTextNodes, shiftSelection } from "@/utils/selection_movements";
+import { experimental_moveSelection, moveSelection, resetRangeToTextNodes, resetSelectionToTextNodes, resetSelectionToUsableText, shiftSelection } from "@/utils/selection_movements";
 import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection, getAllTextNodes, searchCombinedText, getLastValidCharacterIndex } from "@/utils/checks";
 import { cushionTextNode, promoteChildrenOfNode } from "@/utils/dom_operations";
 
@@ -208,6 +208,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
         isValidTextEndpoint(anchorNode, anchorOffset, true) &&
         isValidTextEndpoint(focusNode, focusOffset, true)
       ) {
+        resetSelectionToUsableText();
         updateSelection();
         return;
       }

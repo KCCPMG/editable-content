@@ -128,11 +128,11 @@ export function resetSelectionToUsableText() {
 
   // Repeat process for range.endContainer
   if (range.endOffset === 0) {
-    range.setStart(range.endContainer, 1);
+    range.setEnd(range.endContainer, 1);
   }
 
   else if (range.endOffset === range.endContainer.textContent!.length) {
-    range.setStart(range.endContainer, range.endOffset - 1);
+    range.setEnd(range.endContainer, range.endOffset - 1);
   }
   
 }
