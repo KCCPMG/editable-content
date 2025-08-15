@@ -260,9 +260,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
               cushionTextNode(range.startContainer);
             }
 
-            if (!(br.nextSibling) || !(br.nextSibling instanceof Text)) {
-              br.insertAdjacentText("afterend", "\u200B\u200B");
-            }
 
             // this should always be true, text node should exist to begin with or is created above
             if (br.nextSibling! instanceof Text) {
@@ -434,9 +431,8 @@ export default function EditableContent({ className, disableNewLines }: Editable
                 range.setStart(leftEndpoint?.currentNode, leftEndpoint.offset);
                 
                 // handle break to only delete one break at a time
-                const rangeCopy = range.cloneRange();
-                const contents = rangeCopy.cloneContents();
-                const breaks = Array.from(contents.querySelectorAll("br"));
+                const breaks = Array.from(contentRef.current.querySelectorAll('br'))
+                  .filter(b => range.comparePoint(b,0) === 0)
 
                 if (breaks.length > 0) {
                   console.log("\nbreaks.length > 0,", breaks.length, "\n")
@@ -444,23 +440,18 @@ export default function EditableContent({ className, disableNewLines }: Editable
                   console.log(breakToDelete);
                   
                   let textNodeIndex = allTextNodes.findIndex(tn => tn === range.endContainer);
-                  console.log(range.startContainer, range.endContainer);
-                  console.log(textNodeIndex);
 
                   while (textNodeIndex > 0) {
                     
                     const currentTextNode = allTextNodes[textNodeIndex];
-                    console.log(currentTextNode.textContent, currentTextNode.compareDocumentPosition(breakToDelete) === 2)
-                    if (currentTextNode.compareDocumentPosition(breakToDelete) === 2) {
-                      const currentTextNodeOffset = getLastValidCharacterIndex(currentTextNode)
+                    if (currentTextNode.compareDocumentPosition(breakToDelete) === 4) {
+                      const currentTextNodeOffset = getLastValidCharacterIndex(currentTextNode);
                       range.setStart(currentTextNode, currentTextNodeOffset);
-                      console.log("should start range at:", currentTextNode, currentTextNodeOffset);
                       break;
                     }
                     textNodeIndex--;
                   }
 
-                  // range.setStartBefore(breaks[breaks.length - 1]);
                 }
                 
 
