@@ -344,6 +344,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
    * current window.getSelection()
    */
   function updateSelection() {
+    resetScroll();
     const gotSelection = window.getSelection();
 
     // if selection is within contentRef.current or IS contentRef.current
@@ -364,7 +365,6 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
     } else {
       setSelectionToString("");
     }
-    resetScroll();
   }
 
 
@@ -398,7 +398,12 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
   }
 
 
-
+  /**
+   * Reset scroll of container by
+   * - scrolling up if range is above current view
+   * - scrolling down if range is below current view
+   * @returns 
+   */
   function resetScroll() {
     const range = window.getSelection()?.getRangeAt(0);
     if (!range || ! contentRef.current) return;
