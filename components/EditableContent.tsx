@@ -446,7 +446,9 @@ export default function EditableContent({ className, disableNewLines }: Editable
                     const currentTextNode = allTextNodes[textNodeIndex];
                     if (currentTextNode.compareDocumentPosition(breakToDelete) === 4) {
                       const currentTextNodeOffset = getLastValidCharacterIndex(currentTextNode);
+                      console.log({currentTextNode, currentTextNodeOffset})
                       range.setStart(currentTextNode, currentTextNodeOffset);
+                      console.log(range);
                       break;
                     }
                     textNodeIndex--;
@@ -454,8 +456,12 @@ export default function EditableContent({ className, disableNewLines }: Editable
 
                 }
                 
-
+                console.log(range);
+                const startContainer = range.startContainer;
+                const startOffset = range.startOffset;
                 range.extractContents();
+                range.setStart(startContainer, startOffset);
+                // console.(range);
                 range.collapse(true);
                 console.log(range);
 
@@ -479,5 +485,3 @@ export default function EditableContent({ className, disableNewLines }: Editable
     </>
   )
 }
-
-
