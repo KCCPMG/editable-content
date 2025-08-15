@@ -268,37 +268,34 @@ export default function EditableContent({ className, disableNewLines }: Editable
               range.collapse();
             }
 
-            // Keep selection in view given by container's scroll position 
-            const brRange = new Range();
-            brRange.setStartBefore(br);
-            brRange.setEndAfter(br);
+            // // Keep selection in view given by container's scroll position 
 
-            // this should be collapsed
-            const rangeRect = range.getBoundingClientRect();
-            const lcRect = contentRef.current.getBoundingClientRect();
+            // // this should be collapsed
+            // const rangeRect = range.getBoundingClientRect();
+            // const containerRect = contentRef.current.getBoundingClientRect();
 
-            if (
-              rangeRect.top >= lcRect.top &&
-              rangeRect.top <= (lcRect.top + lcRect.height) &&
-              (rangeRect.top + rangeRect.height) >= lcRect.top &&
-              (rangeRect.top + rangeRect.height) <= (lcRect.top + lcRect.height)
-            ) {
-              // do nothing, range is visible within current lc scroll
-            } else {
+            // if (
+            //   rangeRect.top >= containerRect.top &&
+            //   rangeRect.top <= (containerRect.top + containerRect.height) &&
+            //   (rangeRect.top + rangeRect.height) >= containerRect.top &&
+            //   (rangeRect.top + rangeRect.height) <= (containerRect.top + containerRect.height)
+            // ) {
+            //   // do nothing, range is visible within current lc scroll
+            // } else {
 
-              // range is above current lc scroll window
-              if ( rangeRect.top < lcRect.top) {
-                // targetOffset is distance between rangeRect and where it should be
-                const targetOffset = lcRect.top - rangeRect.top;
-                contentRef.current.scroll(0, contentRef.current.scrollTop - targetOffset);
-              } 
-              // range is below current lc scroll window
-              else if ((rangeRect.top + rangeRect.height) >= (lcRect.top + lcRect.height)) {
-                // targetOffset is distance between rangeRect and where it should be
-                const targetOffset = (rangeRect.top + rangeRect.height) - (lcRect.top + lcRect.height);
-                contentRef.current.scroll(0, contentRef.current.scrollTop + targetOffset);
-              }
-            }
+            //   // range is above current lc scroll window
+            //   if ( rangeRect.top < containerRect.top) {
+            //     // targetOffset is distance between rangeRect and where it should be
+            //     const targetOffset = containerRect.top - rangeRect.top;
+            //     contentRef.current.scroll(0, contentRef.current.scrollTop - targetOffset);
+            //   } 
+            //   // range is below current lc scroll window
+            //   else if ((rangeRect.top + rangeRect.height) >= (containerRect.top + containerRect.height)) {
+            //     // targetOffset is distance between rangeRect and where it should be
+            //     const targetOffset = (rangeRect.top + rangeRect.height) - (containerRect.top + containerRect.height);
+            //     contentRef.current.scroll(0, contentRef.current.scrollTop + targetOffset);
+            //   }
+            // }
 
             updateContent();
           }

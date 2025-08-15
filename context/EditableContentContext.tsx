@@ -6,8 +6,8 @@ import { renderToString } from "react-dom/server";
 import { v4 as uuidv4 } from 'uuid';
 import { EXCLUDE_FROM_DEHYDRATED, PORTAL_CONTAINER_ID_PREFIX, ZWS_RE } from "@/utils/constants";
 import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getAllTextNodes, textNodeIsCushioned, isValidTextEndpoint, identifyBadTextNodes, getIsReactComponent } from "@/utils/checks";
-import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements, cushionTextNode, resetTextNodesCushions} from "@/utils/dom_operations";
-import { resetSelectionToTextNodes, setSelection, moveSelection  } from "@/utils/selection_movements";
+import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements, cushionTextNode, resetTextNodesCushions } from "@/utils/dom_operations";
+import { resetSelectionToTextNodes, setSelection, moveSelection } from "@/utils/selection_movements";
 
 
 
@@ -73,7 +73,7 @@ declare global {
 }
 
 type PortalProps = {
-  [key: string]: {[key: string]: any}
+  [key: string]: { [key: string]: any }
 }
 
 
@@ -97,28 +97,28 @@ export type EditableContentContextType = {
   contentRef: MutableRefObject<HTMLDivElement | null>,
   contentRefCurrentInnerHTML: string,
   setContentRefCurrentInnerHTML: Dispatch<SetStateAction<string>>,
-  selectionToString: string, 
+  selectionToString: string,
   setSelectionToString: Dispatch<SetStateAction<string>>,
-  selectionAnchorNode: Node | null, 
+  selectionAnchorNode: Node | null,
   setSelectionAnchorNode: Dispatch<SetStateAction<Node | null>>,
-  selectionAnchorOffset: number | null, 
+  selectionAnchorOffset: number | null,
   setSelectionAnchorOffset: Dispatch<SetStateAction<number | null>>,
-  selectionFocusNode: Node | null,  
+  selectionFocusNode: Node | null,
   setSelectionFocusNode: Dispatch<SetStateAction<Node | null>>,
-  selectionFocusOffset: number | null,  
+  selectionFocusOffset: number | null,
   setSelectionFocusOffset: Dispatch<SetStateAction<number | null>>,
-  hasSelection: boolean, 
+  hasSelection: boolean,
   setHasSelection: Dispatch<SetStateAction<boolean>>,
-  portals: Array<ReactPortal>, 
+  portals: Array<ReactPortal>,
   setPortals: Dispatch<SetStateAction<Array<ReactPortal>>>,
-  divToSetSelectionTo: HTMLElement | null, 
+  divToSetSelectionTo: HTMLElement | null,
   setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>,
   getDehydratedHTML: (callback: (dehydrated: string) => void) => void,
   updatePortalProps: (updateObj: PortalProps) => void,
   getAllPortalProps: () => PortalProps,
   keyAndWrapperObjs: Array<KeyAndWrapperObj>,
-  updateContent: () => void, 
-  createContentPortal: (component: ReactElement, buttonKey: string) => string | undefined, 
+  updateContent: () => void,
+  createContentPortal: (component: ReactElement, buttonKey: string) => string | undefined,
   appendPortalToDiv: (containingDiv: HTMLDivElement) => void,
   removePortal: (key: string) => void,
   updateSelection: () => void,
@@ -132,7 +132,7 @@ export const EditableContentContext = createContext<EditableContentContextType |
 
 
 
-export function EditableContentContextProvider({children, keyAndWrapperObjs, initialHTML, initialProps}: EditableContentContextProviderProps) {
+export function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHTML, initialProps }: EditableContentContextProviderProps) {
 
   const contextInstanceId = uuidv4();
   const contentRef = useRef<null | HTMLDivElement>(null);
@@ -149,43 +149,43 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
 
 
 
-  useEffect(function() {
+  useEffect(function () {
     window.contentRef = contentRef,
-    window.contentRefCurrentInnerHTML = contentRefCurrentInnerHTML, 
-    window.setContentRefCurrentInnerHTML = setContentRefCurrentInnerHTML,
-    window.selectionToString = selectionToString, 
-    window.setSelectionToString = setSelectionToString,
-    window.selectionAnchorNode = selectionAnchorNode, 
-    window.setSelectionAnchorNode = setSelectionAnchorNode,
-    window.selectionAnchorOffset = selectionAnchorOffset, 
-    window.setSelectionAnchorOffset = setSelectionAnchorOffset,
-    window.selectionFocusNode = selectionFocusNode, 
-    window.setSelectionFocusNode = setSelectionFocusNode,
-    window.selectionFocusOffset = selectionFocusOffset, 
-    window.setSelectionFocusOffset = setSelectionFocusOffset,
-    window.hasSelection = hasSelection, 
-    window.setHasSelection = setHasSelection,
-    window.portals = portals, 
-    window.setPortals = setPortals,
-    window.divToSetSelectionTo = divToSetSelectionTo, 
-    window.setDivToSetSelectionTo = setDivToSetSelectionTo,
-    window.getDehydratedHTML = getDehydratedHTML,
-    window.updatePortalProps = updatePortalProps,
-    window.getAllPortalProps = getAllPortalProps,
-    window.keyAndWrapperObjs = keyAndWrapperObjs,
-    window.updateContent = updateContent,
-    window.createContentPortal = createContentPortal,
-    window.appendPortalToDiv = appendPortalToDiv,
-    window.removePortal = removePortal,
-    window.updateSelection = updateSelection,
-    window.dehydratedHTML = dehydratedHTML,
-    window.getAllTextNodes = getAllTextNodes,
-    window.textNodeIsCushioned = textNodeIsCushioned,
-    window.cushionTextNode = cushionTextNode,
-    window.resetTextNodesCushions = resetTextNodesCushions,
-    window.isValidTextEndpoint = isValidTextEndpoint,
-    window.getRangeChildNodes = getRangeChildNodes,
-    window.moveSelection = moveSelection
+      window.contentRefCurrentInnerHTML = contentRefCurrentInnerHTML,
+      window.setContentRefCurrentInnerHTML = setContentRefCurrentInnerHTML,
+      window.selectionToString = selectionToString,
+      window.setSelectionToString = setSelectionToString,
+      window.selectionAnchorNode = selectionAnchorNode,
+      window.setSelectionAnchorNode = setSelectionAnchorNode,
+      window.selectionAnchorOffset = selectionAnchorOffset,
+      window.setSelectionAnchorOffset = setSelectionAnchorOffset,
+      window.selectionFocusNode = selectionFocusNode,
+      window.setSelectionFocusNode = setSelectionFocusNode,
+      window.selectionFocusOffset = selectionFocusOffset,
+      window.setSelectionFocusOffset = setSelectionFocusOffset,
+      window.hasSelection = hasSelection,
+      window.setHasSelection = setHasSelection,
+      window.portals = portals,
+      window.setPortals = setPortals,
+      window.divToSetSelectionTo = divToSetSelectionTo,
+      window.setDivToSetSelectionTo = setDivToSetSelectionTo,
+      window.getDehydratedHTML = getDehydratedHTML,
+      window.updatePortalProps = updatePortalProps,
+      window.getAllPortalProps = getAllPortalProps,
+      window.keyAndWrapperObjs = keyAndWrapperObjs,
+      window.updateContent = updateContent,
+      window.createContentPortal = createContentPortal,
+      window.appendPortalToDiv = appendPortalToDiv,
+      window.removePortal = removePortal,
+      window.updateSelection = updateSelection,
+      window.dehydratedHTML = dehydratedHTML,
+      window.getAllTextNodes = getAllTextNodes,
+      window.textNodeIsCushioned = textNodeIsCushioned,
+      window.cushionTextNode = cushionTextNode,
+      window.resetTextNodesCushions = resetTextNodesCushions,
+      window.isValidTextEndpoint = isValidTextEndpoint,
+      window.getRangeChildNodes = getRangeChildNodes,
+      window.moveSelection = moveSelection
   }, [])
 
   /**
@@ -197,8 +197,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     contentRef.current = newRef;
   }
 
-  
-  useEffect(function() {
+
+  useEffect(function () {
     getDehydratedHTML(setDehydratedHTML);
   }, [contentRefCurrentInnerHTML])
 
@@ -211,8 +211,8 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
    */
   function getDehydratedHTML(callback: (dehydrated: string) => void) {
 
-    const parsedHTMLBody = (typeof window !== "undefined") ? 
-      new DOMParser().parseFromString(contentRefCurrentInnerHTML, "text/html").body : 
+    const parsedHTMLBody = (typeof window !== "undefined") ?
+      new DOMParser().parseFromString(contentRefCurrentInnerHTML, "text/html").body :
       null;
 
     if (!parsedHTMLBody) return;
@@ -230,7 +230,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       divRange.setEnd(div, div.childNodes.length);
       const textNodes = getRangeChildNodes(divRange, parsedHTMLBody)
         .filter(cn => cn.nodeType === Node.TEXT_NODE);
-      
+
       divRange.extractContents();
       textNodes.forEach(tn => {
         // console.log(tn);
@@ -265,7 +265,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
 
         const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
         if (!container) return;
-  
+
         const foundPortal = previousPortals[foundPortalIndex];
         if (!foundPortal) return;
 
@@ -283,7 +283,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       if (portalClones.length === 0) return previousPortals; // second check to prevent bad setState
 
       return ([
-        ...previousPortals.filter(portal => portal.key===null ||!portalIds.includes(portal.key)),
+        ...previousPortals.filter(portal => portal.key === null || !portalIds.includes(portal.key)),
         ...(portalClones as Array<ReactPortal>)
       ])
     })
@@ -295,7 +295,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
 
       const portalClones: Array<ReactPortal> = [];
 
-      previousPortals.forEach(function(portal) {
+      previousPortals.forEach(function (portal) {
         const portalId = portal.key;
         const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
         if (!container) return;
@@ -334,7 +334,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       if (!isValidElement(targetComponent)) return null;
       const key = portal.key;
       if (!key) return null;
-      return {[key]: targetComponent.props}
+      return { [key]: targetComponent.props }
     }));
   }
 
@@ -348,9 +348,9 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
 
     // if selection is within contentRef.current or IS contentRef.current
     if (
-      gotSelection && 
-      contentRef.current && 
-      (selectionIsDescendentOfNode(gotSelection, contentRef.current) || 
+      gotSelection &&
+      contentRef.current &&
+      (selectionIsDescendentOfNode(gotSelection, contentRef.current) ||
         (
           gotSelection.anchorNode === contentRef.current &&
           gotSelection.focusNode === contentRef.current
@@ -364,6 +364,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     } else {
       setSelectionToString("");
     }
+    resetScroll();
   }
 
 
@@ -397,6 +398,38 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
   }
 
 
+
+  function resetScroll() {
+    const range = window.getSelection()?.getRangeAt(0);
+    if (!range || ! contentRef.current) return;
+    const rangeRect = range.getBoundingClientRect();
+    const containerRect = contentRef.current.getBoundingClientRect();
+
+    if (
+      rangeRect.top >= containerRect.top &&
+      rangeRect.top <= (containerRect.top + containerRect.height) &&
+      (rangeRect.top + rangeRect.height) >= containerRect.top &&
+      (rangeRect.top + rangeRect.height) <= (containerRect.top + containerRect.height)
+    ) {
+      // do nothing, range is visible within current lc scroll
+    } else {
+
+      // range is above current lc scroll window
+      if (rangeRect.top < containerRect.top) {
+        // targetOffset is distance between rangeRect and where it should be
+        const targetOffset = containerRect.top - rangeRect.top;
+        contentRef.current.scroll(0, contentRef.current.scrollTop - targetOffset);
+      }
+      // range is below current lc scroll window
+      else if ((rangeRect.top + rangeRect.height) >= (containerRect.top + containerRect.height)) {
+        // targetOffset is distance between rangeRect and where it should be
+        const targetOffset = (rangeRect.top + rangeRect.height) - (containerRect.top + containerRect.height);
+        contentRef.current.scroll(0, contentRef.current.scrollTop + targetOffset);
+      }
+    }
+  }
+
+
   /**
    * Clone react component with child text. If this is the first time this 
    * portal is being created, load initial props for this component if they
@@ -406,17 +439,17 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
    * @param text 
    * @param targetDiv 
    */
-  function cloneElementIntoPortal(component: ReactElement, props: {[key: string] : any}, text: string, targetDiv: Element) {
+  function cloneElementIntoPortal(component: ReactElement, props: { [key: string]: any }, text: string, targetDiv: Element) {
     const portalId = props["key"] as string;
 
-    const additionalProps ={
+    const additionalProps = {
       portalId: portalId,
       "data-unbreakable": "",
       getContext: useEditableContentContext
     }
 
     setPortals(previousPortals => {
-      const priorIndex = previousPortals.findIndex( p => p.key === portalId )
+      const priorIndex = previousPortals.findIndex(p => p.key === portalId)
       const componentInitialProps: PortalProps = {};
       if (priorIndex >= 0) {
         previousPortals.splice(priorIndex, 1);
@@ -428,7 +461,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
         }
       }
 
-      const clone = cloneElement(component, {...props, ...additionalProps, ...componentInitialProps}, text);
+      const clone = cloneElement(component, { ...props, ...additionalProps, ...componentInitialProps }, text);
       const portal = createPortal(clone, targetDiv, props["key"] || null);
       return [...previousPortals, portal]
     });
@@ -442,7 +475,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
    */
   function createContentPortal(component: ReactElement, buttonKey: string) {
     const uuid = uuidv4();
-    const id = PORTAL_CONTAINER_ID_PREFIX+uuid;
+    const id = PORTAL_CONTAINER_ID_PREFIX + uuid;
     const newDiv = document.createElement("div");
     newDiv.setAttribute('id', id);
     newDiv.setAttribute('data-button-key', buttonKey);
@@ -453,7 +486,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     const range = selection.getRangeAt(0);
 
     // expanding assignment to allow insertion of other logic if need be
-    const text = (function() {
+    const text = (function () {
       const rangeToString = range.toString();
       if (rangeToString.length > 0) {
         return rangeToString;
@@ -466,13 +499,13 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     range.insertNode(newDiv);
 
     setDivToSetSelectionTo(newDiv);
-    
+
     const foundNewDiv = contentRef?.current?.querySelector(`#${id}`)
     if (!foundNewDiv) return;
-    
+
     // currently only handling range text, not nested elements
     if (contentRef.current && contentRef.current && foundNewDiv) {
-      cloneElementIntoPortal(component, {key: uuid, 'data-bk': buttonKey}, text, foundNewDiv);
+      cloneElementIntoPortal(component, { key: uuid, 'data-bk': buttonKey }, text, foundNewDiv);
       return uuid;
     }
   }
@@ -488,7 +521,7 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
    * @param containingDiv 
    */
   function appendPortalToDiv(containingDiv: HTMLDivElement) {
-    
+
     const key = containingDiv.getAttribute("data-button-key");
     const containingDivId = containingDiv.getAttribute('id');
     if (!containingDivId) return;
@@ -502,14 +535,14 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     contentRange.setEnd(containingDiv, containingDiv.childNodes.length);
     const text = contentRange.toString();
     const content = contentRange.extractContents(); // content currently unused
-    
+
     // find correct wrapper button
     const foundKeyAndWrapperObj = keyAndWrapperObjs.find(obj => obj.dataKey === key);
     if (!foundKeyAndWrapperObj) return;
     if (!getIsReactComponent(foundKeyAndWrapperObj.wrapper)) return;
-    
+
     const component = foundKeyAndWrapperObj.wrapper;
-    cloneElementIntoPortal(component, {key: uuid, 'data-bk': key}, text, containingDiv);
+    cloneElementIntoPortal(component, { key: uuid, 'data-bk': key }, text, containingDiv);
   }
 
 
@@ -529,23 +562,23 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
     <EditableContentContext.Provider value={{
       contextInstanceId,
       contentRef,
-      contentRefCurrentInnerHTML, 
+      contentRefCurrentInnerHTML,
       setContentRefCurrentInnerHTML,
-      selectionToString, 
+      selectionToString,
       setSelectionToString,
-      selectionAnchorNode, 
+      selectionAnchorNode,
       setSelectionAnchorNode,
-      selectionAnchorOffset, 
+      selectionAnchorOffset,
       setSelectionAnchorOffset,
-      selectionFocusNode, 
+      selectionFocusNode,
       setSelectionFocusNode,
-      selectionFocusOffset, 
+      selectionFocusOffset,
       setSelectionFocusOffset,
-      hasSelection, 
+      hasSelection,
       setHasSelection,
-      portals, 
+      portals,
       setPortals,
-      divToSetSelectionTo, 
+      divToSetSelectionTo,
       setDivToSetSelectionTo,
       getDehydratedHTML,
       updatePortalProps,
@@ -560,9 +593,9 @@ export function EditableContentContextProvider({children, keyAndWrapperObjs, ini
       resetPortalContainers,
       assignContentRef
     }}
-  >
-    {children}
-  </EditableContentContext.Provider>
+    >
+      {children}
+    </EditableContentContext.Provider>
   )
 }
 
