@@ -80,6 +80,66 @@ export function resetRangeToTextNodes(range: Range) {
 }
 
 
+/**
+ * If window.getSelection() is on text (both start and end are text
+ * nodes), makes sure that both of those text nodes are cushioned,
+ * and makes sure that the offset of both start and end containers
+ * are after the first zero-width space and before the last zero-width
+ * space.
+ * @returns 
+ */
+export function resetSelectionToUsableText() {
+  let selection = window.getSelection();
+  if (!selection) return selection;
+
+  const range = selection.getRangeAt(0);
+
+  // if selection is not set to text, return
+  if (!(range.startContainer instanceof Text && range.endContainer instanceof Text)) {
+    return
+  }
+
+  // else continue
+
+
+  // begin on start
+  if (!(textNodeIsCushioned(range.startContainer))) {
+    cushionTextNode(range.startContainer);
+  }
+
+  /**
+   * If range.startOffset is 0 (before zero-width space), increase by 1
+   * else if range.startOffset is at end of text (after zero-width space),
+   * decrement by 1
+   * Text content is guaranteed by cushionTextNode to exist and have textContent
+   * of length of 2, minimum (2 zero-width spaces)
+   */
+  if (range.startOffset === 0) {
+    range.setStart(range.startContainer, 1);
+  }
+
+  else if (range.startOffset === range.startContainer.textContent!.length) {
+    range.setStart(range.startContainer, range.startOffset - 1);
+  }
+
+  /**
+   * Repeat process for range.endContainer and 
+   */
+  if (!(textNodeIsCushioned(range.endContainer))) {
+    cushionTextNode(range.endContainer);
+  }
+
+  if (range.endOffset === 0) {
+    range.setStart(range.endContainer, 1);
+  }
+
+  else if (range.endOffset === range.endContainer.textContent!.length) {
+    range.setStart(range.endContainer, range.endOffset - 1);
+  }
+  
+}
+
+
 export function experimental_resetRangeToTextNodes(range: Range) {
 
   // console.log(range.startContainer, range.startContainer.nodeType !== Node.TEXT_NODE, range.endContainer.nodeType !== Node.TEXT_NODE);
