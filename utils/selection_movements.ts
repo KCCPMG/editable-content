@@ -101,10 +101,13 @@ export function resetSelectionToUsableText() {
 
   // else continue
 
-
-  // begin on start
+  // make sure text nodes are cushioned
   if (!(textNodeIsCushioned(range.startContainer))) {
     cushionTextNode(range.startContainer);
+  }
+
+  if (!(textNodeIsCushioned(range.endContainer))) {
+    cushionTextNode(range.endContainer);
   }
 
   /**
@@ -122,13 +125,8 @@ export function resetSelectionToUsableText() {
     range.setStart(range.startContainer, range.startOffset - 1);
   }
 
-  /**
-   * Repeat process for range.endContainer and 
-   */
-  if (!(textNodeIsCushioned(range.endContainer))) {
-    cushionTextNode(range.endContainer);
-  }
 
+  // Repeat process for range.endContainer
   if (range.endOffset === 0) {
     range.setStart(range.endContainer, 1);
   }
