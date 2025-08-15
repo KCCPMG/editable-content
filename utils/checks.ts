@@ -549,6 +549,7 @@ export function textNodeIsCushioned(textNode: Text) {
  * - They are empty except for zero width spaces
  * - They are direct descendants of the container
  * - They are not in the current selection
+ * - They do not follow a <br/> element
  */
 export function identifyBadTextNodes(textNodes: Array<Text>, parentContainer: Node) {
   const selection = window?.getSelection() || null;
@@ -558,7 +559,12 @@ export function identifyBadTextNodes(textNodes: Array<Text>, parentContainer: No
     return (
       tn.textContent === '\u200B\u200B' &&
       tn.parentNode === parentContainer &&
-      (!(selection && selection.containsNode(tn)))
+      (!(selection && selection.containsNode(tn))) &&
+      !(
+        tn.previousSibling && 
+        tn.previousSibling.nodeType === Node.ELEMENT_NODE && 
+        (tn.previousSibling as Element).tagName === "BR"
+      )
     )
   })
 }
