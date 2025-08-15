@@ -419,7 +419,17 @@ export function getAllTextNodes(nodes: Array<Node>): Array<Text> {
 export function getLastValidTextNode(textNodeArr: Array<Text>) {
   for (let i = textNodeArr.length - 1; i >= 0; i--) {
     const textNode = textNodeArr[i];
-    if (textNode.textContent?.match("[^\u200B]")) return textNode;
+    if (
+      textNode.textContent?.match("[^\u200B]") || 
+      (
+        textNode.previousSibling &&
+        textNode.previousSibling.nodeType === Node.ELEMENT_NODE &&
+        (textNode.previousSibling as Element).tagName === "BR"
+      )
+    ) {
+
+      return textNode;
+    }
   }
   return textNodeArr[0];
 }
