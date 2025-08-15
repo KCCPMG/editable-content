@@ -51,32 +51,34 @@ export default function SelectionDisplay({show}: SelectionToStringDisplayProps) 
 
 
 function stringRepresentationOfNode(node: Node | null) {
+  const textContent = node?.textContent?.replaceAll('\u200B', '\u25A1');
+  
   if (!node) return "null"
   else if (node.nodeType === Node.TEXT_NODE) {
-    return `Text Node: \"${node.textContent}\"`
+    return `Text Node: \"${textContent}\"`
   }
   else if (node.nodeType === Node.ELEMENT_NODE) {
     return `Element Node: \"${(node as Element).outerHTML}\"`
   }
   else if (node.nodeType === Node.ATTRIBUTE_NODE) {
-    return `Attribute Node: \"${node.textContent}\"`
+    return `Attribute Node: \"${textContent}\"`
   }
   else if (node.nodeType === Node.CDATA_SECTION_NODE) {
-    return `CDATA Section Node: \"${node.textContent}\"`
+    return `CDATA Section Node: \"${textContent}\"`
   }
   else if (node.nodeType === Node.PROCESSING_INSTRUCTION_NODE) {
-    return `Processing Instruction Node: \"${node.textContent}\"`
+    return `Processing Instruction Node: \"${textContent}\"`
   }
   else if (node.nodeType === Node.COMMENT_NODE) {
-    return `Comment Node: \"${node.textContent}\"`
+    return `Comment Node: \"${textContent}\"`
   }
   else if (node.nodeType === Node.DOCUMENT_NODE) {
-    return `Document Node: \"${node.textContent}\"`
+    return `Document Node: \"${textContent}\"`
   }
   else if (node.nodeType === Node.DOCUMENT_TYPE_NODE) {
-    return `Document Type Node: \"${node.textContent}\"`
+    return `Document Type Node: \"${textContent}\"`
   }
   else if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-    return `Document Fragment Node: \"${node.textContent}\"`
+    return `Document Fragment Node: \"${textContent}\"`
   }
 }
