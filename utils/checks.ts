@@ -1,6 +1,7 @@
 import React from "react";
 import { ReactElement } from "react";
 import { ZWS_RE } from "./constants";
+import { cushionTextNode } from "./dom_operations";
 
 
 /**
@@ -868,3 +869,166 @@ export function getNextRightEndpoint(textNodes: Array<Text>, startingIndexOfText
   }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+export function alternativeGetNextPosition(
+  direction: "left" | "right",
+  searchObject: searchCombinedTextArgumentObject,
+  originalNode: Text, originalOffset: number, 
+  resetOnSiblingInterruption: boolean, resetOnBreakInterruption: boolean,
+  currentNode?: Text, currentOffset?: number 
+) {
+  
+  if (!(originalNode instanceof Text)) return;
+  if (currentNode && !(currentNode instanceof Text)) return;
+
+  
+  // move left or right
+  if (direction === "right") {
+    // searchCombinedText? or do this manually? 
+    // If doing search combined text, will have difficulty with breaks, interruptions
+    // if doing this manually will have a hard time 
+  } else if (direction === "left") {
+
+  }
+
+  // if currentNode != orig Node
+    // if node is not cushioned, cushion node
+    // if areUninterruptedSiblings
+      // if offset is valid, (matches re?) return node and offset (include different offset parameter? ie " \u2000B" + 1)
+    // else - not uninterrupted siblings
+      // if resetObSiblingInterruption
+        // ignore sought character, if going right set at 1, if going left set at text.textContent.length-1
+      // else if resetOnBreakInterruptions and interrupted by break
+        // ignore sought character, if going right set at 1, if going left set at text.textContent.length-1
+      // else
+        // can return currentNode and offset if they exist
+
+
+
+
+}
+
+
+
+
+
+
+
+export function getNextPosition(origNode: Text, origOffset: number, limitingContainer: Node, direction: "left" | "right", reSource: string, returnAfterMatch: boolean, returnIndexOffset: number,resetOnSiblingInterruption: boolean, resetOnBreakInterruption: boolean) {
+  
+  const allTextNodes = getAllTextNodes([limitingContainer]);
+
+  if (direction === "left") {
+    // double check this object
+    const result = searchCombinedText({
+      textNodes: [origNode],
+      getLast: true,
+      reSource,
+      returnAfterMatch,
+      returnIndexOffset,
+      upTo: {
+        textNode: origNode,
+        nodeOffset: origOffset
+      }
+    })
+
+    if (result) return result;
+    // else 
+    const textNodeIndex = allTextNodes.findIndex(tn => tn === origNode);
+    let textNodePointer = textNodeIndex - 1;
+
+    while (textNodePointer > 0 && textNodePointer < allTextNodes.length) {
+      
+      // get currentTextNode, make sure is cushioned
+      let currentTextNode = allTextNodes[textNodePointer]; 
+      if (!textNodeIsCushioned(currentTextNode)) {
+        cushionTextNode(currentTextNode)
+      }
+
+      if (areUninterruptedSiblingTextNodes(currentTextNode, origNode)) {
+        const result = searchCombinedText({
+          textNodes: allTextNodes,
+          getLast: (direction === "left"),
+          reSource,
+          returnAfterMatch,
+          returnIndexOffset,
+          upTo: (direction === "left") ? {
+            textNode: origNode,
+            nodeOffset: origOffset
+          } : {
+            textNode: currentTextNode,
+            nodeOffset: currentTextNode.textContent!.length
+          },
+          startFrom: (direction === "left") ? {
+            textNode: currentTextNode,
+            nodeOffset: 0
+          } : {
+            textNode: origNode,
+            nodeOffset: origOffset
+          }
+        })
+        if (result) return result;
+      }
+      else {
+        if (resetOnSiblingInterruption) {
+          if (direction === "left") {
+            return {
+              currentNode: currentTextNode,
+              offset: currentTextNode.length-1
+            }
+          } else if (direction === "right") {
+            return {
+              currentNode: currentTextNode,
+              offset: 1
+            }
+          }
+        }
+        else if (resetOnBreakInterruption) {
+
+
+        } else {
+
+        }
+      }
+
+      if (direction === "left") textNodePointer--;
+      else if (direction === "right") textNodePointer++;
+
+    }
+
+    // nothing found
+    return null;
+  }
+
+
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
