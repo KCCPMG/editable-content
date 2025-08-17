@@ -1013,22 +1013,3 @@ export function getNextPosition(origNode: Text, origOffset: number, limitingCont
 
 
 } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
