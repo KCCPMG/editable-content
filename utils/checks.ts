@@ -929,9 +929,11 @@ export function getNextPosition(origNode: Text, origOffset: number, limitingCont
   
   const allTextNodes = getAllTextNodes([limitingContainer]);
 
+  let result = null;
+
   if (direction === "left") {
     // double check this object
-    const result = searchCombinedText({
+    result = searchCombinedText({
       textNodes: [origNode],
       getLast: true,
       reSource,
@@ -939,77 +941,92 @@ export function getNextPosition(origNode: Text, origOffset: number, limitingCont
       returnIndexOffset,
       upTo: {
         textNode: origNode,
-        nodeOffset: origOffset
+        nodeOffset: origOffset-1
       }
     })
+  }
 
-    if (result) return result;
-    // else 
-    const textNodeIndex = allTextNodes.findIndex(tn => tn === origNode);
-    let textNodePointer = textNodeIndex - 1;
-
-    while (textNodePointer > 0 && textNodePointer < allTextNodes.length) {
-      
-      // get currentTextNode, make sure is cushioned
-      let currentTextNode = allTextNodes[textNodePointer]; 
-      if (!textNodeIsCushioned(currentTextNode)) {
-        cushionTextNode(currentTextNode)
+  else if (direction === "right") {
+    result = searchCombinedText({
+      textNodes: [origNode],
+      getLast: true,
+      reSource,
+      returnAfterMatch,
+      returnIndexOffset,
+      upTo: {
+        textNode: origNode,
+        nodeOffset: origOffset+1
       }
+    })
+  }
 
-      if (areUninterruptedSiblingTextNodes(currentTextNode, origNode)) {
-        const result = searchCombinedText({
-          textNodes: allTextNodes,
-          getLast: (direction === "left"),
-          reSource,
-          returnAfterMatch,
-          returnIndexOffset,
-          upTo: (direction === "left") ? {
-            textNode: origNode,
-            nodeOffset: origOffset
-          } : {
-            textNode: currentTextNode,
-            nodeOffset: currentTextNode.textContent!.length
-          },
-          startFrom: (direction === "left") ? {
-            textNode: currentTextNode,
-            nodeOffset: 0
-          } : {
-            textNode: origNode,
-            nodeOffset: origOffset
-          }
-        })
-        if (result) return result;
-      }
-      else {
-        if (resetOnSiblingInterruption) {
-          if (direction === "left") {
-            return {
-              currentNode: currentTextNode,
-              offset: currentTextNode.length-1
-            }
-          } else if (direction === "right") {
-            return {
-              currentNode: currentTextNode,
-              offset: 1
-            }
-          }
-        }
-        else if (resetOnBreakInterruption) {
+  if (result) return result;
+  // else 
+  const textNodeIndex = allTextNodes.findIndex(tn => tn === origNode);
+  let textNodePointer = textNodeIndex - 1;
 
-
-        } else {
-
-        }
-      }
-
-      if (direction === "left") textNodePointer--;
-      else if (direction === "right") textNodePointer++;
-
+  while (textNodePointer > 0 && textNodePointer < allTextNodes.length) {
+    
+    // get currentTextNode, make sure is cushioned
+    let currentTextNode = allTextNodes[textNodePointer]; 
+    if (!textNodeIsCushioned(currentTextNode)) {
+      cushionTextNode(currentTextNode)
     }
 
-    // nothing found
-    return null;
+    if (areUninterruptedSiblingTextNodes(currentTextNode, origNode)) {
+      const result = searchCombinedText({
+        textNodes: allTextNodes,
+        getLast: (direction === "left"),
+        reSource,
+        returnAfterMatch,
+        returnIndexOffset,
+        upTo: (direction === "left") ? {
+          textNode: origNode,
+          nodeOffset: origOffset
+        } : {
+          textNode: currentTextNode,
+          nodeOffset: currentTextNode.textContent!.length
+        },
+        startFrom: (direction === "left") ? {
+          textNode: currentTextNode,
+          nodeOffset: 0
+        } : {
+          textNode: origNode,
+          nodeOffset: origOffset
+        }
+      })
+      if (result) return result;
+    }
+    else {
+      if (resetOnSiblingInterruption) {
+        if (direction === "left") {
+          return {
+            currentNode: currentTextNode,
+            offset: currentTextNode.length-1
+          }
+        } else if (direction === "right") {
+          return {
+            currentNode: currentTextNode,
+            offset: 1
+          }
+        }
+      }
+      else if (resetOnBreakInterruption) {
+
+
+      } else {
+
+      }
+    }
+
+    if (direction === "left") textNodePointer--;
+    else if (direction === "right") textNodePointer++;
+
   }
+
+  // nothing found
+  return null;
+  
 
 
 } 

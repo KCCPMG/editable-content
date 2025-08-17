@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
-import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getAllTextNodes, searchCombinedText, getReMatch } from "./checks";
+import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getAllTextNodes, searchCombinedText, getReMatch, getNextPosition } from "./checks";
 import { setSelection, resetRangeToTextNodes } from "./selection_movements";
 import { startingHTML, alternateHTML } from "./test_constants";
 
@@ -1275,4 +1275,183 @@ describe("test getNextLeftEndpoint", function () {
 
 describe("test getNextRightEndpoint", function () {
   // TODO
+})
+
+
+
+describe("getNextPosition", function() {
+
+  // const htmlAsNode = new DOMParser()
+  //   .parseFromString(startingHTML, "text/html").body;
+
+  // const containingDiv = htmlAsNode.childNodes[0];
+
+  // const firstStrong = containingDiv.childNodes[0];
+  // const firstStrongText = firstStrong.childNodes[0];
+
+  // const firstItalics = containingDiv.childNodes[1];
+  // const firstItalicsText = firstItalics.childNodes[0];
+
+  // const orphanText = containingDiv.childNodes[2];
+
+  // const secondStrong = containingDiv.childNodes[3];
+  // const secondStrongFirstText = secondStrong.childNodes[0];
+  // const secondStrongFirstItalics = secondStrong.childNodes[1];
+  // const secondStrongFirstItalicsText = secondStrongFirstItalics.childNodes[0];
+  // const secondStrongSecondText = secondStrong.childNodes[2];
+
+
+  /**
+   * Should be
+   * <div>
+   *  ""
+   *  "Second text"
+   *  <br/>
+   *  "Third raw text."
+   *  <br/>
+   *  <strong>
+   *    "First Strong First Text."
+   *    " First Strong Second Text."
+   *    <br/>
+   *    <br/>
+   *    <i>
+   *      <br/>
+   *      ""
+   *      <br/>
+   *      ""
+   *      <br/>
+   *    </i>
+   *    "First Strong Third Text"
+   *  </strong>
+   *  <br/>
+   *  ""
+   *  "Fifth raw text."
+   * </div>
+   */
+
+
+  // clear out body
+  document.body.innerHTML = '';
+
+  const containingDiv = document.createElement('div');
+  document.body.appendChild(containingDiv);
+
+  const firstRawText = new Text();
+  containingDiv.appendChild(firstRawText);
+
+  const secondRawText = new Text("Second text");
+  containingDiv.appendChild(secondRawText);
+  
+  const firstRawBreak = document.createElement("br");
+  containingDiv.append(firstRawBreak);
+
+  const thirdRawText = new Text("Third raw text.");
+  containingDiv.appendChild(thirdRawText);
+
+  const secondRawBreak = document.createElement("break");
+  containingDiv.appendChild(secondRawBreak);
+
+  const firstStrong = document.createElement("strong");
+  containingDiv.appendChild(firstStrong);
+  
+  const firstStrongFirstText = new Text("First Strong First Text.");
+  firstStrong.appendChild(firstStrongFirstText);
+  
+  const firstStrongSecondText = new Text(" Second Strong Second Text.");
+  firstStrong.appendChild(firstStrongSecondText);
+  
+  const firstStrongFirstBreak = document.createElement("br");
+  firstStrong.appendChild(firstStrongFirstBreak);
+
+  const firstStrongSecondBreak = document.createElement("br");
+  firstStrong.appendChild(firstStrongSecondBreak);
+
+  const firstStrongFirstItalics = document.createElement("i");
+  firstStrong.appendChild(firstStrongFirstItalics);
+
+  const firstStrongFirstItalicsFirstBreak = document.createElement("br");
+  firstStrongFirstItalics.appendChild(firstStrongFirstItalicsFirstBreak);
+
+  const firstStrongFirstItalicsFirstText = new Text();
+  firstStrongFirstItalics.appendChild(firstStrongFirstItalicsFirstText);
+
+  const firstStrongFirstItalicsSecondBreak = document.createElement("br");
+  firstStrongFirstItalics.appendChild(firstStrongFirstItalicsSecondBreak);
+
+  const firstStrongFirstItalicsSecondText = new Text();
+  firstStrongFirstItalics.appendChild(firstStrongFirstItalicsSecondText);
+
+  const firstStrongFirstItalicsThirdBreak = document.createElement("br");
+  firstStrongFirstItalics.appendChild(firstStrongFirstItalicsThirdBreak);
+
+  const firstStrongThirdText = new Text("First Strong Third Text");
+  firstStrong.appendChild(firstStrongThirdText);
+
+  const thirdRawBreak = document.createElement("br");
+  containingDiv.appendChild(thirdRawBreak);
+
+  const fourthRawText = new Text();
+  containingDiv.appendChild(fourthRawText);
+
+  const fifthRawText = new Text("Fifth raw text.");
+  containingDiv.appendChild(fifthRawText);
+
+  
+  test("everything in its right place", function() {
+    // expect(containingDiv.childNodes.length).toBe(8);
+
+    expect(containingDiv.childNodes[0]).toBe(firstRawText);
+    expect(containingDiv.childNodes[1]).toBe(secondRawText);
+    expect(containingDiv.childNodes[2]).toBe(firstRawBreak);
+    expect(containingDiv.childNodes[3]).toBe(thirdRawText);
+    expect(containingDiv.childNodes[4]).toBe(secondRawBreak);
+    expect(containingDiv.childNodes[5]).toBe(firstStrong);
+    expect(containingDiv.childNodes[6]).toBe(thirdRawBreak);
+    expect(containingDiv.childNodes[7]).toBe(fourthRawText);
+    expect(containingDiv.childNodes[8]).toBe(fifthRawText);
+    
+    expect(firstStrong.childNodes.length).toBe(6);
+
+    expect(firstStrong.childNodes[0]).toBe(firstStrongFirstText);
+    expect(firstStrong.childNodes[1]).toBe(firstStrongSecondText);
+    expect(firstStrong.childNodes[2]).toBe(firstStrongFirstBreak);
+    expect(firstStrong.childNodes[3]).toBe(firstStrongSecondBreak);
+    expect(firstStrong.childNodes[4]).toBe(firstStrongFirstItalics);
+    expect(firstStrong.childNodes[5]).toBe(firstStrongThirdText);
+
+    expect(firstStrongFirstItalics.childNodes.length).toBe(5);
+    
+    expect(firstStrongFirstItalics.childNodes[0]).toBe(firstStrongFirstItalicsFirstBreak)
+    expect(firstStrongFirstItalics.childNodes[1]).toBe(firstStrongFirstItalicsFirstText)
+    expect(firstStrongFirstItalics.childNodes[2]).toBe(firstStrongFirstItalicsSecondBreak)
+    expect(firstStrongFirstItalics.childNodes[3]).toBe(firstStrongFirstItalicsSecondText)
+    expect(firstStrongFirstItalics.childNodes[4]).toBe(firstStrongFirstItalicsThirdBreak)
+
+  }) 
+
+
+  test("simple move left within text node", function() {
+    if (!(firstStrongFirstText instanceof Text)) fail();
+    const result = getNextPosition(firstStrongFirstText, 7, containingDiv, "left", ".", false, 0, true, true);
+    if (!result) fail();
+    expect(result.currentNode).toBe(firstStrongFirstText);
+    expect(result.offset).toBe(6);
+  })
+
+  test("simple move right within text node", function() {
+    if (!(firstStrongFirstText instanceof Text)) fail();
+    const result = getNextPosition(firstStrongFirstText, 7, containingDiv, "right", ".", false, 0, true, true);
+    if (!result) fail();
+    expect(result.currentNode).toBe(firstStrongFirstText);
+    expect(result.offset).toBe(8);
+  })
+
+  test("simple move left across text nodes", function() {
+
+  })
+
+  test("simple move right across text nodes", function() {
+
+  })
+
 })
