@@ -1428,42 +1428,42 @@ describe("getNextPosition", function() {
   })
 
 
-  // test("simple move left within text node", function() {
-  //   const result = getNextPosition(firstStrongFirstText, 7, containingDiv, "left", ".", false, 0, true, true);
-  //   if (!result) fail();
-  //   expect(result.currentNode).toBe(firstStrongFirstText);
-  //   expect(result.offset).toBe(6);
-  // })
+  test("simple move left within text node", function() {
+    const result = getNextPosition(firstStrongFirstText, 7, containingDiv, "left", ".", false, 0, true, true);
+    if (!result) fail();
+    expect(result.currentNode).toBe(firstStrongFirstText);
+    expect(result.offset).toBe(6);
+  })
 
-  // test("simple move right within text node", function() {
-  //   const result = getNextPosition(firstStrongFirstText, 7, containingDiv, "right", ".", false, 0, true, true);
-  //   if (!result) throw new Error("no result");
-  //   expect(result.currentNode).toBe(firstStrongFirstText);
-  //   expect(result.offset).toBe(8);
-  // })
+  test("simple move right within text node", function() {
+    const result = getNextPosition(firstStrongFirstText, 7, containingDiv, "right", ".", false, 0, true, true);
+    if (!result) throw new Error("no result");
+    expect(result.currentNode).toBe(firstStrongFirstText);
+    expect(result.offset).toBe(8);
+  })
 
-  // test("simple move left across text nodes", function() {
-  //   if (firstStrongFirstText.textContent === null) throw new Error("firstStrongFirstText.textContent === null")
+  test("simple move left across text nodes", function() {
+    if (firstStrongFirstText.textContent === null) throw new Error("firstStrongFirstText.textContent === null")
     
-  //   const result = getNextPosition(firstStrongSecondText, 0, containingDiv, "left", ".", false, 0, true, true);
-  //   if (!result) fail();
-  //   expect(result.currentNode).toBe(firstStrongFirstText);
-  //   expect(result.offset).toBe(firstStrongFirstText.textContent.length - 1);
-  // })
+    const result = getNextPosition(firstStrongSecondText, 0, containingDiv, "left", ".", false, 0, true, true);
+    if (!result) fail();
+    expect(result.currentNode).toBe(firstStrongFirstText);
+    expect(result.offset).toBe(firstStrongFirstText.textContent.length - 1);
+  })
 
-  // test("simple move right across text nodes", function() {
-  //   if (firstStrongFirstText.textContent === null) throw new Error("firstStrongFirstText textContent is null");
+  test("simple move right across text nodes", function() {
+    if (firstStrongFirstText.textContent === null) throw new Error("firstStrongFirstText textContent is null");
 
-  //   // console.log(firstStrongFirstText.textContent, firstStrongFirstText.textContent.length);
+    // console.log(firstStrongFirstText.textContent, firstStrongFirstText.textContent.length);
 
-  //   const result = getNextPosition(firstStrongFirstText, firstStrongFirstText.textContent.length, containingDiv, "right", ".", false, 0, true, true);
+    const result = getNextPosition(firstStrongFirstText, firstStrongFirstText.textContent.length, containingDiv, "right", ".", false, 0, true, true);
 
-  //   if (!result) throw new Error("no result or result is null");
+    if (!result) throw new Error("no result or result is null");
 
-  //   // console.log(result);
-  //   expect(result.currentNode).toBe(firstStrongSecondText);
-  //   expect(result.offset).toBe(1);
-  // })
+    // console.log(result);
+    expect(result.currentNode).toBe(firstStrongSecondText);
+    expect(result.offset).toBe(1);
+  })
 
   test("move left and stop on break", function() {
     const result = getNextPosition(firstStrongFirstItalicsSecondText, 0, containingDiv, "left", ".", false, 0, false, true);

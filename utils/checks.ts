@@ -999,57 +999,59 @@ export function getNextPosition(
   let textNodePointer = allTextNodes.findIndex(tn => tn === origNode);
   console.log("textNodePointer", textNodePointer);
 
-  while (textNodePointer > 0 && textNodePointer < allTextNodes.length) {
+  // while (textNodePointer > 0 && textNodePointer < allTextNodes.length) {
 
     console.log("textNodePointer", textNodePointer);
     
 
     // get currentTextNode, make sure is cushioned
-    let currentTextNode = allTextNodes[textNodePointer];
-    console.log("textNodePointer", textNodePointer);
-    if (!textNodeIsCushioned(currentTextNode)) {
-      cushionTextNode(currentTextNode)
-    }
+    // let currentTextNode = allTextNodes[textNodePointer];
+    // console.log("textNodePointer", textNodePointer);
+    // if (!textNodeIsCushioned(currentTextNode)) {
+    //   cushionTextNode(currentTextNode)
+    // }
 
-    if (areUninterruptedSiblingTextNodes(currentTextNode, origNode)) {
-      const result = searchCombinedText({
-        textNodes: allTextNodes,
-        getLast: (direction === "left"),
-        reSource,
-        returnAfterMatch,
-        returnIndexOffset,
-        upTo: (direction === "left") ? {
-          textNode: origNode,
-          nodeOffset: origOffset - 1
-        } : {  // direction === "right"
-          textNode: currentTextNode,
-          nodeOffset: currentTextNode.textContent!.length
-        },
-        startFrom: (direction === "left") ? {
-          textNode: currentTextNode,
-          nodeOffset: 0
-        } : { // direction === "right"
-          textNode: origNode,
-          nodeOffset: origOffset + 1
-        }
-      })
-      if (result) return result;
-    }
-    else {
-      if (resetOnSiblingInterruption) {
-        if (direction === "left") {
-          return {
-            currentNode: currentTextNode,
-            offset: currentTextNode.length - 1
-          }
-        } else if (direction === "right") {
-          return {
-            currentNode: currentTextNode,
-            offset: 1
-          }
-        }
-      }
-      else if (resetOnBreakInterruption) {
+    // if (areUninterruptedSiblingTextNodes(initialResult.currentNode, origNode)) {
+    //   const result = searchCombinedText({
+    //     textNodes: allTextNodes,
+    //     getLast: (direction === "left"),
+    //     reSource,
+    //     returnAfterMatch,
+    //     returnIndexOffset,
+    //     upTo: (direction === "left") ? {
+    //       textNode: origNode,
+    //       nodeOffset: origOffset - 1
+    //     } : {  // direction === "right"
+    //       textNode: currentTextNode,
+    //       nodeOffset: currentTextNode.textContent!.length
+    //     },
+    //     startFrom: (direction === "left") ? {
+    //       textNode: currentTextNode,
+    //       nodeOffset: 0
+    //     } : { // direction === "right"
+    //       textNode: origNode,
+    //       nodeOffset: origOffset + 1
+    //     }
+    //   })
+    //   if (result) return result;
+    // }
+    // else {
+
+      // draft -not yet implemented 
+      // if (resetOnSiblingInterruption) {
+      //   if (direction === "left") {
+      //     return {
+      //       currentNode: currentTextNode,
+      //       offset: currentTextNode.length - 1
+      //     }
+      //   } else if (direction === "right") {
+      //     return {
+      //       currentNode: currentTextNode,
+      //       offset: 1
+      //     }
+      //   }
+      // }
+      if (resetOnBreakInterruption) {
         if (areUninterruptedByBreak(origNode, initialResult.currentNode)) {
           return initialResult;
         } else {
@@ -1085,30 +1087,30 @@ export function getNextPosition(
                 cushionTextNode(currentTextNode);
               }
 
-              console.log("textNodePointer", textNodePointer, currentTextNode.textContent.replaceAll('\u200B', '\u25A1'), textNodeIsCushioned(currentTextNode));
+              console.log("textNodePointer", textNodePointer, currentTextNode.textContent!.replaceAll('\u200B', '\u25A1'), textNodeIsCushioned(currentTextNode));
 
               if (currentTextNode.compareDocumentPosition(lastBreak) === 4) {
                 return {
                   currentNode: currentTextNode,
-                  offset: currentTextNode.textContent.length - 1
+                  offset: currentTextNode.textContent!.length - 1
                 }
               }
             }
           }
 
           // if moving right, find first text node after first break, return start
-          
+
         }
 
       } else {
 
       }
-    }
+    // }
 
-    if (direction === "left") textNodePointer--;
-    else if (direction === "right") textNodePointer++;
+    // if (direction === "left") textNodePointer--;
+    // else if (direction === "right") textNodePointer++;
 
-  }
+  // }
 
   // nothing found
   return null;
