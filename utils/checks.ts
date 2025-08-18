@@ -993,8 +993,8 @@ export function getNextPosition(
   }
 
   // else
-  console.log("not returning initial result");
-  console.log("initial result", initialResult.currentNode.textContent, initialResult.offset);
+  // console.log("not returning initial result");
+  // console.log("initial result", initialResult.currentNode.textContent, initialResult.offset);
   // const textNodeIndex = allTextNodes.findIndex(tn => tn === origNode);
   let textNodePointer = allTextNodes.findIndex(tn => tn === origNode);
 
@@ -1045,7 +1045,17 @@ export function getNextPosition(
         }
       }
       else if (resetOnBreakInterruption) {
+        if (areUninterruptedByBreak(origNode, initialResult.currentNode)) {
+          return initialResult;
+        } else {
+          
+          console.log("at least I'm in the right place");
 
+          // if moving left, find last text node before last break, return end
+
+          // if moving right, find first text node after first break, return start
+          
+        }
 
       } else {
 

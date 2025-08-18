@@ -1437,13 +1437,13 @@ describe("getNextPosition", function() {
 
   test("simple move right within text node", function() {
     const result = getNextPosition(firstStrongFirstText, 7, containingDiv, "right", ".", false, 0, true, true);
-    if (!result) fail();
+    if (!result) throw new Error("no result");
     expect(result.currentNode).toBe(firstStrongFirstText);
     expect(result.offset).toBe(8);
   })
 
   test("simple move left across text nodes", function() {
-    if (firstStrongFirstText.textContent === null) fail();
+    if (firstStrongFirstText.textContent === null) throw new Error("firstStrongFirstText.textContent === null")
     
     const result = getNextPosition(firstStrongSecondText, 0, containingDiv, "left", ".", false, 0, true, true);
     if (!result) fail();
@@ -1463,6 +1463,17 @@ describe("getNextPosition", function() {
     console.log(result);
     expect(result.currentNode).toBe(firstStrongSecondText);
     expect(result.offset).toBe(1);
+  })
+
+  test("move left and stop on break", function() {
+    const result = getNextPosition(firstStrongFirstItalicsSecondText, 0, containingDiv, "left", ".", false, 0, false, true);
+
+    if (!result) throw new Error("result is null");
+    expect(result.currentNode).toBe(firstStrongFirstItalicsFirstText);
+    expect(result.offset).toBe(1);
+
+    // make sure node is cushioned as result of this or earlier operation
+    expect(result.currentNode.textContent).toBe("\u200B\u200B");
   })
 
 })
