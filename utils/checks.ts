@@ -952,51 +952,44 @@ function areUninterruptedByBreak(text1: Text, text2: Text): boolean {
 
 
 export function getNextPosition(
-    origNode: Text, 
-    origOffset: number, 
-    limitingContainer: Node, 
-    direction: "left" | "right", 
-    reSource: string, 
-    returnAfterMatch: boolean, 
-    returnIndexOffset: number,
-    resetOnSiblingInterruption: boolean, 
-    resetOnBreakInterruption: boolean
-  ) {
+  origNode: Text, 
+  origOffset: number, 
+  limitingContainer: Node, 
+  direction: "left" | "right", 
+  reSource: string, 
+  returnAfterMatch: boolean, 
+  returnIndexOffset: number,
+  resetOnSiblingInterruption: boolean, 
+  resetOnBreakInterruption: boolean
+) {
   
   const allTextNodes = getAllTextNodes([limitingContainer]);
 
-  let result = null;
+  let initialResult = searchCombinedText({
+    textNodes: allTextNodes,
+    getLast: (direction === "left"),
+    reSource,
+    returnAfterMatch,
+    returnIndexOffset,
+    upTo: (direction === "left") ? {
+      textNode: origNode,
+      nodeOffset: origOffset -  1
+    } : {  // direction === "right"
+      textNode: origNode,
+      nodeOffset: origNode.textContent!.length
+    },
+    startFrom: (direction === "left") ? {
+      textNode: origNode,
+      nodeOffset: 0
+    } : { // direction === "right"
+      textNode: origNode,
+      nodeOffset: origOffset + 1
+    }
+  });
 
-  // if (direction === "left") {
-  //   // double check this object
-  //   result = searchCombinedText({
-  //     textNodes: [origNode],
-  //     getLast: true,
-  //     reSource,
-  //     returnAfterMatch,
-  //     returnIndexOffset,
-  //     upTo: {
-  //       textNode: origNode,
-  //       nodeOffset: origOffset-1
-  //     }
-  //   })
-  // }
-
-  // else if (direction === "right") {
-  //   result = searchCombinedText({
-  //     textNodes: [origNode],
-  //     getLast: true,
-  //     reSource,
-  //     returnAfterMatch,
-  //     returnIndexOffset,
-  //     upTo: {
-  //       textNode: origNode,
-  //       nodeOffset: origOffset+1
-  //     }
-  //   })
-  // }
-
-  // if (result) return result;
+  if (initialResult && initialResult.currentNode === origNode) {
+    return initialResult;
+  } 
 
   // else 
   const textNodeIndex = allTextNodes.findIndex(tn => tn === origNode);
@@ -1029,7 +1022,7 @@ export function getNextPosition(
           nodeOffset: 0
         } : { // direction === "right"
           textNode: origNode,
-          nodeOffset: origOffset
+          nodeOffset: origOffset + 1
         }
       })
       if (result) return result;

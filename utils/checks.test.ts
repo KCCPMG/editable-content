@@ -1429,9 +1429,14 @@ describe("getNextPosition", function() {
 
   }) 
 
+  // type narrowing
+  beforeEach(function() {
+    if (!(firstStrongFirstText instanceof Text)) fail();
+    if (!(firstStrongSecondText instanceof Text)) fail();
+  })
+
 
   test("simple move left within text node", function() {
-    if (!(firstStrongFirstText instanceof Text)) fail();
     const result = getNextPosition(firstStrongFirstText, 7, containingDiv, "left", ".", false, 0, true, true);
     if (!result) fail();
     expect(result.currentNode).toBe(firstStrongFirstText);
@@ -1439,7 +1444,6 @@ describe("getNextPosition", function() {
   })
 
   test("simple move right within text node", function() {
-    if (!(firstStrongFirstText instanceof Text)) fail();
     const result = getNextPosition(firstStrongFirstText, 7, containingDiv, "right", ".", false, 0, true, true);
     if (!result) fail();
     expect(result.currentNode).toBe(firstStrongFirstText);
@@ -1447,11 +1451,23 @@ describe("getNextPosition", function() {
   })
 
   test("simple move left across text nodes", function() {
-
+    if (firstStrongFirstText.textContent === null) fail();
+    
+    const result = getNextPosition(firstStrongSecondText, 0, containingDiv, "left", ".", false, 0, true, true);
+    if (!result) fail();
+    console.log(result);
+    expect(result.currentNode).toBe(firstStrongFirstText);
+    expect(result.offset).toBe(firstStrongFirstText.textContent.length - 1);
   })
 
   test("simple move right across text nodes", function() {
-
+    if (firstStrongFirstText.textContent === null) fail();
+    
+    const result = getNextPosition(firstStrongFirstText, firstStrongFirstText.length, containingDiv, "right", ".", false, 0, true, true);
+    if (!result) fail();
+    console.log(result);
+    expect(result.currentNode).toBe(firstStrongSecondText);
+    expect(result.offset).toBe(1);
   })
 
 })
