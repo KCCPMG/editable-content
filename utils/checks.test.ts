@@ -1468,10 +1468,20 @@ describe("getNextPosition", function() {
   test("move left and stop on break", function() {
     const result = getNextPosition(firstStrongFirstItalicsSecondText, 0, containingDiv, "left", ".", false, 0, false, true);
 
-    expect(getAllTextNodes([containingDiv]).findIndex(tn => tn === firstStrongFirstItalicsSecondText)).toBe(6);
-
     if (!result) throw new Error("result is null");
     expect(result.currentNode).toBe(firstStrongFirstItalicsFirstText);
+    expect(result.offset).toBe(1);
+
+    // make sure node is cushioned as result of this or earlier operation
+    expect(result.currentNode.textContent).toBe("\u200B\u200B");
+  })
+
+  test ("move right and top on break", function() {
+    const result = getNextPosition(firstStrongFirstItalicsFirstText, 1, containingDiv, "right", ".", false, 0, false, true);
+
+    if (!result) throw new Error("result is null");
+
+    expect(result.currentNode).toBe(firstStrongFirstItalicsSecondText);
     expect(result.offset).toBe(1);
 
     // make sure node is cushioned as result of this or earlier operation
