@@ -421,7 +421,7 @@ export function getLastValidTextNode(textNodeArr: Array<Text>) {
   for (let i = textNodeArr.length - 1; i >= 0; i--) {
     const textNode = textNodeArr[i];
     if (
-      textNode.textContent?.match("[^\u200B]") || 
+      textNode.textContent?.match("[^\u200B]") ||
       (
         textNode.previousSibling &&
         textNode.previousSibling.nodeType === Node.ELEMENT_NODE &&
@@ -572,8 +572,8 @@ export function identifyBadTextNodes(textNodes: Array<Text>, parentContainer: No
       tn.parentNode === parentContainer &&
       (!(selection && selection.containsNode(tn))) &&
       !(
-        tn.previousSibling && 
-        tn.previousSibling.nodeType === Node.ELEMENT_NODE && 
+        tn.previousSibling &&
+        tn.previousSibling.nodeType === Node.ELEMENT_NODE &&
         (tn.previousSibling as Element).tagName === "BR"
       )
     )
@@ -600,7 +600,7 @@ export function getReMatch(str: string, sourceString: string, startOffset: numbe
 
   const safeRe = new RegExp(sourceString, 'g');
   const gen = str.matchAll(safeRe);
-  
+
   let last: null | RegExpExecArray = null;
 
   while (true) {
@@ -608,7 +608,7 @@ export function getReMatch(str: string, sourceString: string, startOffset: numbe
     if (current.done === true) break;
     if (
       current.value &&
-      current.value.index >= startOffset && 
+      current.value.index >= startOffset &&
       current.value.index <= endOffset
     ) {
       if (getLast) {
@@ -617,7 +617,7 @@ export function getReMatch(str: string, sourceString: string, startOffset: numbe
       }
       else return current.value;
     }
-  } 
+  }
 
   return last;
 
@@ -656,17 +656,17 @@ type searchCombinedTextArgumentObject = {
  */
 export function searchCombinedText(argumentObject: searchCombinedTextArgumentObject) {
 
-  const { 
-    textNodes, 
-    reSource, 
-    returnAfterMatch=false,
-    returnIndexOffset=0,
-    getLast=false,
-    startFrom=null,
-    upTo=null 
+  const {
+    textNodes,
+    reSource,
+    returnAfterMatch = false,
+    returnIndexOffset = 0,
+    getLast = false,
+    startFrom = null,
+    upTo = null
   } = argumentObject;
 
-  
+
   // set up string
   const combinedString = textNodes.map(tn => tn.textContent).join("");
 
@@ -692,17 +692,15 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     const startingIndex = textNodes.findIndex(tn => tn === startFrom.textNode) - 1;
     if (startingIndex === -2) {
       return null;
-    } 
+    }
     if (
-      startFrom.textNode.textContent === null ||
-      // startFrom.nodeOffset < 0 || 
-      startFrom.nodeOffset > startFrom.textNode.textContent.length
+      startFrom.textNode.textContent === null 
     ) {
       return null;
     }
 
     // else - safe to proceed
-    startOffset = (startingIndex === -1 ? 0 : intervals[startingIndex]) 
+    startOffset = (startingIndex === -1 ? 0 : intervals[startingIndex])
       + startFrom.nodeOffset;
   }
 
@@ -712,7 +710,7 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     const endingIndex = textNodes.findIndex(tn => tn === upTo.textNode) - 1;
     if (endingIndex === -2) {
       return null;
-    } 
+    }
     if (
       upTo.textNode.textContent === null ||
       // upTo.nodeOffset < 0 || 
@@ -722,7 +720,7 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     }
 
     // else - safe to proceed
-    endOffset = (endingIndex === -1 ? 0 : intervals[endingIndex]) 
+    endOffset = (endingIndex === -1 ? 0 : intervals[endingIndex])
       + upTo.nodeOffset;
   }
 
@@ -746,7 +744,7 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
 
     if (textNodeIndex === -1) return null;
     const stringLengthPriorToTextNode = (textNodeIndex > 0) ? intervals[textNodeIndex - 1] : 0
-    return { 
+    return {
       currentNode: textNodes[textNodeIndex],
       offset: characterIndex - stringLengthPriorToTextNode
     }
@@ -884,15 +882,15 @@ export function getNextRightEndpoint(textNodes: Array<Text>, startingIndexOfText
 export function alternativeGetNextPosition(
   direction: "left" | "right",
   searchObject: searchCombinedTextArgumentObject,
-  originalNode: Text, originalOffset: number, 
+  originalNode: Text, originalOffset: number,
   resetOnSiblingInterruption: boolean, resetOnBreakInterruption: boolean,
-  currentNode?: Text, currentOffset?: number 
+  currentNode?: Text, currentOffset?: number
 ) {
-  
+
   if (!(originalNode instanceof Text)) return;
   if (currentNode && !(currentNode instanceof Text)) return;
 
-  
+
   // move left or right
   if (direction === "right") {
     // searchCombinedText? or do this manually? 
@@ -903,16 +901,16 @@ export function alternativeGetNextPosition(
   }
 
   // if currentNode != orig Node
-    // if node is not cushioned, cushion node
-    // if areUninterruptedSiblings
-      // if offset is valid, (matches re?) return node and offset (include different offset parameter? ie " \u2000B" + 1)
-    // else - not uninterrupted siblings
-      // if resetObSiblingInterruption
-        // ignore sought character, if going right set at 1, if going left set at text.textContent.length-1
-      // else if resetOnBreakInterruptions and interrupted by break
-        // ignore sought character, if going right set at 1, if going left set at text.textContent.length-1
-      // else
-        // can return currentNode and offset if they exist
+  // if node is not cushioned, cushion node
+  // if areUninterruptedSiblings
+  // if offset is valid, (matches re?) return node and offset (include different offset parameter? ie " \u2000B" + 1)
+  // else - not uninterrupted siblings
+  // if resetObSiblingInterruption
+  // ignore sought character, if going right set at 1, if going left set at text.textContent.length-1
+  // else if resetOnBreakInterruptions and interrupted by break
+  // ignore sought character, if going right set at 1, if going left set at text.textContent.length-1
+  // else
+  // can return currentNode and offset if they exist
 
 
 }
@@ -952,17 +950,17 @@ function areUninterruptedByBreak(text1: Text, text2: Text): boolean {
 
 
 export function getNextPosition(
-  origNode: Text, 
-  origOffset: number, 
-  limitingContainer: Node, 
-  direction: "left" | "right", 
-  reSource: string, 
-  returnAfterMatch: boolean, 
+  origNode: Text,
+  origOffset: number,
+  limitingContainer: Node,
+  direction: "left" | "right",
+  reSource: string,
+  returnAfterMatch: boolean,
   returnIndexOffset: number,
-  resetOnSiblingInterruption: boolean, 
+  resetOnSiblingInterruption: boolean,
   resetOnBreakInterruption: boolean
 ) {
-  
+
   const allTextNodes = getAllTextNodes([limitingContainer]);
 
   let initialResult = searchCombinedText({
@@ -973,32 +971,37 @@ export function getNextPosition(
     returnIndexOffset,
     upTo: (direction === "left") ? {
       textNode: origNode,
-      nodeOffset: origOffset -  1
-    } : {  // direction === "right"
-      textNode: origNode,
-      nodeOffset: origNode.textContent!.length
-    },
-    startFrom: (direction === "left") ? {
-      textNode: origNode,
-      nodeOffset: 0
-    } : { // direction === "right"
+      nodeOffset: origOffset - 1
+    } : undefined,
+    startFrom: (direction === "right") ? {
       textNode: origNode,
       nodeOffset: origOffset + 1
-    }
+    } : undefined
   });
 
-  if (initialResult && initialResult.currentNode === origNode) {
-    return initialResult;
-  } 
+  if (initialResult === null) return null;
 
-  // else 
-  const textNodeIndex = allTextNodes.findIndex(tn => tn === origNode);
-  let textNodePointer = textNodeIndex - 1;
+  if (
+    initialResult.currentNode === origNode ||
+    areUninterruptedSiblingTextNodes(origNode, initialResult.currentNode)
+  ) {
+    console.log("should return initial result");
+    console.log(origNode.textContent!.replaceAll('\u200B', '\u25A1'))
+    console.log(origNode.textContent!.length);
+    console.log(origOffset, initialResult.offset);
+    return initialResult;
+  }
+
+  // else
+  console.log("not returning initial result");
+  console.log("initial result", initialResult.currentNode.textContent, initialResult.offset);
+  // const textNodeIndex = allTextNodes.findIndex(tn => tn === origNode);
+  let textNodePointer = allTextNodes.findIndex(tn => tn === origNode);
 
   while (textNodePointer > 0 && textNodePointer < allTextNodes.length) {
-    
+
     // get currentTextNode, make sure is cushioned
-    let currentTextNode = allTextNodes[textNodePointer]; 
+    let currentTextNode = allTextNodes[textNodePointer];
     if (!textNodeIsCushioned(currentTextNode)) {
       cushionTextNode(currentTextNode)
     }
@@ -1012,7 +1015,7 @@ export function getNextPosition(
         returnIndexOffset,
         upTo: (direction === "left") ? {
           textNode: origNode,
-          nodeOffset: origOffset -  1
+          nodeOffset: origOffset - 1
         } : {  // direction === "right"
           textNode: currentTextNode,
           nodeOffset: currentTextNode.textContent!.length
@@ -1032,7 +1035,7 @@ export function getNextPosition(
         if (direction === "left") {
           return {
             currentNode: currentTextNode,
-            offset: currentTextNode.length-1
+            offset: currentTextNode.length - 1
           }
         } else if (direction === "right") {
           return {
@@ -1056,7 +1059,7 @@ export function getNextPosition(
 
   // nothing found
   return null;
-  
+
 
 
 } 

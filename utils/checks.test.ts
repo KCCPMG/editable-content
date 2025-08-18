@@ -1186,14 +1186,6 @@ describe("test searchCombinedText", function () {
     });
     expect(result).toBe(null);
 
-    // returns null on offset long than length of text node
-    result = searchCombinedText({
-      textNodes, reSource: "\u200B", startFrom: {
-        textNode: strongText,
-        nodeOffset: 14
-      }
-    });
-    expect(result).toBe(null);
   })
 
   test("returns correct node and index with upTo", function () {
@@ -1357,7 +1349,7 @@ describe("getNextPosition", function() {
   const firstStrongFirstText = new Text("First Strong First Text.");
   firstStrong.appendChild(firstStrongFirstText);
   
-  const firstStrongSecondText = new Text(" Second Strong Second Text.");
+  const firstStrongSecondText = new Text(" First Strong Second Text.");
   firstStrong.appendChild(firstStrongSecondText);
   
   const firstStrongFirstBreak = document.createElement("br");
@@ -1455,16 +1447,19 @@ describe("getNextPosition", function() {
     
     const result = getNextPosition(firstStrongSecondText, 0, containingDiv, "left", ".", false, 0, true, true);
     if (!result) fail();
-    console.log(result);
     expect(result.currentNode).toBe(firstStrongFirstText);
     expect(result.offset).toBe(firstStrongFirstText.textContent.length - 1);
   })
 
   test("simple move right across text nodes", function() {
-    if (firstStrongFirstText.textContent === null) fail();
-    
-    const result = getNextPosition(firstStrongFirstText, firstStrongFirstText.length, containingDiv, "right", ".", false, 0, true, true);
-    if (!result) fail();
+    if (firstStrongFirstText.textContent === null) throw new Error("firstStrongFirstText textContent is null");
+
+    console.log(firstStrongFirstText.textContent, firstStrongFirstText.textContent.length);
+
+    const result = getNextPosition(firstStrongFirstText, firstStrongFirstText.textContent.length, containingDiv, "right", ".", false, 0, true, true);
+
+    if (!result) throw new Error("no result or result is null");
+
     console.log(result);
     expect(result.currentNode).toBe(firstStrongSecondText);
     expect(result.offset).toBe(1);
