@@ -1300,6 +1300,10 @@ describe("getNextPosition", function() {
    *  "Second text"
    *  <br/>
    *  "Third raw text."
+   *  <u>
+   *    "First Underline First Text. "
+   *    "First Underline Second Text."
+   *  </u>
    *  <br/>
    *  <strong>
    *    "First Strong First Text."
@@ -1339,6 +1343,15 @@ describe("getNextPosition", function() {
 
   const thirdRawText = new Text("Third raw text.");
   containingDiv.appendChild(thirdRawText);
+
+  const firstUnderline = document.createElement("u");
+  containingDiv.appendChild(firstUnderline);
+
+  const firstUnderlineFirstText = new Text("First Underline First Text. ");
+  firstUnderline.appendChild(firstUnderlineFirstText);
+
+  const firstUnderlineSecondText = new Text("First Underline Second Text.");
+  firstUnderline.appendChild(firstUnderlineSecondText);
 
   const secondRawBreak = document.createElement("break");
   containingDiv.appendChild(secondRawBreak);
@@ -1396,11 +1409,16 @@ describe("getNextPosition", function() {
     expect(containingDiv.childNodes[1]).toBe(secondRawText);
     expect(containingDiv.childNodes[2]).toBe(firstRawBreak);
     expect(containingDiv.childNodes[3]).toBe(thirdRawText);
-    expect(containingDiv.childNodes[4]).toBe(secondRawBreak);
-    expect(containingDiv.childNodes[5]).toBe(firstStrong);
-    expect(containingDiv.childNodes[6]).toBe(thirdRawBreak);
-    expect(containingDiv.childNodes[7]).toBe(fourthRawText);
-    expect(containingDiv.childNodes[8]).toBe(fifthRawText);
+    expect(containingDiv.childNodes[4]).toBe(firstUnderline);
+    expect(containingDiv.childNodes[5]).toBe(secondRawBreak);
+    expect(containingDiv.childNodes[6]).toBe(firstStrong);
+    expect(containingDiv.childNodes[7]).toBe(thirdRawBreak);
+    expect(containingDiv.childNodes[8]).toBe(fourthRawText);
+    expect(containingDiv.childNodes[9]).toBe(fifthRawText);
+
+    expect(firstUnderline.childNodes.length).toBe(2);
+    expect(firstUnderline.childNodes[0]).toBe(firstUnderlineFirstText);
+    expect(firstUnderline.childNodes[1]).toBe(firstUnderlineSecondText);
     
     expect(firstStrong.childNodes.length).toBe(6);
 
@@ -1476,7 +1494,7 @@ describe("getNextPosition", function() {
     expect(result.currentNode.textContent).toBe("\u200B\u200B");
   })
 
-  test ("move right and top on break", function() {
+  test("move right and stop on break", function() {
     const result = getNextPosition(firstStrongFirstItalicsFirstText, 1, containingDiv, "right", ".", false, 0, false, true);
 
     if (!result) throw new Error("result is null");
@@ -1486,6 +1504,10 @@ describe("getNextPosition", function() {
 
     // make sure node is cushioned as result of this or earlier operation
     expect(result.currentNode.textContent).toBe("\u200B\u200B");
+  })
+
+  test("move left and stop on reset on sibling interruption", function() {
+
   })
 
 })
