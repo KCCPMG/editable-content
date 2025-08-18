@@ -985,10 +985,10 @@ export function getNextPosition(
     initialResult.currentNode === origNode ||
     areUninterruptedSiblingTextNodes(origNode, initialResult.currentNode)
   ) {
-    console.log("should return initial result");
-    console.log(origNode.textContent!.replaceAll('\u200B', '\u25A1'))
-    console.log(origNode.textContent!.length);
-    console.log(origOffset, initialResult.offset);
+    // console.log("should return initial result");
+    // console.log(origNode.textContent!.replaceAll('\u200B', '\u25A1'))
+    // console.log(origNode.textContent!.length);
+    // console.log(origOffset, initialResult.offset);
     return initialResult;
   }
 
@@ -997,11 +997,16 @@ export function getNextPosition(
   // console.log("initial result", initialResult.currentNode.textContent, initialResult.offset);
   // const textNodeIndex = allTextNodes.findIndex(tn => tn === origNode);
   let textNodePointer = allTextNodes.findIndex(tn => tn === origNode);
+  console.log("textNodePointer", textNodePointer);
 
   while (textNodePointer > 0 && textNodePointer < allTextNodes.length) {
 
+    console.log("textNodePointer", textNodePointer);
+    
+
     // get currentTextNode, make sure is cushioned
     let currentTextNode = allTextNodes[textNodePointer];
+    console.log("textNodePointer", textNodePointer);
     if (!textNodeIsCushioned(currentTextNode)) {
       cushionTextNode(currentTextNode)
     }
@@ -1050,8 +1055,46 @@ export function getNextPosition(
         } else {
           
           console.log("at least I'm in the right place");
+          const checkForBreakRange = new Range();
 
           // if moving left, find last text node before last break, return end
+          if (direction === "left") {
+            checkForBreakRange.setStartAfter(initialResult.currentNode);
+            checkForBreakRange.setEndBefore(origNode);
+            console.log("checkForBreakRange", checkForBreakRange.toString())
+            // const contents = checkForBreakRange.cloneContents();
+            // const breaks = Array.from(contents.querySelectorAll("br"));
+
+            const ancestorContainer = checkForBreakRange.commonAncestorContainer as HTMLElement;
+            const allBreaksQuery = ancestorContainer.querySelectorAll("br")
+            const breaks = Array.from(allBreaksQuery);
+            
+            // find last break to occur in range
+            const lastBreak = breaks.findLast(br => checkForBreakRange.isPointInRange(br, 0));
+
+            // this is for type narrowing but should never occur due to areUninterruptedByBreak
+            if (!lastBreak) return initialResult;
+
+            console.log("initial text pointer", textNodePointer);
+
+            while (textNodePointer > 0) {
+              
+              textNodePointer--;
+              let currentTextNode = allTextNodes[textNodePointer] ;
+              if (!textNodeIsCushioned(currentTextNode)) {
+                cushionTextNode(currentTextNode);
+              }
+
+              console.log("textNodePointer", textNodePointer, currentTextNode.textContent.replaceAll('\u200B', '\u25A1'), textNodeIsCushioned(currentTextNode));
+
+              if (currentTextNode.compareDocumentPosition(lastBreak) === 4) {
+                return {
+                  currentNode: currentTextNode,
+                  offset: currentTextNode.textContent.length - 1
+                }
+              }
+            }
+          }
 
           // if moving right, find first text node after first break, return start
           
