@@ -994,7 +994,24 @@ export function getNextPosition(
 
   // draft - not yet implemented 
   if (resetOnSiblingInterruption) {
+    const targetTextNodeIndex = allTextNodes.findIndex(tn => tn === initialResult.currentNode);
     if (direction === "left") {
+      while (textNodePointer > targetTextNodeIndex) {
+        textNodePointer--;
+        const currentTextNode = allTextNodes[textNodePointer];
+        
+        if (!textNodeIsCushioned(currentTextNode)) {
+          cushionTextNode(currentTextNode);
+        }
+        
+        if (areUninterruptedSiblingTextNodes(currentTextNode, origNode)) continue;
+        else {
+          return {
+            currentNode: currentTextNode,
+            offset: currentTextNode.length-1
+          }
+        }
+      }
   //     return {
   //       currentNode: currentTextNode,
   //       offset: currentTextNode.length - 1

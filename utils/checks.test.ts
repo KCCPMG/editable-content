@@ -1507,6 +1507,15 @@ describe("getNextPosition", function() {
   })
 
   test("move left and stop on reset on sibling interruption", function() {
+    // move by just one in overall text
+    const result = getNextPosition(firstUnderlineFirstText, 0, containingDiv, "left", ".", false, 0, true, false);
+
+    if (!result) throw new Error("result is null");
+
+    expect(result.currentNode).toBe(thirdRawText);
+    expect(result.offset).toBe(thirdRawText.textContent!.length-1);
+
+    // move by regex which intentionally will not fit the first interrupted-sibling text node
 
   })
 
