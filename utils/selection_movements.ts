@@ -535,6 +535,13 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
       // else
       return selection.setBaseAndExtent(nextPosition.currentNode, nextPosition.offset, nextPosition.currentNode, nextPosition.offset)
     }
+    else if (moveDirection === "right") {
+      if (!(range.startContainer instanceof Text)) return;
+      const nextPosition = getNextPosition(range.startContainer, range.startOffset-1, limitingContainer, "right", "[^\u200B]", true, 0, true, true);
+      if (nextPosition === null) return;
+      // else
+      return selection.setBaseAndExtent(nextPosition.currentNode, nextPosition.offset, nextPosition.currentNode, nextPosition.offset)
+    }
   }
 
   else {

@@ -313,8 +313,8 @@ export default function EditableContent({ className, disableNewLines }: Editable
               !e.metaKey
             ) {
               e.preventDefault();
-              // moveSelection(selection, contentRef.current, "right");
-              experimental_moveSelection(selection, contentRef.current, "right");
+              moveSelection(selection, contentRef.current, "right");
+              // experimental_moveSelection(selection, contentRef.current, "right");
             }
             else if (
               e.shiftKey &&
