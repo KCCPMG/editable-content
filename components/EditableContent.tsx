@@ -4,7 +4,7 @@ import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
 import { experimental_moveSelection, moveSelection, resetRangeToTextNodes, resetSelectionToTextNodes, resetSelectionToUsableText, shiftSelection } from "@/utils/selection_movements";
-import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection, getAllTextNodes, searchCombinedText, getLastValidCharacterIndex } from "@/utils/checks";
+import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection, getAllTextNodes, searchCombinedText, getLastValidCharacterIndex, getNextPosition } from "@/utils/checks";
 import { cushionTextNode, promoteChildrenOfNode } from "@/utils/dom_operations";
 
 
@@ -292,8 +292,18 @@ export default function EditableContent({ className, disableNewLines }: Editable
               !e.metaKey
             ) {
               e.preventDefault();
+              
+              // original
               // moveSelection(selection, contentRef.current, "left");
-              experimental_moveSelection(selection, contentRef.current, "left");
+              
+              // recent experiment
+              // experimental_moveSelection(selection, contentRef.current, "left");
+
+              // most recent attempt
+              if (!(range.startContainer instanceof Text)) return;
+              const nextPosition = getNextPosition(range.startContainer, range.startOffset, contentRef.current, "left", "[^\u200B]", false, 0, true, true);
+              if (nextPosition === null) return;
+              selection.setBaseAndExtent(nextPosition.currentNode, nextPosition.offset, nextPosition.currentNode, nextPosition.offset)
             }
             else if (
               e.shiftKey &&
