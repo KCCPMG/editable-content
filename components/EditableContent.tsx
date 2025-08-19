@@ -297,13 +297,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
               // moveSelection(selection, contentRef.current, "left");
               
               // recent experiment
-              // experimental_moveSelection(selection, contentRef.current, "left");
-
-              // most recent attempt
-              if (!(range.startContainer instanceof Text)) return;
-              const nextPosition = getNextPosition(range.startContainer, range.startOffset, contentRef.current, "left", "[^\u200B]", false, 0, true, true);
-              if (nextPosition === null) return;
-              selection.setBaseAndExtent(nextPosition.currentNode, nextPosition.offset, nextPosition.currentNode, nextPosition.offset)
+              experimental_moveSelection(selection, contentRef.current, "left");
             }
             else if (
               e.shiftKey &&
