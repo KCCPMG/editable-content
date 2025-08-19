@@ -1,4 +1,4 @@
-import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getNextRightEndpoint } from "./checks";
+import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getNextRightEndpoint, getNextPosition } from "./checks";
 import { ZWS_RE } from "./constants";
 import { cushionTextNode } from "./dom_operations";
 
@@ -508,183 +508,39 @@ export function experimental_moveSelection(selection: Selection, limitingContain
 export function moveSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
 
   const direction = getSelectionDirection(selection);
+  const range = selection.getRangeAt(0);
   const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
-  if (selection.rangeCount === 0) return;
-  if (!anchorNode || !focusNode) return;
 
-  const textNodes = getAllTextNodes([limitingContainer]);
+  if (
+    !range ||
+    !anchorNode || 
+    !anchorOffset ||
+    !focusNode ||
+    !focusOffset 
+  ) return;
+
+  // if (selection.rangeCount === 0) return;
+  // if (!anchorNode || !focusNode) return;
+
+  // const textNodes = getAllTextNodes([limitingContainer]);
 
 
   // range is collapsed
   if (direction === "none") {
 
-    let indexOfTextNode = textNodes.findIndex(tn => tn === anchorNode);
-
     if (moveDirection === "left") {
-
-      if (anchorOffset > 0) {
-
-        for (let i = anchorOffset - 1; i >= 0; i--) {
-          if (anchorNode.textContent && anchorNode.textContent[i] !== '\u200B') {
-            return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
-          }
-        }
-
-        // if hitting 0 and still no textContent
-        while (indexOfTextNode > 0) {
-          indexOfTextNode--;
-          const currentTextNode = textNodes[indexOfTextNode];
-          const content = currentTextNode.textContent;
-          if (!content) continue;
-          if (content === '\u200B\u200B') {
-            return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
-          }
-          for (let i = content.length; i > 0; i--) {
-            if (content[i - 1] !== '\u200B') {
-              return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
-            }
-          }
-        }
-        return;
-
-        // old below
-        // selection.setBaseAndExtent(anchorNode, anchorOffset-1, anchorNode, anchorOffset-1);
-      }
-      else {
-
-        // if hitting 0 and still no textContent
-        while (indexOfTextNode > 0) {
-          indexOfTextNode--;
-          const currentTextNode = textNodes[indexOfTextNode];
-          const content = currentTextNode.textContent;
-          if (!content) continue;
-          if (content === '\u200B\u200B') {
-            return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
-          }
-          for (let i = content.length; i > 0; i--) {
-            console.log({
-              "content.length": content.length,
-              "i": i,
-              "content[i-1]": content[i - 1],
-              "content[i-1] === '\u200B'": content[i - 1] === '\u200B',
-            })
-            if (content[i - 1] !== '\u200B') {
-              return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
-            }
-          }
-        }
-        return;
-
-        // const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
-
-        // if (thisIndex > 0) {
-        //   const leftTextNode = textNodes[thisIndex - 1];
-        //   if (!leftTextNode) return;
-        //   selection.setBaseAndExtent(leftTextNode, leftTextNode.textContent?.length || 0, leftTextNode, leftTextNode.textContent?.length || 0);
-        // } else return;
-      }
-
-
-    } else if (moveDirection === "right") {
-
-      // console.log("moving right from ", anchorNode, anchorOffset, anchorNode.textContent[anchorOffset]);
-
-      if (anchorNode.textContent && anchorOffset < anchorNode?.textContent?.length) {
-
-        console.log(anchorNode.textContent[anchorOffset], anchorNode.textContent[anchorOffset] !== '\u200B');
-        if (anchorNode.textContent[anchorOffset] !== '\u200B') {
-          return selection.setBaseAndExtent(anchorNode, anchorOffset + 1, anchorNode, anchorOffset + 1);
-        }
-        else { // if hitting edge of text
-          // console.log("hitting else");
-          for (let i = anchorOffset + 1; i <= anchorNode?.textContent?.length; i++) {
-            if (anchorNode.textContent[i - 1] !== '\u200B') {
-              console.log("setting anchorNode before", anchorNode.textContent[i])
-              return selection.setBaseAndExtent(anchorNode, i, anchorNode, i);
-            }
-          }
-
-          // console.log("leaving this text node");
-
-          while (indexOfTextNode < textNodes.length) {
-            console.log(indexOfTextNode, textNodes.length);
-            indexOfTextNode++;
-            console.log(indexOfTextNode, textNodes.length);
-            const currentTextNode = textNodes[indexOfTextNode];
-            if (!currentTextNode) continue;
-            const content = currentTextNode.textContent;
-            if (!content) continue;
-            if (content === '\u200B\u200B') {
-              return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
-            }
-            for (let i = 0; i < content.length; i++) {
-              if (content[i] !== '\u200B') {
-                // console.log("setting anchorNode before", content);
-                return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
-              }
-            }
-          }
-        }
-
-        // old
-        // selection.setBaseAndExtent(anchorNode, anchorOffset+1, anchorNode, anchorOffset+1);
-      }
-      else {
-
-        // console.log("from the else block");
-        console.log(indexOfTextNode, textNodes.length);
-
-
-        while (indexOfTextNode < textNodes.length) {
-          console.log(indexOfTextNode, textNodes.length);
-          indexOfTextNode++;
-          console.log(indexOfTextNode, textNodes.length);
-          const currentTextNode = textNodes[indexOfTextNode];
-          if (!currentTextNode) continue;
-          const content = currentTextNode.textContent;
-          if (!content) continue;
-          if (content === '\u200B\u200B') {
-            return selection.setBaseAndExtent(currentTextNode, 1, currentTextNode, 1);
-          }
-          for (let i = 0; i < content.length; i++) {
-            if (content[i] !== '\u200B') {
-              return selection.setBaseAndExtent(currentTextNode, i, currentTextNode, i);
-            }
-          }
-        }
-
-        return;
-
-
-        // const thisIndex = textNodes.findIndex(tn => tn === selection.anchorNode);
-
-        // if (thisIndex < textNodes.length - 1) {
-        //   const rightTextNode = textNodes[thisIndex + 1];
-        //   if (!rightTextNode) return;
-        //   selection.setBaseAndExtent(rightTextNode, 0, rightTextNode, 0);
-        // } else return;
-      }
+      if (!(range.startContainer instanceof Text)) return;
+      const nextPosition = getNextPosition(range.startContainer, range.startOffset, limitingContainer, "left", "[^\u200B]", false, 0, true, true);
+      if (nextPosition === null) return;
+      // else
+      return selection.setBaseAndExtent(nextPosition.currentNode, nextPosition.offset, nextPosition.currentNode, nextPosition.offset)
     }
-
-    // handle check for zero width space character, recursion
-    // if (
-    //   selection &&
-    //   selection.anchorNode &&
-    //   selection.anchorNode.textContent &&
-    //   (
-    //     selection?.anchorNode?.textContent[selection.anchorOffset] === "\u200B" ||
-    //     selection?.anchorNode?.textContent[selection.anchorOffset] === undefined 
-    //   )
-    // ) {
-    //   moveSelection(selection, limitingContainer, moveDirection);
-    // }
-    return;
-
   }
 
   else {
 
     console.log(moveDirection, direction);
+
 
     if (moveDirection === "left" && direction === "backward") {
       selection.setBaseAndExtent(focusNode, focusOffset, focusNode, focusOffset);
