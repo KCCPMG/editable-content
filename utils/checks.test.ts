@@ -1516,7 +1516,7 @@ describe("getNextPosition", function() {
     expect(firstResult.offset).toBe(thirdRawText.textContent!.length-1);
 
     // move by regex which intentionally will not fit the first interrupted-sibling text node
-    const secondResult = getNextPosition(firstUnderlineSecondText, 0, containingDiv, "left", "Second text", false, 0, true, false);
+    const secondResult = getNextPosition(firstUnderlineSecondText, 9, containingDiv, "left", "Second text", false, 0, true, false);
 
     if (!secondResult) throw new Error("result is null");
 
@@ -1524,5 +1524,24 @@ describe("getNextPosition", function() {
     expect(secondResult.offset).toBe(thirdRawText.textContent!.length-1);
 
   })
+
+  test("move right and stop on reset on sibling interruption", function() {
+    // move by just one in overall text
+    const firstResult = getNextPosition(thirdRawText, thirdRawText.textContent!.length-1, containingDiv, "right", ".", false, 0, true, false);
+
+    if (!firstResult) throw new Error("result is null");
+
+    expect(firstResult.currentNode).toBe(firstUnderlineFirstText)
+    expect(firstResult.offset).toBe(1);
+
+    // move by regex which intentionally will not fit the first interrupted-sibling text node
+    const secondResult = getNextPosition(thirdRawText, 5, containingDiv, "right", "Strong Third", false, 0, true, false);
+
+    if (!secondResult) throw new Error("result is null");
+
+    expect(secondResult.currentNode).toBe(firstUnderlineFirstText);
+    expect(secondResult.offset).toBe(1);
+  })
+
 
 })

@@ -1013,10 +1013,24 @@ export function getNextPosition(
         }
       }
     } else if (direction === "right") {
-  //     return {
-  //       currentNode: currentTextNode,
-  //       offset: 1
-  //     }
+      const targetTextNodeIndex = allTextNodes.findIndex(tn => tn === initialResult.currentNode);
+      while (textNodePointer < targetTextNodeIndex) {
+        textNodePointer++;
+        const currentTextNode = allTextNodes[textNodePointer];
+
+        if (!textNodeIsCushioned(currentTextNode)) {
+          cushionTextNode(currentTextNode);
+        }
+
+        if (areUninterruptedSiblingTextNodes(currentTextNode, origNode)) continue;
+        else {
+          return {
+            currentNode: currentTextNode,
+            offset: 1
+          }
+        }
+
+      }
     }
   }
 
