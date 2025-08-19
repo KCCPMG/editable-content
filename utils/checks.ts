@@ -1012,10 +1012,6 @@ export function getNextPosition(
           }
         }
       }
-  //     return {
-  //       currentNode: currentTextNode,
-  //       offset: currentTextNode.length - 1
-  //     }
     } else if (direction === "right") {
   //     return {
   //       currentNode: currentTextNode,
@@ -1046,7 +1042,6 @@ export function getNextPosition(
         // this is for type narrowing but should never occur due to areUninterruptedByBreak
         if (!lastBreak) return initialResult;
 
-        console.log("initial text pointer", textNodePointer);
 
         while (textNodePointer > 0) {
           

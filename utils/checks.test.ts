@@ -1508,14 +1508,20 @@ describe("getNextPosition", function() {
 
   test("move left and stop on reset on sibling interruption", function() {
     // move by just one in overall text
-    const result = getNextPosition(firstUnderlineFirstText, 0, containingDiv, "left", ".", false, 0, true, false);
+    const firstResult = getNextPosition(firstUnderlineFirstText, 0, containingDiv, "left", ".", false, 0, true, false);
 
-    if (!result) throw new Error("result is null");
+    if (!firstResult) throw new Error("result is null");
 
-    expect(result.currentNode).toBe(thirdRawText);
-    expect(result.offset).toBe(thirdRawText.textContent!.length-1);
+    expect(firstResult.currentNode).toBe(thirdRawText);
+    expect(firstResult.offset).toBe(thirdRawText.textContent!.length-1);
 
     // move by regex which intentionally will not fit the first interrupted-sibling text node
+    const secondResult = getNextPosition(firstUnderlineSecondText, 0, containingDiv, "left", "Second text", false, 0, true, false);
+
+    if (!secondResult) throw new Error("result is null");
+
+    expect(secondResult.currentNode).toBe(thirdRawText);
+    expect(secondResult.offset).toBe(thirdRawText.textContent!.length-1);
 
   })
 
