@@ -986,13 +986,21 @@ export function getNextPosition(
     initialResult.currentNode === origNode ||
     areUninterruptedSiblingTextNodes(origNode, initialResult.currentNode)
   ) {
+    // make sure nodes are cushioned
+    if (!(textNodeIsCushioned(origNode))) {
+      cushionTextNode(origNode);
+    }
+    if (!(textNodeIsCushioned(initialResult.currentNode))) {
+      cushionTextNode(initialResult.currentNode);
+    }
+
     return initialResult;
   }
 
   // else - text nodes ARE interrupted
+
   let textNodePointer = allTextNodes.findIndex(tn => tn === origNode);
 
-  // draft - not yet implemented 
   if (resetOnSiblingInterruption) {
     const targetTextNodeIndex = allTextNodes.findIndex(tn => tn === initialResult.currentNode);
     if (direction === "left") {
