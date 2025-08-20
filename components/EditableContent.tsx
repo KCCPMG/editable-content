@@ -304,8 +304,10 @@ export default function EditableContent({ className, disableNewLines }: Editable
               extendSelection(selection, contentRef.current, "left");
             } else if (
               e.shiftKey &&
-              !e.altKey &&
-              e.ctrlKey &&
+              (
+                e.altKey ||
+                e.ctrlKey
+              ) &&
               !e.metaKey
             ) {
               e.preventDefault();
@@ -322,7 +324,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
             ) {
               e.preventDefault();
               moveSelection(selection, contentRef.current, "right");
-              // experimental_moveSelection(selection, contentRef.current, "right");
             }
             else if (
               e.shiftKey &&
@@ -330,13 +331,14 @@ export default function EditableContent({ className, disableNewLines }: Editable
               !e.ctrlKey &&
               !e.metaKey
             ) {
-              // console.log("shift key and left")
               e.preventDefault();
               extendSelection(selection, contentRef.current, "right");
             } else if (
               e.shiftKey &&
-              !e.altKey &&
-              e.ctrlKey &&
+              (
+                e.altKey ||
+                e.ctrlKey
+              ) &&
               !e.metaKey
             ) {
               e.preventDefault();
