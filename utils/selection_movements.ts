@@ -556,7 +556,7 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
 
 
 
-export function shiftSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
+export function extendSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
 
   const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
   const range = selection.getRangeAt(0);
@@ -567,9 +567,6 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
     !(anchorNode instanceof Text) ||
     !(focusNode instanceof Text)
   ) return;
-
-  // const textNodes = getAllTextNodes([limitingContainer]);
-  // let indexOfTextNode = textNodes.findIndex(tn => tn === focusNode);
 
 
   if (moveDirection === "left") {
@@ -588,5 +585,4 @@ export function shiftSelection(selection: Selection, limitingContainer: Element,
   }
 
 }
-
 

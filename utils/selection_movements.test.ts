@@ -807,7 +807,7 @@ describe("test moveSelection", function() {
 })
 
 
-describe("test shiftSelection", function() {
+describe("test extendSelection", function() {
   // TODO
 })
 
