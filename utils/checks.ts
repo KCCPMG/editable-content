@@ -571,11 +571,8 @@ export function identifyBadTextNodes(textNodes: Array<Text>, parentContainer: No
       tn.textContent === '\u200B\u200B' &&
       tn.parentNode === parentContainer &&
       (!(selection && selection.containsNode(tn))) &&
-      !(
-        tn.previousSibling &&
-        tn.previousSibling.nodeType === Node.ELEMENT_NODE &&
-        (tn.previousSibling as Element).tagName === "BR"
-      )
+      (tn.previousSibling && tn.previousSibling instanceof Text) &&
+      (tn.nextSibling && tn.nextSibling instanceof Text)
     )
   })
 }
@@ -994,9 +991,9 @@ export function getNextPosition(
 
       // cushion text node, make sure to adjust offset to account for cushioning
 
-      const zeroWidthSpacesPriorToOffsetBeforeCushion = initialResult.currentNode.textContent.slice(0, initialResult.offset).match(/\u200B/g)?.length || 0;
+      const zeroWidthSpacesPriorToOffsetBeforeCushion = initialResult.currentNode.textContent?.slice(0, initialResult.offset).match(/\u200B/g)?.length || 0;
       cushionTextNode(initialResult.currentNode);
-      const zeroWidthSpacesPriorToOffsetAfterCushion = initialResult.currentNode.textContent.slice(0, initialResult.offset).match(/\u200B/g)?.length || 0;
+      const zeroWidthSpacesPriorToOffsetAfterCushion = initialResult.currentNode.textContent?.slice(0, initialResult.offset).match(/\u200B/g)?.length || 0;
       if (initialResult.offset === 0) initialResult.offset = 1;
       else {
         initialResult.offset = initialResult.offset - zeroWidthSpacesPriorToOffsetBeforeCushion + zeroWidthSpacesPriorToOffsetAfterCushion

@@ -268,7 +268,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
               range.setStart(br.nextSibling, 1);
               range.collapse();
             }
-
+            
             updateContent();
           }
 

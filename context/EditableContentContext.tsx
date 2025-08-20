@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { renderToString } from "react-dom/server";
 import { v4 as uuidv4 } from 'uuid';
 import { EXCLUDE_FROM_DEHYDRATED, PORTAL_CONTAINER_ID_PREFIX, ZWS_RE } from "@/utils/constants";
-import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getAllTextNodes, textNodeIsCushioned, isValidTextEndpoint, identifyBadTextNodes, getIsReactComponent } from "@/utils/checks";
+import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getAllTextNodes, textNodeIsCushioned, isValidTextEndpoint, identifyBadTextNodes, getIsReactComponent, getNextPosition } from "@/utils/checks";
 import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements, cushionTextNode, resetTextNodesCushions } from "@/utils/dom_operations";
 import { resetSelectionToTextNodes, setSelection, moveSelection } from "@/utils/selection_movements";
 
@@ -68,7 +68,9 @@ declare global {
     textNodeIsCushioned: (textNode: Text) => boolean;
     cushionTextNode: (textNode: Text) => void;
     resetTextNodesCushions: (textNodes: Array<Text>) => void;
-    isValidTextEndpoint: any
+    isValidTextEndpoint: any,
+    getNextPosition: any,
+    identifyBadTextNodes: any
   }
 }
 
@@ -151,41 +153,43 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
 
   useEffect(function () {
     window.contentRef = contentRef,
-      window.contentRefCurrentInnerHTML = contentRefCurrentInnerHTML,
-      window.setContentRefCurrentInnerHTML = setContentRefCurrentInnerHTML,
-      window.selectionToString = selectionToString,
-      window.setSelectionToString = setSelectionToString,
-      window.selectionAnchorNode = selectionAnchorNode,
-      window.setSelectionAnchorNode = setSelectionAnchorNode,
-      window.selectionAnchorOffset = selectionAnchorOffset,
-      window.setSelectionAnchorOffset = setSelectionAnchorOffset,
-      window.selectionFocusNode = selectionFocusNode,
-      window.setSelectionFocusNode = setSelectionFocusNode,
-      window.selectionFocusOffset = selectionFocusOffset,
-      window.setSelectionFocusOffset = setSelectionFocusOffset,
-      window.hasSelection = hasSelection,
-      window.setHasSelection = setHasSelection,
-      window.portals = portals,
-      window.setPortals = setPortals,
-      window.divToSetSelectionTo = divToSetSelectionTo,
-      window.setDivToSetSelectionTo = setDivToSetSelectionTo,
-      window.getDehydratedHTML = getDehydratedHTML,
-      window.updatePortalProps = updatePortalProps,
-      window.getAllPortalProps = getAllPortalProps,
-      window.keyAndWrapperObjs = keyAndWrapperObjs,
-      window.updateContent = updateContent,
-      window.createContentPortal = createContentPortal,
-      window.appendPortalToDiv = appendPortalToDiv,
-      window.removePortal = removePortal,
-      window.updateSelection = updateSelection,
-      window.dehydratedHTML = dehydratedHTML,
-      window.getAllTextNodes = getAllTextNodes,
-      window.textNodeIsCushioned = textNodeIsCushioned,
-      window.cushionTextNode = cushionTextNode,
-      window.resetTextNodesCushions = resetTextNodesCushions,
-      window.isValidTextEndpoint = isValidTextEndpoint,
-      window.getRangeChildNodes = getRangeChildNodes,
-      window.moveSelection = moveSelection
+    window.contentRefCurrentInnerHTML = contentRefCurrentInnerHTML,
+    window.setContentRefCurrentInnerHTML = setContentRefCurrentInnerHTML,
+    window.selectionToString = selectionToString,
+    window.setSelectionToString = setSelectionToString,
+    window.selectionAnchorNode = selectionAnchorNode,
+    window.setSelectionAnchorNode = setSelectionAnchorNode,
+    window.selectionAnchorOffset = selectionAnchorOffset,
+    window.setSelectionAnchorOffset = setSelectionAnchorOffset,
+    window.selectionFocusNode = selectionFocusNode,
+    window.setSelectionFocusNode = setSelectionFocusNode,
+    window.selectionFocusOffset = selectionFocusOffset,
+    window.setSelectionFocusOffset = setSelectionFocusOffset,
+    window.hasSelection = hasSelection,
+    window.setHasSelection = setHasSelection,
+    window.portals = portals,
+    window.setPortals = setPortals,
+    window.divToSetSelectionTo = divToSetSelectionTo,
+    window.setDivToSetSelectionTo = setDivToSetSelectionTo,
+    window.getDehydratedHTML = getDehydratedHTML,
+    window.updatePortalProps = updatePortalProps,
+    window.getAllPortalProps = getAllPortalProps,
+    window.keyAndWrapperObjs = keyAndWrapperObjs,
+    window.updateContent = updateContent,
+    window.createContentPortal = createContentPortal,
+    window.appendPortalToDiv = appendPortalToDiv,
+    window.removePortal = removePortal,
+    window.updateSelection = updateSelection,
+    window.dehydratedHTML = dehydratedHTML,
+    window.getAllTextNodes = getAllTextNodes,
+    window.textNodeIsCushioned = textNodeIsCushioned,
+    window.cushionTextNode = cushionTextNode,
+    window.resetTextNodesCushions = resetTextNodesCushions,
+    window.isValidTextEndpoint = isValidTextEndpoint,
+    window.getRangeChildNodes = getRangeChildNodes,
+    window.moveSelection = moveSelection,
+    window.getNextPosition = getNextPosition,
+    window.identifyBadTextNodes = identifyBadTextNodes
   }, [])
 
   /**
