@@ -24,7 +24,7 @@ import SampleReactButton from "@/components/Wrappers/SampleReactButton";
 import DehydratedHTMLDisplay from "@/components/DisplayComponents/DehydratedHTMLDisplay";
 import ButtonAndContentContainer from "@/components/ContentWrappers/ButtonAndContentContainer";
 import RenderedContentContainer from "@/components/ContentWrappers/RenderedContentContainer";
-import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode } from "@/utils/checks";
+import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getNextPosition } from "@/utils/checks";
 import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements } from "@/utils/dom_operations";
 import { resetSelectionToTextNodes, setSelection, moveSelection } from "@/utils/selection_movements";
 
@@ -68,7 +68,8 @@ export default function Page() {
     window.limitingContainer = document.querySelector("[contenteditable]")
     window.getAncestorNode = getAncestorNode;
     window.initialHTML = initialHTML;
-    window.renderToString = renderToString
+    window.renderToString = renderToString,
+    window.getNextPosition = getNextPosition
   }, [])
 
   return (
