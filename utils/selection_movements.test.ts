@@ -587,12 +587,7 @@ describe("test moveSelection", function() {
     moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 2, " ");
     moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongFourthText, 1, " ");
 
-    moveSelection(selection!, LC, "left");
-    console.log(secondStrongSecondText.textContent.replaceAll('\u200B', '\u25A1'), textNodeIsCushioned(secondStrongSecondText));
-    console.log(selection?.anchorNode, selection?.anchorOffset, selection?.anchorNode.textContent[selection.anchorOffset]);
-
-    // going to prior text node, should skip node entirely as it is a direct sibling without valid characters, go to secondStrongSecondText
-    // moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongSecondText, 3, "c");
+    moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongSecondText, 3, "c");
     moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongSecondText, 2, "b");
     moveAndCompareSelectionCheckText(selection!, LC, "left", secondStrongSecondText, 1, "a");
 

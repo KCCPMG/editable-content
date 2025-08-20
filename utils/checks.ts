@@ -991,17 +991,17 @@ export function getNextPosition(
       cushionTextNode(origNode);
     }
     if (!(textNodeIsCushioned(initialResult.currentNode))) {
-      const retrievedOffset = initialResult.offset;
+
+      // cushion text node, make sure to adjust offset to account for cushioning
+
       const zeroWidthSpacesPriorToOffsetBeforeCushion = initialResult.currentNode.textContent.slice(0, initialResult.offset).match(/\u200B/g)?.length || 0;
-      console.log(initialResult.currentNode.textContent.replaceAll('\u200B', '\u25A1'))
       cushionTextNode(initialResult.currentNode);
-      console.log(initialResult.currentNode.textContent.replaceAll('\u200B', '\u25A1'))
       const zeroWidthSpacesPriorToOffsetAfterCushion = initialResult.currentNode.textContent.slice(0, initialResult.offset).match(/\u200B/g)?.length || 0;
       if (initialResult.offset === 0) initialResult.offset = 1;
       else {
         initialResult.offset = initialResult.offset - zeroWidthSpacesPriorToOffsetBeforeCushion + zeroWidthSpacesPriorToOffsetAfterCushion
       }
-      console.log(retrievedOffset, zeroWidthSpacesPriorToOffsetBeforeCushion, zeroWidthSpacesPriorToOffsetAfterCushion, initialResult.offset);
+
     }
 
     return initialResult;
