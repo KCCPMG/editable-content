@@ -3,7 +3,7 @@ import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect, useRef,
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
-import { experimental_moveSelection, moveSelection, resetRangeToTextNodes, resetSelectionToTextNodes, resetSelectionToUsableText, extendSelection } from "@/utils/selection_movements";
+import { experimental_moveSelection, moveSelection, resetRangeToTextNodes, resetSelectionToTextNodes, resetSelectionToUsableText, extendSelection, extendWordSelection } from "@/utils/selection_movements";
 import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection, getAllTextNodes, searchCombinedText, getLastValidCharacterIndex, getNextPosition } from "@/utils/checks";
 import { cushionTextNode, promoteChildrenOfNode } from "@/utils/dom_operations";
 
@@ -302,6 +302,14 @@ export default function EditableContent({ className, disableNewLines }: Editable
             ) {
               e.preventDefault();
               extendSelection(selection, contentRef.current, "left");
+            } else if (
+              e.shiftKey &&
+              !e.altKey &&
+              e.ctrlKey &&
+              !e.metaKey
+            ) {
+              e.preventDefault();
+              extendWordSelection(selection, contentRef.current, "left");
             }
           }
 

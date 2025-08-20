@@ -586,3 +586,36 @@ export function extendSelection(selection: Selection, limitingContainer: Element
 
 }
 
+
+export function extendWordSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
+
+  const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
+  const range = selection.getRangeAt(0);
+  if (
+    !range ||
+    !anchorNode || 
+    !focusNode ||
+    !(anchorNode instanceof Text) ||
+    !(focusNode instanceof Text)
+  ) return;
+
+
+  if (moveDirection === "left") {
+    if (!(range.startContainer instanceof Text)) return;
+    const nextPosition = getNextPosition(focusNode, focusOffset-1, limitingContainer, "left", "\\u200B| \\S", false, 1, true, true);
+
+    console.log("nextPosition", nextPosition?.currentNode, nextPosition?.offset);
+    
+    if (nextPosition === null) return;
+    // else
+    return selection.setBaseAndExtent(anchorNode, anchorOffset, nextPosition.currentNode, nextPosition.offset)
+  }
+  else if (moveDirection === "right") {
+    if (!(range.startContainer instanceof Text)) return;
+    const nextPosition = getNextPosition(focusNode, focusOffset-1, limitingContainer, "right", "[^\u200B]", true, 0, true, true);
+    if (nextPosition === null) return;
+    // else
+    return selection.setBaseAndExtent(anchorNode, anchorOffset, nextPosition.currentNode, nextPosition.offset)
+  }
+
+}
