@@ -340,7 +340,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
               const direction = getSelectionDirection(selection);
               if (direction === "none") {
                 e.preventDefault();
-                shiftSelection(selection, contentRef.current, "right");
+                extendSelection(selection, contentRef.current, "right");
                 selection.getRangeAt(0).deleteContents();
                 updateContent();
               }
