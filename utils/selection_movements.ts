@@ -602,20 +602,22 @@ export function extendWordSelection(selection: Selection, limitingContainer: Ele
 
   if (moveDirection === "left") {
     if (!(range.startContainer instanceof Text)) return;
-    const nextPosition = getNextPosition(focusNode, focusOffset-1, limitingContainer, "left", "\\u200B| \\S", false, 1, true, true);
-
-    console.log("nextPosition", nextPosition?.currentNode, nextPosition?.offset);
+    const nextPosition = getNextPosition(focusNode, focusOffset-1, limitingContainer, "left", "\\u200B| \\S", false, 1, false, true);
     
     if (nextPosition === null) return;
     // else
     return selection.setBaseAndExtent(anchorNode, anchorOffset, nextPosition.currentNode, nextPosition.offset)
   }
+
   else if (moveDirection === "right") {
     if (!(range.startContainer instanceof Text)) return;
-    const nextPosition = getNextPosition(focusNode, focusOffset-1, limitingContainer, "right", "[^\u200B]", true, 0, true, true);
+    const nextPosition = getNextPosition(focusNode, focusOffset, limitingContainer, "right", "\\S |\\S\\u200B$", false, 1, false, true);
     if (nextPosition === null) return;
     // else
     return selection.setBaseAndExtent(anchorNode, anchorOffset, nextPosition.currentNode, nextPosition.offset)
   }
 
 }
+
+
+// const { focusNode, focusOffset } = window.getSelection();

@@ -333,6 +333,14 @@ export default function EditableContent({ className, disableNewLines }: Editable
               // console.log("shift key and left")
               e.preventDefault();
               extendSelection(selection, contentRef.current, "right");
+            } else if (
+              e.shiftKey &&
+              !e.altKey &&
+              e.ctrlKey &&
+              !e.metaKey
+            ) {
+              e.preventDefault();
+              extendWordSelection(selection, contentRef.current, "right");
             }
           }
 
