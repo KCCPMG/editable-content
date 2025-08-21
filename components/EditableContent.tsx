@@ -347,131 +347,32 @@ export default function EditableContent({ className, disableNewLines }: Editable
           }
 
           if (e.code === "Delete") {
-            if (
-              !e.shiftKey &&
-              !e.altKey &&
-              !e.ctrlKey &&
-              !e.metaKey
-            ) {
-              console.log("delete");
-              // TODO: replace use of getSelectionDirection with something simpler 
-              const direction = getSelectionDirection(selection);
-              if (direction === "none") {
-                e.preventDefault();
-                extendSelection(selection, contentRef.current, "right");
-                selection.getRangeAt(0).deleteContents();
-                updateContent();
-              }
+            e.preventDefault();
+            
+            if (range.toString().length === 0) {
+              extendSelection(selection, contentRef.current, "right");
+              clearAndResetSelection(selection);
+            } 
+            else {
+              clearAndResetSelection(selection);
             }
+
+            updateContent();
           }
 
           if (e.code === "Backspace") {
-            console.log("backspace");
-            if (range.toString().length === 0) {
 
-              e.preventDefault();
-
-              if (!(range.startContainer instanceof Text)) {
-                console.log("range.startContainer is not instance of text")
-                console.log(range.startContainer);
-                return null;
-              }
-
-              const allTextNodes = getAllTextNodes([contentRef.current]);
-              // let textNode = range.startContainer;
-              // let offset = range.startOffset;
-
-              // if (offset === 0) {
-              //   const textNodeIndex = allTextNodes.findIndex(tn => tn === textNode) - 1;
-              //   if (textNodeIndex < 0) return;
-              //   else {
-              //     textNode = allTextNodes[textNodeIndex];
-              //     offset = textNode.textContent.length;
-              //   }
-              // }
-
-              const leftEndpoint = searchCombinedText({
-                textNodes: allTextNodes,
-                reSource: "[^\u200B]",
-                getLast: true,
-                upTo: {
-                  textNode: range.startContainer,
-                  nodeOffset: range.startOffset - 1
-                }
-
-              })
-
-
-              console.log({
-                start: {
-                  currentNode: range.startContainer.textContent,
-                  offset: range.startOffset
-                },
-                leftEndpoint: {
-                  currentNode: leftEndpoint?.currentNode.textContent,
-                  offset: leftEndpoint?.offset
-                }
-              });
-
-              if (leftEndpoint) {
-                range.setStart(leftEndpoint?.currentNode, leftEndpoint.offset);
-                
-                // handle break to only delete one break at a time
-                const breaks = Array.from(contentRef.current.querySelectorAll('br'))
-                  .filter(b => range.comparePoint(b,0) === 0)
-
-                if (breaks.length > 0) {
-                  console.log("\nbreaks.length > 0,", breaks.length, "\n")
-                  const breakToDelete = breaks[breaks.length - 1];
-                  console.log(breakToDelete);
-                  
-                  let textNodeIndex = allTextNodes.findIndex(tn => tn === range.endContainer);
-
-                  while (textNodeIndex > 0) {
-                    
-                    const currentTextNode = allTextNodes[textNodeIndex];
-                    if (currentTextNode.compareDocumentPosition(breakToDelete) === 4) {
-                      const currentTextNodeOffset = getLastValidCharacterIndex(currentTextNode);
-                      console.log({currentTextNode, currentTextNodeOffset})
-                      range.setStart(currentTextNode, currentTextNodeOffset);
-                      console.log(range);
-                      break;
-                    }
-                    textNodeIndex--;
-                  }
-
-                }
-                
-                console.log(range);
-                const startContainer = range.startContainer;
-                const startOffset = range.startOffset;
-                range.extractContents();
-                range.setStart(startContainer, startOffset);
-                // console.(range);
-                range.collapse(true);
-                console.log(range);
-
-              }
-              updateContent();
-            } 
+            e.preventDefault();
             
-            else {
-              e.preventDefault();
-
+            if (range.toString().length === 0) {
+              extendSelection(selection, contentRef.current, "left");
               clearAndResetSelection(selection);
-              updateContent();
-
-              // if (
-              //   !(range.startContainer instanceof Text) ||
-              //   !(range.endContainer instanceof Text) 
-              // ) return;
-
-              // const { startContainer, startOffset } = range;
-              // range.extractContents();
-              // selection.setBaseAndExtent(startContainer, startOffset, startContainer, startOffset);
-
-              // return;
+            } 
+            else {
+              clearAndResetSelection(selection);
             }
+
+            updateContent();
           }
 
         }}
