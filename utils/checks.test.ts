@@ -4,7 +4,7 @@
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
 import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getAllTextNodes, searchCombinedText, getReMatch, getNextPosition } from "./checks";
 import { setSelection, resetRangeToTextNodes } from "./selection_movements";
-import { startingHTML, alternateHTML } from "./test_constants";
+import { startingHTML, alternateHTML } from "./test_constants_and_helpers";
 
 
 

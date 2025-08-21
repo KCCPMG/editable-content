@@ -1,3 +1,22 @@
+
+export function compareSelection(selection: Selection, expAnchorNode: Node, expAnchorOffset: number, expFocusNode?: Node, expFocusOffset?: number) {
+  expect(selection.anchorNode).toBe(expAnchorNode);
+  expect(selection.anchorOffset).toBe(expAnchorOffset);
+  if (expFocusNode) {
+    expect(selection.focusNode).toBe(expFocusNode);
+  } else expect(selection.focusNode).toBe(expAnchorNode);
+  if (expFocusOffset) {
+    expect(selection.focusOffset).toBe(expFocusOffset);
+  } else expect(selection.focusOffset).toBe(expAnchorOffset);
+}
+
+
+export function checkText(selection: Selection, character: string) {
+  expect(selection.anchorNode!.textContent![selection.anchorOffset]).toBe(character);
+}
+
+
+
 export const startingHTML = 
 `<div>
   <strong id="strong-1">Strong Text</strong>
