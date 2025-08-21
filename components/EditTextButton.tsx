@@ -6,7 +6,7 @@ import { renderToString } from "react-dom/server";
 import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
 import { getAllTextNodes, getAncestorNode, getButtonStatus, getIsReactComponent, getLastValidCharacterIndex, getLastValidTextNode, getRangeChildNodes, getRangeLowestAncestorElement } from "@/utils/checks";
 import { generateQuery, unwrapSelectionFromQuery, createWrapper, wrapInElement, cushionTextNode } from "@/utils/dom_operations";
-import { resetRangeToTextNodes, resetSelectionToTextNodes, moveSelection, experimental_moveSelection } from "@/utils/selection_movements";
+import { resetRangeToTextNodes, resetSelectionToTextNodes, moveSelection } from "@/utils/selection_movements";
 
 type htmlSelectCallback = (wrapper: HTMLElement) => void
 type reactSelectCallback = (wrapper: ReactElement<any, string | JSXElementConstructor<any>>, portalId: string | undefined) => void
@@ -297,7 +297,7 @@ export default function EditTextButton({
 
     // moveSelection(selection, contentRef?.current, "right");
     if (targetElement.nextSibling && targetElement.nextSibling.nodeType === Node.TEXT_NODE) {
-      experimental_moveSelection(selection, contentRef.current, "right");
+      moveSelection(selection, contentRef.current, "right");
     }
     else {
       const newEmptyTextNode = new Text('\u200B\u200B');
