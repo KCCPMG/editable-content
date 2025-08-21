@@ -247,8 +247,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
           if (!selection || selection.rangeCount === 0 || !contentRef.current) return;
           const range = selection.getRangeAt(0);
 
-          console.log(e.key, e.key.length);
-
           // delete range before replacing with character to prevent text merging
           if (
             e.key.length === 1 && 
@@ -364,11 +362,8 @@ export default function EditableContent({ className, disableNewLines }: Editable
             
             if (range.toString().length === 0) {
               extendSelection(selection, contentRef.current, "right");
-              clearAndResetSelection(selection);
             } 
-            else {
-              clearAndResetSelection(selection);
-            }
+            clearAndResetSelection(selection);
 
             updateContent();
           }
@@ -379,11 +374,9 @@ export default function EditableContent({ className, disableNewLines }: Editable
             
             if (range.toString().length === 0) {
               extendSelection(selection, contentRef.current, "left");
-              clearAndResetSelection(selection);
             } 
-            else {
-              clearAndResetSelection(selection);
-            }
+
+            clearAndResetSelection(selection);
 
             updateContent();
           }

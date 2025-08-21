@@ -571,14 +571,14 @@ export function extendSelection(selection: Selection, limitingContainer: Element
 
   if (moveDirection === "left") {
     if (!(range.startContainer instanceof Text)) return;
-    const nextPosition = getNextPosition(focusNode, focusOffset, limitingContainer, "left", "[^\u200B]", false, 0, true, true);
+    const nextPosition = getNextPosition(focusNode, focusOffset, limitingContainer, "left", "[^\u200B]", false, 0, false, true);
     if (nextPosition === null) return;
     // else
     return selection.setBaseAndExtent(anchorNode, anchorOffset, nextPosition.currentNode, nextPosition.offset)
   }
   else if (moveDirection === "right") {
     if (!(range.startContainer instanceof Text)) return;
-    const nextPosition = getNextPosition(focusNode, focusOffset-1, limitingContainer, "right", "[^\u200B]", true, 0, true, true);
+    const nextPosition = getNextPosition(focusNode, focusOffset-1, limitingContainer, "right", "[^\u200B]", true, 0, false, true);
     if (nextPosition === null) return;
     // else
     return selection.setBaseAndExtent(anchorNode, anchorOffset, nextPosition.currentNode, nextPosition.offset)
