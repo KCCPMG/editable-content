@@ -1,4 +1,4 @@
-import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getNextRightEndpoint, getNextPosition } from "./checks";
+import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getNextPosition } from "./checks";
 import { ZWS_RE } from "./constants";
 import { cushionTextNode } from "./dom_operations";
 

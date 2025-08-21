@@ -1,4 +1,4 @@
-import { areUninterruptedSiblingTextNodes, getAllTextNodes, getLastValidCharacterIndex, getNextRightEndpoint, getSelectionDirection } from "./checks";
+import { areUninterruptedSiblingTextNodes, getAllTextNodes, getLastValidCharacterIndex, getSelectionDirection, searchCombinedTextArgumentObject } from "./checks";
 import { resetSelectionToTextNodes } from "./selection_movements";
 
 export function bisect(myRef: React.MutableRefObject<HTMLDivElement | null>) {
@@ -612,6 +612,156 @@ export function experimental_moveSelection(selection: Selection, limitingContain
     }
 
   }
+
+
+}
+
+
+
+export function getNextLeftEndpoint(textNodes: Array<Text>, startingIndexOfTextNode: number, startingOffset: number) {
+
+  let indexOfTextNode = startingIndexOfTextNode;
+  let offset = startingOffset;
+
+  // index check
+  if (
+    indexOfTextNode < 0 ||
+    indexOfTextNode >= textNodes.length
+  ) {
+    return;
+  }
+
+  let currentNode = textNodes[indexOfTextNode];
+
+  if (currentNode.textContent) {
+
+  }
+}
+
+
+export function getNextRightEndpoint(textNodes: Array<Text>, startingIndexOfTextNode: number, startingOffset: number) {
+
+  let indexOfTextNode = startingIndexOfTextNode;
+  let offset = startingOffset;
+
+  // index check
+  if (
+    indexOfTextNode < 0 ||
+    indexOfTextNode >= textNodes.length
+  ) {
+    return;
+  }
+
+  let currentNode = textNodes[indexOfTextNode];
+
+  if (currentNode.textContent) {
+    if (offset < currentNode.textContent.length) {
+
+      // find first non-zero-width space character
+      const reMatch = currentNode
+        .textContent
+        .slice(offset)
+        .match(/[^\u200B]/);
+
+      if (reMatch && reMatch.index !== undefined) {
+        const newIndex = reMatch.index + offset + 1;
+        return { currentNode, newIndex }
+      }
+    }
+  }
+
+  // else
+  while (indexOfTextNode < textNodes.length) {
+
+    indexOfTextNode++;
+    if (indexOfTextNode >= textNodes.length) return;
+
+    // determine if is sibling
+    // const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
+    const isSibling = areUninterruptedSiblingTextNodes(currentNode, textNodes[indexOfTextNode])
+    currentNode = textNodes[indexOfTextNode];
+    if (!(currentNode instanceof Text)) return; // narrow type
+
+    if (isSibling && currentNode.textContent !== null) {
+      const reMatch = currentNode
+        .textContent
+        .match(/[^\u200B]/);
+
+      if (reMatch && reMatch.index !== undefined) {
+        const newIndex = reMatch.index + 1;
+        return { currentNode, newIndex };
+      }
+    } else {
+
+      // if empty text
+      if (currentNode.textContent === "") {
+        return { currentNode, newIndex: 0 };
+      }
+
+      // if only character is zero-width space
+      if (currentNode.textContent === "\u200B") {
+        return { currentNode, newIndex: 1 };
+      }
+
+      // if is fully cushioned node
+      if (
+        currentNode.textContent !== null &&
+        currentNode.textContent.split("").every(ch => ch === "\u200B")
+      ) {
+        return { currentNode, newIndex: 1 };
+      }
+
+      /**
+       * else - find first non-zero-width space character as above, but 
+       * place cursor *before* first valid character
+       */
+      if (currentNode.textContent) {
+        const reMatch = currentNode
+          .textContent
+          .match(/[^\u200B]/);
+
+        if (reMatch && reMatch.index !== undefined) {
+          const newIndex = reMatch.index;
+          return { currentNode, newIndex }
+        }
+      }
+    }
+  }
+}
+
+
+export function alternativeGetNextPosition(
+  direction: "left" | "right",
+  searchObject: searchCombinedTextArgumentObject,
+  originalNode: Text, originalOffset: number,
+  resetOnSiblingInterruption: boolean, resetOnBreakInterruption: boolean,
+  currentNode?: Text, currentOffset?: number
+) {
+
+  if (!(originalNode instanceof Text)) return;
+  if (currentNode && !(currentNode instanceof Text)) return;
+
+
+  // move left or right
+  if (direction === "right") {
+    // searchCombinedText? or do this manually? 
+    // If doing search combined text, will have difficulty with breaks, interruptions
+    // if doing this manually will have a hard time 
+  } else if (direction === "left") {
+
+  }
+
+  // if currentNode != orig Node
+  // if node is not cushioned, cushion node
+  // if areUninterruptedSiblings
+  // if offset is valid, (matches re?) return node and offset (include different offset parameter? ie " \u2000B" + 1)
+  // else - not uninterrupted siblings
+  // if resetObSiblingInterruption
+  // ignore sought character, if going right set at 1, if going left set at text.textContent.length-1
+  // else if resetOnBreakInterruptions and interrupted by break
+  // ignore sought character, if going right set at 1, if going left set at text.textContent.length-1
+  // else
+  // can return currentNode and offset if they exist
 
 
 }

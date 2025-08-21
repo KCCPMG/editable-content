@@ -58,7 +58,14 @@ export function getNearestValidOffset(content: string, initialOffset: number) {
 
 
 
-
+/**
+ * Given a node, a query, and a limitingContainer node, returns true if 
+ * the node is inside the limitingContainer and matches the query, otherwise false
+ * @param node 
+ * @param query 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function nodeIsDescendentOf(node: Node, query: string, limitingContainer: Node) {
   let parentNode = node.parentNode;
   while (parentNode) {
@@ -73,7 +80,15 @@ export function nodeIsDescendentOf(node: Node, query: string, limitingContainer:
 }
 
 
-
+/**
+ * Given a node, a query, and a limitingContainer node, climbs the node's
+ * ancestors up to the limitingContainer, and returns the first ancestor node
+ * which matches the query, or if not found, returns null
+ * @param node 
+ * @param query 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function getAncestorNode(node: Node, query: string, limitingContainer: Node): Node | null {
   let parentNode = node.parentNode;
   while (parentNode) {
@@ -89,12 +104,26 @@ export function getAncestorNode(node: Node, query: string, limitingContainer: No
 }
 
 
+/**
+ * Given a range, returns that range's commonAncestor if it is an Element,
+ * otherwise returns nearest ancestor which is an Element. If no Element
+ * ancestor is found, returns null
+ * @param range 
+ * @returns 
+ */
 export function getRangeLowestAncestorElement(range: Range): Element | null {
   const commonContainer = range.commonAncestorContainer;
   return getNodeLowestAncestorElement(commonContainer);
 }
 
 
+/**
+ * Given a node, if that node is an element, returns that node. Otherwise,
+ * recursively climbs dom from node and returns first Element found. If no
+ * element is found, returns null.
+ * @param node 
+ * @returns 
+ */
 function getNodeLowestAncestorElement(node: Node): Element | null {
   // if (node.nodeType === Node.ELEMENT_NODE) return node;
   if (node instanceof Element) return node;
@@ -106,6 +135,12 @@ function getNodeLowestAncestorElement(node: Node): Element | null {
 }
 
 
+/**
+ * Given a selection, returns the selection's direction as "none", "forward",
+ * or "backward"
+ * @param selection 
+ * @returns 
+ */
 export function getSelectionDirection(selection: Selection | null) {
   if (!selection) return "none";
   if (selection.rangeCount === 0) return "none";
@@ -174,7 +209,7 @@ export function getSelectionChildNodes(selection: Selection, limitingContainer: 
   return getRangeChildNodes(range, limitingContainer);
 }
 
-
+// TODO: Double check this function, make sure it works as intended
 /**
  * Returns all nodes (elements and text) which descend from a 
  * limitingContainer node and begin and/or end within the given
@@ -192,7 +227,7 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
     startContainer
 
   const endNode = endContainer.hasChildNodes() ?
-    endContainer.childNodes[Math.max(0, endOffset - 1)] : // [Math.max(0, endOffset-1)]
+    endContainer.childNodes[Math.max(0, endOffset - 1)] : 
     endContainer
 
 
@@ -200,16 +235,12 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
     document.createTreeWalker(startNode) :
     document.createTreeWalker(limitingContainer);
 
-  // const tw = document.createTreeWalker(limitingContainer);
-
   const childNodes: Array<Node> = [];
   let inRange = false;
 
   while (true) {
 
     const currentNode = tw.currentNode;
-    // if (currentNode) childNodes.push(currentNode);
-    // else break;
 
     if (!currentNode) break;
 
@@ -221,8 +252,6 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
 
     // not an else statement, can flip inRange switch and then progress
     if (inRange) {
-      // childNodes.push(currentNode);
-      // if (currentNode == endNode) break;
 
       // if we're at the end, wrap up
       if (currentNode == endNode) {
@@ -249,16 +278,12 @@ export function getRangeChildNodes(range: Range, limitingContainer: Node): Array
 
   }
   return childNodes;
-
-  // const firstIndex = childNodes.findIndex(cn => cn === selection.getRangeAt(0).startContainer);
-
-  // return Array.from(selection.getRangeAt(0).cloneContents().childNodes)
 }
 
 
 /**
- * Checks if all text in selection is covered by one or more elements matching a given query, 
- * provided all are within a limitingContainer Node
+ * Checks if all text in selection is covered by one or more elements 
+ * matching a given query, provided all are within a limitingContainer Node
  * @param selection 
  * @param query 
  * @param limitingContainer 
@@ -274,13 +299,26 @@ export function selectionIsCoveredBy(selection: Selection, query: string, limiti
 
 }
 
-
+/**
+ * Returns boolean indicating if there are one or more text nodes 
+ * in the given selection
+ * @param selection 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function selectionHasTextNodes(selection: Selection, limitingContainer: Element) {
   const childNodes = getSelectionChildNodes(selection, limitingContainer);
   return childNodes.some(cn => cn.nodeType === Node.TEXT_NODE);
 }
 
-
+/**
+ * Returns boolean indicating whether all child nodes in a selection are
+ * text nodes
+ * @param selection 
+ * @param limitingContainer 
+ * @param query 
+ * @returns 
+ */
 export function selectionContainsOnlyText(selection: Selection, limitingContainer: Node, query: string) {
   const childNodes = getSelectionChildNodes(selection, limitingContainer);
   return (
@@ -295,7 +333,14 @@ export function selectionContainsOnlyText(selection: Selection, limitingContaine
   );
 }
 
-
+/**
+ * Returns a boolean indicating whether the selection contains any
+ * unbreakable elements, defined by having the data-unbreakable 
+ * attribute
+ * @param selection 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function selectionContainsNoUnbreakables(selection: Selection, limitingContainer: Node) {
   const childNodes = getSelectionChildNodes(selection, limitingContainer);
   return (
@@ -304,6 +349,19 @@ export function selectionContainsNoUnbreakables(selection: Selection, limitingCo
 }
 
 
+/**
+ * Given a selection, a boolean signifying an element is unbreakable, 
+ * a query generated by a button, and the limitingContainer, returns an
+ * object with a boolean for enabled, and a boolean for selected. This 
+ * is to be used by an EditTextButton to determine the button's state
+ * based on what is currently selected and what wrapper the button applies
+ * or removes.
+ * @param selection 
+ * @param isUnbreakable 
+ * @param query 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function getButtonStatus(selection: Selection | null, isUnbreakable: boolean | undefined, query: string, limitingContainer: Node | null) {
 
   const status = {
@@ -393,6 +451,12 @@ export function getButtonStatus(selection: Selection | null, isUnbreakable: bool
 }
 
 
+/**
+ * Given an array of nodes, recursively descends each to compile an 
+ * array of text nodes
+ * @param nodes 
+ * @returns 
+ */
 export function getAllTextNodes(nodes: Array<Node>): Array<Text> {
   const textNodes: Array<Text> = [];
 
@@ -416,7 +480,13 @@ export function getAllTextNodes(nodes: Array<Node>): Array<Text> {
   return textNodes;
 }
 
-
+/**
+ * Given an array of text nodes, traverses the array backwards to return
+ * the last text node which has a non-zero-width space character OR is a
+ * text node which follows a br element
+ * @param textNodeArr 
+ * @returns 
+ */
 export function getLastValidTextNode(textNodeArr: Array<Text>) {
   for (let i = textNodeArr.length - 1; i >= 0; i--) {
     const textNode = textNodeArr[i];
@@ -428,7 +498,6 @@ export function getLastValidTextNode(textNodeArr: Array<Text>) {
         (textNode.previousSibling as Element).tagName === "BR"
       )
     ) {
-
       return textNode;
     }
   }
@@ -533,14 +602,25 @@ export function areUninterruptedSiblingTextNodes(node1: Text, node2: Text): bool
 }
 
 
-
+/**
+ * Returns if a given element is a valid React component
+ * @param component 
+ * @returns 
+ */
 export function getIsReactComponent(component: ReactElement) {
   if (!React.isValidElement(component)) return false;
   return (typeof component.type === "function" ||
     typeof component.type === "object");
 }
 
-
+/**
+ * Determines whether a given text node is cushioned, meaning
+ * it has a length of 2 or more, begins with a zero-width space,
+ * ends with a zero-width space, and does not have any zero-width
+ * spaces in any positions besides first and last
+ * @param textNode 
+ * @returns 
+ */
 export function textNodeIsCushioned(textNode: Text) {
   const content = textNode.textContent;
   if (!content) return false;
@@ -622,7 +702,7 @@ export function getReMatch(str: string, sourceString: string, startOffset: numbe
 }
 
 
-type searchCombinedTextArgumentObject = {
+export type searchCombinedTextArgumentObject = {
   textNodes: Array<Text>,
   reSource: string,
   returnAfterMatch?: boolean,
@@ -663,7 +743,6 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     upTo = null
   } = argumentObject;
 
-
   // set up string
   const combinedString = textNodes.map(tn => tn.textContent).join("");
 
@@ -701,7 +780,6 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
       + startFrom.nodeOffset;
   }
 
-
   // narrow end offset
   if (upTo) {
     const endingIndex = textNodes.findIndex(tn => tn === upTo.textNode) - 1;
@@ -720,7 +798,6 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
     endOffset = (endingIndex === -1 ? 0 : intervals[endingIndex])
       + upTo.nodeOffset;
   }
-
 
   // find re
   const combinedStringMatch = getReMatch(combinedString, reSource, startOffset, endOffset, getLast);
@@ -746,169 +823,6 @@ export function searchCombinedText(argumentObject: searchCombinedTextArgumentObj
       offset: characterIndex - stringLengthPriorToTextNode
     }
   }
-
-}
-
-
-export function getNextLeftEndpoint(textNodes: Array<Text>, startingIndexOfTextNode: number, startingOffset: number) {
-
-  let indexOfTextNode = startingIndexOfTextNode;
-  let offset = startingOffset;
-
-  // index check
-  if (
-    indexOfTextNode < 0 ||
-    indexOfTextNode >= textNodes.length
-  ) {
-    return;
-  }
-
-  let currentNode = textNodes[indexOfTextNode];
-
-  if (currentNode.textContent) {
-
-  }
-}
-
-
-export function getNextRightEndpoint(textNodes: Array<Text>, startingIndexOfTextNode: number, startingOffset: number) {
-
-  let indexOfTextNode = startingIndexOfTextNode;
-  let offset = startingOffset;
-
-  // index check
-  if (
-    indexOfTextNode < 0 ||
-    indexOfTextNode >= textNodes.length
-  ) {
-    return;
-  }
-
-  let currentNode = textNodes[indexOfTextNode];
-
-  if (currentNode.textContent) {
-    if (offset < currentNode.textContent.length) {
-
-      // find first non-zero-width space character
-      const reMatch = currentNode
-        .textContent
-        .slice(offset)
-        .match(/[^\u200B]/);
-
-      if (reMatch && reMatch.index !== undefined) {
-        const newIndex = reMatch.index + offset + 1;
-        return { currentNode, newIndex }
-      }
-    }
-  }
-
-  // else
-  while (indexOfTextNode < textNodes.length) {
-
-    indexOfTextNode++;
-    if (indexOfTextNode >= textNodes.length) return;
-
-    // determine if is sibling
-    // const isSibling = (textNodes[indexOfTextNode].parentNode === anchorNode.parentNode);
-    const isSibling = areUninterruptedSiblingTextNodes(currentNode, textNodes[indexOfTextNode])
-    currentNode = textNodes[indexOfTextNode];
-    if (!(currentNode instanceof Text)) return; // narrow type
-
-    if (isSibling && currentNode.textContent !== null) {
-      const reMatch = currentNode
-        .textContent
-        .match(/[^\u200B]/);
-
-      if (reMatch && reMatch.index !== undefined) {
-        const newIndex = reMatch.index + 1;
-        return { currentNode, newIndex };
-      }
-    } else {
-
-      // if empty text
-      if (currentNode.textContent === "") {
-        return { currentNode, newIndex: 0 };
-      }
-
-      // if only character is zero-width space
-      if (currentNode.textContent === "\u200B") {
-        return { currentNode, newIndex: 1 };
-      }
-
-      // if is fully cushioned node
-      if (
-        currentNode.textContent !== null &&
-        currentNode.textContent.split("").every(ch => ch === "\u200B")
-      ) {
-        return { currentNode, newIndex: 1 };
-      }
-
-      /**
-       * else - find first non-zero-width space character as above, but 
-       * place cursor *before* first valid character
-       */
-      if (currentNode.textContent) {
-        const reMatch = currentNode
-          .textContent
-          .match(/[^\u200B]/);
-
-        if (reMatch && reMatch.index !== undefined) {
-          const newIndex = reMatch.index;
-          return { currentNode, newIndex }
-        }
-      }
-
-
-    }
-
-  }
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-export function alternativeGetNextPosition(
-  direction: "left" | "right",
-  searchObject: searchCombinedTextArgumentObject,
-  originalNode: Text, originalOffset: number,
-  resetOnSiblingInterruption: boolean, resetOnBreakInterruption: boolean,
-  currentNode?: Text, currentOffset?: number
-) {
-
-  if (!(originalNode instanceof Text)) return;
-  if (currentNode && !(currentNode instanceof Text)) return;
-
-
-  // move left or right
-  if (direction === "right") {
-    // searchCombinedText? or do this manually? 
-    // If doing search combined text, will have difficulty with breaks, interruptions
-    // if doing this manually will have a hard time 
-  } else if (direction === "left") {
-
-  }
-
-  // if currentNode != orig Node
-  // if node is not cushioned, cushion node
-  // if areUninterruptedSiblings
-  // if offset is valid, (matches re?) return node and offset (include different offset parameter? ie " \u2000B" + 1)
-  // else - not uninterrupted siblings
-  // if resetObSiblingInterruption
-  // ignore sought character, if going right set at 1, if going left set at text.textContent.length-1
-  // else if resetOnBreakInterruptions and interrupted by break
-  // ignore sought character, if going right set at 1, if going left set at text.textContent.length-1
-  // else
-  // can return currentNode and offset if they exist
-
 
 }
 
@@ -945,7 +859,21 @@ function areUninterruptedByBreak(text1: Text, text2: Text): boolean {
 
 
 
-
+/**
+ * Helper function which makes determinations about how 
+ * to use searchCombinedText to get a specific position, 
+ * for use with specific selection movements
+ * @param origNode 
+ * @param origOffset 
+ * @param limitingContainer 
+ * @param direction 
+ * @param reSource 
+ * @param returnAfterMatch 
+ * @param returnIndexOffset 
+ * @param resetOnSiblingInterruption 
+ * @param resetOnBreakInterruption 
+ * @returns 
+ */
 export function getNextPosition(
   origNode: Text,
   origOffset: number,
@@ -1125,13 +1053,9 @@ export function getNextPosition(
 
     }
 
-  } else {
-
   }
 
   // nothing found
   return null;
-
-
 
 } 
