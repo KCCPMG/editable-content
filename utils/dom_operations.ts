@@ -432,3 +432,21 @@ export function interceptSyntheticKeyboardEvent(e: ExpandedKeyboardEvent, callba
   }
 
 }
+
+
+export function clearAndResetSelection(selection: Selection) {
+
+  const range = selection.getRangeAt(0);
+  const { startContainer, startOffset, endContainer } = range;
+
+  if (
+    !(startContainer instanceof Text) || 
+    !(endContainer instanceof Text)
+  ) return;
+
+  range.extractContents();
+  selection.setBaseAndExtent(startContainer, startOffset, startContainer, startOffset);
+
+  return;
+
+}

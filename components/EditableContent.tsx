@@ -5,7 +5,7 @@ import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
 import { experimental_moveSelection, moveSelection, resetRangeToTextNodes, resetSelectionToTextNodes, resetSelectionToUsableText, extendSelection, extendWordSelection } from "@/utils/selection_movements";
 import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection, getAllTextNodes, searchCombinedText, getLastValidCharacterIndex, getNextPosition } from "@/utils/checks";
-import { cushionTextNode, interceptSyntheticKeyboardEvent, promoteChildrenOfNode } from "@/utils/dom_operations";
+import { clearAndResetSelection, cushionTextNode, interceptSyntheticKeyboardEvent, promoteChildrenOfNode } from "@/utils/dom_operations";
 
 
 export default function EditableContent({ className, disableNewLines }: EditableContentProps) {
@@ -458,16 +458,19 @@ export default function EditableContent({ className, disableNewLines }: Editable
             else {
               e.preventDefault();
 
-              if (
-                !(range.startContainer instanceof Text) ||
-                !(range.endContainer instanceof Text) 
-              ) return;
+              clearAndResetSelection(selection);
+              updateContent();
 
-              const { startContainer, startOffset } = range;
-              range.extractContents();
-              selection.setBaseAndExtent(startContainer, startOffset, startContainer, startOffset);
+              // if (
+              //   !(range.startContainer instanceof Text) ||
+              //   !(range.endContainer instanceof Text) 
+              // ) return;
 
-              return;
+              // const { startContainer, startOffset } = range;
+              // range.extractContents();
+              // selection.setBaseAndExtent(startContainer, startOffset, startContainer, startOffset);
+
+              // return;
             }
           }
 
