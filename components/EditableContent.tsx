@@ -247,6 +247,19 @@ export default function EditableContent({ className, disableNewLines }: Editable
           if (!selection || selection.rangeCount === 0 || !contentRef.current) return;
           const range = selection.getRangeAt(0);
 
+          console.log(e.key, e.key.length);
+
+          // delete range before replacing with character to prevent text merging
+          if (
+            e.key.length === 1 && 
+            range.toString().length > 0 &&
+            range.startContainer instanceof Text &&
+            range.endContainer instanceof Text
+          ) {
+            clearAndResetSelection(selection);
+            // allow e to continue - no block on default
+          }
+
           if (e.code === "Enter") {
             e.preventDefault();
             if (disableNewLines) return;
