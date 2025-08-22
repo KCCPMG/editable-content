@@ -129,168 +129,18 @@ export function resetSelectionToUsableText() {
   else if (range.endOffset === range.endContainer.textContent!.length) {
     range.setEnd(range.endContainer, range.endOffset - 1);
   }
-  
 }
 
 
-export function experimental_resetRangeToTextNodes(range: Range) {
-
-  // console.log(range.startContainer, range.startContainer.nodeType !== Node.TEXT_NODE, range.endContainer.nodeType !== Node.TEXT_NODE);
-
-  // console.log("resetting range to text nodes");
-
-  const collapsed: boolean = range.collapsed;
-
-
-  // console.log({range});
-
-  if (range.startContainer.nodeType !== Node.TEXT_NODE) {
-    const startNode = range.startContainer.childNodes[range.startOffset];
-    if (!startNode) return null;
-    const tw = document.createTreeWalker(startNode);
-    while (true) {
-      if (tw.currentNode.nodeType === Node.TEXT_NODE) {
-
-        const currentNode = tw.currentNode;
-        const content = currentNode.textContent;
-
-        if (!content || (content.length === 0)) {
-          // console.log("first if");
-          range.setStart(currentNode, 0);
-          break;
-        }
-
-        // if purely cushioned node, place after first zero-width space
-        if (tw.currentNode.textContent?.split("").every(ch => ch === '\u200B')) {
-          // console.log("second if");
-          range.setStart(tw.currentNode, 1);
-          break;
-        }
-
-        // otherwise place before first non-zero-width space
-        else {
-          for (let i = 0; i < content.length; i++) {
-            // console.log("third if");
-            // console.log(currentNode);
-            if (content[i] !== '\u200B') {
-              range.setStart(currentNode, i);
-              break;
-            }
-          }
-          console.log("this should never hit");
-          break;
-
-        }
-
-        // original
-        // range.setStart(tw.currentNode, 0);
-        // break;
-      } else {
-        if (!tw.nextNode()) break;
-      }
-    }
-  } else {
-
-    const currentNode = range.startContainer;
-    const content = currentNode.textContent;
-
-    // console.log("startContainer is text node");    
-
-    if (!content || (content.length === 0)) {
-      console.log("first if");
-      range.setStart(currentNode, 0);
-    }
-
-    // if it's fine, leave it
-    // effectively does nothing except divert from later else ifs
-    else if (
-      content[range.startOffset] &&
-      content[range.startOffset] !== '\u200B'
-    ) {
-      range.setStart(currentNode, range.startOffset);
-    }
-
-    // if purely cushioned node, place after first zero-width space
-    else if (currentNode.textContent?.split("").every(ch => ch === '\u200B')) {
-      // console.log("second if");
-      range.setStart(currentNode, 1);
-    }
-
-    // go outwards from startOffset to find nearest non-zws
-    else for (let i = 1; i < content.length; i++) {
-      // console.log("last for loop ", i);
-      if (
-        range.startOffset - i >= 0 &&
-        content[range.startOffset - i] !== '\u200B'
-      ) {
-        range.setStart(currentNode, range.startOffset - i + 1);
-        break;
-      } else if (
-        range.startOffset <= content.length &&
-        content[range.startOffset + i]
-      ) {
-        range.setStart(currentNode, range.startOffset + i - 1);
-        break;
-      }
-    }
-
-
-    // otherwise place before first non-zero-width space
-    // else {
-    //   for (let i=0; i<content.length; i++) {
-    //     console.log("third if");
-    //     console.log(currentNode);
-    //     if (content[i] !== '\u200B') {
-    //       range.setStart(currentNode, i);
-    //       break;
-    //     }
-    //   }
-
-    // }
-
-    // original
-    // range.setStart(tw.currentNode, 0);
-    // break;
-
-  }
-
-  // console.log("after setting start", range.startContainer, range.startOffset);
-
-  // if this range is meant to be collapsed, collapse to start
-  if (collapsed) {
-    range.setEnd(range.startContainer, range.startOffset);
-  }
-
-  // otherwise find correct distinct end
-  else if (range.endContainer.nodeType !== Node.TEXT_NODE) {
-
-    // console.log("sanity check 1");
-    const commonAncestor = range.commonAncestorContainer;
-
-    let lastTextNode = range.startContainer;
-    const tw = document.createTreeWalker(commonAncestor);
-    // advance to new start container
-    while (tw.currentNode !== range.startContainer) {
-      // console.log("sanity check 2");
-      tw.nextNode();
-    }
-    while (range.isPointInRange(tw.currentNode, 0)) {
-      // console.log("sanity check 3");
-      if (tw.currentNode.nodeType === Node.TEXT_NODE) {
-        lastTextNode = tw.currentNode;
-      }
-      if (!tw.nextNode()) break; // advance tw, break loop if null
-    }
-    // console.log("sanity check 4");
-    range.setEnd(lastTextNode, lastTextNode.textContent?.length || 0);
-  }
-
-  return range;
-}
-
-
-
-
+/**
+ * Move selection left or right by one non-zero-width space character,
+ * resetting on breaks and sibling interruptions. If range is over more
+ * than one character, collapses to the appropriate end of the range
+ * @param selection 
+ * @param limitingContainer 
+ * @param moveDirection 
+ * @returns 
+ */
 export function moveSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
 
   const direction = getSelectionDirection(selection);
@@ -323,7 +173,6 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
   }
 
   else {
-
     if (moveDirection === "left" && direction === "backward") {
       selection.setBaseAndExtent(focusNode, focusOffset, focusNode, focusOffset);
     }
@@ -336,12 +185,18 @@ export function moveSelection(selection: Selection, limitingContainer: Element, 
     else if (moveDirection === "right" && direction === "forward") {
       selection.setBaseAndExtent(focusNode, focusOffset, focusNode, focusOffset);
     }
-
   }
 }
 
 
-
+/**
+ * Extends selection left or right, skipping over non-zero-width space 
+ * characters, resetting on breaks but not on sibling interruptions
+ * @param selection 
+ * @param limitingContainer 
+ * @param moveDirection 
+ * @returns 
+ */
 export function extendSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
 
   const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
@@ -373,6 +228,15 @@ export function extendSelection(selection: Selection, limitingContainer: Element
 }
 
 
+/**
+ * Extends selection to the end of the next word (current if the cursor
+ * is on it), as defined by a white space or the beginning or ending of 
+ * the total text of the limitingContainer.
+ * @param selection 
+ * @param limitingContainer 
+ * @param moveDirection 
+ * @returns 
+ */
 export function extendWordSelection(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right") {
 
   const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
@@ -402,8 +266,4 @@ export function extendWordSelection(selection: Selection, limitingContainer: Ele
     // else
     return selection.setBaseAndExtent(anchorNode, anchorOffset, nextPosition.currentNode, nextPosition.offset)
   }
-
 }
-
-
-// const { focusNode, focusOffset } = window.getSelection();

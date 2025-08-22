@@ -16,11 +16,6 @@ function moveAndCompareSelectionCheckText(selection: Selection, limitingContaine
   if (character) expect(selection?.anchorNode!.textContent![selection.anchorOffset]).toBe(character);
 }
 
-// before all
-beforeAll(function() {
-  document.body.innerHTML = startingHTML;
-})
-
 
 describe("test resetSelectionToTextNodes", function() {
 
@@ -37,10 +32,6 @@ describe("test resetSelectionToTextNodes", function() {
     const selection = window.getSelection();
     selection?.setBaseAndExtent(document.body, 0, document.body, 0);
     expect(selection).not.toBeNull();
-    console.log("sanity");
-    console.log("selection", selection);
-    console.log("range", selection?.getRangeAt(0));
-    console.log("bonus sanity ha ha ha");
     const range = selection!.getRangeAt(0);
     const p = document.querySelector("#content > article > section:nth-child(4) > div > dl > dd:nth-child(4) > p");
     expect(p).not.toBeNull();
