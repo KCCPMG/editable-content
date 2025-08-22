@@ -9,57 +9,34 @@ export default function RenderedContent({className}: EditableContentProps) {
 
   const {
     contentRef, 
-    contentRefCurrentInnerHTML, 
-    setContentRefCurrentInnerHTML,
-    selectionToString, 
-    setSelectionToString,
-    selectionAnchorNode, 
-    setSelectionAnchorNode,
-    selectionAnchorOffset, 
-    setSelectionAnchorOffset,
-    selectionFocusNode, 
-    setSelectionFocusNode,
-    selectionFocusOffset, 
-    setSelectionFocusOffset,
-    hasSelection, 
     setHasSelection,
     portals, 
-    setPortals,
-    divToSetSelectionTo, 
-    setDivToSetSelectionTo,
     appendPortalToDiv,
-    updateSelection,
-    updateContent,
     dehydratedHTML,
     resetPortalContainers,
     assignContentRef
   } = useEditableContentContext();
 
 
-
-  // on initial render
+  // on initial render - populate portal containers without deleting for being empty
   useLayoutEffect(() => {
 
     setHasSelection(false);
 
     if (contentRef.current) {
-      // if (initialHTML) {
+      // populate with dehydratedHTML
       contentRef.current.innerHTML = dehydratedHTML;
-      
-      console.log("portals.length:", portals.length);
 
-      // load react portals
+      // identify portal divs, load react portals
       const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
       if (portals.length === 0) {
         reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
       } else resetPortalContainers();
-
     }
 
     // teardown
     return () => {
-      contentRef.current = null;
-      // document.removeEventListener('selectionchange', handleSelectionChange);
+      contentRef.current = null; // clear contentRef to be reassigned
     }
 
   }, [contentRef])
@@ -68,10 +45,10 @@ export default function RenderedContent({className}: EditableContentProps) {
   // on portal change
   useEffect(() => {
     
-    // clean up divs which no longer contain a portal
     if (!contentRef.current) return;
-    const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
 
+    // clean up divs which no longer contain a portal
+    const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
     toDelete.forEach(td => promoteChildrenOfNode(td));
 
   }, [portals])
@@ -83,13 +60,6 @@ export default function RenderedContent({className}: EditableContentProps) {
         spellCheck={false}
         ref={assignContentRef}
         className={className}
-        // style={divStyle ? divStyle : {
-        //   width: "100%",
-        //   height: "150px",
-        //   margin: "auto",
-        //   // border: "2px solid black",
-        //   overflowY: "scroll"
-        // }}
       >
       </div>
       {portals}
