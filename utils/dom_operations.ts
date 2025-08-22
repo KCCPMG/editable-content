@@ -94,10 +94,6 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
     const unbreakableRange = new Range();
     unbreakableRange.setStart(unbreakable, 0);
     unbreakableRange.setEnd(unbreakable, unbreakable.childNodes.length);
-    // // unwrapRangeFromQuery(unbreakableRange, query, )
-    // breakpoints.push([unbreakableRange.startContainer, unbreakableRange.startOffset]);
-    // breakpoints.push([unbreakableRange.endContainer, unbreakableRange.endOffset]);
-
 
     if (unbreakableRange.startContainer.nodeType !== Node.TEXT_NODE) {
       const startNode = unbreakableRange.startContainer.childNodes[unbreakableRange.startOffset];
@@ -116,6 +112,7 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
 
       let lastTextNode = unbreakableRange.startContainer;
       const tw = document.createTreeWalker(commonAncestor);
+
       // advance to new start container
       while (tw.currentNode !== unbreakableRange.startContainer) {
         tw.nextNode();
@@ -132,8 +129,6 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
     unwrapRangeFromQuery(unbreakableRange, query, limitingContainer)
 
   }
-
-  // deleteEmptyElements(limitingContainer); - moving to updateContent
   
   resetSelectionToTextNodes(); // make sure we're in text nodes
 
@@ -291,8 +286,15 @@ export function promoteChildrenOfNode(node: Node): void {
 }
 
 
-export function generateQuery({element, classList, id, unbreakable, attributes}: WrapperArgs): string {
-  const classListString = (classList && classList.length > 0) ? classList.map(c => "."+c).join("") : "";
+/**
+ * Takes a WrapperArgs object and returns a string corresponding
+ * to a query for user in querySelector which will identify
+ * instances of the corresponding element. Does not factor
+ * classList into string 
+ * @param {WrapperArgs} wrapperArgs
+ * @returns 
+ */
+export function generateQuery({element, id, unbreakable, attributes}: WrapperArgs): string {
   const idString = id ? "#"+id : "";
   const unbreakableString = unbreakable ? "[data-unbreakable]" : "";
 
@@ -306,11 +308,16 @@ export function generateQuery({element, classList, id, unbreakable, attributes}:
       .join(""):
     "";
 
-  // return element + classListString + idString + unbreakableString + attributesString;
   return element + idString + unbreakableString + attributesString;
 }
 
-
+/**
+ * Creates a wrapper element from WrapperArgs, also requires
+ * a document for the sake of creating the element.
+ * @param {WrapperArgs} param0 
+ * @param document 
+ * @returns 
+ */
 export function createWrapper({element, classList, id, unbreakable, attributes, eventListeners}: WrapperArgs, document: Document): HTMLElement {
 
   const wrapper = document.createElement(element);
