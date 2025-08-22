@@ -5,7 +5,7 @@ import { useEditableContentContext } from "@/context/EditableContentContext";
 import { createPortal } from "react-dom";
 import { moveSelection, resetRangeToTextNodes, resetSelectionToTextNodes, resetSelectionToUsableText, extendSelection, extendWordSelection } from "@/utils/selection_movements";
 import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection, getAllTextNodes, searchCombinedText, getLastValidCharacterIndex, getNextPosition } from "@/utils/checks";
-import { clearAndResetSelection, cushionTextNode, interceptSyntheticKeyboardEvent, promoteChildrenOfNode } from "@/utils/dom_operations";
+import { clearAndResetSelection, cushionTextNode, promoteChildrenOfNode } from "@/utils/dom_operations";
 
 
 export default function EditableContent({ className, disableNewLines }: EditableContentProps) {
