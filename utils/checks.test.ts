@@ -3,7 +3,7 @@
  */
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
 import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getAllTextNodes, searchCombinedText, getReMatch, getNextPosition } from "./checks";
-import { setSelection, resetRangeToTextNodes } from "./selection_movements";
+import { resetRangeToTextNodes } from "./selection_movements";
 import { startingHTML, alternateHTML } from "./test_constants_and_helpers";
 
 
@@ -80,7 +80,9 @@ describe("test selectionIsDescendentOfNode", function () {
     const strong = document.querySelector("strong#strong-1");
     const textNode = strong!.childNodes[0];
 
-    const selection = setSelection(textNode!, 4, textNode!, 8);
+    const selection = window.getSelection();
+    if (selection === null) throw new Error("selection is null");
+    selection.setBaseAndExtent(textNode!, 4, textNode!, 8);
 
     expect(selection).not.toBeNull();
 
@@ -112,7 +114,8 @@ describe("test selectionIsDescendentOfNode", function () {
     const italics = document.querySelector("i#italics-1");
     const italicsTextNode = italics!.childNodes[0]
 
-    const selection = setSelection(strongTextNode!, 4, italicsTextNode!, 3);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(strongTextNode!, 4, italicsTextNode!, 3);
 
     expect(selection).not.toBeNull();
 
@@ -161,7 +164,8 @@ describe("test getSelectionChildNodes", function () {
 
     expect(orphanTextNode!.nodeType).toBe(Node.TEXT_NODE);
 
-    const selection = setSelection(strongText!, 5, orphanTextNode!, 7);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(strongText!, 5, orphanTextNode!, 7);
 
     const result = getSelectionChildNodes(selection!, limitingContainer!);
 
@@ -434,7 +438,8 @@ describe("test selectionIsCoveredBy", function () {
     expect(strongText).not.toBeNull();
     expect(secondStrongText).not.toBeNull();
 
-    const selection = setSelection(strongText, 5, secondStrongText, 5);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(strongText, 5, secondStrongText, 5);
 
     expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(true);
     expect(selectionIsCoveredBy(selection!, "strong#strong-2", limitingContainer!)).toBe(true);
@@ -454,7 +459,8 @@ describe("test selectionIsCoveredBy", function () {
     expect(italics).not.toBeNull();
     expect(italicsText).not.toBeNull();
 
-    const selection = setSelection(strongText, 5, italicsText, 5);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(strongText, 5, italicsText, 5);
     expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(false);
     expect(selectionIsCoveredBy(selection!, "i", limitingContainer!)).toBe(false);
     expect(selectionIsCoveredBy(selection!, "strong#strong-1", limitingContainer!)).toBe(false);
@@ -486,7 +492,8 @@ describe("test selectionIsCoveredBy - alternate HTML", function () {
     expect(firstStrongText).not.toBeNull();
     expect(thirdStrongText).not.toBeNull();
 
-    const selection = setSelection(firstStrongText, 5, thirdStrongText, 7);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(firstStrongText, 5, thirdStrongText, 7);
     expect(selection).not.toBeNull();
 
     expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(true);
@@ -511,7 +518,8 @@ describe("test selectionIsCoveredBy - alternate HTML", function () {
     expect(fourthStrongText).not.toBeNull();
     expect(fifthStrongText).not.toBeNull();
 
-    const selection = setSelection(fourthStrongText, 7, fifthStrongText, 4)
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(fourthStrongText, 7, fifthStrongText, 4)
 
     expect(selectionIsCoveredBy(selection!, "strong", limitingContainer!)).toBe(true);
     expect(selectionIsCoveredBy(selection!, "italics", limitingContainer!)).toBe(false);
@@ -531,7 +539,8 @@ describe("test selectionIsCoveredBy - alternate HTML", function () {
 
     expect(firstStrongText).not.toBeNull();
 
-    const selection = setSelection(firstStrongText, 3, firstStrongText, 8);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(firstStrongText, 3, firstStrongText, 8);
     expect(selectionIsCoveredBy(selection!, 'strong', limitingContainer!)).toBe(true);
   })
 
@@ -552,7 +561,8 @@ describe("test selectionIsCoveredBy - alternate HTML", function () {
     expect(sixthStrongText).not.toBeNull();
     expect(sixthStrongText.textContent).toBe("Sixth Strong Text");
 
-    const selection = setSelection(fourthStrongText, 4, sixthStrongText, 10);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(fourthStrongText, 4, sixthStrongText, 10);
 
     expect(selectionIsCoveredBy(selection!, 'strong', limitingContainer!)).toBe(false);
     expect(selectionIsCoveredBy(selection!, 'i', limitingContainer!)).toBe(false);

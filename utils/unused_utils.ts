@@ -765,3 +765,16 @@ export function alternativeGetNextPosition(
 
 
 }
+
+
+
+export function setSelection(startContainer: Node, startOffset: number, endContainer: Node, endOffset: number) {
+  const range = new Range();
+  range.setStart(startContainer, startOffset);
+  range.setEnd(endContainer, endOffset);
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+
+  return selection;
+}

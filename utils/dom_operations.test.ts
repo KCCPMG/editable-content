@@ -3,7 +3,6 @@
  */
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
 import { wrapInElement, deleteEmptyElementsByQuery, unwrapSelectionFromQuery, unwrapRangeFromQuery, generateQuery, createWrapper } from "./dom_operations";
-import { setSelection } from "./selection_movements";
 import { startingHTML, alternateHTMLwithUnbreakable, alternateHTML } from "./test_constants_and_helpers";
 
 
@@ -32,7 +31,8 @@ describe("test wrapInElement", function() {
 
     const startContainerOffset = allSiblings.findIndex(n => n ===italics);
     const endContainerOffset = startContainerOffset + 1;
-    const selection = setSelection(parentNode!, startContainerOffset, parentNode!, endContainerOffset);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(parentNode!, startContainerOffset, parentNode!, endContainerOffset);
     expect(selection).not.toBeNull();
     expect(selection!.anchorNode).toBe(selection!.focusNode)
     expect(selection).not.toBeNull();
@@ -55,7 +55,8 @@ describe("test wrapInElement", function() {
     const italics = document.querySelector("i#italics-2");
     expect(italics).not.toBeNull();
     const italicsText = italics!.childNodes[0];
-    const selection = setSelection(italicsText!, 7, italicsText!, 18);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(italicsText!, 7, italicsText!, 18);
     expect(selection).not.toBeNull();
 
     const underlineElement = document.createElement('u');
@@ -82,7 +83,8 @@ describe("test wrapInElement", function() {
     expect(underlineText).not.toBeNull();
     expect(lastItalicsText).not.toBeNull();
 
-    const selection = setSelection(underlineText!, 8, lastItalicsText!, 7);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(underlineText!, 8, lastItalicsText!, 7);
     const selectionText = selection!.toString();
     expect(selectionText).not.toBeNull();
     // expect(selectionText).toBe("")
@@ -181,7 +183,8 @@ describe("test unwrapSelectionFromQuery", function() {
 
     expect(italicsTextContent).toEqual(italicsTextNode!.textContent);
 
-    const selection = setSelection(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
 
     expect(selection).not.toBeNull();
 
@@ -213,7 +216,8 @@ describe("test unwrapSelectionFromQuery", function() {
 
     expect(italicsTextContent).toEqual(italicsTextNode!.textContent);
 
-    const selection = setSelection(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
 
     expect(selection).not.toBeNull();
 
@@ -263,7 +267,8 @@ describe("test unwrapSelectionFromQuery - alternateHTML", function() {
     expect(firstStrongText).not.toBeNull();
     expect(thirdStrongText).not.toBeNull();
 
-    const selection = setSelection(firstStrongText, 5, thirdStrongText, 7);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(firstStrongText, 5, thirdStrongText, 7);
     expect(selection).not.toBeNull();
 
     unwrapSelectionFromQuery(selection!, "strong", limitingContainer!);
@@ -305,7 +310,8 @@ describe("test unwrapRangeFromQuery", function() {
 
     expect(italicsTextContent).toEqual(italicsTextNode!.textContent);
 
-    const selection = setSelection(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
 
     expect(selection).not.toBeNull();
 
@@ -339,7 +345,8 @@ describe("test unwrapRangeFromQuery", function() {
 
     expect(italicsTextContent).toEqual(italicsTextNode!.textContent);
 
-    const selection = setSelection(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
+    const selection = window.getSelection();
+    selection?.setBaseAndExtent(italicsTextNode!, 0, italicsTextNode!, italicsTextContent!.length);
 
     expect(selection).not.toBeNull();
 

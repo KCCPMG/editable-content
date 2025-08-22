@@ -2,19 +2,13 @@ import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIs
 import { ZWS_RE } from "./constants";
 import { cushionTextNode } from "./dom_operations";
 
-export function setSelection(startContainer: Node, startOffset: number, endContainer: Node, endOffset: number) {
-  const range = new Range();
-  range.setStart(startContainer, startOffset);
-  range.setEnd(endContainer, endOffset);
-  const selection = window.getSelection();
-  selection?.removeAllRanges();
-  selection?.addRange(range);
-
-  return selection;
-}
 
 
 
+/**
+ * Resets the window selection using resetRangeToTextNodes
+ * @returns 
+ */
 export function resetSelectionToTextNodes(): Selection | null {
   let selection = window.getSelection();
   if (!selection) return selection;
@@ -28,27 +22,28 @@ export function resetSelectionToTextNodes(): Selection | null {
   selection = window.getSelection();
   if (!selection) return null;
 
-  // this is causing an infinite loop if reset called on every selection
-  // selection.removeAllRanges(); 
-  // selection.addRange(modifiedRange);
-
   return selection;
 }
 
+/**
+ * Given a range, makes sure startContainer and endContainer are
+ * text, or finds first text and last text nodes in the range, and
+ * resets the range in the beginning and ending respectively of 
+ * those nodes, allowing one space for the cushioning of an assumed
+ * zero-width space
+ * @param range 
+ * @returns 
+ */
 export function resetRangeToTextNodes(range: Range) {
 
-  // console.log("resetRangeToTextNodes");
-
-  // console.log(range.startContainer, range.startContainer.nodeType !== Node.TEXT_NODE, range.endContainer.nodeType !== Node.TEXT_NODE);
-
   if (range.startContainer.nodeType !== Node.TEXT_NODE) {
-    // console.log("range.startContainer not text node")
+    
     const startNode = range.startContainer.childNodes[range.startOffset];
     if (!startNode) return null;
     const tw = document.createTreeWalker(startNode);
     while (true) {
       if (tw.currentNode.nodeType === Node.TEXT_NODE) {
-        // console.log("found text node:", tw.currentNode)
+        
         range.setStart(tw.currentNode, 0);
         break;
       } else {

@@ -2,19 +2,15 @@
  * @jest-environment jsdom
  */
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { setSelection, resetSelectionToTextNodes,moveSelection } from "./selection_movements";
+import { resetSelectionToTextNodes,moveSelection } from "./selection_movements";
 import { startingHTML, mdnDocPageHTML, checkText, compareSelection } from "./test_constants_and_helpers";
-import { getAllTextNodes, textNodeIsCushioned } from './checks';
+import { getAllTextNodes } from './checks';
 import { cushionTextNode } from './dom_operations';
 
 
 
 function moveAndCompareSelectionCheckText(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right", expAnchorNode: Node, expAnchorOffset: number, character?: string) {
   moveSelection(selection, limitingContainer, moveDirection);
-  if (moveDirection === "left") {
-    // console.log("selection?.anchorNode", selection?.anchorNode, selection?.anchorNode?.textContent?.length);
-    // console.log("selection?.anchorOffset", selection?.anchorOffset)
-  }
   expect(selection?.anchorNode).toBe(expAnchorNode);
   expect(selection?.anchorOffset).toBe(expAnchorOffset);
   if (character) expect(selection?.anchorNode!.textContent![selection.anchorOffset]).toBe(character);
@@ -24,41 +20,6 @@ function moveAndCompareSelectionCheckText(selection: Selection, limitingContaine
 beforeAll(function() {
   document.body.innerHTML = startingHTML;
 })
-
-
-
-
-
-describe("test setSelection", function() {
-
-  test("set Selection on text inside italics node", function() {
-    const italics = document.querySelector("i");
-    expect(italics).not.toBeNull();
-    const selection = setSelection(italics!, 0, italics!, italics!.childNodes.length);
-    expect(selection?.toString()).toEqual(italics!.textContent);
-  })
-
-  test("set Selection on limited text inside italics node", function() {
-    const italics = document.querySelector("i#italics-2");
-    expect(italics).not.toBeNull();
-    const italicsText = italics!.childNodes[0];
-    const selection = setSelection(italicsText!, 7, italicsText!, 18);
-
-    const range = new Range();
-    range.setStart(italicsText, 7);
-    range.setEnd(italicsText, 18);
-    
-    range.setStart(italicsText, 0);
-    range.setEnd(italicsText, 7);
-
-    expect(selection).not.toBeNull();
-    expect(selection!.anchorNode?.nodeName).toBe("#text");
-    expect(selection!.anchorNode).toBe(selection!.focusNode);
-    expect(selection!.toString()).toEqual("and Italics")
-
-  })
-
-});
 
 
 describe("test resetSelectionToTextNodes", function() {
@@ -74,7 +35,12 @@ describe("test resetSelectionToTextNodes", function() {
   test("Set selection range to cover bounding p", function() {
 
     const selection = window.getSelection();
+    selection?.setBaseAndExtent(document.body, 0, document.body, 0);
     expect(selection).not.toBeNull();
+    console.log("sanity");
+    console.log("selection", selection);
+    console.log("range", selection?.getRangeAt(0));
+    console.log("bonus sanity ha ha ha");
     const range = selection!.getRangeAt(0);
     const p = document.querySelector("#content > article > section:nth-child(4) > div > dl > dd:nth-child(4) > p");
     expect(p).not.toBeNull();

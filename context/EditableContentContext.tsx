@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { EXCLUDE_FROM_DEHYDRATED, PORTAL_CONTAINER_ID_PREFIX, ZWS_RE } from "@/utils/constants";
 import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getAllTextNodes, textNodeIsCushioned, isValidTextEndpoint, identifyBadTextNodes, getIsReactComponent, getNextPosition, getReMatch } from "@/utils/checks";
 import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements, cushionTextNode, resetTextNodesCushions } from "@/utils/dom_operations";
-import { resetSelectionToTextNodes, setSelection, moveSelection } from "@/utils/selection_movements";
+import { resetSelectionToTextNodes,  moveSelection } from "@/utils/selection_movements";
 
 
 
@@ -28,7 +28,6 @@ declare global {
     getRangeLowestAncestorElement?: typeof getRangeLowestAncestorElement;
     promoteChildrenOfNode?: typeof promoteChildrenOfNode;
     deleteEmptyElements?: typeof deleteEmptyElements;
-    setSelection?: typeof setSelection;
     moveSelection?: typeof moveSelection;
     getRangeChildNodes?: typeof getRangeChildNodes;
     limitingContainer?: any;

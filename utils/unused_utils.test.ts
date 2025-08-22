@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { experimental_moveSelection } from './unused_utils';
+import { experimental_moveSelection, setSelection } from './unused_utils';
 import { checkText, compareSelection, startingHTML } from './test_constants_and_helpers';
 import { getAllTextNodes } from './checks';
 
@@ -320,3 +320,35 @@ describe("test experimental_moveSelection", function() {
 
 
 })
+
+
+describe("test setSelection", function() {
+
+  test("set Selection on text inside italics node", function() {
+    const italics = document.querySelector("i");
+    expect(italics).not.toBeNull();
+    const selection = setSelection(italics!, 0, italics!, italics!.childNodes.length);
+    expect(selection?.toString()).toEqual(italics!.textContent);
+  })
+
+  test("set Selection on limited text inside italics node", function() {
+    const italics = document.querySelector("i#italics-2");
+    expect(italics).not.toBeNull();
+    const italicsText = italics!.childNodes[0];
+    const selection = setSelection(italicsText!, 7, italicsText!, 18);
+
+    const range = new Range();
+    range.setStart(italicsText, 7);
+    range.setEnd(italicsText, 18);
+    
+    range.setStart(italicsText, 0);
+    range.setEnd(italicsText, 7);
+
+    expect(selection).not.toBeNull();
+    expect(selection!.anchorNode?.nodeName).toBe("#text");
+    expect(selection!.anchorNode).toBe(selection!.focusNode);
+    expect(selection!.toString()).toEqual("and Italics")
+
+  })
+
+});
