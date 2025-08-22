@@ -1,7 +1,5 @@
-import { getSelectionDirection, getAllTextNodes, isValidTextEndpoint, textNodeIsCushioned, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getNextPosition } from "./checks";
-import { ZWS_RE } from "./constants";
+import { getSelectionDirection, textNodeIsCushioned, getNextPosition } from "./checks";
 import { cushionTextNode } from "./dom_operations";
-
 
 
 
@@ -14,7 +12,6 @@ export function resetSelectionToTextNodes(): Selection | null {
   if (!selection) return selection;
 
   const range = selection.getRangeAt(0);
-  const originalStartContainer = range.startContainer;
 
   const modifiedRange = resetRangeToTextNodes(range);
   if (!modifiedRange) return null;
