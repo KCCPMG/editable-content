@@ -31,7 +31,8 @@ export default function RenderedContent({className}: EditableContentProps) {
       const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
       if (portals.length === 0) {
         reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
-      } else resetPortalContainers();
+      } 
+      else resetPortalContainers();
     }
 
     // teardown

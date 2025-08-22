@@ -1,10 +1,9 @@
 "use client"
-import React, { isValidElement, ReactPortal, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
-import { createPortal } from "react-dom";
-import { moveSelection, resetRangeToTextNodes, resetSelectionToTextNodes, resetSelectionToUsableText, extendSelection, extendWordSelection } from "@/utils/selection_movements";
-import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getSelectionDirection, getAllTextNodes, searchCombinedText, getLastValidCharacterIndex, getNextPosition } from "@/utils/checks";
+import { moveSelection, resetSelectionToTextNodes, resetSelectionToUsableText, extendSelection, extendWordSelection } from "@/utils/selection_movements";
+import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint } from "@/utils/checks";
 import { clearAndResetSelection, cushionTextNode, promoteChildrenOfNode } from "@/utils/dom_operations";
 
 
@@ -13,18 +12,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
   const {
     contextInstanceId,
     contentRef,
-    contentRefCurrentInnerHTML,
     setContentRefCurrentInnerHTML,
-    selectionToString,
-    setSelectionToString,
-    selectionAnchorNode,
-    setSelectionAnchorNode,
-    selectionAnchorOffset,
-    setSelectionAnchorOffset,
-    selectionFocusNode,
-    setSelectionFocusNode,
-    selectionFocusOffset,
-    setSelectionFocusOffset,
     hasSelection,
     setHasSelection,
     portals,
@@ -35,49 +23,27 @@ export default function EditableContent({ className, disableNewLines }: Editable
     updateSelection,
     updateContent,
     dehydratedHTML,
-    updatePortalProps,
     resetPortalContainers,
     assignContentRef
   } = useEditableContentContext();
 
-
-  // experiment
-  // useLayoutEffect(() => {
-  //   console.log("useEffect");
-  //   console.log("if contentRef.current: ", !!contentRef.current)
-  //   if (contentRef.current) {
-
-  //     // populate div with html and update state
-  //     contentRef.current.innerHTML = dehydratedHTML;
-  //     console.log("initialRender in if block"); 
-  //   }  
-  // }, [contentRef])
-
+  const [safeToUpdateInUseEffect, setSafeToUpdateInUseEffect] = useState<boolean>(false);
 
 
   // on initial render
   useEffect(() => {
-    console.log("useEffect");
-    console.log("if contentRef.current: ", !!contentRef.current)
+
     if (contentRef.current) {
 
       // populate div with html and update state
       contentRef.current.innerHTML = dehydratedHTML;
-      console.log("initialRender in if block");
 
-      // console.log(contentRef.current.innerHTML);
-      // console.log(portals.length);
-
-      // load react portals
+      // identify portal divs, load react portals
       const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
       if (portals.length === 0) {
-        console.log("should add", reactContainerDivs.length, "portals");
         reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
       }
-      else {
-        console.log("should reset portal containers");
-        resetPortalContainers();
-      }
+      else resetPortalContainers();
 
       setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
     }
@@ -98,17 +64,17 @@ export default function EditableContent({ className, disableNewLines }: Editable
 
     // teardown
     return () => {
+      // remove selection listener, clear contentRef for reassignment
       document.removeEventListener('selectionchange', handleSelectionChange);
       contentRef.current = null;
     }
 
   }, [contentRef])
 
-  const [safeToUpdateInUseEffect, setSafeToUpdateInUseEffect] = useState<boolean>(false);
+
 
   // on portal change
   useEffect(() => {
-    // console.log("post-sanity check check on portals")
 
     // clean up divs which no longer contain a portal
     if (!contentRef.current) return;
@@ -233,6 +199,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
         onInput={updateContent}
         onFocus={() => { setHasSelection(true) }}
         onBlurCapture={(e) => {
+          // if blurring because button is being clicked, do not setHasSelection to false
           if (
             !e.relatedTarget || 
             e.relatedTarget.tagName !== 'BUTTON' || 
@@ -383,13 +350,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
 
         }}
         className={className}
-      // style={divStyle ? divStyle : {
-      //   width: "100%",
-      //   height: "150px",
-      //   margin: "auto",
-      //   border: "2px solid black",
-      //   overflowY: "scroll"
-      // }}
       >
       </div>
       {portals}
