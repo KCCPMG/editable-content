@@ -933,3 +933,44 @@ export function experimental_resetRangeToTextNodes(range: Range) {
 
   return range;
 }
+
+
+type ExpandedKeyboardEvent = React.KeyboardEvent & {
+  nativeEvent: React.KeyboardEvent["nativeEvent"] & {
+    safeToProceed?: boolean
+  }
+}
+
+
+export function interceptSyntheticKeyboardEvent(e: ExpandedKeyboardEvent, callback: (e?: React.KeyboardEvent) => void) {
+
+  if (e.nativeEvent.safeToProceed) {
+    console.log("safe to proceed");
+    // do not interfere with 
+    return;
+    
+  } else {
+    console.log(e);
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("preventing default, intercepting event and performing callback")
+    callback(e);
+    const copiedEvent = new KeyboardEvent(e.type, {
+      // isTrusted: true - cannot be directly assigned, defaults to false and causes SyntheticEvent not to fire
+      altKey: e.altKey,
+      code: e.code,
+      ctrlKey: e.ctrlKey,
+      isComposing: e.nativeEvent.isComposing,
+      key : e.key,
+      location : e.location,
+      metaKey : e.metaKey,
+      repeat : e.repeat,
+      shiftKey: e.shiftKey
+    })
+    e.nativeEvent.safeToProceed = true;
+    console.log(copiedEvent);
+    e.nativeEvent.target?.dispatchEvent(copiedEvent);
+
+  }
+
+}

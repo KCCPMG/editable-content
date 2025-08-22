@@ -3,16 +3,31 @@ import { getAncestorNode, getRangeChildNodes, textNodeIsCushioned } from "./chec
 import { resetSelectionToTextNodes } from "./selection_movements";
 
 
-
+/**
+ * Generate string which will work as query in document.querySelector,
+ * using element's name and its attributes
+ * @param element 
+ * @returns 
+ */
 function generateQueryFromElement(element: Element) : string 
 {
   return element.tagName.toLowerCase() + Array.from(element.attributes).map(attr => {
     return `[${attr.name}="${attr.value}"]`
   }).join("");
-
 }
 
 
+/**
+ * Given a selection and an element, extracts the contents,
+ * deletes empty start and end containers if they are empty 
+ * text, promotes any children in the contents which match
+ * the query of the wrapper element, have wrapper element
+ * append contents, insert wrapper into range.
+ * @param selection 
+ * @param element 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function wrapInElement(selection: Selection, element: Element, limitingContainer: Element): void {
   if (!selection) return;
 
@@ -20,7 +35,6 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
 
   // TODO: if start container or end container are in unbreakable elements which are not the same, move selection away
   
-
   resetSelectionToTextNodes();
   const range = selection.getRangeAt(0);
 
@@ -40,7 +54,6 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
       range.endContainer.parentNode?.removeChild(range.endContainer);
     }
   }
-
 
   const childNodes = contents.childNodes;
 
@@ -152,14 +165,13 @@ export function deleteEmptyElementsByQuery(query: string, limitingContainer: Ele
   })
 
   return;
-
 }
 
 
 
 /**
  * Delete all elements within a limitingContainer Element if those
- * elements have no text
+ * elements have no text, unless they are a br.
  * @param limitingContainer 
  */
 export function deleteEmptyElements(limitingContainer: Element) {
@@ -173,7 +185,8 @@ export function deleteEmptyElements(limitingContainer: Element) {
 
 
 /**
- * Promotes all text in a selection where it is a descendent of an element matching a given query. 
+ * Promotes all text in a selection where it is a descendent of an element 
+ * matching a given query using unwrapRangeFromQuery
  * @param query 
  * @param limitingContainer 
  * @returns 
@@ -197,6 +210,20 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
 }
 
 
+// TODO: Look for ways to simplify this, leverage existing functions
+/**
+ * Given a range which has as a common ancestor an element matching
+ * a given query, breaks the query-matching element into three parts: 
+ * preRange, range, postRange. The preRange and postRange extract 
+ * their contents and then reassemble themselves so that the element
+ * is split into three parts corresponding to the range. Finally, the
+ * range reassembles itself with everything except its own instance of
+ * the query-matching element
+ * @param range 
+ * @param query 
+ * @param limitingContainer 
+ * @returns 
+ */
 export function unwrapRangeFromQuery(range: Range, query: string, limitingContainer: Element): void {
 
   // the range must necessarily have both the start and end each be within an ancestor node matching the query, which can be a common ancestor node
@@ -212,8 +239,7 @@ export function unwrapRangeFromQuery(range: Range, query: string, limitingContai
     preRange.insertNode(cn);
   }
 
-  const postAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
-
+  const postAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer); // assumes endContainer is text node
   if (!postAncestorNode) return;
 
   const postRange = new Range();
@@ -227,24 +253,13 @@ export function unwrapRangeFromQuery(range: Range, query: string, limitingContai
   // find matching ancestor nodes of start and end containers
   const startContainerAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer);
   if (startContainerAncestorNode) {
-    // promoteChildrenOfNode(startContainerAncestorNode)
     range.setStartBefore(startContainerAncestorNode);
   }
 
   const endContainerAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
   if (endContainerAncestorNode) {
-    // promoteChildrenOfNode(endContainerAncestorNode)
     range.setEndAfter(endContainerAncestorNode);
-    // range.setEnd(endContainerAncestorNode, endContainerAncestorNode.childNodes.length)
-    // range.setEnd(endContainerAncestorNode, 0);
   }
-  
-  // need to reset range or tw will fail in getSelectionChildNodes
-
-  // const contents = range.extractContents();
-  // for (let cn of Array.from(contents.childNodes)) {
-  //   range.insertNode(cn);
-  // }
 
   // promote children of all query-matching nodes in selection
   const childNodes = getRangeChildNodes(range, limitingContainer);
@@ -253,26 +268,7 @@ export function unwrapRangeFromQuery(range: Range, query: string, limitingContai
   });
   targetedNodes.forEach(tn => promoteChildrenOfNode(tn));
 
-  // will preAncestorNode and postAncestorNode necessarily be the same?
-  // I still need to promote the actual selection out of the wrapper
-
-  // const selectionAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
-  // if (!selectionAncestorNode) return;
-  // const selectionAncestorRange = new Range();
-  // selectionAncestorRange.setStartBefore(selectionAncestorNode);
-  // selectionAncestorRange.setEndAfter(selectionAncestorNode);
-  // const selectionAncestorContents = selectionAncestorRange.extractContents();
-  // for (let cn of Array.from(selection.getRangeAt(0).extractContents))
-  // if (selectionAncestorNode) {
-  //   // 
-  //   promoteChildrenOfNode(selectionAncestorNode);
-  // }
-
-
-
-
   // finally clean up empty elements of this query
-  // deleteEmptyElementsByQuery(query, limitingContainer);
   deleteEmptyElements(limitingContainer);
 
   resetSelectionToTextNodes();
@@ -386,6 +382,12 @@ export function cushionTextNode(textNode: Text) {
 
 }
 
+
+/**
+ * Given an array of text nodes, resets the cushioning of any
+ * which are not already cushioned.
+ * @param textNodes 
+ */
 export function resetTextNodesCushions(textNodes: Array<Text>) {
   textNodes.forEach(tn => {
     if (!textNodeIsCushioned(tn)) cushionTextNode(tn);
@@ -393,47 +395,12 @@ export function resetTextNodesCushions(textNodes: Array<Text>) {
 }
 
 
-type ExpandedKeyboardEvent = React.KeyboardEvent & {
-  nativeEvent: React.KeyboardEvent["nativeEvent"] & {
-    safeToProceed?: boolean
-  }
-}
-
-
-export function interceptSyntheticKeyboardEvent(e: ExpandedKeyboardEvent, callback: (e?: React.KeyboardEvent) => void) {
-
-  if (e.nativeEvent.safeToProceed) {
-    console.log("safe to proceed");
-    // do not interfere with 
-    return;
-    
-  } else {
-    console.log(e);
-    e.preventDefault();
-    e.stopPropagation();
-    console.log("preventing default, intercepting event and performing callback")
-    callback(e);
-    const copiedEvent = new KeyboardEvent(e.type, {
-      // isTrusted: true - cannot be directly assigned, defaults to false and causes SyntheticEvent not to fire
-      altKey: e.altKey,
-      code: e.code,
-      ctrlKey: e.ctrlKey,
-      isComposing: e.nativeEvent.isComposing,
-      key : e.key,
-      location : e.location,
-      metaKey : e.metaKey,
-      repeat : e.repeat,
-      shiftKey: e.shiftKey
-    })
-    e.nativeEvent.safeToProceed = true;
-    console.log(copiedEvent);
-    e.nativeEvent.target?.dispatchEvent(copiedEvent);
-
-  }
-
-}
-
-
+/**
+ * Given a selection, make sure it starts and ends in text nodes,
+ * extracts contents to delete them, collapses selection.
+ * @param selection 
+ * @returns 
+ */
 export function clearAndResetSelection(selection: Selection) {
 
   const range = selection.getRangeAt(0);
