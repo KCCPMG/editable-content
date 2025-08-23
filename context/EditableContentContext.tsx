@@ -137,6 +137,7 @@ export const EditableContentContext = createContext<EditableContentContextType |
 export function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHTML, initialProps }: EditableContentContextProviderProps) {
 
   const contextInstanceId = uuidv4();
+  
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
   const [selectionToString, setSelectionToString] = useState<string>("");

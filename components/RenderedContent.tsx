@@ -24,6 +24,7 @@ export default function RenderedContent({className}: EditableContentProps) {
     setHasSelection(false);
 
     if (contentRef.current) {
+      
       // populate with dehydratedHTML
       contentRef.current.innerHTML = dehydratedHTML;
 

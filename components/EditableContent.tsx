@@ -28,10 +28,13 @@ export default function EditableContent({ className, disableNewLines }: Editable
   } = useEditableContentContext();
 
   const [safeToUpdateInUseEffect, setSafeToUpdateInUseEffect] = useState<boolean>(false);
+  const [initialRendersAchieved, setInitialRendersAchieved] = useState<number>(0);
 
 
   // on initial render
   useEffect(() => {
+
+    console.log(process.env.NODE_ENV);
 
     if (contentRef.current) {
 
@@ -46,6 +49,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
       else resetPortalContainers();
 
       setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+      setInitialRendersAchieved((initialRendersAchieved) => initialRendersAchieved + 1)
     }
 
     // assign event listeners
@@ -71,6 +75,22 @@ export default function EditableContent({ className, disableNewLines }: Editable
 
   }, [contentRef])
 
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      if (initialRendersAchieved >= 2) {
+        setSafeToUpdateInUseEffect(true);
+      }
+    }
+    else {
+      if (initialRendersAchieved >= 1) {
+        setSafeToUpdateInUseEffect(true);
+      }
+    }
+  }, [initialRendersAchieved])
+
+  useEffect(() => {
+    console.log("safeToUpdateInUseEffect", safeToUpdateInUseEffect)
+  }, [safeToUpdateInUseEffect])
 
 
   // on portal change
@@ -82,6 +102,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
     // if (!safeToUpdateInUseEffect.current) updateContent();
     // else safeToUpdateInUseEffect.current = true;
 
+    if (safeToUpdateInUseEffect) updateContent();
 
     const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
 
