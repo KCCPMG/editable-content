@@ -88,10 +88,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
     }
   }, [initialRendersAchieved])
 
-  useEffect(() => {
-    console.log("safeToUpdateInUseEffect", safeToUpdateInUseEffect)
-  }, [safeToUpdateInUseEffect])
-
 
   // on portal change
   useEffect(() => {
@@ -99,11 +95,10 @@ export default function EditableContent({ className, disableNewLines }: Editable
     // clean up divs which no longer contain a portal
     if (!contentRef.current) return;
 
-    // if (!safeToUpdateInUseEffect.current) updateContent();
-    // else safeToUpdateInUseEffect.current = true;
-
+    // only update content if initial render useEffect has completed
     if (safeToUpdateInUseEffect) updateContent();
 
+    // collect and delete portal divs marked for deletion
     const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
 
     toDelete.forEach(td => promoteChildrenOfNode(td));
@@ -112,10 +107,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
       resetSelectionToTextNodes();
     }
 
-
-    // TODO: Delete these once done testing
-    (window as any).portals = portals;
-    (window as any).setPortals = setPortals;
   }, [portals])
 
   // on divToSetSelectionTo change
@@ -124,7 +115,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
     if (divToSetSelectionTo) {
       if (divToSetSelectionTo.childNodes.length > 0) {
         window.getSelection()?.setBaseAndExtent(divToSetSelectionTo, 0, divToSetSelectionTo, divToSetSelectionTo.childNodes.length);
-        console.log("reset selection in divToSetSelectionTo useEffect");
         resetSelectionToTextNodes();
         setDivToSetSelectionTo(null);
       }
@@ -132,42 +122,14 @@ export default function EditableContent({ className, disableNewLines }: Editable
   }, [divToSetSelectionTo])
 
 
-  // run on initial render to unlock future runs of updateContent on portals changes
-  // but to prevent it from running right away
+  /**
+   * run on initial render to unlock future runs of updateContent on portals 
+   * changes but to prevent it from running right away
+   */
   useEffect(function () {
     setSafeToUpdateInUseEffect(true);
   }, [])
 
-  /**
-   * if changes need to be made to selection, make those changes, 
-   * otherwise update selection pieces of state
-   */
-  function old_handleSelectionChange() {
-    const selection = window.getSelection();
-    if (selection &&
-      contentRef.current &&
-      selection?.anchorNode?.nodeType !== Node.TEXT_NODE &&
-      selection?.focusNode?.nodeType !== Node.TEXT_NODE
-    ) {
-      console.log("selectionHasTextNodes", selectionHasTextNodes(selection, contentRef.current));
-      if (selectionHasTextNodes(selection, contentRef.current)) {
-        resetSelectionToTextNodes();
-      } else {
-        const textNode = document.createTextNode('\u200B\u200B');
-        // contentRef.current.append(textNode);
-        const range = selection.getRangeAt(0);
-        range.insertNode(textNode)
-        range.setStart(textNode, 1);
-        range.setEnd(textNode, 1);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    }
-    else {
-      // resetSelectionToTextNodes();
-      updateSelection();
-    }
-  }
 
 
   function handleSelectionChange() {
@@ -179,16 +141,9 @@ export default function EditableContent({ className, disableNewLines }: Editable
 
       if (!anchorNode || !focusNode) return;
 
-      // console.log(!selectionHasTextNodes(selection, contentRef.current))
       if (!selectionHasTextNodes(selection, contentRef.current)) return;
 
       // check if selection is fine, if so, updateSelection (no reset)
-      // console.log((
-      //   anchorNode.nodeType === Node.TEXT_NODE &&
-      //   focusNode.nodeType === Node.TEXT_NODE &&
-      //   isValidTextEndpoint(anchorNode, anchorOffset, true) &&
-      //   isValidTextEndpoint(focusNode, focusOffset, true)
-      // ))
       if (
         anchorNode.nodeType === Node.TEXT_NODE &&
         focusNode.nodeType === Node.TEXT_NODE &&
@@ -201,8 +156,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
       }
 
       // else - selection is not fine, reset selection
-      // console.log("should reset selection");
-      // console.log("result of resetSelectionToTextNodes:", resetSelectionToTextNodes());
       updateSelection();
       return;
 
@@ -249,8 +202,8 @@ export default function EditableContent({ className, disableNewLines }: Editable
           if (e.code === "Enter") {
             e.preventDefault();
             if (disableNewLines) return;
-
             // else continue
+
             const br = document.createElement('br')
             range.extractContents();
             range.insertNode(br);
@@ -259,7 +212,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
             if (range.startContainer instanceof Text) {
               cushionTextNode(range.startContainer);
             }
-
 
             // this should always be true, text node should exist to begin with or is created above
             if (br.nextSibling! instanceof Text) {
@@ -352,7 +304,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
               extendSelection(selection, contentRef.current, "right");
             } 
             clearAndResetSelection(selection);
-
             updateContent();
           }
 
@@ -365,7 +316,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
             } 
 
             clearAndResetSelection(selection);
-
             updateContent();
           }
 
