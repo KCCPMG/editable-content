@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { moveSelection, resetSelectionToTextNodes, resetSelectionToUsableText, extendSelection, extendWordSelection } from "@/utils/selection_movements";
-import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint } from "@/utils/checks";
+import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getAllTextNodes } from "@/utils/checks";
 import { clearAndResetSelection, cushionTextNode, promoteChildrenOfNode } from "@/utils/dom_operations";
 
 
@@ -171,7 +171,17 @@ export default function EditableContent({ className, disableNewLines }: Editable
         ref={assignContentRef}
         spellCheck={false}
         onInput={updateContent}
-        onFocus={() => { setHasSelection(true) }}
+        onFocus={() => { 
+          // create empty text node if necessary
+          if (contentRef.current && getAllTextNodes([contentRef.current]).length === 0) {
+            const textNode = new Text("\u200B\u200B");
+            contentRef.current.append(textNode);
+            window.getSelection()?.setBaseAndExtent(textNode, 1, textNode, 1);
+            updateContent();
+          }
+          
+          setHasSelection(true);
+        }}
         onBlurCapture={(e) => {
           // if blurring because button is being clicked, do not setHasSelection to false
           if (
