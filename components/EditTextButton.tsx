@@ -1,5 +1,5 @@
 import { Button, ButtonOwnProps } from "@mui/material";
-import { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, ReactNode, useEffect, useMemo, useState } from "react";
+import { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, ReactNode, useEffect,  useRef,  useState } from "react";
 import { WrapperArgs } from "./";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
@@ -38,7 +38,6 @@ export default function EditTextButton({
   const { 
     contextInstanceId,
     hasSelection, 
-    setHasSelection, 
     selectionAnchorNode, 
     selectionAnchorOffset, 
     selectionFocusNode, 
@@ -56,6 +55,10 @@ export default function EditTextButton({
   const [enabled, setEnabled] = useState<boolean>(false);
   const [beingClicked, setBeingClicked] = useState<boolean>(false);
 
+  const thisKeyAndWrapperRef = useRef(keyAndWrapperObjs.find(kw => kw.dataKey === dataKey));
+  const wrapper = thisKeyAndWrapperRef?.current?.wrapper;
+
+  // on selection change
   useEffect(function () {
     const selection = window.getSelection();
 
@@ -69,13 +72,10 @@ export default function EditTextButton({
       setSelected(status.selected);
       setEnabled(status.enabled);
     }
-
-
   }, [hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset])
 
-  // TODO: opportunity for useMemo
-  const thisKeyAndWrapper = keyAndWrapperObjs.find(kw => kw.dataKey === dataKey);
-  const wrapper = thisKeyAndWrapper?.wrapper;
+
+
   if (!wrapper) return;
   const isReactComponent = getIsReactComponent(wrapper);
 
