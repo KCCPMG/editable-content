@@ -212,6 +212,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
               return;
 
             } 
+            range.startContainer.insertData(range.startOffset, e.key);
             range.setEnd(range.startContainer, range.startOffset + 1);
             range.collapse();
             updateContent();
