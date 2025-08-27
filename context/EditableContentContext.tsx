@@ -1,10 +1,8 @@
-
-import { EditableContentProps, EditTextButtonObject, WrapperInstructions, WrapperArgs } from "@/components";
 import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { renderToString } from "react-dom/server";
 import { v4 as uuidv4 } from 'uuid';
-import { EXCLUDE_FROM_DEHYDRATED, PORTAL_CONTAINER_ID_PREFIX, ZWS_RE } from "@/utils/constants";
+import { EXCLUDE_FROM_DEHYDRATED, PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
 import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getAllTextNodes, textNodeIsCushioned, isValidTextEndpoint, identifyBadTextNodes, getIsReactComponent, getNextPosition, getReMatch } from "@/utils/checks";
 import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements, cushionTextNode, resetTextNodesCushions } from "@/utils/dom_operations";
 import { resetSelectionToTextNodes,  moveSelection } from "@/utils/selection_movements";
@@ -12,67 +10,7 @@ import { resetSelectionToTextNodes,  moveSelection } from "@/utils/selection_mov
 
 
 
-declare global {
-  interface Window {
-    wrapInElement?: typeof wrapInElement;
-    selectionIsDescendentOfNode?: typeof selectionIsDescendentOfNode;
-    generateQuery?: typeof generateQuery;
-    selectionIsCoveredBy?: typeof selectionIsCoveredBy;
-    createWrapper?: typeof createWrapper;
-    unwrapSelectionFromQuery?: typeof unwrapSelectionFromQuery;
-    resetSelectionToTextNodes?: typeof resetSelectionToTextNodes;
-    selectionHasTextNodes?: typeof selectionHasTextNodes;
-    getSelectionChildNodes?: typeof getSelectionChildNodes;
-    selectionContainsOnlyText?: typeof selectionContainsOnlyText;
-    getButtonStatus?: typeof getButtonStatus;
-    getRangeLowestAncestorElement?: typeof getRangeLowestAncestorElement;
-    promoteChildrenOfNode?: typeof promoteChildrenOfNode;
-    deleteEmptyElements?: typeof deleteEmptyElements;
-    moveSelection?: typeof moveSelection;
-    getRangeChildNodes?: typeof getRangeChildNodes;
-    limitingContainer?: any;
-    getAncestorNode?: typeof getAncestorNode;
-    initialHTML?: string;
-    renderToString?: typeof renderToString
-    contentRef: any;
-    contentRefCurrentInnerHTML?: any;
-    setContentRefCurrentInnerHTML?: any;
-    selectionToString?: any;
-    setSelectionToString?: any;
-    selectionAnchorNode?: any;
-    setSelectionAnchorNode?: any;
-    selectionAnchorOffset?: any;
-    setSelectionAnchorOffset?: any;
-    selectionFocusNode?: any;
-    setSelectionFocusNode?: any;
-    selectionFocusOffset?: any;
-    setSelectionFocusOffset?: any;
-    hasSelection?: any;
-    setHasSelection?: any;
-    portals?: any;
-    setPortals?: any;
-    divToSetSelectionTo?: any;
-    setDivToSetSelectionTo?: any;
-    getDehydratedHTML?: any;
-    updatePortalProps?: any;
-    getAllPortalProps?: any;
-    keyAndWrapperObjs?: any;
-    updateContent?: any;
-    createContentPortal?: any;
-    appendPortalToDiv?: any;
-    removePortal?: any;
-    updateSelection?: any;
-    dehydratedHTML?: any;
-    getAllTextNodes: any;
-    textNodeIsCushioned: (textNode: Text) => boolean;
-    cushionTextNode: (textNode: Text) => void;
-    resetTextNodesCushions: (textNodes: Array<Text>) => void;
-    isValidTextEndpoint: any,
-    getNextPosition: any,
-    identifyBadTextNodes: any,
-    getReMatch: any
-  }
-}
+
 
 type PortalProps = {
   [key: string]: { [key: string]: any }
@@ -152,47 +90,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
 
 
 
-  useEffect(function () {
-    window.contentRef = contentRef,
-    window.contentRefCurrentInnerHTML = contentRefCurrentInnerHTML,
-    window.setContentRefCurrentInnerHTML = setContentRefCurrentInnerHTML,
-    window.selectionToString = selectionToString,
-    window.setSelectionToString = setSelectionToString,
-    window.selectionAnchorNode = selectionAnchorNode,
-    window.setSelectionAnchorNode = setSelectionAnchorNode,
-    window.selectionAnchorOffset = selectionAnchorOffset,
-    window.setSelectionAnchorOffset = setSelectionAnchorOffset,
-    window.selectionFocusNode = selectionFocusNode,
-    window.setSelectionFocusNode = setSelectionFocusNode,
-    window.selectionFocusOffset = selectionFocusOffset,
-    window.setSelectionFocusOffset = setSelectionFocusOffset,
-    window.hasSelection = hasSelection,
-    window.setHasSelection = setHasSelection,
-    window.portals = portals,
-    window.setPortals = setPortals,
-    window.divToSetSelectionTo = divToSetSelectionTo,
-    window.setDivToSetSelectionTo = setDivToSetSelectionTo,
-    window.getDehydratedHTML = getDehydratedHTML,
-    window.updatePortalProps = updatePortalProps,
-    window.getAllPortalProps = getAllPortalProps,
-    window.keyAndWrapperObjs = keyAndWrapperObjs,
-    window.updateContent = updateContent,
-    window.createContentPortal = createContentPortal,
-    window.appendPortalToDiv = appendPortalToDiv,
-    window.removePortal = removePortal,
-    window.updateSelection = updateSelection,
-    window.dehydratedHTML = dehydratedHTML,
-    window.getAllTextNodes = getAllTextNodes,
-    window.textNodeIsCushioned = textNodeIsCushioned,
-    window.cushionTextNode = cushionTextNode,
-    window.resetTextNodesCushions = resetTextNodesCushions,
-    window.isValidTextEndpoint = isValidTextEndpoint,
-    window.getRangeChildNodes = getRangeChildNodes,
-    window.moveSelection = moveSelection,
-    window.getNextPosition = getNextPosition,
-    window.identifyBadTextNodes = identifyBadTextNodes,
-    window.getReMatch = getReMatch
-  }, [])
+  
 
   /**
    * Used in place of ref={contentRef} to avoid race condition
