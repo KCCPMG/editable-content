@@ -170,7 +170,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
         contentEditable
         ref={assignContentRef}
         spellCheck={false}
-        // onInput={updateContent}
         onFocus={() => { 
           // create empty text node if necessary
           if (contentRef.current && getAllTextNodes([contentRef.current]).length === 0) {
@@ -208,33 +207,13 @@ export default function EditableContent({ className, disableNewLines }: Editable
             e.stopPropagation();
             if (range.toString().length > 0) {
               range.startContainer.insertData(range.startOffset, e.key)
-              
               range.setStart(range.startContainer, range.startOffset+1);
               range.extractContents();
               return;
-              
-              // clearAndResetSelection(selection);
 
-
-              // if (selection.anchorNode instanceof Text) {
-              //   // if this is now empty text node, cushion and set selection between cushions before continuing
-              //   if (
-              //     selection.anchorNode === selection.focusNode &&
-              //     selection.anchorNode.textContent === ""
-              //   ) {
-              //     selection.anchorNode.insertData(0, "\u200B\u200B")
-              //     selection.setBaseAndExtent(selection.anchorNode, 1, selection.anchorNode, 1);
-              //   }
-              // }
             } 
-            console.log("range.toString()", range.toString())
-            console.log(range.startContainer, range.startOffset, range.endContainer, range.endOffset);
-            range.startContainer.insertData(range.startOffset, e.key);
-            // moveSelection(selection, contentRef.current, "right");
             range.setEnd(range.startContainer, range.startOffset + 1);
-            console.log(range.startContainer, range.startOffset, range.endContainer, range.endOffset);
             range.collapse();
-            console.log(range.startContainer, range.startOffset, range.endContainer, range.endOffset);
             updateContent();
             return;
           }
@@ -262,18 +241,6 @@ export default function EditableContent({ className, disableNewLines }: Editable
             
             updateContent();
           }
-
-          // if (e.code === "Space") {
-          //   e.preventDefault();
-          //   const spaceNode = document.createTextNode("\u0020\u200B");
-          //   range.extractContents();
-          //   range.insertNode(spaceNode);
-          //   range.setStart(spaceNode, 2);
-          //   range.collapse();
-          //   selection.removeAllRanges();
-          //   selection.addRange(range);
-          //   updateContent();
-          // }
 
           if (e.code === "ArrowLeft") {
             if (
