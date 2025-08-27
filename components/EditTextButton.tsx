@@ -56,7 +56,10 @@ export default function EditTextButton({
   const [beingClicked, setBeingClicked] = useState<boolean>(false);
 
   const thisKeyAndWrapperRef = useRef(keyAndWrapperObjs.find(kw => kw.dataKey === dataKey));
-  const wrapper = thisKeyAndWrapperRef?.current?.wrapper;
+  const wrapperRef = useRef(thisKeyAndWrapperRef?.current?.wrapper);
+
+  if (!wrapperRef.current) return;
+  const isReactComponentRef = useRef(getIsReactComponent(wrapperRef.current));
 
   // on selection change
   useEffect(function () {
@@ -76,26 +79,23 @@ export default function EditTextButton({
 
 
 
-  if (!wrapper) return;
-  const isReactComponent = getIsReactComponent(wrapper);
-
   // get wrapperArgs
-  const wrapperArgs = reactNodeToWrapperArgs(wrapper, dataKey);
+  const wrapperArgs = reactNodeToWrapperArgs(wrapperRef.current, dataKey);
   // const query = useMemo((()=> {return generateQuery(wrapperArgs)}), []);
   const query = generateQuery(wrapperArgs);
 
   function handleEditTextButtonClick() {
 
-    if (!wrapper) return;
+    if (!wrapperRef.current) return;
 
     const selection = window.getSelection();
 
     if (selection) {
       if (selected) {
-        if (isReactComponent) {
+        if (isReactComponentRef.current) {
           unwrapReactComponent(selection);
         }
-        else if (!isReactComponent) {
+        else if (!isReactComponentRef.current) {
           if (wrapperArgs.unbreakable) {
             unwrapUnbreakableElement(selection);
           }
@@ -116,20 +116,19 @@ export default function EditTextButton({
         }
       }
       else if (!selected) {
-        if (isReactComponent) {
+        if (isReactComponentRef.current) {
           // if isReactComponent, can assert wrapperInstructions as ReactElement
-          console.log(wrapper, dataKey);
-          const portalId = createContentPortal(wrapper, dataKey);
+          console.log(wrapperRef.current, dataKey);
+          const portalId = createContentPortal(wrapperRef.current, dataKey);
           if (selectCallback) {
             console.log("there's a selectCallback here");
-            console.log(wrapper, portalId);
+            console.log(wrapperRef.current, portalId);
             console.log(portals);
             console.log(portals.find(portal => portal.key === portalId));
-            (selectCallback as reactSelectCallback)(wrapper, portalId);
+            (selectCallback as reactSelectCallback)(wrapperRef.current, portalId);
           }
 
-
-        } else if (!isReactComponent) {
+        } else if (!isReactComponentRef.current) {
           const wrapper = createWrapper(wrapperArgs, document);
           wrapInElement(selection, wrapper, contentRef.current!);
           
