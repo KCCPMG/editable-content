@@ -21,7 +21,8 @@ export default function IncreaseColorButton({componentBorderColor, setComponentB
     const keys = divs.map(div => div.getAttribute('id')?.split("portal-container-")[1]);
 
     const updateObj = Object.assign({}, ...keys.map(key => {
-      if (typeof key != "string") return {}
+      if (typeof key != "string") return {};
+      // else
       return {[key]: {borderC: componentBorderColor}}
     }))
 
