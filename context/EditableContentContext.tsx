@@ -116,7 +116,6 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
     const tagsToIgnore = Array.from(parsedHTMLBody.querySelectorAll(`[${EXCLUDE_FROM_DEHYDRATED}]`));
     tagsToIgnore.forEach(tti => tti.remove());
 
-
     const divs = Array.from(parsedHTMLBody.querySelectorAll("div[data-button-key]"));
 
     for (let div of divs) {
@@ -128,7 +127,6 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
 
       divRange.extractContents();
       textNodes.forEach(tn => {
-        // console.log(tn);
         divRange.insertNode(tn)
       });
     }
@@ -140,15 +138,13 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
   /** 
    * Go through the keys of the update object, find the corresponding portal 
    * in portals, clone portal with new props, filter out original portals and
-   * set setPortals with clones
+   * then setPortals with clones
    * @param updateObj
    */
   function updatePortalProps(updateObj: PortalProps) {
 
-    console.log("updatePortalProps", updateObj);
-
     const portalClones: Array<ReactPortal> = [];
-    const portalIds = Object.keys(updateObj);
+    const portalIds = Object.keys(updateObj); // ids of portals to update only
 
     if (portalIds.length === 0) return; // prevent unnecessary setPortals especially during dev re-render
 
@@ -177,6 +173,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
 
       if (portalClones.length === 0) return previousPortals; // second check to prevent bad setState
 
+      // remove stale portals, replace with portalClones
       return ([
         ...previousPortals.filter(portal => portal.key === null || !portalIds.includes(portal.key)),
         ...(portalClones as Array<ReactPortal>)
@@ -185,6 +182,11 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
   }
 
 
+  /**
+   * Updates portals state by extracting children from the div which will house the portal,
+   * then passing those children to the portal
+   * @returns 
+   */
   function resetPortalContainers() {
     return setPortals(previousPortals => {
 
@@ -270,10 +272,10 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
    */
   function updateContent() {
 
-    // get all text nodes in contentRef.current, make sure 
-    // that they begin and end with a zero width space
-    // make sure they do not contain any other zero width spaces?
-    // console.log(window.getSelection());
+    /**
+     * Get all text nodes in contentRef.current, make sure 
+     * that they begin and end with a zero width space
+     */
 
     if (contentRef.current) {
       const textNodes = getAllTextNodes([contentRef.current]);
@@ -285,7 +287,6 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
     }
 
     if (hasSelection) {
-      // console.log("reset selection in EditableContentContext updateContent");
       resetSelectionToTextNodes();
     }
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
@@ -369,7 +370,8 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
 
 
   /**
-   * Generate a containing div element, append ReactElement to that div, 
+   * Generate a containing div element with data-button-key indicating 
+   * type of React Element it holds, append ReactElement to that div, 
    * create portal and add that portal to portals state
    * @param component 
    */
@@ -395,7 +397,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
         return '\u200B\u200B';
       }
     }());
-    const contents = range?.extractContents();
+    range?.extractContents();
     range.insertNode(newDiv);
 
     setDivToSetSelectionTo(newDiv);
