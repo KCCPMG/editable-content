@@ -1,14 +1,10 @@
 import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { renderToString } from "react-dom/server";
 import { v4 as uuidv4 } from 'uuid';
 import { EXCLUDE_FROM_DEHYDRATED, PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
-import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getAllTextNodes, textNodeIsCushioned, isValidTextEndpoint, identifyBadTextNodes, getIsReactComponent, getNextPosition, getReMatch } from "@/utils/checks";
-import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements, cushionTextNode, resetTextNodesCushions } from "@/utils/dom_operations";
-import { resetSelectionToTextNodes,  moveSelection } from "@/utils/selection_movements";
-
-
-
+import { selectionIsDescendentOfNode, getRangeChildNodes, getAllTextNodes,   identifyBadTextNodes, getIsReactComponent } from "@/utils/checks";
+import { deleteEmptyElements, resetTextNodesCushions } from "@/utils/dom_operations";
+import { resetSelectionToTextNodes } from "@/utils/selection_movements";
 
 
 
@@ -31,7 +27,6 @@ type EditableContentContextProviderProps = {
 }
 
 
-// this is a replacement for EditableContent's state in all cases
 export type EditableContentContextType = {
   contextInstanceId: string,
   contentRef: MutableRefObject<HTMLDivElement | null>,
@@ -67,9 +62,8 @@ export type EditableContentContextType = {
   assignContentRef: (newRef: HTMLDivElement) => void
 }
 
+
 export const EditableContentContext = createContext<EditableContentContextType | null>(null);
-
-
 
 
 export function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHTML, initialProps }: EditableContentContextProviderProps) {
@@ -87,9 +81,6 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
   const [portals, setPortals] = useState<Array<React.ReactPortal>>([]);
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
   const [dehydratedHTML, setDehydratedHTML] = useState<string>(initialHTML || "")
-
-
-
   
 
   /**
