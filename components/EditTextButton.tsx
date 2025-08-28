@@ -100,7 +100,17 @@ export default function EditTextButton({
             unwrapUnbreakableElement(selection);
           }
           else if (!wrapperArgs.unbreakable) {
+            const originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
             unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+
+            // update button status if selection does not change
+            const newRange = selection.getRangeAt(0);
+            if (originalRange == newRange) {
+              const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
+              setSelected(status.selected);
+              setEnabled(status.enabled);
+            }
+            
             updateContent();
           }
           else {
