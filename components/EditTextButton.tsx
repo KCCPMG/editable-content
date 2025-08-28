@@ -1,5 +1,5 @@
 import { Button, ButtonOwnProps } from "@mui/material";
-import { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, ReactNode, useEffect,  useRef,  useState } from "react";
+import { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, ReactNode, ReactPortal, useCallback, useEffect,  useRef,  useState } from "react";
 import { WrapperArgs } from "./";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { renderToString } from "react-dom/server";
@@ -81,7 +81,13 @@ export default function EditTextButton({
     }
   }, [hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset])
 
-  
+
+  /**
+   * Handler for all button clicks for wrapping and unwrapping text
+   * with React wrappers, non-React unbreakable wrappers, and standard
+   * wrappers
+   * @returns 
+   */
   function handleEditTextButtonClick() {
 
     if (!wrapperRef.current) return;
@@ -90,8 +96,10 @@ export default function EditTextButton({
 
     if (selection) {
       if (selected) {
+        // selected - this action should unwrap
+
         if (isReactComponentRef.current) {
-          unwrapReactComponent(selection);
+          unwrapReactComponent(selection, portals);
         }
         else if (!isReactComponentRef.current) {
           if (wrapperArgsRef.current.unbreakable) {
@@ -117,15 +125,12 @@ export default function EditTextButton({
         }
       }
       else if (!selected) {
+        // not selected - this action should wrap
+
         if (isReactComponentRef.current) {
           // if isReactComponent, can assert wrapperInstructions as ReactElement
-          console.log(wrapperRef.current, dataKey);
           const portalId = createContentPortal(wrapperRef.current, dataKey);
           if (selectCallback) {
-            console.log("there's a selectCallback here");
-            console.log(wrapperRef.current, portalId);
-            console.log(portals);
-            console.log(portals.find(portal => portal.key === portalId));
             (selectCallback as reactSelectCallback)(wrapperRef.current, portalId);
           }
         } 
@@ -151,7 +156,7 @@ export default function EditTextButton({
     // if no selection, no click handler
   }
 
-  function unwrapReactComponent(selection: Selection) {
+  const unwrapReactComponent = useCallback((selection: Selection, portalsState: ReactPortal[]) =>{
     const range = selection.getRangeAt(0);
     if (!selection.anchorNode || !contentRef.current) return;
     const targetDiv = getAncestorNode(selection.anchorNode, "div[data-button-key]", contentRef.current) as Element;
@@ -163,7 +168,9 @@ export default function EditTextButton({
 
     if (!key || key.length === 0) return;
 
-    const targetPortal = portals.find(p => p.key === key);
+    const targetPortal = portalsState.find(p => p.key === key);
+
+    console.log({key, targetPortal, portalsState});
 
     if (!targetPortal) return;
 
@@ -181,7 +188,6 @@ export default function EditTextButton({
       // const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
 
       const textNodes = getAllTextNodes([targetDiv]);
-
 
       const lastTextNode = getLastValidTextNode(textNodes);
       const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
@@ -209,6 +215,7 @@ export default function EditTextButton({
       reactNodeToElement(children);
     htmlChildren && targetDiv.appendChild(htmlChildren);
 
+    console.log(key);
     removePortal(key);
 
     // need to remove containing div / unwrap text normally
@@ -216,7 +223,7 @@ export default function EditTextButton({
 
     // promoteChildrenOfNode(targetDiv);
 
-  }
+  }, [removePortal])
 
   function unwrapUnbreakableElement(selection: Selection) {
     if (!contentRef.current) return;
