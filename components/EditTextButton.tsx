@@ -60,6 +60,10 @@ export default function EditTextButton({
 
   if (!wrapperRef.current) return;
   const isReactComponentRef = useRef(getIsReactComponent(wrapperRef.current));
+  
+  // get wrapperArgs
+  const wrapperArgsRef = useRef(reactNodeToWrapperArgs(wrapperRef.current, dataKey));
+  const queryRef = useRef(generateQuery(wrapperArgsRef.current));
 
   // on selection change
   useEffect(function () {
@@ -71,19 +75,13 @@ export default function EditTextButton({
       setEnabled(false);
     }
     else {
-      const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
+      const status = getButtonStatus(selection, wrapperArgsRef.current.unbreakable, queryRef.current, contentRef.current);
       setSelected(status.selected);
       setEnabled(status.enabled);
     }
   }, [hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset])
 
-
-
-  // get wrapperArgs
-  const wrapperArgs = reactNodeToWrapperArgs(wrapperRef.current, dataKey);
-  // const query = useMemo((()=> {return generateQuery(wrapperArgs)}), []);
-  const query = generateQuery(wrapperArgs);
-
+  
   function handleEditTextButtonClick() {
 
     if (!wrapperRef.current) return;
@@ -96,29 +94,22 @@ export default function EditTextButton({
           unwrapReactComponent(selection);
         }
         else if (!isReactComponentRef.current) {
-          if (wrapperArgs.unbreakable) {
+          if (wrapperArgsRef.current.unbreakable) {
             unwrapUnbreakableElement(selection);
           }
-          else if (!wrapperArgs.unbreakable) {
+          else if (!wrapperArgsRef.current.unbreakable) {
             const originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
-            unwrapSelectionFromQuery(selection, query, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+            unwrapSelectionFromQuery(selection, queryRef.current, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
 
             // update button status if selection does not change
             const newRange = selection.getRangeAt(0);
             if (originalRange == newRange) {
-              const status = getButtonStatus(selection, wrapperArgs.unbreakable, query, contentRef.current);
+              const status = getButtonStatus(selection, wrapperArgsRef.current.unbreakable, queryRef.current, contentRef.current);
               setSelected(status.selected);
               setEnabled(status.enabled);
-            }
-            
+            }  
             updateContent();
-          }
-          else {
-            console.log("uncaught scenario in selected and not react component");
-          }
-        }
-        else {
-          console.log("uncaught scenario in handling click on text selected by button")
+          } 
         }
 
         if (deselectCallback) {
@@ -137,9 +128,9 @@ export default function EditTextButton({
             console.log(portals.find(portal => portal.key === portalId));
             (selectCallback as reactSelectCallback)(wrapperRef.current, portalId);
           }
-
-        } else if (!isReactComponentRef.current) {
-          const wrapper = createWrapper(wrapperArgs, document);
+        } 
+        else if (!isReactComponentRef.current) {
+          const wrapper = createWrapper(wrapperArgsRef.current, document);
           wrapInElement(selection, wrapper, contentRef.current!);
           
           // make sure all text nodes are cushioned, reset range to include ZWSs
@@ -154,13 +145,10 @@ export default function EditTextButton({
           if (selectCallback) {
             (selectCallback as htmlSelectCallback)(wrapper);
           }
-
         }
-
       }
     }
     // if no selection, no click handler
-
   }
 
   function unwrapReactComponent(selection: Selection) {
