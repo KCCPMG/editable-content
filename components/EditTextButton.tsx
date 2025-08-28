@@ -155,6 +155,12 @@ export default function EditTextButton({
     // if no selection, no click handler
   }
 
+
+  /**
+   * Handle removal of React component, including removal of portal, 
+   * promotion of children to div containing portal, marking that
+   * div for deletion in EditableContent useEffect [portals]
+   */
   const unwrapReactComponent = useCallback((selection: Selection, portalsState: ReactPortal[]) =>{
     const range = selection.getRangeAt(0);
     if (!selection.anchorNode || !contentRef.current) return;
@@ -169,11 +175,7 @@ export default function EditTextButton({
 
     const targetPortal = portalsState.find(p => p.key === key);
 
-    console.log({key, targetPortal, portalsState});
-
     if (!targetPortal) return;
-
-    // const childNodes = Array.from(targetPortal.childNodes);
 
     if (targetPortal.children && range.toString().length === 0) {
 
@@ -182,45 +184,36 @@ export default function EditTextButton({
       childrenRange.setStart(targetDiv, 0);
       childrenRange.setEnd(targetDiv, targetDiv.childNodes.length)
 
-      // resetRangeToTextNodes(childrenRange);
-      // const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
-      // const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
-
       const textNodes = getAllTextNodes([targetDiv]);
 
       const lastTextNode = getLastValidTextNode(textNodes);
       const lastTextIndex = getLastValidCharacterIndex(lastTextNode);
 
-      console.log(textNodes);
-      console.log(lastTextNode, lastTextIndex);
-
-      console.log(range.startContainer, range.startOffset, range.endContainer, range.endOffset);
-
-      // if at end of react component
+      // if at end of react component, break element at end
       if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
-        console.log("should break element at end");
         breakElementAtEnd(targetDiv, selection);
         return;
       }
     }
 
-    // else to either condition above
+    // else - there is a target portal and range is over 1 or more characters
     const targetComponent = targetPortal.children;
     if (!targetComponent || !isValidElement(targetComponent)) return;
 
+    // target component exists, remove portal, copy children to targetDiv
     const children = targetComponent.props.children;
     const htmlChildren = (typeof children === "string") ?
       document.createTextNode(children) :
       reactNodeToElement(children);
     htmlChildren && targetDiv.appendChild(htmlChildren);
 
-    console.log(key);
     removePortal(key);
 
-    // need to remove containing div / unwrap text normally
+    /**
+     * mark targetDiv for cleanup, which will promote children in EditableContent
+     * useEffect with portals dependency
+     */ 
     targetDiv.setAttribute('data-mark-for-deletion', '');
-
-    // promoteChildrenOfNode(targetDiv);
 
   }, [removePortal])
 
