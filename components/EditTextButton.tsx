@@ -102,7 +102,16 @@ export default function EditTextButton({
         }
         else if (!isReactComponentRef.current) {
           if (wrapperArgsRef.current.unbreakable) {
+            const originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
             unwrapUnbreakableElement(selection);
+
+            // update button status if selection does not change
+            const newRange = selection.getRangeAt(0);
+            if (originalRange == newRange) {
+              const status = getButtonStatus(selection, wrapperArgsRef.current.unbreakable, queryRef.current, contentRef.current);
+              setSelected(status.selected);
+              setEnabled(status.enabled);
+            }  
           }
           else if (!wrapperArgsRef.current.unbreakable) {
             const originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
@@ -115,8 +124,8 @@ export default function EditTextButton({
               setSelected(status.selected);
               setEnabled(status.enabled);
             }  
-            updateContent();
           } 
+          updateContent();
         }
 
         if (deselectCallback) {
@@ -157,11 +166,12 @@ export default function EditTextButton({
 
 
   /**
-   * Handle removal of React component, including removal of portal, 
-   * promotion of children to div containing portal, marking that
-   * div for deletion in EditableContent useEffect [portals]
+   * Handle moving out of React component (if range is collapsed and at 
+   * end) or removal of React component, including removal of portal, 
+   * promotion of children to div containing portal, marking that div 
+   * for deletion in EditableContent useEffect [portals]
    */
-  const unwrapReactComponent = useCallback((selection: Selection, portalsState: ReactPortal[]) =>{
+  const unwrapReactComponent = useCallback((selection: Selection, portalsState: ReactPortal[]) => {
     const range = selection.getRangeAt(0);
     if (!selection.anchorNode || !contentRef.current) return;
     const targetDiv = getAncestorNode(selection.anchorNode, "div[data-button-key]", contentRef.current) as Element;
@@ -217,7 +227,14 @@ export default function EditTextButton({
 
   }, [removePortal])
 
-  function unwrapUnbreakableElement(selection: Selection) {
+
+  /**
+   * Handle moving out of unbreakable element (if range is collapsed
+   * and at end) or promotion of children from unbreakable element.
+   * Assumes that range's lowest ancestor element is the element to
+   * unwrap, requires caution when calling
+   */
+  const unwrapUnbreakableElement = useCallback((selection: Selection) => {
     if (!contentRef.current) return;
     const range = selection.getRangeAt(0);
     const element = getRangeLowestAncestorElement(range);
@@ -228,8 +245,6 @@ export default function EditTextButton({
       elementRange.setEnd(element, element.childNodes.length);
       resetRangeToTextNodes(elementRange);
       const childNodes = getRangeChildNodes(elementRange, contentRef.current);
-
-      // const childNodes = Array.from(element.childNodes);
 
       const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
 
@@ -244,7 +259,7 @@ export default function EditTextButton({
         }
       }
 
-      // else to either condition above
+      // else - selection is not at end of element
       const startNodeIndex = childNodes.findIndex(cn => cn === range.startContainer);
       const startNodeOffset = range.startOffset;
       const endNodeIndex = childNodes.findIndex(cn => cn === range.endContainer);
@@ -271,7 +286,9 @@ export default function EditTextButton({
       return;
 
     }
-  }
+  }, [updateContent]);
+
+
 
   function breakElementAtEnd(targetElement: Element, selection: Selection) {
     console.log("in breakElementAtEnd");
