@@ -355,8 +355,8 @@ export default function EditTextButton({
     isMUIButton ?
       <Button
         disabled={!enabled}
-        // prevent !hasSelection from blocking button's ability to click
         onMouseDown={() => {
+          // prevent !hasSelection from blocking button's ability to click
           setBeingClicked(true);
         }}
         onClick={(e) => {
@@ -376,10 +376,12 @@ export default function EditTextButton({
       </Button> :
       <button
         disabled={!enabled}
+        onMouseDown={() => {
+          // prevent !hasSelection from blocking button's ability to click
+          setBeingClicked(true);
+        }}
         onClick={() => { handleEditTextButtonClick() }}
         data-context-id={contextInstanceId}
-        // id={id}
-        // className={classList?.join(" ")}
         {...remainderProps}
       >
         {children}
@@ -391,14 +393,7 @@ export default function EditTextButton({
 
 
 
-// unfinished, unused
-function getWrapperArgs(component: ReactElement, isReactComponent: boolean) {
-  const element = isReactComponent ?
-    reactNodeToElement(component) :
-    component as unknown as Element;
 
-
-}
 
 
 function reactNodeToWrapperArgs(rn: ReactNode, dataKey: string): WrapperArgs {
@@ -449,19 +444,3 @@ function reactNodeToElement(reactNode: ReactNode) {
   return parsedElement;
 }
 
-function getIsSelected(selection: Selection, query: string, contentRef: MutableRefObject<HTMLDivElement>) {
-
-  const { anchorNode, focusNode, anchorOffset, focusOffset } = selection;
-
-  if (
-    anchorNode == contentRef.current &&
-    focusNode == contentRef.current &&
-    anchorOffset == 0 &&
-    focusOffset == 0
-  ) {
-    const thisRange = selection.getRangeAt(0);
-    thisRange.insertNode(document.createTextNode(""));
-    selection.removeAllRanges();
-    selection.addRange(thisRange);
-  }
-}
