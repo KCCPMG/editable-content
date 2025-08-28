@@ -289,9 +289,12 @@ export default function EditTextButton({
   }, [updateContent]);
 
 
-
-  function breakElementAtEnd(targetElement: Element, selection: Selection) {
-    console.log("in breakElementAtEnd");
+  /**
+   * Move selection out of end of targetElement and into next
+   * text node if it exists, and if it does not exist, creates
+   * it.
+   */
+  const breakElementAtEnd = useCallback((targetElement: Element, selection: Selection) => {
     if (!contentRef.current) return;
 
     const childrenRange = new Range();
@@ -299,16 +302,8 @@ export default function EditTextButton({
     childrenRange.setStart(targetElement, 0);
     childrenRange.setEnd(targetElement, targetElement.childNodes.length);
 
-    // resetRangeToTextNodes(childrenRange);
-    // const childNodes = getRangeChildNodes(childrenRange, contentRef.current);
-    // const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE) as Array<Text>;
-    // const range = selection.getRangeAt(0);
-
     const textNodes = getAllTextNodes([targetElement]);
 
-    console.log("right before moveSelection right in breakElementAtEnd")
-
-    // moveSelection(selection, contentRef?.current, "right");
     if (targetElement.nextSibling && targetElement.nextSibling.nodeType === Node.TEXT_NODE) {
       moveSelection(selection, contentRef.current, "right");
     }
@@ -323,9 +318,10 @@ export default function EditTextButton({
       window.getSelection()?.setBaseAndExtent(newEmptyTextNode, 1, newEmptyTextNode, 1);
     }
 
-    // get new selection, make sure it starts with zero width space
-    // if not, add it, put selection after zero width space)
-    // if (!selection?.anchorNode?.textContent) return;
+    /**
+     * get new selection, make sure it starts with zero width space
+     * if not, add it, put selection after zero width space)
+     */
     if (!(selection?.anchorNode)) return;
 
     // if selection is still inside of element, - end of text
@@ -336,11 +332,10 @@ export default function EditTextButton({
       const newTextNode = document.createTextNode("\u200B\u200B");
       newRange.insertNode(newTextNode);
 
-
+      // directly set new selection
       window.getSelection()?.setBaseAndExtent(newTextNode, 1, newTextNode, 1);
-      // moveSelection(selection, contentRef?.current, "right");
-
     }
+
     // make sure next text node starts with zero width space
     if (selection.anchorNode.textContent != null && (
       selection.anchorNode.textContent.length == 0 ||
@@ -351,7 +346,8 @@ export default function EditTextButton({
     }
     return;
 
-  }
+  }, []);
+
 
   if (!wrapperRef.current) return;
 
