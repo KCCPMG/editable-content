@@ -58,8 +58,7 @@ export default function EditTextButton({
   const thisKeyAndWrapperRef = useRef(keyAndWrapperObjs.find(kw => kw.dataKey === dataKey));
   const wrapperRef = useRef(thisKeyAndWrapperRef?.current?.wrapper);
 
-  if (!wrapperRef.current) return;
-  const isReactComponentRef = useRef(getIsReactComponent(wrapperRef.current));
+  const isReactComponentRef = useRef(wrapperRef.current ? getIsReactComponent(wrapperRef?.current) : false);
   
   // get wrapperArgs
   const wrapperArgsRef = useRef(reactNodeToWrapperArgs(wrapperRef.current, dataKey));
@@ -343,6 +342,8 @@ export default function EditTextButton({
     return;
 
   }
+
+  if (!wrapperRef.current) return;
 
   return (
     isMUIButton ?
