@@ -106,7 +106,9 @@ export default function EditTextButton({
     updateContent, 
     createContentPortal, 
     portals, 
-    removePortal 
+    removePortal,
+    buttonUpdateTrigger,
+    triggerButtonUpdate
   } = useEditableContentContext();
 
 
@@ -137,7 +139,7 @@ export default function EditTextButton({
       setSelected(status.selected);
       setEnabled(status.enabled);
     }
-  }, [hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset])
+  }, [hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, buttonUpdateTrigger])
 
 
   /**
@@ -350,9 +352,7 @@ export default function EditTextButton({
             // update button status if selection does not change
             const newRange = selection.getRangeAt(0);
             if (originalRange == newRange) {
-              const status = getButtonStatus(selection, wrapperArgsRef.current.unbreakable, queryRef.current, contentRef.current);
-              setSelected(status.selected);
-              setEnabled(status.enabled);
+              triggerButtonUpdate();
             }  
           }
           else if (!wrapperArgsRef.current.unbreakable) {
@@ -362,9 +362,7 @@ export default function EditTextButton({
             // update button status if selection does not change
             const newRange = selection.getRangeAt(0);
             if (originalRange == newRange) {
-              const status = getButtonStatus(selection, wrapperArgsRef.current.unbreakable, queryRef.current, contentRef.current);
-              setSelected(status.selected);
-              setEnabled(status.enabled);
+              triggerButtonUpdate();
             }  
           } 
           updateContent();

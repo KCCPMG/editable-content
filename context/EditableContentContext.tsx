@@ -60,6 +60,8 @@ export type EditableContentContextType = {
   dehydratedHTML: string,
   resetPortalContainers: () => void,
   assignContentRef: (newRef: HTMLDivElement) => void
+  buttonUpdateTrigger: boolean,
+  triggerButtonUpdate: () => void
 }
 
 
@@ -81,7 +83,11 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
   const [portals, setPortals] = useState<Array<React.ReactPortal>>([]);
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
   const [dehydratedHTML, setDehydratedHTML] = useState<string>(initialHTML || "")
+  const [buttonUpdateTrigger, setButtonUpdateTrigger] = useState<boolean>(false);
   
+  function triggerButtonUpdate() {
+    setButtonUpdateTrigger(!buttonUpdateTrigger)
+  }
 
   /**
    * Used in place of ref={contentRef} to avoid race condition
@@ -493,7 +499,9 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
       updateSelection,
       dehydratedHTML,
       resetPortalContainers,
-      assignContentRef
+      assignContentRef,
+      buttonUpdateTrigger,
+      triggerButtonUpdate
     }}
     >
       {children}
