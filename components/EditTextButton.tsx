@@ -67,7 +67,6 @@ function reactNodeToElement(reactNode: ReactNode) {
 }
 
 
-
 type htmlSelectCallback = (wrapper: HTMLElement) => void
 type reactSelectCallback = (wrapper: ReactElement<any, string | JSXElementConstructor<any>>, portalId: string | undefined) => void
 
@@ -139,90 +138,6 @@ export default function EditTextButton({
       setEnabled(status.enabled);
     }
   }, [hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset])
-
-
-  /**
-   * Handler for all button clicks for wrapping and unwrapping text
-   * with React wrappers, non-React unbreakable wrappers, and standard
-   * wrappers
-   * @returns 
-   */
-  function handleEditTextButtonClick() {
-
-    if (!wrapperRef.current) return;
-
-    const selection = window.getSelection();
-
-    if (selection) {
-      if (selected) {
-        // selected - this action should unwrap
-
-        if (isReactComponentRef.current) {
-          unwrapReactComponent(selection, portals);
-        }
-        else if (!isReactComponentRef.current) {
-          if (wrapperArgsRef.current.unbreakable) {
-            const originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
-            unwrapUnbreakableElement(selection);
-
-            // update button status if selection does not change
-            const newRange = selection.getRangeAt(0);
-            if (originalRange == newRange) {
-              const status = getButtonStatus(selection, wrapperArgsRef.current.unbreakable, queryRef.current, contentRef.current);
-              setSelected(status.selected);
-              setEnabled(status.enabled);
-            }  
-          }
-          else if (!wrapperArgsRef.current.unbreakable) {
-            const originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
-            unwrapSelectionFromQuery(selection, queryRef.current, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
-
-            // update button status if selection does not change
-            const newRange = selection.getRangeAt(0);
-            if (originalRange == newRange) {
-              const status = getButtonStatus(selection, wrapperArgsRef.current.unbreakable, queryRef.current, contentRef.current);
-              setSelected(status.selected);
-              setEnabled(status.enabled);
-            }  
-          } 
-          updateContent();
-        }
-
-        if (deselectCallback) {
-          deselectCallback();
-        }
-      }
-      else if (!selected) {
-        // not selected - this action should wrap
-
-        if (isReactComponentRef.current) {
-          // if isReactComponent, can assert wrapperInstructions as ReactElement
-          const portalId = createContentPortal(wrapperRef.current, dataKey);
-          if (selectCallback) {
-            (selectCallback as reactSelectCallback)(wrapperRef.current, portalId);
-          }
-        } 
-        else if (!isReactComponentRef.current) {
-          const wrapper = createWrapper(wrapperArgsRef.current, document);
-          wrapInElement(selection, wrapper, contentRef.current!);
-          
-          // make sure all text nodes are cushioned, reset range to include ZWSs
-          const textNodes = getAllTextNodes([wrapper]);
-          textNodes.forEach(tn => cushionTextNode(tn));
-          const range = window.getSelection()?.getRangeAt(0);
-          range?.setStart(textNodes[0], 0);
-          const lastTextNode = textNodes[textNodes.length - 1];
-          range?.setEnd(lastTextNode, lastTextNode.length);
-
-          updateContent();
-          if (selectCallback) {
-            (selectCallback as htmlSelectCallback)(wrapper);
-          }
-        }
-      }
-    }
-    // if no selection, no click handler
-  }
 
 
   /**
@@ -409,6 +324,89 @@ export default function EditTextButton({
   }, []);
 
 
+  /**
+   * Handler for all button clicks for wrapping and unwrapping text
+   * with React wrappers, non-React unbreakable wrappers, and standard
+   * wrappers
+   */
+  const handleEditTextButtonClick = useCallback((portalArray: ReactPortal[], isSelected: boolean) => {
+
+    if (!wrapperRef.current) return;
+
+    const selection = window.getSelection();
+
+    if (selection) {
+      if (isSelected) {
+        // selected - this action should unwrap
+
+        if (isReactComponentRef.current) {
+          unwrapReactComponent(selection, portalArray);
+        }
+        else if (!isReactComponentRef.current) {
+          if (wrapperArgsRef.current.unbreakable) {
+            const originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
+            unwrapUnbreakableElement(selection);
+
+            // update button status if selection does not change
+            const newRange = selection.getRangeAt(0);
+            if (originalRange == newRange) {
+              const status = getButtonStatus(selection, wrapperArgsRef.current.unbreakable, queryRef.current, contentRef.current);
+              setSelected(status.selected);
+              setEnabled(status.enabled);
+            }  
+          }
+          else if (!wrapperArgsRef.current.unbreakable) {
+            const originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
+            unwrapSelectionFromQuery(selection, queryRef.current, contentRef.current!) // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
+
+            // update button status if selection does not change
+            const newRange = selection.getRangeAt(0);
+            if (originalRange == newRange) {
+              const status = getButtonStatus(selection, wrapperArgsRef.current.unbreakable, queryRef.current, contentRef.current);
+              setSelected(status.selected);
+              setEnabled(status.enabled);
+            }  
+          } 
+          updateContent();
+        }
+
+        if (deselectCallback) {
+          deselectCallback();
+        }
+      }
+      else if (!selected) {
+        // not selected - this action should wrap
+
+        if (isReactComponentRef.current) {
+          // if isReactComponent, can assert wrapperInstructions as ReactElement
+          const portalId = createContentPortal(wrapperRef.current, dataKey);
+          if (selectCallback) {
+            (selectCallback as reactSelectCallback)(wrapperRef.current, portalId);
+          }
+        } 
+        else if (!isReactComponentRef.current) {
+          const wrapper = createWrapper(wrapperArgsRef.current, document);
+          wrapInElement(selection, wrapper, contentRef.current!);
+          
+          // make sure all text nodes are cushioned, reset range to include ZWSs
+          const textNodes = getAllTextNodes([wrapper]);
+          textNodes.forEach(tn => cushionTextNode(tn));
+          const range = window.getSelection()?.getRangeAt(0);
+          range?.setStart(textNodes[0], 0);
+          const lastTextNode = textNodes[textNodes.length - 1];
+          range?.setEnd(lastTextNode, lastTextNode.length);
+
+          updateContent();
+          if (selectCallback) {
+            (selectCallback as htmlSelectCallback)(wrapper);
+          }
+        }
+      }
+    }
+    // if no selection, no click handler
+  }, [wrapperRef, wrapperArgsRef, queryRef, contentRef, isReactComponentRef, createContentPortal, updateContent])
+
+
   if (!wrapperRef.current) return;
 
   return (
@@ -420,8 +418,7 @@ export default function EditTextButton({
           setBeingClicked(true);
         }}
         onClick={(e) => {
-          console.log("has selection at click", hasSelection);
-          handleEditTextButtonClick();
+          handleEditTextButtonClick(portals, selected);
           setBeingClicked(false);
         }}
         variant={selected ?
@@ -440,7 +437,7 @@ export default function EditTextButton({
           // prevent !hasSelection from blocking button's ability to click
           setBeingClicked(true);
         }}
-        onClick={() => { handleEditTextButtonClick() }}
+        onClick={() => { handleEditTextButtonClick(portals, selected) }}
         data-context-id={contextInstanceId}
         {...remainderProps}
       >
