@@ -8,6 +8,66 @@ import { getAllTextNodes, getAncestorNode, getButtonStatus, getIsReactComponent,
 import { generateQuery, unwrapSelectionFromQuery, createWrapper, wrapInElement, cushionTextNode } from "@/utils/dom_operations";
 import { resetRangeToTextNodes, resetSelectionToTextNodes, moveSelection } from "@/utils/selection_movements";
 
+
+/**
+ * Takes a ReactNode and a dataKey and generates a 
+ * WrapperArgs object
+ * @param rn 
+ * @param dataKey 
+ * @returns 
+ */
+function reactNodeToWrapperArgs(rn: ReactNode, dataKey: string): WrapperArgs {
+
+  const element = reactNodeToElement(rn);
+  if (!element) return { element: "" };
+
+  let mappedAttributes: { [key: string]: string | undefined } = {
+    'data-bk': dataKey
+  }
+
+  for (let attr of Array.from(element.attributes)) {
+    if ((attr.name) === 'class' || (attr.name) === 'getContext') continue;
+    if (attr.name === 'style') {
+      // TODO: make style compatible for wrapperArgs search
+      continue;
+    }
+    const attrName = attr.name;
+    const attrValue = attr.value || '';
+
+    mappedAttributes[attrName] = attrValue;
+  }
+
+  // set all react elements to unbreakable, might change this later
+  const wrapperArgs = {
+    element: element.tagName,
+    classList: element.className ? element.className.split(" ") : [],
+    id: element.getAttribute('id') || undefined,
+    attributes: mappedAttributes,
+    unbreakable: element.hasAttribute("data-unbreakable") || getIsReactComponent(rn as ReactElement)
+  };
+
+  return wrapperArgs;
+}
+
+
+/**
+ * If the window exists, generates an Element from 
+ * a given ReactNode. If the window does not exist,
+ * returns null
+ * @param reactNode 
+ * @returns 
+ */
+function reactNodeToElement(reactNode: ReactNode) {
+  const stringified = renderToString(reactNode);
+
+  const parsedElement = (typeof window !== "undefined") ? 
+    new DOMParser().parseFromString(stringified, "text/html").body.children[0] : 
+    null;
+  return parsedElement;
+}
+
+
+
 type htmlSelectCallback = (wrapper: HTMLElement) => void
 type reactSelectCallback = (wrapper: ReactElement<any, string | JSXElementConstructor<any>>, portalId: string | undefined) => void
 
@@ -388,59 +448,3 @@ export default function EditTextButton({
       </button>
   )
 }
-
-
-
-
-
-
-
-
-function reactNodeToWrapperArgs(rn: ReactNode, dataKey: string): WrapperArgs {
-
-  const element = reactNodeToElement(rn);
-
-  if (!element) return { element: "" };
-
-  let mappedAttributes: { [key: string]: string | undefined } = {
-    'data-bk': dataKey
-  }
-
-  for (let attr of Array.from(element.attributes)) {
-    if ((attr.name) === 'class' || (attr.name) === 'getContext') continue;
-    if (attr.name === 'style') {
-      // TODO: make style compatible for wrapperArgs search
-      continue;
-    }
-    const attrName = attr.name;
-    const attrValue = attr.value || '';
-    // console.log({attrName, attrValue});
-    mappedAttributes[attrName] = attrValue;
-  }
-
-
-  // set all react elements to unbreakable, might change this later
-  const wrapperArgs = {
-    element: element.tagName,
-    classList: element.className ? element.className.split(" ") : [],
-    id: element.getAttribute('id') || undefined,
-    attributes: mappedAttributes,
-    // unbreakable: typeof mappedAttributes['data-unbreakable'] === 'string'
-    // unbreakable: true
-    unbreakable: element.hasAttribute("data-unbreakable") || getIsReactComponent(rn as ReactElement)
-    // eventListeners: getEventListeners(element)      
-  };
-
-  // console.log(rn?.type?.name, wrapperArgs);
-
-  return wrapperArgs;
-}
-
-
-function reactNodeToElement(reactNode: ReactNode) {
-  const stringified = renderToString(reactNode);
-
-  const parsedElement = (typeof window !== "undefined") ? new DOMParser().parseFromString(stringified, "text/html").body.children[0] : null;
-  return parsedElement;
-}
-
