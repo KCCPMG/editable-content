@@ -95,7 +95,7 @@ export default function EditTextButton({
 ) {
 
   const { 
-    contextInstanceId,
+    contextInstanceIdRef,
     hasSelection, 
     selectionAnchorNode, 
     selectionAnchorOffset, 
@@ -424,7 +424,7 @@ export default function EditTextButton({
           (deselectedVariant || "outlined")
         }
         // Only pass valid MUI Button props here
-        data-context-id={contextInstanceId}
+        data-context-id={contextInstanceIdRef.current}
         {...(remainderProps as React.ComponentProps<typeof Button>)}
       >
         {children}
@@ -436,7 +436,7 @@ export default function EditTextButton({
           setBeingClicked(true);
         }}
         onClick={() => { handleEditTextButtonClick(portals, selected) }}
-        data-context-id={contextInstanceId}
+        data-context-id={contextInstanceIdRef.current}
         {...remainderProps}
       >
         {children}

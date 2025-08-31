@@ -10,7 +10,7 @@ import { clearAndResetSelection, cushionTextNode, promoteChildrenOfNode } from "
 export default function EditableContent({ className, disableNewLines }: EditableContentProps) {
 
   const {
-    contextInstanceId,
+    contextInstanceIdRef,
     contentRef,
     setContentRefCurrentInnerHTML,
     hasSelection,
@@ -186,7 +186,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
           if (
             !e.relatedTarget || 
             e.relatedTarget.tagName !== 'BUTTON' || 
-            e.relatedTarget.getAttribute('data-context-id') !== contextInstanceId
+            e.relatedTarget.getAttribute('data-context-id') !== contextInstanceIdRef.current
           ) {
             setHasSelection(false);
           }

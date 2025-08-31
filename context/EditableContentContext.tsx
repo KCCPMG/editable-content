@@ -28,7 +28,7 @@ type EditableContentContextProviderProps = {
 
 
 export type EditableContentContextType = {
-  contextInstanceId: string,
+  contextInstanceIdRef: MutableRefObject<string>,
   contentRef: MutableRefObject<HTMLDivElement | null>,
   contentRefCurrentInnerHTML: string,
   setContentRefCurrentInnerHTML: Dispatch<SetStateAction<string>>,
@@ -70,7 +70,7 @@ export const EditableContentContext = createContext<EditableContentContextType |
 
 export function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHTML, initialProps }: EditableContentContextProviderProps) {
 
-  const contextInstanceId = uuidv4();
+  
   
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
@@ -84,6 +84,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
   const [dehydratedHTML, setDehydratedHTML] = useState<string>(initialHTML || "")
   const [buttonUpdateTrigger, setButtonUpdateTrigger] = useState<boolean>(false);
+  const contextInstanceIdRef = useRef<string>(uuidv4());
   
   function triggerButtonUpdate() {
     setButtonUpdateTrigger(!buttonUpdateTrigger)
@@ -468,7 +469,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
 
   return (
     <EditableContentContext.Provider value={{
-      contextInstanceId,
+      contextInstanceIdRef,
       contentRef,
       contentRefCurrentInnerHTML,
       setContentRefCurrentInnerHTML,
