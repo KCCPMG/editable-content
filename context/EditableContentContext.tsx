@@ -2,7 +2,7 @@ import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, 
 import { createPortal } from "react-dom";
 import { v4 as uuidv4 } from 'uuid';
 import { EXCLUDE_FROM_DEHYDRATED, PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
-import { selectionIsDescendentOfNode, getRangeChildNodes, getAllTextNodes,   identifyBadTextNodes, getIsReactComponent } from "@/utils/checks";
+import { selectionIsDescendentOfNode, getRangeChildNodes, getAllTextNodes,   identifyBadTextNodes, getIsReactComponent, getSelectionDirection, getRangeLowestAncestorElement } from "@/utils/checks";
 import { deleteEmptyElements, resetTextNodesCushions } from "@/utils/dom_operations";
 import { resetSelectionToTextNodes } from "@/utils/selection_movements";
 
@@ -301,18 +301,31 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
   }
 
 
+  // TODO: rework vertical logic to comprehensive approach based on focus node/offset
   /**
    * Reset scroll of container by
    * - scrolling up if range is above current view
    * - scrolling down if range is below current view
+   * - scrolling left if range is to left of current view
+   * - scrolling right if range is to right of current view
    * @returns 
    */
   function resetScroll() {
+    
+    // initialize
     const range = window.getSelection()?.getRangeAt(0);
+    const selectionDirection = getSelectionDirection(window.getSelection());
+
     if (!range || ! contentRef.current) return;
     const rangeRect = range.getBoundingClientRect();
     const containerRect = contentRef.current.getBoundingClientRect();
 
+    const comparisonRange = range.cloneRange();
+
+    if (selectionDirection === "backward") comparisonRange.collapse(true);
+    else comparisonRange.collapse(false);
+
+    // vertical reset scroll
     if (
       rangeRect.top >= containerRect.top &&
       rangeRect.top <= (containerRect.top + containerRect.height) &&
@@ -335,6 +348,17 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
         contentRef.current.scroll(0, contentRef.current.scrollTop + targetOffset);
       }
     }
+
+    // horizontal reset scroll
+    const comparisonRangeRect = comparisonRange.getBoundingClientRect();
+
+    if (comparisonRangeRect.left < containerRect.left) {
+      contentRef.current.scrollBy(comparisonRangeRect.left - containerRect.left, 0);
+    }
+    if (comparisonRangeRect.right > containerRect.right) {
+      contentRef.current.scrollBy(comparisonRangeRect.right - containerRect.right, 0);
+    }
+
   }
 
 

@@ -96,31 +96,24 @@ export default function Page() {
           }}
         >
           <EditableLinkDialogContextProvider>
-            <main
-              style={{
-                maxWidth: '1000px',
-                margin: 'auto'
-              }}
-            >
-              <Typography variant="h2">Styling and Callbacks</Typography>
-              <p>
-                The EditableContent component and the RenderedContent components can both be styled on their own or as parts of other components. The below component is actually an EditableContent that was given an appearance generally resembling a basic TextField. 
-              </p>
-              <p>
-                As you can see, there is some text already populated in this field. Since this is an EditableContent component, clicking on the link will give you the ability to edit its text rather than taking you to the link. However, if you right click on the link, you will see that you have the ability to see the url, to open the url in a new tab, or to change the url. Try changing the URL to see this in action.
-              </p>
-              <p>
-                Additionally, this field gives us the ability to create a new link. Try typing in some new text (outside of the existing link), and click the Link button. A dialogue should appear giving you the ability to say where this link should go. Additionally, just like with the sample link provided, you can right click on your new link to edit the url.
-              </p>
-              <LinkEditTextButton>
-                Link
-              </LinkEditTextButton>
-              {editMode ? <EditableTextField /> : <RenderedContent />}
-              <Button onClick={() => setEditMode(em => (!em))}>
-                {editMode ? "Render Text" : "Edit Text"}
-              </Button>
-              <AllPropsDisplay show={false} />
-            </main>
+            <Typography variant="h2">Styling and Callbacks</Typography>
+            <p>
+              The EditableContent component and the RenderedContent components can both be styled on their own or as parts of other components. The below component is actually an EditableContent that was given an appearance generally resembling a basic TextField. 
+            </p>
+            <p>
+              As you can see, there is some text already populated in this field. Since this is an EditableContent component, clicking on the link will give you the ability to edit its text rather than taking you to the link. However, if you right click on the link, you will see that you have the ability to see the url, to open the url in a new tab, or to change the url. Try changing the URL to see this in action.
+            </p>
+            <p>
+              Additionally, this field gives us the ability to create a new link. Try typing in some new text (outside of the existing link), and click the Link button. A dialogue should appear giving you the ability to say where this link should go. Additionally, just like with the sample link provided, you can right click on your new link to edit the url.
+            </p>
+            <LinkEditTextButton>
+              Link
+            </LinkEditTextButton>
+            {editMode ? <EditableTextField /> : <RenderedContent />}
+            <Button onClick={() => setEditMode(em => (!em))}>
+              {editMode ? "Render Text" : "Edit Text"}
+            </Button>
+            <AllPropsDisplay show={false} />
           </EditableLinkDialogContextProvider>
         </EditableContentContextProvider>
       </ContextMenuContextProvider>
