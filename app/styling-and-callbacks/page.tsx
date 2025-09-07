@@ -109,7 +109,8 @@ export default function Page() {
             <LinkEditTextButton>
               Link
             </LinkEditTextButton>
-            {editMode ? <EditableTextField /> : <RenderedContent />}
+            {/* {editMode ? <EditableTextField /> : <RenderedContent />} */}
+            <EditableTextField editMode={editMode} />
             <Button onClick={() => setEditMode(em => (!em))}>
               {editMode ? "Render Text" : "Edit Text"}
             </Button>

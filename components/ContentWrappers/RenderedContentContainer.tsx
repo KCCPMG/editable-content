@@ -4,6 +4,7 @@ import { useEditableContentContext } from "@/context/EditableContentContext";
 import { Paper, Typography, Button } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import { promoteChildrenOfNode } from "@/utils/dom_operations";
+import RenderedContent from "../RenderedContent";
 
 
 
@@ -99,7 +100,7 @@ export default function RenderedContentContainer(
     >
       <Typography variant="h5">Rendered Content</Typography>
       <hr/>
-      <div
+      {/* <div
         spellCheck={false}
         ref={assignContentRef}
         style={{
@@ -115,7 +116,8 @@ export default function RenderedContentContainer(
         // }}
       >
       </div>
-      {portals}
+      {portals} */}
+      <RenderedContent />
       <hr/>
       <Button onClick={() => setEditMode(true)}>
         Edit Text

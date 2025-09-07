@@ -59,9 +59,10 @@ export default function RenderedContent({className}: EditableContentProps) {
   return (
     <>
       <div
-        spellCheck={false}
         ref={assignContentRef}
         className={className}
+        spellCheck={false}
+        // style={{ whiteSpace: "pre-wrap" }}
       >
       </div>
       {portals}

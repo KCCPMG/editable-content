@@ -169,7 +169,9 @@ export default function EditableContent({ className, disableNewLines }: Editable
       <div
         contentEditable
         ref={assignContentRef}
+        className={className}
         spellCheck={false}
+        // style={{ whiteSpace: "pre" }}
         onFocus={() => { 
           // create empty text node if necessary
           if (contentRef.current && getAllTextNodes([contentRef.current]).length === 0) {
@@ -212,7 +214,8 @@ export default function EditableContent({ className, disableNewLines }: Editable
               return;
 
             } 
-            range.startContainer.insertData(range.startOffset, e.key);
+            const char = e.key === " " ? "\u00a0" : e.key
+            range.startContainer.insertData(range.startOffset, char);
             range.setEnd(range.startContainer, range.startOffset + 1);
             range.collapse();
             updateContent();
@@ -328,7 +331,7 @@ export default function EditableContent({ className, disableNewLines }: Editable
           }
 
         }}
-        className={className}
+        
       >
       </div>
       {portals}
