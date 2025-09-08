@@ -1,13 +1,15 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import { EditableContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { moveSelection, resetSelectionToTextNodes, resetSelectionToUsableText, extendSelection, extendWordSelection } from "@/utils/selection_movements";
 import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getAllTextNodes } from "@/utils/checks";
 import { clearAndResetSelection, cushionTextNode, promoteChildrenOfNode } from "@/utils/dom_operations";
+import { ContentProps } from ".";
 
 
-export default function EditableContent({ className, disableNewLines }: EditableContentProps) {
+
+
+export default function EditableContent({ className, disableNewLines }: ContentProps) {
 
   const {
     contextInstanceIdRef,

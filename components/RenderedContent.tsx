@@ -1,11 +1,11 @@
 "use client"
 import React, { useEffect, useLayoutEffect } from "react";
-import { EditableContentProps } from ".";
+import { ContentProps } from ".";
 import { useEditableContentContext } from "@/context/EditableContentContext";
 import { promoteChildrenOfNode } from "@/utils/dom_operations";
 
 
-export default function RenderedContent({className}: EditableContentProps) {
+export default function RenderedContent({className}: ContentProps) {
 
   const {
     contentRef, 
