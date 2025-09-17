@@ -1,5 +1,5 @@
-"use client"
 import { AppBar, Toolbar, Typography } from "@mui/material";
+import Image from "next/image";
 
 
 type HeadBarProps = {
@@ -25,41 +25,22 @@ export default function HeadBar({heightInPixels}: HeadBarProps) {
           variant="h3" 
           component="div" 
           color="primary"
-          // sx={{margin: "auto"}}
         >
-          Editable&nbsp;
+          Editable
         </Typography>
-        <Typography 
-          variant="h3" 
-          component="div" 
-          color="primary.light"
-          // sx={{margin: "auto"}}
-        >
-          &lt;&nbsp;&nbsp;
-        </Typography>
-        <Typography 
-          variant="h3" 
-          component="div" 
-          color="primary.light"
-          sx={{mt: 2.8}}
-        >
-           * 
-        </Typography>
-        <Typography 
-          variant="h3" 
-          component="div" 
-          color="primary.light"
-          // sx={{margin: "auto"}}
-        >
-          &nbsp;/&gt;
-        </Typography>
+        <Image 
+          alt="editable-content logo"
+          src="/editable-content-logo.png"
+          width={200}
+          height={120}
+        
+        />
         <Typography 
           variant="h3" 
           component="div" 
           color="primary"
-          // sx={{margin: "auto"}}
         >
-           &nbsp;Content
+          Content
         </Typography>
       </Toolbar>
     </AppBar>
