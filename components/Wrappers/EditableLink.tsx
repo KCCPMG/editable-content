@@ -11,7 +11,7 @@ type EditableLinkProps = {
   children?: React.ReactNode,
   portalId?: string,
   key?: string,
-  [key: string]: any,
+  // [key: string]: any,
   getContext?: () => EditableContentContextType,
 }
 
