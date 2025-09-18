@@ -19,40 +19,10 @@ export default function PropfulBox(
 {
 
   const containerRef = useRef<HTMLDivElement | null>(null);
-  // const clickCountRef = useRef<HTMLSpanElement | null>(null);
 
-  // useEffect(function() {
-
-  //   console.log("propful box use effect")
-  //   // need to create and append <span ref={clickCountRef}>{clickCount}</span> 
-  //   const clickCountSpan = document.createElement("span");
-  //   clickCountRef.current = clickCountSpan;
-    
-  //   if (containerRef.current) {
-  //     // containerRef.current.insertNode(clickCountRef.current);
-  //     containerRef.current.insertBefore(clickCountSpan, containerRef.current.firstChild)
-  //   }
-
-  //   return (() => {
-  //     console.log("propful box teardown")
-  //     if (clickCountRef.current) {
-  //       clickCountRef.current.remove();
-  //     }
-  //   })
-  // }, [])
-
-
-  // useEffect(function() {
-  //   if (clickCountRef.current) {
-  //     clickCountRef.current.innerText = `${clickCount} `;
-  //   }
-  // }, [clickCount])
-
-  // const { updatePortalProps } = useEditableContentContext();
   const { updatePortalProps=undefined } = getContext ? getContext() : {};
 
   function increaseClicks() {
-    // console.log(`clicked ${portalId}`)
     if (portalId && updatePortalProps) updatePortalProps({
       [portalId]:
         {
@@ -60,8 +30,6 @@ export default function PropfulBox(
         }
     })
   }
-
-  const blah="data-blah";
 
   return (
     <Box    

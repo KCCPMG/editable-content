@@ -23,7 +23,7 @@ export default function EditableLink({href, children, portalId, key, getContext,
 
   return (
     <Link 
-      href={href ? href : ""} {...rest} 
+      href={href ? href : ""} 
       onContextMenu={(e) => {
         if (menuContext) {
           e.preventDefault();
@@ -47,6 +47,7 @@ export default function EditableLink({href, children, portalId, key, getContext,
           ]);
         }
       }}
+      {...rest} 
     >
       {children}
     </Link>

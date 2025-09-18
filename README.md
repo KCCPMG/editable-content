@@ -36,39 +36,56 @@ In order to function properly, the value passed to `dataKey` must be unique amon
 
 ### Defining Your Own React Component Wrappers
 
-As a part of the rendering process, there are several props which will be passed to each wrapper automatically and should not be passed into the wrapper declaration here. Those props are the following:
+As a part of the rendering process, there are several props which will be passed to each React wrapper automatically, and should be included in the Type definition of your wrapper's Props. Those props are the following:
 
- - `portalId`: the id of the portal to which the wrapper will be appended
- - `getContext`: a function which will return the result of `useEditableContentContext`. **IMPORTANT:** Do NOT call `useEditableContentContext` in the body of your wrapper, as this will cause an error. Call `getContext` instead.
- - `children`: ReactNode, standard use of children in a React context
+- `portalId`: the id of the portal to which the wrapper will be appended
+- `getContext`: a function which will return the result of `useEditableContentContext`. **IMPORTANT:** Do NOT call `useEditableContentContext` in the body of your wrapper, as this will cause an error. Call `getContext` instead.
+- `children`: ReactNode, standard use of children in a React context
 
 When declaring the PropTypes for your wrappers, make sure that any of these values which you wish to access are declared as optional. Inside the component, make sure that any access of these props is conditional. When declaring your PropTypes, you should include the following:
 
 - `portalId?: string`
-- `getContext: () => EditableContentContextType` a function which will be passed to your rendered wrapper automatically and will return the EditableContentContextProvider's value (more on that later)
+- `getContext?: () => EditableContentContextType` a function which will be passed to your rendered wrapper automatically and will return the EditableContentContextProvider's value (more on that later)
 - `children?: React.ReactNode`
-- `[key: string]: any` this is not necessary, but may be desired to handle 
 
-When passing props to your component in the return call, make sure to destructure `{...rest}` from your props, and then to pass `{...rest}` into the top level of the component. This will ensure that you can pass additional props through, and especially will pass through the `data-unbreakable` prop which is assigned behind the scenes.
+#### Passing unspecified props
+
+You may wish to have the option to pass additional props into your component than what you wish to directly specify. For example, If you have a component called `MyContainer` which renders at a basic level a `Container` component from MaterialUI, you may wish to retain the ability to pass into your component any props for the Container to consume. However, you may not wish to specifically write out the handling of any props that the Container will take. 
+
+To do this, first make sure that your `MyContainerProps` definition accommodates all props that you would want to pass to it from ContainerProps (which in this case can be done with `MyContainerProps = ContainerProps & {...}`). In order to pass these to your container, without explicitly listing each potential key in the prop, simply use the `...rest` operator in your prop deconstruction, and pass `{...rest}` as a prop to the `Container`.
 
 #### Marking Content for Exclusion
 
-There may be some times where you have some part of your component which you do not wish to include in the Dehydrated HTML. For example, in the propful-only demonstration of the demo, the clickCount number is rendered dynamically, but still read as text. Without taking any extra effort, every switch between EditableContent and RenderedContent would extract all of the text for repackaging *including the dynamically rendered clickCount*. This means that on every switch between EditableContent and RenderedContent, the prior count would be added as text to the content of the component's child, and after several switches, you would end up with something like this:
-```
-10 9 8 3 3 2 1 Propful Component
-```
+When you 'unwrap' text from a React component, the process that is happening is that all of the text of that component is being extracted, the component is deleted, and then the text is put back in its correct place. For most purposes, this is fine for a text decoration, but there may be times where your React component aims to add text as part of the React component itself. For example, if you have a React component meant for a user to decree that text in a certain place is a name, you might have the following set of actions for a hypothetical app:
 
-In order to avoid this, the clickCount is rendered inside of a span which has the attribute "data-exclude-from-dehydrated". This value is exported as the constant EXCLUDE_FROM_DEHYDRATED and can be passed to html like this:
+- A user types some text 'Alan Turing'
+- The user, following the logic flow of the app, wants to indicate that this is a name
+- The user highlights 'Alan Turing' and clicks the 'NAME' `EditTextButton`
+- Clicking the button creates a React component which puts 'Alan Turing' into a div, but also adds the preceding text 'NAME:', so the total text content of the React component is now 'NAME: Alan Turing'
+
+- The user decides they are done with the text, they click a button which removes the EditableContent instance and replaces it with a RenderedContent instance. The React component's text is removed, the component is destroyed, and then the component is re-rendered in the RenderedContent instance, only now its text is 'NAME: NAME: Alan Turing'
+
+-OR-
+- If instead of rendering the text, the user instead decides they made a mistake and click the 'NAME' button again to remove the decoration, the React component will be removed, and the text 'NAME: Alan Turing' will then be rendered as plain text in its place.
+
+This is obviously undesired behavior, but the `EditableContentContextProvider` can check for content which it should not count when it is removing a React component. The solution is that any html element which contains content which should not be factored in should be given the 'data-exclude-from-dehydrated' attribute. This is also exported from (TODO: determine where this will be exported from) as EXCLUDE_FROM_DEHYDRATED. Here is an example from the `PropfulBox` component in the demo site's "Propful Only" example:
+
 ```
-  <span 
-    {...{[EXCLUDE_FROM_DEHYDRATED]: ""}}
+return (
+  <Box    
+    onClick={increaseClicks} 
+    {...rest}
   >
-    {clickCount}&nbsp;
-  </span>
-
+    <span 
+      {...{[EXCLUDE_FROM_DEHYDRATED]: ""}}
+    >
+      {clickCount}&nbsp;
+    </span>
+    {children}
+  </Box>
+)
 ```
-
-Doing this will mark the span as something which should be excluded from what is collected by `getDehydratedHTML` and keep the React child from being polluted by prior renders of dynamic content.
+In this example, the clickCount is increased from clicking on the box and is rendered dynamically, but rendering the text or unwrapping the text from the React component will *not* cause the clickCount to be rendered as text.
 
 
 #### A Note on Contexts used by wrappers
