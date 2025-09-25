@@ -1,4 +1,4 @@
-import { useEditableContentContext } from "@/context/EditableContentContext"
+import { useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext"
 import { Dialog, DialogTitle, DialogActions, DialogContent, Button, TextField } from "@mui/material"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 

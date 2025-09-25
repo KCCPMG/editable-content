@@ -1,6 +1,6 @@
 "use client"
 import { Box } from "@mui/material";
-import { EditableContentContextProvider } from "@/context/EditableContentContext";
+import { EditableContentContextProvider } from "@/packages/editable-content/src/EditableContentContext";
 import StatefulBox from "@/components/Wrappers/StatefulBox";
 import MultiLevelBox from "@/components/Wrappers/MultilLevelBox";
 import UnderlineColor from "@/components/Wrappers/UnderlineColor";

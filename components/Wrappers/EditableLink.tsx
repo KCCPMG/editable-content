@@ -1,5 +1,5 @@
 import { ContextMenuContext } from "@/context/ContextMenuContext";
-import { EditableContentContextType } from "@/context/EditableContentContext";
+import { EditableContentContextType } from "@/packages/editable-content/src/EditableContentContext";
 import { EditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
 import { Link, Box } from "@mui/material";
 import { MutableRefObject, useEffect, useState, useContext } from "react";

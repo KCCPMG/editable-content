@@ -4,7 +4,7 @@ import EditableContent from "@/components/EditableContent";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { useState, useEffect } from "react";
 import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Container, Typography, Paper } from "@mui/material";
-import { EditableContentContextProvider } from "@/context/EditableContentContext"
+import { EditableContentContextProvider } from "@/packages/editable-content/src/EditableContentContext"
 import MultiLevelBox from "@/components/Wrappers/MultilLevelBox";
 import UnderlineColor from "@/components/Wrappers/UnderlineColor";
 import EditTextButton from "@/components/EditTextButton";
@@ -24,9 +24,9 @@ import SampleReactButton from "@/components/Wrappers/SampleReactButton";
 import DehydratedHTMLDisplay from "@/components/DisplayComponents/DehydratedHTMLDisplay";
 import ButtonAndContentContainer from "@/components/ContentWrappers/ButtonAndContentContainer";
 import RenderedContentContainer from "@/components/ContentWrappers/RenderedContentContainer";
-import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getNextPosition, identifyBadTextNodes } from "@/utils/checks";
-import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements } from "@/utils/dom_operations";
-import { resetSelectionToTextNodes, moveSelection } from "@/utils/selection_movements";
+import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getNextPosition, identifyBadTextNodes } from "@/packages/editable-content/src/utils/checks";
+import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements } from "@/packages/editable-content/src/utils/dom_operations";
+import { resetSelectionToTextNodes, moveSelection } from "@/packages/editable-content/src/utils/selection_movements";
 import ContextWindowExposure from "@/components/ContextWindowExposure";
 
 

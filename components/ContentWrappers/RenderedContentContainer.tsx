@@ -1,9 +1,9 @@
 "use client"
 import React, { useEffect, useLayoutEffect } from "react";
-import { useEditableContentContext } from "@/context/EditableContentContext";
+import { useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext";
 import { Paper, Typography, Button } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
-import { promoteChildrenOfNode } from "@/utils/dom_operations";
+import { promoteChildrenOfNode } from "@/packages/editable-content/src/utils/dom_operations";
 import RenderedContent from "../RenderedContent";
 
 

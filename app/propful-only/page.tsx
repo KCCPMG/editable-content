@@ -1,5 +1,5 @@
 "use client"
-import { EditableContentContextProvider } from "@/context/EditableContentContext";
+import { EditableContentContextProvider } from "@/packages/editable-content/src/EditableContentContext";
 import { useState } from "react";
 import PropfulBox from "@/components/Wrappers/PropfulBox";
 import StatefulBox from "@/components/Wrappers/StatefulBox";

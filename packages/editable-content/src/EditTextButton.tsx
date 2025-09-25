@@ -1,12 +1,12 @@
 import { Button, ButtonOwnProps } from "@mui/material";
 import { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, ReactNode, ReactPortal, useCallback, useEffect,  useRef,  useState } from "react";
-import { WrapperArgs } from "./";
-import { useEditableContentContext } from "@/context/EditableContentContext";
+import { WrapperArgs } from "./types";
+import { useEditableContentContext } from "./EditableContentContext";
 import { renderToString } from "react-dom/server";
-import { PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
-import { getAllTextNodes, getAncestorNode, getButtonStatus, getIsReactComponent, getLastValidCharacterIndex, getLastValidTextNode, getRangeChildNodes, getRangeLowestAncestorElement } from "@/utils/checks";
-import { generateQuery, unwrapSelectionFromQuery, createWrapper, wrapInElement, cushionTextNode } from "@/utils/dom_operations";
-import { resetRangeToTextNodes, resetSelectionToTextNodes, moveSelection } from "@/utils/selection_movements";
+import { PORTAL_CONTAINER_ID_PREFIX } from "./utils/constants";
+import { getAllTextNodes, getAncestorNode, getButtonStatus, getIsReactComponent, getLastValidCharacterIndex, getLastValidTextNode, getRangeChildNodes, getRangeLowestAncestorElement } from "./utils/checks";
+import { generateQuery, unwrapSelectionFromQuery, createWrapper, wrapInElement, cushionTextNode } from "./utils/dom_operations";
+import { resetRangeToTextNodes, resetSelectionToTextNodes, moveSelection } from "./utils/selection_movements";
 
 
 /**

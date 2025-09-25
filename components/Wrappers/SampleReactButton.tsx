@@ -1,4 +1,4 @@
-import { EditableContentContextType } from "@/context/EditableContentContext";
+import { EditableContentContextType } from "@/packages/editable-content/src/EditableContentContext";
 import { Box, Typography } from "@mui/material";
 import { ReactNode } from "react";
 

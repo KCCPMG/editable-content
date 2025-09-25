@@ -1,4 +1,4 @@
-import { useEditableContentContext } from "@/context/EditableContentContext";
+import { useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext";
 import { Button } from "@mui/material";
 
 export default function ClearButton() {

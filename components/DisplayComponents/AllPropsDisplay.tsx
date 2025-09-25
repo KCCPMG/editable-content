@@ -1,4 +1,4 @@
-import { useEditableContentContext } from "@/context/EditableContentContext"
+import { useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext"
 import DisplayContainer from "./DisplayContainer";
 import safeStringify from "safe-stringify";
 import { Table, TableContainer, TableHead, TableBody, TableRow, TableCell } from "@mui/material";

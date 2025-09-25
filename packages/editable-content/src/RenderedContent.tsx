@@ -1,8 +1,8 @@
 "use client"
 import React, { useEffect, useLayoutEffect } from "react";
-import { ContentProps } from ".";
-import { useEditableContentContext } from "@/context/EditableContentContext";
-import { promoteChildrenOfNode } from "@/utils/dom_operations";
+import { ContentProps } from "./types";
+import { useEditableContentContext } from "./EditableContentContext";
+import { promoteChildrenOfNode } from "./utils/dom_operations";
 
 
 export default function RenderedContent({className}: ContentProps) {

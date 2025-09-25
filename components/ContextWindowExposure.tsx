@@ -1,7 +1,7 @@
-import { useEditableContentContext } from "@/context/EditableContentContext";
-import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getAllTextNodes, textNodeIsCushioned, isValidTextEndpoint, getNextPosition, identifyBadTextNodes, getReMatch } from "@/utils/checks";
-import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements, cushionTextNode, resetTextNodesCushions } from "@/utils/dom_operations";
-import { resetSelectionToTextNodes, moveSelection } from "@/utils/selection_movements";
+import { useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext";
+import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getAllTextNodes, textNodeIsCushioned, isValidTextEndpoint, getNextPosition, identifyBadTextNodes, getReMatch } from "@/packages/editable-content/src/utils/checks";
+import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements, cushionTextNode, resetTextNodesCushions } from "@/packages/editable-content/src/utils/dom_operations";
+import { resetSelectionToTextNodes, moveSelection } from "@/packages/editable-content/src/utils/selection_movements";
 import { useEffect } from "react";
 import { renderToString } from "react-dom/server";
 

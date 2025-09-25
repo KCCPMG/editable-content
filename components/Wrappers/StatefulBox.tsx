@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box} from "@mui/material"
-import { EditableContentContextType } from "@/context/EditableContentContext";
+import { EditableContentContextType } from "@/packages/editable-content/src/EditableContentContext";
 
 
 type StatefulBoxProps = {

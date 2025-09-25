@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect } from "react";
-import { useEditableContentContext } from "@/context/EditableContentContext";
+import { useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext";
 import { Button } from "@mui/material";
 
 type IncreaseColorButtonProps = {

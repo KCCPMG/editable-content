@@ -1,7 +1,7 @@
 "use client"
 import EditableContent from "@/components/EditableContent";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
-import { EditableContentContextProvider, useEditableContentContext } from "@/context/EditableContentContext";
+import { EditableContentContextProvider, useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext";
 import StatefulAndPropfulBox from "@/components/Wrappers/StatefulAndPropfulBox";
 import StatefulBox from "@/components/Wrappers/StatefulBox";
 import { Box, Button, Typography } from "@mui/material";

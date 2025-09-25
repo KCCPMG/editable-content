@@ -1,10 +1,10 @@
 import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { v4 as uuidv4 } from 'uuid';
-import { EXCLUDE_FROM_DEHYDRATED, PORTAL_CONTAINER_ID_PREFIX } from "@/utils/constants";
-import { selectionIsDescendentOfNode, getRangeChildNodes, getAllTextNodes,   identifyBadTextNodes, getIsReactComponent, getSelectionDirection, getRangeLowestAncestorElement } from "@/utils/checks";
-import { deleteEmptyElements, resetTextNodesCushions } from "@/utils/dom_operations";
-import { resetSelectionToTextNodes } from "@/utils/selection_movements";
+import { EXCLUDE_FROM_DEHYDRATED, PORTAL_CONTAINER_ID_PREFIX } from "./utils/constants";
+import { selectionIsDescendentOfNode, getRangeChildNodes, getAllTextNodes,   identifyBadTextNodes, getIsReactComponent, getSelectionDirection, getRangeLowestAncestorElement } from "./utils/checks";
+import { deleteEmptyElements, resetTextNodesCushions } from "./utils/dom_operations";
+import { resetSelectionToTextNodes } from "./utils/selection_movements";
 
 
 

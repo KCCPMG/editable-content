@@ -7,7 +7,7 @@ import { Box, Button, Container } from "@mui/material";
 import IncreaseColorButton from "./IncreaseColorButton";
 import { useContext, useState } from "react";
 import { EditModeContext } from "@/context/EditModeContext";
-import { EditableContentContext } from "@/context/EditableContentContext";
+import { EditableContentContext } from "@/packages/editable-content/src/EditableContentContext";
 
 
 

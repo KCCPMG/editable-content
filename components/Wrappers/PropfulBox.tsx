@@ -1,7 +1,7 @@
-import { EditableContentContextType, useEditableContentContext } from "@/context/EditableContentContext";
+import { EditableContentContextType, useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext";
 import { Box } from "@mui/material";
 import { ReactNode, useRef, useEffect } from "react";
-import { EXCLUDE_FROM_DEHYDRATED } from "@/utils/constants";
+import { EXCLUDE_FROM_DEHYDRATED } from "@/packages/editable-content/src/utils/constants";
 
 
 type PropfulBoxProps = {
