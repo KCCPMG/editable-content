@@ -1,15 +1,12 @@
 "use client"
-import EditableContent from "@/components/EditableContent";
+import { EditableContentContextProvider, useEditableContentContext, EditableContent, EditTextButton, RenderedContent } from "editable-content"
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
-import { EditableContentContextProvider, useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext";
 import StatefulAndPropfulBox from "@/components/Wrappers/StatefulAndPropfulBox";
 import StatefulBox from "@/components/Wrappers/StatefulBox";
 import { Box, Button, Typography } from "@mui/material";
-import EditTextButton from "@/components/EditTextButton";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import ContentRefCurrentInnerHTMLDisplay from "@/components/DisplayComponents/ContentRefCurrentInnerHTMLDisplay";
 import SelectionDisplay from "@/components/DisplayComponents/SelectionDisplay";
-import RenderedContent from "@/components/RenderedContent";
 import NextPageLink from "@/components/LayoutComponents/NextPageLink";
 
 const initialHTML = `​Normal ​Text<br>

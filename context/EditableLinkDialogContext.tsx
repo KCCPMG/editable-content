@@ -1,8 +1,8 @@
 import { useState, createContext, useContext, Dispatch, SetStateAction, useEffect, ReactElement } from "react";
-import { useEditableContentContext } from "../packages/editable-content/src/EditableContentContext";
+import { useEditableContentContext } from "editable-content";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
-import { PORTAL_CONTAINER_ID_PREFIX } from "@/packages/editable-content/src/utils/constants";
-import { getAllTextNodes, getLastValidTextNode, getLastValidCharacterIndex } from "@/packages/editable-content/src/utils/checks";
+import { PORTAL_CONTAINER_ID_PREFIX } from "editable-content/utils";
+import { getAllTextNodes, getLastValidTextNode, getLastValidCharacterIndex } from "editable-content/utils";
 // import EditHrefDialog from "@/components/TestComponents/EditHrefDialog";
 
 type EditLinkDialogContextProps = {

@@ -1,5 +1,4 @@
-import EditableContent from "../EditableContent";
-import RenderedContent from "../RenderedContent";
+import { EditableContent, RenderedContent } from "editable-content";
 import styles from "./EditableTextField.module.css";
 
 type EditableTextFieldProps = {

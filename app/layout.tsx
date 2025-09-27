@@ -5,7 +5,7 @@ import { Box, ThemeProvider } from "@mui/material";
 import { Montserrat, Roboto } from 'next/font/google';
 import SideBar from "@/components/LayoutComponents/SideBar";
 import HeadBar from "@/components/LayoutComponents/HeadBar";
-import addTwoNumbers from "test-package";
+// import addTwoNumbers from "test-package";
 
 
 
@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  console.log("test-package test addTwoNumbers(1,2): ", addTwoNumbers(1,2));
+  // console.log("test-package test addTwoNumbers(1,2): ", addTwoNumbers(1,2));
 
   return (
     <html lang="en" className={`${montserrat.variable} ${roboto.variable}`}>

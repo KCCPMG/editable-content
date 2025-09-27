@@ -1,4 +1,4 @@
-import { WrapperArgs } from "@/components";
+import { WrapperArgs } from "../types";
 import { getAncestorNode, getRangeChildNodes, textNodeIsCushioned } from "./checks";
 import { resetSelectionToTextNodes } from "./selection_movements";
 

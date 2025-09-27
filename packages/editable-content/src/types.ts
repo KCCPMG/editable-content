@@ -17,7 +17,7 @@ export type WrapperArgs = {
     [key: string]: string | undefined
   },
   eventListeners?: {
-    [key: string]: function
+    [key: string]: (e: Event) => void
   }
 }
 

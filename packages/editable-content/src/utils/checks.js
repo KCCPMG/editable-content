@@ -1,0 +1,900 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isValidTextEndpoint = isValidTextEndpoint;
+exports.getNearestValidOffset = getNearestValidOffset;
+exports.nodeIsDescendentOf = nodeIsDescendentOf;
+exports.getAncestorNode = getAncestorNode;
+exports.getRangeLowestAncestorElement = getRangeLowestAncestorElement;
+exports.getSelectionDirection = getSelectionDirection;
+exports.selectionIsDescendentOfNode = selectionIsDescendentOfNode;
+exports.getSelectionChildNodes = getSelectionChildNodes;
+exports.getRangeChildNodes = getRangeChildNodes;
+exports.selectionIsCoveredBy = selectionIsCoveredBy;
+exports.selectionHasTextNodes = selectionHasTextNodes;
+exports.selectionContainsOnlyText = selectionContainsOnlyText;
+exports.selectionContainsNoUnbreakables = selectionContainsNoUnbreakables;
+exports.getButtonStatus = getButtonStatus;
+exports.getAllTextNodes = getAllTextNodes;
+exports.getLastValidTextNode = getLastValidTextNode;
+exports.getLastValidCharacterIndex = getLastValidCharacterIndex;
+exports.areUninterruptedSiblingTextNodes = areUninterruptedSiblingTextNodes;
+exports.getIsReactComponent = getIsReactComponent;
+exports.textNodeIsCushioned = textNodeIsCushioned;
+exports.identifyBadTextNodes = identifyBadTextNodes;
+exports.getReMatch = getReMatch;
+exports.searchCombinedText = searchCombinedText;
+exports.getNextPosition = getNextPosition;
+const react_1 = __importDefault(require("react"));
+const constants_1 = require("./constants");
+const dom_operations_1 = require("./dom_operations");
+/**
+ * Takes a node, and an offset, as would come from a range's startContainer and
+ * startOffset or its endContainer and endOffset, also takes a boolean which
+ * determines whether cushion nodes (every character is a zero-width space) are
+ * acceptable.
+ * @param node
+ * @param offset
+ * @param acceptEmptyCushionNodes
+ * @returns
+ */
+function isValidTextEndpoint(node, offset, acceptEmptyCushionNodes = true) {
+    if (node.nodeType !== Node.TEXT_NODE)
+        return false;
+    const content = node.textContent;
+    if (content === null)
+        return false;
+    else if (offset > content.length)
+        return false;
+    else if (content.split("").every(ch => ch === '/u200B')) {
+        if (!acceptEmptyCushionNodes)
+            return false;
+        else {
+            if (offset > 0)
+                return true;
+            else
+                return false;
+        }
+    }
+    else if (content[offset] === '\u200B')
+        return false;
+    else
+        return true;
+}
+/** WORK IN PROGRESS
+ *
+ * @param content
+ * @param initialOffset
+ */
+function getNearestValidOffset(content, initialOffset) {
+    for (let i = 1; i < content.length; i++) {
+        if ((initialOffset - i) >= 0 &&
+            content[initialOffset - 1] !== '\u200B') {
+            return initialOffset - i + 1;
+        }
+        else {
+            initialOffset + i;
+        }
+    }
+}
+/**
+ * Given a node, a query, and a limitingContainer node, returns true if
+ * the node is inside the limitingContainer and matches the query, otherwise false
+ * @param node
+ * @param query
+ * @param limitingContainer
+ * @returns
+ */
+function nodeIsDescendentOf(node, query, limitingContainer) {
+    let parentNode = node.parentNode;
+    while (parentNode) {
+        if (parentNode === limitingContainer)
+            break;
+        if (parentNode instanceof Element && parentNode.matches(query)) {
+            return true;
+        }
+        else {
+            parentNode = parentNode.parentNode;
+        }
+    }
+    return false;
+}
+/**
+ * Given a node, a query, and a limitingContainer node, climbs the node's
+ * ancestors up to the limitingContainer, and returns the first ancestor node
+ * which matches the query, or if not found, returns null
+ * @param node
+ * @param query
+ * @param limitingContainer
+ * @returns
+ */
+function getAncestorNode(node, query, limitingContainer) {
+    let parentNode = node.parentNode;
+    while (parentNode) {
+        if (parentNode === limitingContainer)
+            break;
+        if (parentNode instanceof Element && parentNode.matches(query)) {
+            return parentNode;
+        }
+        else {
+            parentNode = parentNode.parentNode;
+        }
+    }
+    return null;
+}
+/**
+ * Given a range, returns that range's commonAncestor if it is an Element,
+ * otherwise returns nearest ancestor which is an Element. If no Element
+ * ancestor is found, returns null
+ * @param range
+ * @returns
+ */
+function getRangeLowestAncestorElement(range) {
+    const commonContainer = range.commonAncestorContainer;
+    return getNodeLowestAncestorElement(commonContainer);
+}
+/**
+ * Given a node, if that node is an element, returns that node. Otherwise,
+ * recursively climbs dom from node and returns first Element found. If no
+ * element is found, returns null.
+ * @param node
+ * @returns
+ */
+function getNodeLowestAncestorElement(node) {
+    // if (node.nodeType === Node.ELEMENT_NODE) return node;
+    if (node instanceof Element)
+        return node;
+    else {
+        const parentNode = node.parentNode;
+        if (parentNode)
+            return getNodeLowestAncestorElement(parentNode);
+        else
+            return null;
+    }
+}
+/**
+ * Given a selection, returns the selection's direction as "none", "forward",
+ * or "backward"
+ * @param selection
+ * @returns
+ */
+function getSelectionDirection(selection) {
+    if (!selection)
+        return "none";
+    if (selection.rangeCount === 0)
+        return "none";
+    const range = selection.getRangeAt(0);
+    if (selection.anchorNode === selection.focusNode) {
+        if (selection.anchorOffset === selection.focusOffset)
+            return "none";
+        if (selection.anchorOffset < selection.focusOffset)
+            return "forward";
+        else
+            return "backward";
+    }
+    if (range.startContainer === selection.anchorNode)
+        return "forward";
+    if (range.startContainer === selection.focusNode)
+        return "backward";
+}
+function nodeIsDescendentOfNode(node, ancestorNode) {
+    let parentNode = node.parentNode;
+    while (parentNode) {
+        if (parentNode === ancestorNode)
+            return true;
+        parentNode = parentNode.parentNode;
+    }
+    return false;
+}
+/**
+ * Returns boolean indicating if selection is within a given element
+ * @param selection
+ * @param ancestorElement
+ * @returns
+ */
+function selectionIsDescendentOfNode(selection, ancestorElement) {
+    return (!!selection.anchorNode &&
+        !!selection.focusNode &&
+        (nodeIsDescendentOfNode(selection.anchorNode, ancestorElement) ||
+            selection.anchorNode === ancestorElement) &&
+        (nodeIsDescendentOfNode(selection.focusNode, ancestorElement) ||
+            selection.focusNode === ancestorElement));
+}
+/**
+ * Creates a TreeWalker to walk a range, returns all nodes;
+ * siblings and children.
+ * @param selection
+ * @param limitingContainer
+ * @returns
+ */
+function getSelectionChildNodes(selection, limitingContainer) {
+    if (!selection ||
+        !selection.anchorNode ||
+        !selection.focusNode ||
+        !(limitingContainer.contains(selection.anchorNode)) ||
+        !(limitingContainer.contains(selection.focusNode)))
+        return [];
+    const range = selection.getRangeAt(0);
+    return getRangeChildNodes(range, limitingContainer);
+}
+// TODO: Double check this function, make sure it works as intended
+/**
+ * Returns all nodes (elements and text) which descend from a
+ * limitingContainer node and begin and/or end within the given
+ * range
+ * @param range
+ * @param limitingContainer
+ * @returns
+ */
+function getRangeChildNodes(range, limitingContainer) {
+    const { startContainer, startOffset, endContainer, endOffset } = range;
+    const startNode = startContainer.hasChildNodes() ?
+        startContainer.childNodes[startOffset] :
+        startContainer;
+    const endNode = endContainer.hasChildNodes() ?
+        endContainer.childNodes[Math.max(0, endOffset - 1)] :
+        endContainer;
+    const tw = startNode === endNode ?
+        document.createTreeWalker(startNode) :
+        document.createTreeWalker(limitingContainer);
+    const childNodes = [];
+    let inRange = false;
+    while (true) {
+        const currentNode = tw.currentNode;
+        if (!currentNode)
+            break;
+        if (!inRange) {
+            if (currentNode == startNode) {
+                inRange = true;
+            }
+        }
+        // not an else statement, can flip inRange switch and then progress
+        if (inRange) {
+            // if we're at the end, wrap up
+            if (currentNode == endNode) {
+                if (currentNode.nodeType === Node.TEXT_NODE) {
+                    childNodes.push(currentNode);
+                }
+                else {
+                    childNodes.push(currentNode);
+                    while (true) {
+                        if (!tw.nextNode())
+                            break;
+                        if (!nodeIsDescendentOfNode(tw.currentNode, endNode))
+                            break;
+                        // else
+                        childNodes.push(tw.currentNode);
+                    }
+                }
+                break;
+            }
+            else {
+                childNodes.push(currentNode);
+            }
+        }
+        if (!tw.nextNode())
+            break;
+    }
+    return childNodes;
+}
+/**
+ * Checks if all text in selection is covered by one or more elements
+ * matching a given query, provided all are within a limitingContainer Node
+ * @param selection
+ * @param query
+ * @param limitingContainer
+ * @returns
+ */
+function selectionIsCoveredBy(selection, query, limitingContainer) {
+    const nodes = getSelectionChildNodes(selection, limitingContainer);
+    const textNodes = nodes
+        .filter(n => n.nodeType === Node.TEXT_NODE);
+    return textNodes.every(tn => nodeIsDescendentOf(tn, query, limitingContainer));
+}
+/**
+ * Returns boolean indicating if there are one or more text nodes
+ * in the given selection
+ * @param selection
+ * @param limitingContainer
+ * @returns
+ */
+function selectionHasTextNodes(selection, limitingContainer) {
+    const childNodes = getSelectionChildNodes(selection, limitingContainer);
+    return childNodes.some(cn => cn.nodeType === Node.TEXT_NODE);
+}
+/**
+ * Returns boolean indicating whether all child nodes in a selection are
+ * text nodes
+ * @param selection
+ * @param limitingContainer
+ * @param query
+ * @returns
+ */
+function selectionContainsOnlyText(selection, limitingContainer, query) {
+    const childNodes = getSelectionChildNodes(selection, limitingContainer);
+    return (childNodes.every(cn => cn.nodeType === Node.TEXT_NODE) &&
+        (childNodes.every(cn => (cn.parentNode instanceof Element &&
+            cn.parentNode.matches(query))) ||
+            childNodes.every(cn => cn.parentNode === limitingContainer)));
+}
+/**
+ * Returns a boolean indicating whether the selection contains any
+ * unbreakable elements, defined by having the data-unbreakable
+ * attribute
+ * @param selection
+ * @param limitingContainer
+ * @returns
+ */
+function selectionContainsNoUnbreakables(selection, limitingContainer) {
+    const childNodes = getSelectionChildNodes(selection, limitingContainer);
+    return (childNodes.every(cn => !nodeIsDescendentOf(cn, "[data-unbreakable]", limitingContainer)));
+}
+/**
+ * Given a selection, a boolean signifying an element is unbreakable,
+ * a query generated by a button, and the limitingContainer, returns an
+ * object with a boolean for enabled, and a boolean for selected. This
+ * is to be used by an EditTextButton to determine the button's state
+ * based on what is currently selected and what wrapper the button applies
+ * or removes.
+ * @param selection
+ * @param isUnbreakable
+ * @param query
+ * @param limitingContainer
+ * @returns
+ */
+function getButtonStatus(selection, isUnbreakable, query, limitingContainer) {
+    const status = {
+        enabled: true,
+        selected: false
+    };
+    //might be unnecessary
+    if (!limitingContainer || !selection || selection.rangeCount == 0) {
+        status.enabled = false;
+        status.selected = false;
+        return status;
+    }
+    if (!selection || !limitingContainer) {
+        status.enabled = false;
+        status.selected = false;
+        return status;
+    }
+    // might be unnecessary
+    if (!(limitingContainer instanceof Element)) {
+        status.enabled = false;
+        status.selected = false;
+        return status;
+    }
+    if (!selectionIsDescendentOfNode(selection, limitingContainer)) {
+        status.enabled = false;
+        status.selected = false;
+        return status;
+    }
+    const childNodes = getSelectionChildNodes(selection, limitingContainer);
+    if (selection.rangeCount === 0) {
+        status.enabled = false;
+        status.selected = false;
+        return status;
+    }
+    const range = selection.getRangeAt(0);
+    const rangeCommonElementAncestor = getRangeLowestAncestorElement(range);
+    if (isUnbreakable) {
+        if (childNodes.every(cn => cn.nodeType === Node.TEXT_NODE)) {
+            if (childNodes.every(cn => cn.parentNode === limitingContainer)) {
+                status.enabled = true;
+                status.selected = false;
+                return status;
+            }
+            else if (rangeCommonElementAncestor && (rangeCommonElementAncestor.matches(query)) ||
+                nodeIsDescendentOf(rangeCommonElementAncestor, query, limitingContainer)) {
+                status.enabled = true;
+                status.selected = true;
+                return status;
+            }
+            else {
+                status.enabled = false;
+                status.selected = false;
+                return status;
+            }
+        }
+        else {
+            status.enabled = false;
+            status.selected = false;
+            return status;
+        }
+    }
+    else {
+        if (!selectionContainsNoUnbreakables(selection, limitingContainer)) {
+            status.enabled = false;
+        }
+        if (selectionIsCoveredBy(selection, query, limitingContainer)) {
+            status.selected = true;
+        }
+        else
+            status.selected = false;
+    }
+    return status;
+}
+/**
+ * Given an array of nodes, recursively descends each to compile an
+ * array of text nodes
+ * @param nodes
+ * @returns
+ */
+function getAllTextNodes(nodes) {
+    const textNodes = [];
+    // let currentNode = node;
+    function descendNode(cn) {
+        if (cn.nodeType === Node.TEXT_NODE) {
+            textNodes.push(cn);
+        }
+        if (cn.hasChildNodes()) {
+            for (let nextGeneration of Array.from(cn.childNodes)) {
+                descendNode(nextGeneration);
+            }
+        }
+    }
+    for (let currentNode of nodes) {
+        descendNode(currentNode);
+    }
+    return textNodes;
+}
+/**
+ * Given an array of text nodes, traverses the array backwards to return
+ * the last text node which has a non-zero-width space character OR is a
+ * text node which follows a br element
+ * @param textNodeArr
+ * @returns
+ */
+function getLastValidTextNode(textNodeArr) {
+    var _a;
+    for (let i = textNodeArr.length - 1; i >= 0; i--) {
+        const textNode = textNodeArr[i];
+        if (((_a = textNode.textContent) === null || _a === void 0 ? void 0 : _a.match("[^\u200B]")) ||
+            (textNode.previousSibling &&
+                textNode.previousSibling.nodeType === Node.ELEMENT_NODE &&
+                textNode.previousSibling.tagName === "BR")) {
+            return textNode;
+        }
+    }
+    return textNodeArr[0];
+}
+/**
+ * Looks for the last acceptable place in a cursor to put a text node,
+ * and returns its index. If a maxOffset is included, the maxOffset will
+ * be the highest possible number returned, meaning the function will
+ * search backwards from that index. If there is no maxOffset returned,
+ * the highest potential index would be the length of the text node,
+ * meaning after all of the contents of the text node.
+ * - If a text node has no text content, returns 0
+ * - If a text node is fully cushioned but otherwise empty, returns 1 (after
+ *   one zero-width space and before all others)
+ * - If a maxOffset is provided, returns the highest index equal to or less
+ *   than that maxOffset provided that textNode.textContent[index] is equal
+ *   to a valid character (non-zero-width space *on at least one side*)
+ * - Otherwise returns one GREATER than the last index where
+ *   textNode.textContent[index] equal to a valid character, ie. AFTER the last
+ *   valid character
+ * @param textNode
+ * @param maxOffset
+ * @returns
+ */
+function getLastValidCharacterIndex(textNode, acceptEmptyCushionNodes = true, maxOffset) {
+    if (!textNode.textContent) {
+        if (acceptEmptyCushionNodes)
+            return 0;
+        else
+            return -1;
+    }
+    const content = textNode.textContent;
+    // if node is cushioned but empty of valid characters
+    if (content.split("").every(ch => ch === '\u200B')) {
+        if (acceptEmptyCushionNodes)
+            return 1;
+        else
+            return -1;
+    }
+    else if (maxOffset !== undefined) {
+        for (let i = maxOffset; i >= 0; i--) {
+            if ((textNode.textContent[i] &&
+                textNode.textContent[i].match("[^\u200B]")) ||
+                (textNode.textContent[i - 1] &&
+                    textNode.textContent[i - 1].match("[^\u200B]"))) {
+                // console.log("returning ", i+1);
+                return i;
+            }
+        }
+        if (acceptEmptyCushionNodes)
+            return 0;
+        else
+            return -1;
+    }
+    // if last character is not zero width space, return full length
+    else if (content[content.length - 1] !== '\u200B') {
+        return textNode.textContent.length;
+    }
+    // else move backwards, return after last valid (non-zws) character
+    for (let i = textNode.length - 1; i >= 0; i--) {
+        if (textNode.textContent[i].match("[^\u200B]")) {
+            // console.log("returning ", i+1);
+            return i + 1;
+        }
+    }
+    // fallback
+    return -1;
+}
+/**
+ * Takes two text nodes and determines if they are uninterrupted siblings,
+ * meaning they have the same parent and there are no non-text nodes between them
+ * @param node1
+ * @param node2
+ */
+function areUninterruptedSiblingTextNodes(node1, node2) {
+    if (node1.parentNode !== node2.parentNode)
+        return false;
+    const parentNode = node1.parentNode;
+    if (parentNode === null)
+        return false;
+    const node1Index = Array.from(parentNode.childNodes).findIndex(node => node === node1);
+    const node2Index = Array.from(parentNode.childNodes).findIndex(node => node === node2);
+    const lowerNodeIndex = Math.min(node1Index, node2Index);
+    const higherNodeIndex = Math.max(node1Index, node2Index);
+    // go through range of siblings, including both text nodes, verify unbroken string of text
+    for (let i = lowerNodeIndex; i <= higherNodeIndex; i++) {
+        if (parentNode.childNodes[i].nodeType !== Node.TEXT_NODE)
+            return false;
+    }
+    // else 
+    return true;
+}
+/**
+ * Returns if a given element is a valid React component
+ * @param component
+ * @returns
+ */
+function getIsReactComponent(component) {
+    if (!react_1.default.isValidElement(component))
+        return false;
+    return (typeof component.type === "function" ||
+        typeof component.type === "object");
+}
+/**
+ * Determines whether a given text node is cushioned, meaning
+ * it has a length of 2 or more, begins with a zero-width space,
+ * ends with a zero-width space, and does not have any zero-width
+ * spaces in any positions besides first and last
+ * @param textNode
+ * @returns
+ */
+function textNodeIsCushioned(textNode) {
+    const content = textNode.textContent;
+    if (!content)
+        return false;
+    return !!(content.length >= 2 &&
+        content[0] === '\u200B' &&
+        content[content.length - 1] == '\u200B' &&
+        content.slice(1, content.length - 1).match(constants_1.ZWS_RE) === null);
+}
+/**
+ * Identify all text nodes which should be deleted because they
+ * meet the following criteria:
+ * - Neither the first nor last text node
+ * - They are empty except for zero width spaces
+ * - They are direct descendants of the container
+ * - They are not in the current selection
+ * - They do not follow a <br/> element
+ */
+function identifyBadTextNodes(textNodes, parentContainer) {
+    const selection = (window === null || window === void 0 ? void 0 : window.getSelection()) || null;
+    if (textNodes.length <= 2)
+        return [];
+    else
+        return textNodes.slice(1, textNodes.length - 1).filter(tn => {
+            return (tn.textContent === '\u200B\u200B' &&
+                tn.parentNode === parentContainer &&
+                (!(selection && selection.containsNode(tn))) &&
+                (tn.previousSibling && tn.previousSibling instanceof Text) &&
+                (tn.nextSibling && tn.nextSibling instanceof Text));
+        });
+}
+/**
+ * Returns full match object for found regular expression using generator
+ * created by matchAll and global flag, takes as necessary inputs numbers
+ * representing start and end of search range, and boolean for getLast. If
+ * getLast is true, will return the last occurrence fitting all criteria,
+ * otherwise returns first occurrence
+ * @param str
+ * @param sourceString
+ * @param startOffset
+ * @param endOffset
+ * @param getLast
+ * @returns
+ */
+function getReMatch(str, sourceString, startOffset, endOffset, getLast) {
+    const safeRe = new RegExp(sourceString, 'g');
+    const gen = str.matchAll(safeRe);
+    let last = null;
+    while (true) {
+        let current = gen.next();
+        if (current.done === true)
+            break;
+        if (current.value &&
+            current.value.index >= startOffset &&
+            current.value.index <= endOffset) {
+            if (getLast) {
+                last = current.value;
+                continue;
+            }
+            else
+                return current.value;
+        }
+    }
+    return last;
+}
+/**
+ * Takes an object for its argument which includes a string, an array of text nodes
+ * to be combined into a single string for the re. A start node and offset can be
+ * specified, as can an end node and offset, and getLast can be used to return the
+ * last occurrence in the range rather than the first. The function returns null if
+ * not found, or it returns an object with the text node and offset within that
+ * text node corresponding to the start of the re. If the 'returnAfterMatch'
+ * property is set to true, returns the value after the found re, alternatively
+ * a number can be specified for returnIndexOffset, which will return the node
+ * and offset which is that many characters after the start of the found re.
+ * @param argumentObject
+ * @returns
+ */
+function searchCombinedText(argumentObject) {
+    const { textNodes, reSource, returnAfterMatch = false, returnIndexOffset = 0, getLast = false, startFrom = null, upTo = null } = argumentObject;
+    // set up string
+    const combinedString = textNodes.map(tn => tn.textContent).join("");
+    // set up intervals array
+    const intervals = [];
+    let lastInterval = 0;
+    textNodes.forEach(tn => {
+        if (tn.textContent === null) {
+            lastInterval += 0;
+        }
+        else {
+            lastInterval += tn.textContent.length;
+        }
+        intervals.push(lastInterval);
+    });
+    // initialize start and end offsets
+    let startOffset = 0;
+    let endOffset = combinedString.length;
+    // narrow start offset
+    if (startFrom) {
+        const startingIndex = textNodes.findIndex(tn => tn === startFrom.textNode) - 1;
+        if (startingIndex === -2) {
+            return null;
+        }
+        if (startFrom.textNode.textContent === null) {
+            return null;
+        }
+        // else - safe to proceed
+        startOffset = (startingIndex === -1 ? 0 : intervals[startingIndex])
+            + startFrom.nodeOffset;
+    }
+    // narrow end offset
+    if (upTo) {
+        const endingIndex = textNodes.findIndex(tn => tn === upTo.textNode) - 1;
+        if (endingIndex === -2) {
+            return null;
+        }
+        if (upTo.textNode.textContent === null ||
+            // upTo.nodeOffset < 0 || 
+            upTo.nodeOffset > upTo.textNode.textContent.length) {
+            return null;
+        }
+        // else - safe to proceed
+        endOffset = (endingIndex === -1 ? 0 : intervals[endingIndex])
+            + upTo.nodeOffset;
+    }
+    // find re
+    const combinedStringMatch = getReMatch(combinedString, reSource, startOffset, endOffset, getLast);
+    if (!combinedStringMatch || combinedStringMatch.index === undefined) {
+        return null;
+    }
+    else {
+        const characterIndex = combinedStringMatch.index +
+            ((returnAfterMatch) ? combinedStringMatch[0].length : 0) +
+            returnIndexOffset;
+        // conditions which indicate an after position should default to prior text node in case of ambiguity
+        const textNodeIndex = returnAfterMatch || returnIndexOffset > 0 ?
+            intervals.findIndex(i => i >= characterIndex) :
+            intervals.findIndex(i => i > characterIndex);
+        if (textNodeIndex === -1)
+            return null;
+        const stringLengthPriorToTextNode = (textNodeIndex > 0) ? intervals[textNodeIndex - 1] : 0;
+        return {
+            currentNode: textNodes[textNodeIndex],
+            offset: characterIndex - stringLengthPriorToTextNode
+        };
+    }
+}
+/**
+ * Compares two text nodes (assumes nodes are of same level, cannot
+ * be children of one another) and determines if there are any br
+ * elements in between them. Returns true if they are the same
+ * text node.
+ * @param text1
+ * @param text2
+ * @returns
+ */
+function areUninterruptedByBreak(text1, text2) {
+    if (text1 === text2)
+        return true;
+    const compareRange = new Range();
+    if (text1.compareDocumentPosition(text2) === 4) {
+        compareRange.setStartAfter(text1);
+        compareRange.setEndBefore(text2);
+    }
+    else {
+        compareRange.setStartAfter(text2);
+        compareRange.setEndBefore(text1);
+    }
+    const clonedContents = compareRange.cloneContents();
+    // return true if no breaks, false if there are
+    return !(clonedContents.querySelector("br"));
+}
+/**
+ * Helper function which makes determinations about how
+ * to use searchCombinedText to get a specific position,
+ * for use with specific selection movements
+ * @param origNode
+ * @param origOffset
+ * @param limitingContainer
+ * @param direction
+ * @param reSource
+ * @param returnAfterMatch
+ * @param returnIndexOffset
+ * @param resetOnSiblingInterruption
+ * @param resetOnBreakInterruption
+ * @returns
+ */
+function getNextPosition(origNode, origOffset, limitingContainer, direction, reSource, returnAfterMatch, returnIndexOffset, resetOnSiblingInterruption, resetOnBreakInterruption) {
+    var _a, _b, _c, _d;
+    const allTextNodes = getAllTextNodes([limitingContainer]);
+    let initialResult = searchCombinedText({
+        textNodes: allTextNodes,
+        getLast: (direction === "left"),
+        reSource,
+        returnAfterMatch,
+        returnIndexOffset,
+        upTo: (direction === "left") ? {
+            textNode: origNode,
+            nodeOffset: origOffset - 1
+        } : undefined,
+        startFrom: (direction === "right") ? {
+            textNode: origNode,
+            nodeOffset: origOffset + 1
+        } : undefined
+    });
+    if (initialResult === null)
+        return null;
+    // else - result is valid, text node(s) not interrupted
+    if (initialResult.currentNode === origNode ||
+        areUninterruptedSiblingTextNodes(origNode, initialResult.currentNode)) {
+        // make sure nodes are cushioned
+        if (!(textNodeIsCushioned(origNode))) {
+            (0, dom_operations_1.cushionTextNode)(origNode);
+        }
+        if (!(textNodeIsCushioned(initialResult.currentNode))) {
+            // cushion text node, make sure to adjust offset to account for cushioning
+            const zeroWidthSpacesPriorToOffsetBeforeCushion = ((_b = (_a = initialResult.currentNode.textContent) === null || _a === void 0 ? void 0 : _a.slice(0, initialResult.offset).match(/\u200B/g)) === null || _b === void 0 ? void 0 : _b.length) || 0;
+            (0, dom_operations_1.cushionTextNode)(initialResult.currentNode);
+            const zeroWidthSpacesPriorToOffsetAfterCushion = ((_d = (_c = initialResult.currentNode.textContent) === null || _c === void 0 ? void 0 : _c.slice(0, initialResult.offset).match(/\u200B/g)) === null || _d === void 0 ? void 0 : _d.length) || 0;
+            if (initialResult.offset === 0)
+                initialResult.offset = 1;
+            else {
+                initialResult.offset = initialResult.offset - zeroWidthSpacesPriorToOffsetBeforeCushion + zeroWidthSpacesPriorToOffsetAfterCushion;
+            }
+        }
+        return initialResult;
+    }
+    // else - text nodes ARE interrupted
+    let textNodePointer = allTextNodes.findIndex(tn => tn === origNode);
+    if (resetOnSiblingInterruption) {
+        const targetTextNodeIndex = allTextNodes.findIndex(tn => tn === initialResult.currentNode);
+        if (direction === "left") {
+            while (textNodePointer > targetTextNodeIndex) {
+                textNodePointer--;
+                const currentTextNode = allTextNodes[textNodePointer];
+                if (!textNodeIsCushioned(currentTextNode)) {
+                    (0, dom_operations_1.cushionTextNode)(currentTextNode);
+                }
+                if (areUninterruptedSiblingTextNodes(currentTextNode, origNode))
+                    continue;
+                else {
+                    return {
+                        currentNode: currentTextNode,
+                        offset: currentTextNode.length - 1
+                    };
+                }
+            }
+        }
+        else if (direction === "right") {
+            const targetTextNodeIndex = allTextNodes.findIndex(tn => tn === initialResult.currentNode);
+            while (textNodePointer < targetTextNodeIndex) {
+                textNodePointer++;
+                const currentTextNode = allTextNodes[textNodePointer];
+                if (!textNodeIsCushioned(currentTextNode)) {
+                    (0, dom_operations_1.cushionTextNode)(currentTextNode);
+                }
+                if (areUninterruptedSiblingTextNodes(currentTextNode, origNode))
+                    continue;
+                else {
+                    return {
+                        currentNode: currentTextNode,
+                        offset: 1
+                    };
+                }
+            }
+        }
+    }
+    else if (resetOnBreakInterruption) {
+        if (areUninterruptedByBreak(origNode, initialResult.currentNode)) {
+            return initialResult;
+        }
+        else {
+            const checkForBreakRange = new Range();
+            // if moving left, find last text node before last break, return end
+            if (direction === "left") {
+                checkForBreakRange.setStartAfter(initialResult.currentNode);
+                checkForBreakRange.setEndBefore(origNode);
+                const ancestorContainer = checkForBreakRange.commonAncestorContainer;
+                const allBreaksQuery = ancestorContainer.querySelectorAll("br");
+                const breaks = Array.from(allBreaksQuery);
+                // find last break to occur in range
+                const lastBreak = breaks.findLast(br => checkForBreakRange.isPointInRange(br, 0));
+                // this is for type narrowing but should never occur due to areUninterruptedByBreak
+                if (!lastBreak)
+                    return initialResult;
+                while (textNodePointer > 0) {
+                    textNodePointer--;
+                    let currentTextNode = allTextNodes[textNodePointer];
+                    if (!textNodeIsCushioned(currentTextNode)) {
+                        (0, dom_operations_1.cushionTextNode)(currentTextNode);
+                    }
+                    // console.log("textNodePointer", textNodePointer, currentTextNode.textContent!.replaceAll('\u200B', '\u25A1'), textNodeIsCushioned(currentTextNode));
+                    if (currentTextNode.compareDocumentPosition(lastBreak) === 4) {
+                        return {
+                            currentNode: currentTextNode,
+                            offset: currentTextNode.textContent.length - 1
+                        };
+                    }
+                }
+            }
+            // if moving right, find first text node after first break, return start
+            else {
+                checkForBreakRange.setStartAfter(origNode);
+                checkForBreakRange.setEndBefore(initialResult.currentNode);
+                const ancestorContainer = checkForBreakRange.commonAncestorContainer;
+                const allBreaksQuery = ancestorContainer.querySelectorAll("br");
+                const breaks = Array.from(allBreaksQuery);
+                // find first break to occur in range
+                const firstBreak = breaks.find(br => checkForBreakRange.isPointInRange(br, 0));
+                // this is for type narrowing but should never occur due to areUninterruptedByBreak
+                if (!firstBreak)
+                    return initialResult;
+                while (textNodePointer < allTextNodes.length) {
+                    textNodePointer++;
+                    let currentTextNode = allTextNodes[textNodePointer];
+                    if (!textNodeIsCushioned(currentTextNode)) {
+                        (0, dom_operations_1.cushionTextNode)(currentTextNode);
+                    }
+                    if (currentTextNode.compareDocumentPosition(firstBreak) === 2) {
+                        return {
+                            currentNode: currentTextNode,
+                            offset: 1
+                        };
+                    }
+                }
+            }
+        }
+    }
+    // nothing found
+    return null;
+}

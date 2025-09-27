@@ -1,9 +1,8 @@
 import { Box, Button, Divider, Typography } from "@mui/material";
-import EditableContent from "../EditableContent";
+import { EditableContent, EditTextButton } from "editable-content";
 import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import EditTextButton from "../EditTextButton";
-import ClearButton from "../ButtonsAndUI/ClearButton";
+import ClearButton from "@/components/ButtonsAndUI/ClearButton";
 import { Dispatch, SetStateAction } from "react";
 import styles from "./ButtonAndContentContainer.module.css";
 

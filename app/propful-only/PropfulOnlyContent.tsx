@@ -1,13 +1,11 @@
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
-import EditableContent from "@/components/EditableContent";
-import EditTextButton from "@/components/EditTextButton";
-import RenderedContent from "@/components/RenderedContent";
+import { EditableContentContext, EditableContent, EditTextButton, RenderedContent } from "editable-content"; 
 import { FormatBold, FormatItalic } from "@mui/icons-material";
 import { Box, Button, Container } from "@mui/material";
 import IncreaseColorButton from "./IncreaseColorButton";
 import { useContext, useState } from "react";
 import { EditModeContext } from "@/context/EditModeContext";
-import { EditableContentContext } from "@/packages/editable-content/src/EditableContentContext";
+
 
 
 

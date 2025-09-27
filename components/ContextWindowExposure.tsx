@@ -1,7 +1,6 @@
-import { useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext";
-import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getAllTextNodes, textNodeIsCushioned, isValidTextEndpoint, getNextPosition, identifyBadTextNodes, getReMatch } from "@/packages/editable-content/src/utils/checks";
+import { useEditableContentContext } from "editable-content";
 import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements, cushionTextNode, resetTextNodesCushions } from "@/packages/editable-content/src/utils/dom_operations";
-import { resetSelectionToTextNodes, moveSelection } from "@/packages/editable-content/src/utils/selection_movements";
+import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getAllTextNodes, textNodeIsCushioned, isValidTextEndpoint, getNextPosition, identifyBadTextNodes, getReMatch, resetSelectionToTextNodes, moveSelection } from "editable-content/utils";
 import { useEffect } from "react";
 import { renderToString } from "react-dom/server";
 

@@ -1,10 +1,9 @@
 "use client"
 import React, { useEffect, useLayoutEffect } from "react";
-import { useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext";
+import { RenderedContent, useEditableContentContext } from "editable-content";
 import { Paper, Typography, Button } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
-import { promoteChildrenOfNode } from "@/packages/editable-content/src/utils/dom_operations";
-import RenderedContent from "../RenderedContent";
+// import { promoteChildrenOfNode } from "editable-content/utils";
 
 
 
@@ -76,15 +75,15 @@ export default function RenderedContentContainer(
 
 
   // on portal change
-  useEffect(() => {
+  // useEffect(() => {
     
-    // clean up divs which no longer contain a portal
-    if (!contentRef.current) return;
-    const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
+  //   // clean up divs which no longer contain a portal
+  //   if (!contentRef.current) return;
+  //   const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
 
-    toDelete.forEach(td => promoteChildrenOfNode(td));
+  //   toDelete.forEach(td => promoteChildrenOfNode(td));
 
-  }, [portals])
+  // }, [portals])
 
 
   return (

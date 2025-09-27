@@ -1,5 +1,5 @@
-export * from "./EditableContent";
+export { default as EditableContent } from "./EditableContent";
 export * from "./EditableContentContext";
-export * from "./EditTextButton";
-export * from "./RenderedContent";
+export { default as EditTextButton } from "./EditTextButton";
+export { default as RenderedContent } from "./RenderedContent";
 export * from "./types";
