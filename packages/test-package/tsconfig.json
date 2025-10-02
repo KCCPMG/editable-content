@@ -1,4 +1,12 @@
 {
-  "extends": "@tsconfig/recommended/tsconfig.json",
-  "jsx": "preserve"
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "es2016",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "jsx": "preserve"
+  }
 }
