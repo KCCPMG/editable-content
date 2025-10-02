@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
-import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getAllTextNodes, searchCombinedText, getReMatch, getNextPosition } from "./checks";
-import { resetRangeToTextNodes } from "./selection_movements";
+import { selectionIsDescendentOfNode, getSelectionChildNodes, getRangeChildNodes, selectionIsCoveredBy, nodeIsDescendentOf, getLastValidCharacterIndex, areUninterruptedSiblingTextNodes, getAllTextNodes, searchCombinedText, getReMatch, getNextPosition } from "../src/utils/checks";
+import { resetRangeToTextNodes } from "../src/utils/selection_movements";
 import { startingHTML, alternateHTML } from "./test_constants_and_helpers";
 
 

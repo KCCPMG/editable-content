@@ -2,9 +2,9 @@
  * @jest-environment jsdom
  */
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { experimental_moveSelection, setSelection } from './unused_utils';
+import { experimental_moveSelection, setSelection } from '../unused_utils/unused_utils';
 import { checkText, compareSelection, startingHTML } from './test_constants_and_helpers';
-import { getAllTextNodes } from './checks';
+import { getAllTextNodes } from '../src/utils/checks';
 
 function experimentalMoveAndCompareSelectionCheckText(selection: Selection, limitingContainer: Element, moveDirection: "left" | "right", expAnchorNode: Node, expAnchorOffset: number, character?: string) {
   experimental_moveSelection(selection, limitingContainer, moveDirection);

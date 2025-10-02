@@ -1,8 +1,11 @@
 {
   "name": "editable-content",
   "version": "0.1.0",
-  "description": "React-compatible contenteditable",
+  "description": "React-compatible contenteditable divs",
   "main": "src/index.js",
+  "files": [
+    "./src"
+  ],
   "exports": {
     ".": "./src/index.js",
     "./utils": "./src/utils/index.js" 
@@ -11,7 +14,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-        "typescript": "^5.9.2"
+    "typescript": "^5.9.2"
   },
   "author": "Connor Wales",
   "license": "ISC"

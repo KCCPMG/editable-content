@@ -6,6 +6,7 @@ module.exports = {
 
   // Jest file locations
   testMatch: [
-    "**/utils/*.test.ts"
+    // "**/utils/*.test.ts",
+    "**/tests/*.test.ts"
   ],
 };

@@ -2,10 +2,10 @@
  * @jest-environment jsdom
  */
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
-import { resetSelectionToTextNodes,moveSelection } from "./selection_movements";
+import { resetSelectionToTextNodes,moveSelection } from "../src/utils/selection_movements";
 import { startingHTML, mdnDocPageHTML, checkText, compareSelection } from "./test_constants_and_helpers";
-import { getAllTextNodes } from './checks';
-import { cushionTextNode } from './dom_operations';
+import { getAllTextNodes } from '../src/utils/checks';
+import { cushionTextNode } from '../src/utils/dom_operations';
 
 
 

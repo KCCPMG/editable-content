@@ -1,5 +1,5 @@
-import { areUninterruptedSiblingTextNodes, getAllTextNodes, getLastValidCharacterIndex, getSelectionDirection, searchCombinedTextArgumentObject } from "./checks";
-import { resetSelectionToTextNodes } from "./selection_movements";
+import { areUninterruptedSiblingTextNodes, getAllTextNodes, getLastValidCharacterIndex, getSelectionDirection, searchCombinedTextArgumentObject } from "../src/utils/checks";
+import { resetSelectionToTextNodes } from "../src/utils/selection_movements";
 
 export function bisect(myRef: React.MutableRefObject<HTMLDivElement | null>) {
   // incomplete, experiment
