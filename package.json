@@ -1,5 +1,5 @@
 {
-  "name": "editable-content",
+  "name": "editable-content-demo",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,10 @@
     "lint": "next lint",
     "test": "jest"
   },
+  "workspaces": [
+    "./packages/editable-content",
+    "./packages/test-package"
+  ],
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
