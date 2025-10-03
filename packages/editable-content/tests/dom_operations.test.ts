@@ -4,6 +4,7 @@
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
 import { wrapInElement, deleteEmptyElementsByQuery, unwrapSelectionFromQuery, unwrapRangeFromQuery, generateQuery, createWrapper } from "../src/utils/dom_operations";
 import { startingHTML, alternateHTMLwithUnbreakable, alternateHTML } from "./test_constants_and_helpers";
+import { getAllTextNodes } from '../src/utils';
 
 
 
@@ -372,6 +373,31 @@ describe("test unwrapRangeFromQuery", function() {
           More Strong Text
         </strong>
       </div>`.replaceAll(/\n */g, ''));
+  })
+
+  // TODO: finish this test
+  test("unwraps from range across multiple nested underlines", function() {
+
+    const nestedHTML = `<u class="underlined-standard" data-bk="underlined">​designed ​<strong class="bold-standard" data-bk="bold"><i class="italics-standard" data-bk="italics"><u class="underlined-standard" data-bk="underlined">​to giv​</u></i></strong></u><strong class="bold-standard" data-bk="bold"><i class="italics-standard" data-bk="italics"><u class="underlined-standard" data-bk="underlined">​e developers​</u></i></strong>`;
+    document.body.innerHTML = nestedHTML;
+
+    const range = new Range();
+
+    const first_u = document.querySelector("u.underlined-standard");
+    expect(first_u).not.toBeNull();
+    expect(first_u?.childNodes.length).toBeGreaterThan(0);
+    const first_u_text = first_u!.childNodes[0];
+    expect(first_u_text.nodeType).toBe(Node.TEXT_NODE);
+    range.setStart(first_u_text, 5);
+
+    const allTextNodes = getAllTextNodes([document.body]);
+    expect(allTextNodes.length).toBe(3);
+    const third_u_text = allTextNodes[2];
+    expect(third_u_text).not.toBeNull();
+    expect(third_u_text.nodeType).toBe(Node.TEXT_NODE);
+    range.setEnd(third_u_text!, 9);
+
+
   })
 })
 
