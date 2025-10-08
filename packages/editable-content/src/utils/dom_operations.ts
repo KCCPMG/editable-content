@@ -37,7 +37,6 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
   
   resetSelectionToTextNodes();
   const range = selection.getRangeAt(0);
-
   const query = generateQueryFromElement(element);
 
   const contents = range.extractContents();
@@ -74,6 +73,7 @@ export function wrapInElement(selection: Selection, element: Element, limitingCo
       unbreakables.push(cn);
     }
   }
+  // unwrapRangeFromQuery(range, query, limitingContainer);
 
   element.append(contents); 
   range.insertNode(element); // range is collapsed, this effectively inserts *after*

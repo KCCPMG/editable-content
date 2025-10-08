@@ -73,6 +73,7 @@ function wrapInElement(selection, element, limitingContainer) {
             unbreakables.push(cn);
         }
     }
+    // unwrapRangeFromQuery(range, query, limitingContainer);
     element.append(contents);
     range.insertNode(element); // range is collapsed, this effectively inserts *after*
     range.setStartBefore(element);

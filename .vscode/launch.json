@@ -4,7 +4,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-
+    
     {
       "type": "node",
       "request": "launch",
@@ -28,7 +28,13 @@
       "type":"chrome",
       "request": "launch",
       "url": "http://localhost:3000/",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      // "sourceMapPathOverrides": {
+      //   "webpack:///./node_modules/editable-content/src/*": "${workspaceFolder}/packages/editable-content/src/*.ts",
+      //   // "webpack:///./node_modules/editable-content/*": "${workspaceFolder}/packages/editable-content/src/utils/dom_operations.ts",
+      //   // "webpack:///./node_modules/editable-content/utils/*": "${workspaceFolder}/packages/editable-content/src/utils/*.ts"
+      // }
 
     }
   ]

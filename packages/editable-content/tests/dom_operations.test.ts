@@ -378,7 +378,24 @@ describe("test unwrapRangeFromQuery", function() {
   // TODO: finish this test
   test("unwraps from range across multiple nested underlines", function() {
 
-    const nestedHTML = `<u class="underlined-standard" data-bk="underlined">​designed ​<strong class="bold-standard" data-bk="bold"><i class="italics-standard" data-bk="italics"><u class="underlined-standard" data-bk="underlined">​to giv​</u></i></strong></u><strong class="bold-standard" data-bk="bold"><i class="italics-standard" data-bk="italics"><u class="underlined-standard" data-bk="underlined">​e developers​</u></i></strong>`;
+    const nestedHTML = `
+      <u class="underlined-standard" data-bk="underlined">
+        ​designed ​
+        <strong class="bold-standard" data-bk="bold">
+          <i class="italics-standard" data-bk="italics">
+            <u class="underlined-standard" data-bk="underlined">
+              ​to giv​
+            </u>
+          </i>
+        </strong>
+      </u>
+      <strong class="bold-standard" data-bk="bold">
+        <i class="italics-standard" data-bk="italics">
+          <u class="underlined-standard" data-bk="underlined">
+            ​e developers​
+          </u>
+        </i>
+      </strong>`.replaceAll(/\n */g, '');
     document.body.innerHTML = nestedHTML;
 
     const range = new Range();
@@ -397,6 +414,13 @@ describe("test unwrapRangeFromQuery", function() {
     expect(third_u_text.nodeType).toBe(Node.TEXT_NODE);
     range.setEnd(third_u_text!, 9);
 
+    const rangeText = range.toString();
+
+    unwrapRangeFromQuery(range, 'u.underlined-standard [data-bk="underlined"]', document.body);
+    expect(range.toString()).toEqual(rangeText);
+
+    const contents = range.cloneContents();
+    expect(Array.from(contents.querySelectorAll('u.underlined-standard [data-bk="underlined"]')).length).toBe(0);
 
   })
 })
