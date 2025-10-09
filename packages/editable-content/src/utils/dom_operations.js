@@ -73,7 +73,6 @@ function wrapInElement(selection, element, limitingContainer) {
             unbreakables.push(cn);
         }
     }
-    // unwrapRangeFromQuery(range, query, limitingContainer);
     element.append(contents);
     range.insertNode(element); // range is collapsed, this effectively inserts *after*
     range.setStartBefore(element);
@@ -172,7 +171,7 @@ function unwrapSelectionFromQuery(selection, query, limitingContainer) {
     // Work with range instead of selection for start/end container clarity
     const range = selection.getRangeAt(0);
     if (range.toString().length === 0) {
-        const textNode = document.createTextNode('\u200B');
+        const textNode = document.createTextNode('\u200B\u200B');
         range.insertNode(textNode);
         range.setStart(textNode, 0);
         range.setEnd(textNode, textNode.length);
@@ -197,41 +196,61 @@ function unwrapSelectionFromQuery(selection, query, limitingContainer) {
  */
 function unwrapRangeFromQuery(range, query, limitingContainer) {
     // the range must necessarily have both the start and end each be within an ancestor node matching the query, which can be a common ancestor node
-    const preAncestorNode = (0, checks_1.getAncestorNode)(range.startContainer, query, limitingContainer); // assumes startContainer is text node
-    if (!preAncestorNode)
-        return;
-    const preRange = new Range();
-    preRange.setStartBefore(preAncestorNode);
-    preRange.setEnd(range.startContainer, range.startOffset);
-    const preRangeContents = preRange.extractContents();
-    for (let cn of Array.from(preRangeContents.childNodes)) {
-        preRange.insertNode(cn);
-    }
-    const postAncestorNode = (0, checks_1.getAncestorNode)(range.endContainer, query, limitingContainer); // assumes endContainer is text node
-    if (!postAncestorNode)
-        return;
-    const postRange = new Range();
-    postRange.setEndAfter(postAncestorNode);
-    postRange.setStart(range.endContainer, range.endOffset);
-    const postRangeContents = postRange.extractContents();
-    for (let cn of Array.from(postRangeContents.childNodes)) {
-        postRange.insertNode(cn);
+    const matchingAncestor = (() => {
+        if (range.commonAncestorContainer instanceof Element) {
+            if (range.commonAncestorContainer.matches(query))
+                return range.commonAncestorContainer;
+        }
+        // else to either
+        return (0, checks_1.getAncestorNode)(range.commonAncestorContainer, query, limitingContainer);
+    })();
+    console.log(matchingAncestor);
+    matchingAncestor && console.log(matchingAncestor.textContent);
+    if (matchingAncestor) {
+        // const preAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer); // assumes startContainer is text node
+        // if (!preAncestorNode) return;
+        // const postAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer); // assumes endContainer is text node
+        // if (!postAncestorNode) return;
+        const preRange = new Range();
+        preRange.setStartBefore(matchingAncestor);
+        preRange.setEnd(range.startContainer, range.startOffset);
+        const preRangeContents = preRange.extractContents();
+        for (let cn of Array.from(preRangeContents.childNodes)) {
+            preRange.insertNode(cn);
+        }
+        const postRange = new Range();
+        postRange.setEndAfter(matchingAncestor);
+        postRange.setStart(range.endContainer, range.endOffset);
+        const postRangeContents = postRange.extractContents();
+        for (let cn of Array.from(postRangeContents.childNodes)) {
+            postRange.insertNode(cn);
+        }
+        range.setStart(preRange.endContainer, preRange.endOffset);
+        range.setEnd(postRange.startContainer, postRange.startOffset);
+        // range.setStartAfter(preRange.endContainer);
+        // range.setStartBefore(postRange.startContainer);
     }
     // find matching ancestor nodes of start and end containers
-    const startContainerAncestorNode = (0, checks_1.getAncestorNode)(range.startContainer, query, limitingContainer);
-    if (startContainerAncestorNode) {
-        range.setStartBefore(startContainerAncestorNode);
-    }
-    const endContainerAncestorNode = (0, checks_1.getAncestorNode)(range.endContainer, query, limitingContainer);
-    if (endContainerAncestorNode) {
-        range.setEndAfter(endContainerAncestorNode);
-    }
+    // const startContainerAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer);
+    // if (startContainerAncestorNode) {
+    //   range.setStartBefore(startContainerAncestorNode);
+    // }
+    // const endContainerAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
+    // if (endContainerAncestorNode) {
+    //   range.setEndAfter(endContainerAncestorNode);
+    // }
     // promote children of all query-matching nodes in selection
-    const childNodes = (0, checks_1.getRangeChildNodes)(range, limitingContainer);
-    const targetedNodes = childNodes.filter(cn => {
-        return (cn instanceof Element && cn.matches(query));
-    });
-    targetedNodes.forEach(tn => promoteChildrenOfNode(tn));
+    // const childNodes = getRangeChildNodes(range, limitingContainer);
+    const contents = range.extractContents();
+    const targetElements = Array.from(contents.querySelectorAll(query));
+    console.log(targetElements);
+    targetElements.forEach(c => promoteChildrenOfNode(c));
+    console.log(contents);
+    Array.from(contents.childNodes).reverse().forEach(cn => range.insertNode(cn));
+    // const targetedNodes = childNodes.filter(cn => {
+    //   return (cn instanceof Element && cn.matches(query));
+    // });
+    // targetedNodes.forEach(tn => promoteChildrenOfNode(tn));
     // finally clean up empty elements of this query
     deleteEmptyElements(limitingContainer);
     (0, selection_movements_1.resetSelectionToTextNodes)();
