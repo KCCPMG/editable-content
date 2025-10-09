@@ -206,22 +206,28 @@ export function unwrapSelectionFromQuery(selection: Selection, query: string, li
 
 // TODO: Look for ways to simplify this, leverage existing functions
 /**
- * Given a range which has as a common ancestor an element matching
- * a given query, breaks the query-matching element into three parts: 
- * preRange, range, postRange. The preRange and postRange extract 
- * their contents and then reassemble themselves so that the element
- * is split into three parts corresponding to the range. Finally, the
- * range reassembles itself with everything except its own instance of
- * the query-matching element
+ * Given a range, promotes all content of the range which is in an element
+ * which matches the given query, provided it is within the limitingContainer
+ * element. This is true if the range is fully within a matching element,
+ * intersects multiple matching elements (ie starts in one matching element
+ * and ends in another), or if the range contains matching elements. In the
+ * case of intersecting matching elements, the part of the elements which
+ * are not within the range are preserved. Similarly, in the case of the
+ * range being fully within a matching element, the parts of the matching
+ * element which are not in the range are preserved as new copies of that
+ * element
+ * 
  * @param range 
  * @param query 
  * @param limitingContainer 
  * @returns 
  */
 export function unwrapRangeFromQuery(range: Range, query: string, limitingContainer: Element): void {
-
-  // the range must necessarily have both the start and end each be within an ancestor node matching the query, which can be a common ancestor node
   
+/**
+ * Find out if there is a matchingAncestor, meaning an a node which entirely contains
+ * the range and matches the query, ie what we want to unwrap from
+ */
   const matchingAncestor = (() => {
     if (range.commonAncestorContainer instanceof Element) {
       if (range.commonAncestorContainer.matches(query)) return range.commonAncestorContainer; 
@@ -230,75 +236,65 @@ export function unwrapRangeFromQuery(range: Range, query: string, limitingContai
     return getAncestorNode(range.commonAncestorContainer, query, limitingContainer);
   })();
 
-  // console.log(matchingAncestor);
-  // matchingAncestor && console.log(matchingAncestor.textContent);
 
+  // If there is a matchingAncestor, unwrap from the matchingAncestor
   if (matchingAncestor) {
     
-    // const preAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer); // assumes startContainer is text node
-    // if (!preAncestorNode) return;
+    /**
+     * Create a preRange and postRange which will cover the parts of the
+     * ancestor which are *not* in the range we will unwrap. The preRange
+     * and postRange will extract their contents and reassemble themselves
+     * so that the matching ancestor is broken up into two pieces- a beginning
+     * and an end, with neither of them covering the range. This unwraps
+     * the range from the matchingAncestor.
+     */
     
-    // const postAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer); // assumes endContainer is text node
-    // if (!postAncestorNode) return;
-    
+
+    // create range, set it from before matchingAncestor up to range start
     const preRange = new Range();
     preRange.setStartBefore(matchingAncestor);
     preRange.setEnd(range.startContainer, range.startOffset);
     const preRangeContents = preRange.extractContents();
+
+    // reassemble preRange
     for (let cn of Array.from(preRangeContents.childNodes)) {
       preRange.insertNode(cn);
     }
     
+    // create range, set it from range end to after matchingAncestor
     const postRange = new Range();
     postRange.setEndAfter(matchingAncestor);
     postRange.setStart(range.endContainer, range.endOffset);
     const postRangeContents = postRange.extractContents();
+
+    // reassemble postRange
     for (let cn of Array.from(postRangeContents.childNodes)) {
       postRange.insertNode(cn);
     }
 
+    // reset range to fully cover everything between preRange and postRange
     range.setStart(preRange.endContainer, preRange.endOffset);
     range.setEnd(postRange.startContainer, postRange.startOffset);
-    // range.setStartAfter(preRange.endContainer);
-    // range.setStartBefore(postRange.startContainer);
+
   }
 
-
-  // find matching ancestor nodes of start and end containers
-  // const startContainerAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer);
-  // if (startContainerAncestorNode) {
-  //   range.setStartBefore(startContainerAncestorNode);
-  // }
-
-  // const endContainerAncestorNode = getAncestorNode(range.endContainer, query, limitingContainer);
-  // if (endContainerAncestorNode) {
-  //   range.setEndAfter(endContainerAncestorNode);
-  // }
-
-  // promote children of all query-matching nodes in selection
-  // const childNodes = getRangeChildNodes(range, limitingContainer);
+  /**
+   * Whether there was a matchingAncestor or not, we now need to
+   * remove every element within the range which matches the query
+   * by finding those elements and promoting their children
+   */
 
   const contents = range.extractContents();
-
   const targetElements = Array.from(contents.querySelectorAll(query));
-  // console.log(targetElements);
-  
   targetElements.forEach(c => promoteChildrenOfNode(c));
 
-  // console.log(contents);
-
+  // repopulate the range in reverse order of childNodes to use insertNode
   Array.from(contents.childNodes).reverse().forEach(cn => range.insertNode(cn));
 
-  // const targetedNodes = childNodes.filter(cn => {
-  //   return (cn instanceof Element && cn.matches(query));
-  // });
-  // targetedNodes.forEach(tn => promoteChildrenOfNode(tn));
 
-  // finally clean up empty elements of this query
+  // finally clean up empty elements of this query, clean up selection, return
   deleteEmptyElements(limitingContainer);
-
   resetSelectionToTextNodes();
-
   return;
 }
 
