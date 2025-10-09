@@ -280,7 +280,6 @@ const utils_1 = require("../src/utils");
         </strong>
       </div>`.replaceAll(/\n */g, ''));
     });
-    // TODO: finish this test
     (0, globals_1.test)("unwraps from range across multiple nested underlines", function () {
         const nestedHTML = `
       <u class="underlined-standard" data-bk="underlined">
@@ -301,24 +300,58 @@ const utils_1 = require("../src/utils");
         </i>
       </strong>`.replaceAll(/\n */g, '');
         document.body.innerHTML = nestedHTML;
+        /**
+         * Set range to:
+         *
+         *  <u class="underlined-standard" data-bk="underlined">
+         *   gned ​
+         *    <strong class="bold-standard" data-bk="bold">
+         *      <i class="italics-standard" data-bk="italics">
+         *        <u class="underlined-standard" data-bk="underlined">
+         *          ​to giv​
+         *        </u>
+         *      </i>
+         *    </strong>
+         *  </u>
+         *  <strong class="bold-standard" data-bk="bold">
+         *    <i class="italics-standard" data-bk="italics">
+         *      <u class="underlined-standard" data-bk="underlined">
+         *        ​e develo
+         *      </u>
+         *    </i>
+         *  </strong>
+         *
+         */
         const range = new Range();
         const first_u = document.querySelector("u.underlined-standard");
         (0, globals_1.expect)(first_u).not.toBeNull();
         (0, globals_1.expect)(first_u === null || first_u === void 0 ? void 0 : first_u.childNodes.length).toBeGreaterThan(0);
         const first_u_text = first_u.childNodes[0];
         (0, globals_1.expect)(first_u_text.nodeType).toBe(Node.TEXT_NODE);
+        (0, globals_1.expect)(first_u_text.textContent).toBe("​designed ​");
         range.setStart(first_u_text, 5);
         const allTextNodes = (0, utils_1.getAllTextNodes)([document.body]);
         (0, globals_1.expect)(allTextNodes.length).toBe(3);
         const third_u_text = allTextNodes[2];
         (0, globals_1.expect)(third_u_text).not.toBeNull();
         (0, globals_1.expect)(third_u_text.nodeType).toBe(Node.TEXT_NODE);
+        (0, globals_1.expect)(third_u_text.textContent).toBe("​e developers​");
         range.setEnd(third_u_text, 9);
         const rangeText = range.toString();
-        (0, dom_operations_1.unwrapRangeFromQuery)(range, 'u.underlined-standard [data-bk="underlined"]', document.body);
+        (0, globals_1.expect)(rangeText).toBe("gned ​​to giv​​e develo");
+        const query = 'u.underlined-standard[data-bk="underlined"]';
+        (0, dom_operations_1.unwrapRangeFromQuery)(range, query, document.body);
         (0, globals_1.expect)(range.toString()).toEqual(rangeText);
         const contents = range.cloneContents();
         (0, globals_1.expect)(Array.from(contents.querySelectorAll('u.underlined-standard [data-bk="underlined"]')).length).toBe(0);
+        const childNodes = (0, utils_1.getRangeChildNodes)(range, document.body);
+        (0, globals_1.expect)(childNodes.filter(cn => cn instanceof Element && cn.matches(query)).length).toBe(0);
+        /**
+         * first and last underlined elements should still exist with
+         * what was not included in the range
+         *
+         */
+        (0, globals_1.expect)(Array.from(document.querySelectorAll(query)).length).toBe(2);
     });
 });
 (0, globals_1.describe)("test promoteChildrenOfNode", function () {

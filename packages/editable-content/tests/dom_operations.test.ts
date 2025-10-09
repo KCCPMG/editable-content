@@ -4,7 +4,7 @@
 import {describe, expect, jest, test, beforeEach} from '@jest/globals';
 import { wrapInElement, deleteEmptyElementsByQuery, unwrapSelectionFromQuery, unwrapRangeFromQuery, generateQuery, createWrapper } from "../src/utils/dom_operations";
 import { startingHTML, alternateHTMLwithUnbreakable, alternateHTML } from "./test_constants_and_helpers";
-import { getAllTextNodes } from '../src/utils';
+import { getAllTextNodes, getRangeChildNodes } from '../src/utils';
 
 
 
@@ -375,7 +375,7 @@ describe("test unwrapRangeFromQuery", function() {
       </div>`.replaceAll(/\n */g, ''));
   })
 
-  // TODO: finish this test
+  
   test("unwraps from range across multiple nested underlines", function() {
 
     const nestedHTML = `
@@ -398,6 +398,29 @@ describe("test unwrapRangeFromQuery", function() {
       </strong>`.replaceAll(/\n */g, '');
     document.body.innerHTML = nestedHTML;
 
+    /**
+     * Set range to:
+     * 
+     *  <u class="underlined-standard" data-bk="underlined">
+     *   gned ​
+     *    <strong class="bold-standard" data-bk="bold">
+     *      <i class="italics-standard" data-bk="italics">
+     *        <u class="underlined-standard" data-bk="underlined">
+     *          ​to giv​
+     *        </u>
+     *      </i>
+     *    </strong>
+     *  </u>
+     *  <strong class="bold-standard" data-bk="bold">
+     *    <i class="italics-standard" data-bk="italics">
+     *      <u class="underlined-standard" data-bk="underlined">
+     *        ​e develo
+     *      </u>
+     *    </i>
+     *  </strong>
+     * 
+     */
+
     const range = new Range();
 
     const first_u = document.querySelector("u.underlined-standard");
@@ -405,6 +428,7 @@ describe("test unwrapRangeFromQuery", function() {
     expect(first_u?.childNodes.length).toBeGreaterThan(0);
     const first_u_text = first_u!.childNodes[0];
     expect(first_u_text.nodeType).toBe(Node.TEXT_NODE);
+    expect(first_u_text.textContent).toBe("​designed ​");
     range.setStart(first_u_text, 5);
 
     const allTextNodes = getAllTextNodes([document.body]);
@@ -412,15 +436,29 @@ describe("test unwrapRangeFromQuery", function() {
     const third_u_text = allTextNodes[2];
     expect(third_u_text).not.toBeNull();
     expect(third_u_text.nodeType).toBe(Node.TEXT_NODE);
+    expect(third_u_text.textContent).toBe("​e developers​")
     range.setEnd(third_u_text!, 9);
 
     const rangeText = range.toString();
+    expect(rangeText).toBe("gned ​​to giv​​e develo")
 
-    unwrapRangeFromQuery(range, 'u.underlined-standard [data-bk="underlined"]', document.body);
+    const query = 'u.underlined-standard[data-bk="underlined"]'
+
+    unwrapRangeFromQuery(range, query, document.body);
     expect(range.toString()).toEqual(rangeText);
 
     const contents = range.cloneContents();
     expect(Array.from(contents.querySelectorAll('u.underlined-standard [data-bk="underlined"]')).length).toBe(0);
+
+    const childNodes = getRangeChildNodes(range, document.body);
+    expect(childNodes.filter(cn => cn instanceof Element && cn.matches(query)).length).toBe(0);
+
+    /**
+     * first and last underlined elements should still exist with 
+     * what was not included in the range
+     * 
+     */ 
+    expect(Array.from(document.querySelectorAll(query)).length).toBe(2);
 
   })
 })

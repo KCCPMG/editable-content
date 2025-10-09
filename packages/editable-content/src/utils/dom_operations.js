@@ -204,8 +204,8 @@ function unwrapRangeFromQuery(range, query, limitingContainer) {
         // else to either
         return (0, checks_1.getAncestorNode)(range.commonAncestorContainer, query, limitingContainer);
     })();
-    console.log(matchingAncestor);
-    matchingAncestor && console.log(matchingAncestor.textContent);
+    // console.log(matchingAncestor);
+    // matchingAncestor && console.log(matchingAncestor.textContent);
     if (matchingAncestor) {
         // const preAncestorNode = getAncestorNode(range.startContainer, query, limitingContainer); // assumes startContainer is text node
         // if (!preAncestorNode) return;
@@ -243,9 +243,9 @@ function unwrapRangeFromQuery(range, query, limitingContainer) {
     // const childNodes = getRangeChildNodes(range, limitingContainer);
     const contents = range.extractContents();
     const targetElements = Array.from(contents.querySelectorAll(query));
-    console.log(targetElements);
+    // console.log(targetElements);
     targetElements.forEach(c => promoteChildrenOfNode(c));
-    console.log(contents);
+    // console.log(contents);
     Array.from(contents.childNodes).reverse().forEach(cn => range.insertNode(cn));
     // const targetedNodes = childNodes.filter(cn => {
     //   return (cn instanceof Element && cn.matches(query));

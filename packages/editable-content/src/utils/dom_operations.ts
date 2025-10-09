@@ -230,8 +230,8 @@ export function unwrapRangeFromQuery(range: Range, query: string, limitingContai
     return getAncestorNode(range.commonAncestorContainer, query, limitingContainer);
   })();
 
-  console.log(matchingAncestor)
-  matchingAncestor && console.log(matchingAncestor.textContent);
+  // console.log(matchingAncestor);
+  // matchingAncestor && console.log(matchingAncestor.textContent);
 
   if (matchingAncestor) {
     
@@ -281,11 +281,11 @@ export function unwrapRangeFromQuery(range: Range, query: string, limitingContai
   const contents = range.extractContents();
 
   const targetElements = Array.from(contents.querySelectorAll(query));
-  console.log(targetElements);
+  // console.log(targetElements);
   
   targetElements.forEach(c => promoteChildrenOfNode(c));
 
-  console.log(contents);
+  // console.log(contents);
 
   Array.from(contents.childNodes).reverse().forEach(cn => range.insertNode(cn));
 
