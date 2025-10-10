@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __rest = (this && this.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -12,14 +45,14 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EditTextButton;
-var material_1 = require("@mui/material");
-var react_1 = require("react");
-var EditableContentContext_1 = require("./EditableContentContext");
-var server_1 = require("react-dom/server");
-var constants_1 = require("./utils/constants");
-var checks_1 = require("./utils/checks");
-var dom_operations_1 = require("./utils/dom_operations");
-var selection_movements_1 = require("./utils/selection_movements");
+const material_1 = require("@mui/material");
+const react_1 = __importStar(require("react"));
+const EditableContentContext_1 = require("./EditableContentContext");
+const server_1 = require("react-dom/server");
+const constants_1 = require("./utils/constants");
+const checks_1 = require("./utils/checks");
+const dom_operations_1 = require("./utils/dom_operations");
+const selection_movements_1 = require("./utils/selection_movements");
 /**
  * Takes a ReactNode and a dataKey and generates a
  * WrapperArgs object
@@ -28,26 +61,25 @@ var selection_movements_1 = require("./utils/selection_movements");
  * @returns
  */
 function reactNodeToWrapperArgs(rn, dataKey) {
-    var element = reactNodeToElement(rn);
+    const element = reactNodeToElement(rn);
     if (!element)
         return { element: "" };
-    var mappedAttributes = {
+    let mappedAttributes = {
         'data-bk': dataKey
     };
-    for (var _i = 0, _a = Array.from(element.attributes); _i < _a.length; _i++) {
-        var attr = _a[_i];
+    for (let attr of Array.from(element.attributes)) {
         if ((attr.name) === 'class' || (attr.name) === 'getContext')
             continue;
         if (attr.name === 'style') {
             // TODO: make style compatible for wrapperArgs search
             continue;
         }
-        var attrName = attr.name;
-        var attrValue = attr.value || '';
+        const attrName = attr.name;
+        const attrValue = attr.value || '';
         mappedAttributes[attrName] = attrValue;
     }
     // set all react elements to unbreakable, might change this later
-    var wrapperArgs = {
+    const wrapperArgs = {
         element: element.tagName,
         classList: element.className ? element.className.split(" ") : [],
         id: element.getAttribute('id') || undefined,
@@ -64,37 +96,37 @@ function reactNodeToWrapperArgs(rn, dataKey) {
  * @returns
  */
 function reactNodeToElement(reactNode) {
-    var stringified = (0, server_1.renderToString)(reactNode);
-    var parsedElement = (typeof window !== "undefined") ?
+    const stringified = (0, server_1.renderToString)(reactNode);
+    const parsedElement = (typeof window !== "undefined") ?
         new DOMParser().parseFromString(stringified, "text/html").body.children[0] :
         null;
     return parsedElement;
 }
 function EditTextButton(_a) {
     var _b;
-    var isMUIButton = _a.isMUIButton, dataKey = _a.dataKey, children = _a.children, selectedVariant = _a.selectedVariant, deselectedVariant = _a.deselectedVariant, selectCallback = _a.selectCallback, deselectCallback = _a.deselectCallback, remainderProps = __rest(_a, ["isMUIButton", "dataKey", "children", "selectedVariant", "deselectedVariant", "selectCallback", "deselectCallback"]);
-    var _c = (0, EditableContentContext_1.useEditableContentContext)(), contextInstanceIdRef = _c.contextInstanceIdRef, hasSelection = _c.hasSelection, selectionAnchorNode = _c.selectionAnchorNode, selectionAnchorOffset = _c.selectionAnchorOffset, selectionFocusNode = _c.selectionFocusNode, selectionFocusOffset = _c.selectionFocusOffset, keyAndWrapperObjs = _c.keyAndWrapperObjs, contentRef = _c.contentRef, updateContent = _c.updateContent, createContentPortal = _c.createContentPortal, portals = _c.portals, removePortal = _c.removePortal, buttonUpdateTrigger = _c.buttonUpdateTrigger, triggerButtonUpdate = _c.triggerButtonUpdate;
-    var _d = (0, react_1.useState)(false), selected = _d[0], setSelected = _d[1];
-    var _e = (0, react_1.useState)(false), enabled = _e[0], setEnabled = _e[1];
-    var _f = (0, react_1.useState)(false), beingClicked = _f[0], setBeingClicked = _f[1];
-    var thisKeyAndWrapperRef = (0, react_1.useRef)(keyAndWrapperObjs.find(function (kw) { return kw.dataKey === dataKey; }));
-    var wrapperRef = (0, react_1.useRef)((_b = thisKeyAndWrapperRef === null || thisKeyAndWrapperRef === void 0 ? void 0 : thisKeyAndWrapperRef.current) === null || _b === void 0 ? void 0 : _b.wrapper);
-    var isReactComponentRef = (0, react_1.useRef)(wrapperRef.current ? (0, checks_1.getIsReactComponent)(wrapperRef === null || wrapperRef === void 0 ? void 0 : wrapperRef.current) : false);
+    var { isMUIButton, dataKey, children, selectedVariant, deselectedVariant, selectCallback, deselectCallback } = _a, remainderProps = __rest(_a, ["isMUIButton", "dataKey", "children", "selectedVariant", "deselectedVariant", "selectCallback", "deselectCallback"]);
+    const { contextInstanceIdRef, hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef, updateContent, createContentPortal, portals, removePortal, buttonUpdateTrigger, triggerButtonUpdate } = (0, EditableContentContext_1.useEditableContentContext)();
+    const [selected, setSelected] = (0, react_1.useState)(false);
+    const [enabled, setEnabled] = (0, react_1.useState)(false);
+    const [beingClicked, setBeingClicked] = (0, react_1.useState)(false);
+    const thisKeyAndWrapperRef = (0, react_1.useRef)(keyAndWrapperObjs.find(kw => kw.dataKey === dataKey));
+    const wrapperRef = (0, react_1.useRef)((_b = thisKeyAndWrapperRef === null || thisKeyAndWrapperRef === void 0 ? void 0 : thisKeyAndWrapperRef.current) === null || _b === void 0 ? void 0 : _b.wrapper);
+    const isReactComponentRef = (0, react_1.useRef)(wrapperRef.current ? (0, checks_1.getIsReactComponent)(wrapperRef === null || wrapperRef === void 0 ? void 0 : wrapperRef.current) : false);
     // get wrapperArgs
-    var wrapperArgsRef = (0, react_1.useRef)(reactNodeToWrapperArgs(wrapperRef.current, dataKey));
-    var queryRef = (0, react_1.useRef)((0, dom_operations_1.generateQuery)(wrapperArgsRef.current));
+    const wrapperArgsRef = (0, react_1.useRef)(reactNodeToWrapperArgs(wrapperRef.current, dataKey));
+    const queryRef = (0, react_1.useRef)((0, dom_operations_1.generateQuery)(wrapperArgsRef.current));
     // on selection change
     (0, react_1.useEffect)(function () {
-        var selection = window.getSelection();
+        const selection = window.getSelection();
         // disable button if div doesn't have selection and button is not actively being clicked
         if (!hasSelection && !beingClicked) {
             setSelected(false);
             setEnabled(false);
         }
         else {
-            var status_1 = (0, checks_1.getButtonStatus)(selection, wrapperArgsRef.current.unbreakable, queryRef.current, contentRef.current);
-            setSelected(status_1.selected);
-            setEnabled(status_1.enabled);
+            const status = (0, checks_1.getButtonStatus)(selection, wrapperArgsRef.current.unbreakable, queryRef.current, contentRef.current);
+            setSelected(status.selected);
+            setEnabled(status.enabled);
         }
     }, [hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, buttonUpdateTrigger]);
     /**
@@ -103,27 +135,27 @@ function EditTextButton(_a) {
      * promotion of children to div containing portal, marking that div
      * for deletion in EditableContent useEffect [portals]
      */
-    var unwrapReactComponent = (0, react_1.useCallback)(function (selection, portalsState) {
-        var range = selection.getRangeAt(0);
+    const unwrapReactComponent = (0, react_1.useCallback)((selection, portalsState) => {
+        const range = selection.getRangeAt(0);
         if (!selection.anchorNode || !contentRef.current)
             return;
-        var targetDiv = (0, checks_1.getAncestorNode)(selection.anchorNode, "div[data-button-key]", contentRef.current);
+        const targetDiv = (0, checks_1.getAncestorNode)(selection.anchorNode, "div[data-button-key]", contentRef.current);
         if (!targetDiv)
             return;
-        var id = targetDiv.getAttribute('id');
-        var key = id === null || id === void 0 ? void 0 : id.split(constants_1.PORTAL_CONTAINER_ID_PREFIX)[1];
+        const id = targetDiv.getAttribute('id');
+        const key = id === null || id === void 0 ? void 0 : id.split(constants_1.PORTAL_CONTAINER_ID_PREFIX)[1];
         if (!key || key.length === 0)
             return;
-        var targetPortal = portalsState.find(function (p) { return p.key === key; });
+        const targetPortal = portalsState.find(p => p.key === key);
         if (!targetPortal)
             return;
         if (targetPortal.children && range.toString().length === 0) {
-            var childrenRange = new Range();
+            const childrenRange = new Range();
             childrenRange.setStart(targetDiv, 0);
             childrenRange.setEnd(targetDiv, targetDiv.childNodes.length);
-            var textNodes = (0, checks_1.getAllTextNodes)([targetDiv]);
-            var lastTextNode = (0, checks_1.getLastValidTextNode)(textNodes);
-            var lastTextIndex = (0, checks_1.getLastValidCharacterIndex)(lastTextNode);
+            const textNodes = (0, checks_1.getAllTextNodes)([targetDiv]);
+            const lastTextNode = (0, checks_1.getLastValidTextNode)(textNodes);
+            const lastTextIndex = (0, checks_1.getLastValidCharacterIndex)(lastTextNode);
             // if at end of react component, break element at end
             if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
                 breakElementAtEnd(targetDiv, selection);
@@ -131,12 +163,12 @@ function EditTextButton(_a) {
             }
         }
         // else - there is a target portal and range is over 1 or more characters
-        var targetComponent = targetPortal.children;
+        const targetComponent = targetPortal.children;
         if (!targetComponent || !(0, react_1.isValidElement)(targetComponent))
             return;
         // target component exists, remove portal, copy children to targetDiv
-        var children = targetComponent.props.children;
-        var htmlChildren = (typeof children === "string") ?
+        const children = targetComponent.props.children;
+        const htmlChildren = (typeof children === "string") ?
             document.createTextNode(children) :
             reactNodeToElement(children);
         htmlChildren && targetDiv.appendChild(htmlChildren);
@@ -153,34 +185,34 @@ function EditTextButton(_a) {
      * Assumes that range's lowest ancestor element is the element to
      * unwrap, requires caution when calling
      */
-    var unwrapUnbreakableElement = (0, react_1.useCallback)(function (selection) {
+    const unwrapUnbreakableElement = (0, react_1.useCallback)((selection) => {
         if (!contentRef.current)
             return;
-        var range = selection.getRangeAt(0);
-        var element = (0, checks_1.getRangeLowestAncestorElement)(range);
+        const range = selection.getRangeAt(0);
+        const element = (0, checks_1.getRangeLowestAncestorElement)(range);
         if (element) {
-            var elementRange = new Range();
+            const elementRange = new Range();
             elementRange.setStart(element, 0);
             elementRange.setEnd(element, element.childNodes.length);
             (0, selection_movements_1.resetRangeToTextNodes)(elementRange);
-            var childNodes = (0, checks_1.getRangeChildNodes)(elementRange, contentRef.current);
-            var textNodes = childNodes.filter(function (cn) { return cn.nodeType === Node.TEXT_NODE; });
+            const childNodes = (0, checks_1.getRangeChildNodes)(elementRange, contentRef.current);
+            const textNodes = childNodes.filter(cn => cn.nodeType === Node.TEXT_NODE);
             // handle break off from end of element
             if (range.toString().length === 0) {
-                var lastTextNode = (0, checks_1.getLastValidTextNode)(textNodes);
-                var lastTextIndex = (0, checks_1.getLastValidCharacterIndex)(lastTextNode);
+                const lastTextNode = (0, checks_1.getLastValidTextNode)(textNodes);
+                const lastTextIndex = (0, checks_1.getLastValidCharacterIndex)(lastTextNode);
                 if (range.startContainer === lastTextNode && range.startOffset >= lastTextIndex) {
                     breakElementAtEnd(element, selection);
                     return;
                 }
             }
             // else - selection is not at end of element
-            var startNodeIndex = childNodes.findIndex(function (cn) { return cn === range.startContainer; });
-            var startNodeOffset = range.startOffset;
-            var endNodeIndex = childNodes.findIndex(function (cn) { return cn === range.endContainer; });
-            var endNodeOffset = range.endOffset;
-            var parentNode = element.parentNode;
-            for (var i = 0; i < childNodes.length; i++) {
+            const startNodeIndex = childNodes.findIndex(cn => cn === range.startContainer);
+            const startNodeOffset = range.startOffset;
+            const endNodeIndex = childNodes.findIndex(cn => cn === range.endContainer);
+            const endNodeOffset = range.endOffset;
+            const parentNode = element.parentNode;
+            for (let i = 0; i < childNodes.length; i++) {
                 parentNode === null || parentNode === void 0 ? void 0 : parentNode.insertBefore(childNodes[i], element);
                 if (i === startNodeIndex) {
                     range.setStart(childNodes[i], startNodeOffset);
@@ -200,19 +232,19 @@ function EditTextButton(_a) {
      * text node if it exists, and if it does not exist, creates
      * it.
      */
-    var breakElementAtEnd = (0, react_1.useCallback)(function (targetElement, selection) {
+    const breakElementAtEnd = (0, react_1.useCallback)((targetElement, selection) => {
         var _a, _b;
         if (!contentRef.current)
             return;
-        var childrenRange = new Range();
+        const childrenRange = new Range();
         childrenRange.setStart(targetElement, 0);
         childrenRange.setEnd(targetElement, targetElement.childNodes.length);
-        var textNodes = (0, checks_1.getAllTextNodes)([targetElement]);
+        const textNodes = (0, checks_1.getAllTextNodes)([targetElement]);
         if (targetElement.nextSibling && targetElement.nextSibling.nodeType === Node.TEXT_NODE) {
             (0, selection_movements_1.moveSelection)(selection, contentRef.current, "right");
         }
         else {
-            var newEmptyTextNode = new Text('\u200B\u200B');
+            const newEmptyTextNode = new Text('\u200B\u200B');
             if (targetElement.nextSibling) {
                 contentRef.current.insertBefore(newEmptyTextNode, targetElement.nextSibling);
             }
@@ -229,10 +261,10 @@ function EditTextButton(_a) {
             return;
         // if selection is still inside of element, - end of text
         if (textNodes.includes(selection.anchorNode)) {
-            var newRange = new Range();
+            const newRange = new Range();
             newRange.setStartAfter(targetElement);
             newRange.collapse();
-            var newTextNode = document.createTextNode("\u200B\u200B");
+            const newTextNode = document.createTextNode("\u200B\u200B");
             newRange.insertNode(newTextNode);
             // directly set new selection
             (_b = window.getSelection()) === null || _b === void 0 ? void 0 : _b.setBaseAndExtent(newTextNode, 1, newTextNode, 1);
@@ -250,11 +282,11 @@ function EditTextButton(_a) {
      * with React wrappers, non-React unbreakable wrappers, and standard
      * wrappers
      */
-    var handleEditTextButtonClick = (0, react_1.useCallback)(function (portalArray, isSelected) {
+    const handleEditTextButtonClick = (0, react_1.useCallback)((portalArray, isSelected) => {
         var _a;
         if (!wrapperRef.current)
             return;
-        var selection = window.getSelection();
+        const selection = window.getSelection();
         if (selection) {
             if (isSelected) {
                 // selected - this action should unwrap
@@ -263,19 +295,19 @@ function EditTextButton(_a) {
                 }
                 else if (!isReactComponentRef.current) {
                     if (wrapperArgsRef.current.unbreakable) {
-                        var originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
+                        const originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
                         unwrapUnbreakableElement(selection);
                         // update button status if selection does not change
-                        var newRange = selection.getRangeAt(0);
+                        const newRange = selection.getRangeAt(0);
                         if (originalRange == newRange) {
                             triggerButtonUpdate();
                         }
                     }
                     else if (!wrapperArgsRef.current.unbreakable) {
-                        var originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
+                        const originalRange = selection.getRangeAt(0); // pre unwrap selection for comparison
                         (0, dom_operations_1.unwrapSelectionFromQuery)(selection, queryRef.current, contentRef.current); // typescript not deeply analyzing callback, prior check of contentRef.current is sufficient
                         // update button status if selection does not change
-                        var newRange = selection.getRangeAt(0);
+                        const newRange = selection.getRangeAt(0);
                         if (originalRange == newRange) {
                             triggerButtonUpdate();
                         }
@@ -290,20 +322,20 @@ function EditTextButton(_a) {
                 // not selected - this action should wrap
                 if (isReactComponentRef.current) {
                     // if isReactComponent, can assert wrapperInstructions as ReactElement
-                    var portalId = createContentPortal(wrapperRef.current, dataKey);
+                    const portalId = createContentPortal(wrapperRef.current, dataKey);
                     if (selectCallback) {
                         selectCallback(wrapperRef.current, portalId);
                     }
                 }
                 else if (!isReactComponentRef.current) {
-                    var wrapper = (0, dom_operations_1.createWrapper)(wrapperArgsRef.current, document);
+                    const wrapper = (0, dom_operations_1.createWrapper)(wrapperArgsRef.current, document);
                     (0, dom_operations_1.wrapInElement)(selection, wrapper, contentRef.current);
                     // make sure all text nodes are cushioned, reset range to include ZWSs
-                    var textNodes = (0, checks_1.getAllTextNodes)([wrapper]);
-                    textNodes.forEach(function (tn) { return (0, dom_operations_1.cushionTextNode)(tn); });
-                    var range = (_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.getRangeAt(0);
+                    const textNodes = (0, checks_1.getAllTextNodes)([wrapper]);
+                    textNodes.forEach(tn => (0, dom_operations_1.cushionTextNode)(tn));
+                    const range = (_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.getRangeAt(0);
                     range === null || range === void 0 ? void 0 : range.setStart(textNodes[0], 0);
-                    var lastTextNode = textNodes[textNodes.length - 1];
+                    const lastTextNode = textNodes[textNodes.length - 1];
                     range === null || range === void 0 ? void 0 : range.setEnd(lastTextNode, lastTextNode.length);
                     updateContent();
                     if (selectCallback) {
@@ -317,23 +349,17 @@ function EditTextButton(_a) {
     if (!wrapperRef.current)
         return;
     return (isMUIButton ?
-        <material_1.Button disabled={!enabled} onMouseDown={function () {
+        react_1.default.createElement(material_1.Button, Object.assign({ disabled: !enabled, onMouseDown: () => {
                 // prevent !hasSelection from blocking button's ability to click
                 setBeingClicked(true);
-            }} onClick={function (e) {
+            }, onClick: (e) => {
                 handleEditTextButtonClick(portals, selected);
                 setBeingClicked(false);
-            }} variant={selected ?
+            }, variant: selected ?
                 (selectedVariant || "contained") :
-                (deselectedVariant || "outlined")} 
-        // Only pass valid MUI Button props here
-        data-context-id={contextInstanceIdRef.current} {...remainderProps}>
-        {children}
-      </material_1.Button> :
-        <button disabled={!enabled} onMouseDown={function () {
+                (deselectedVariant || "outlined"), "data-context-id": contextInstanceIdRef.current }, remainderProps), children) :
+        react_1.default.createElement("button", Object.assign({ disabled: !enabled, onMouseDown: () => {
                 // prevent !hasSelection from blocking button's ability to click
                 setBeingClicked(true);
-            }} onClick={function () { handleEditTextButtonClick(portals, selected); }} data-context-id={contextInstanceIdRef.current} {...remainderProps}>
-        {children}
-      </button>);
+            }, onClick: () => { handleEditTextButtonClick(portals, selected); }, "data-context-id": contextInstanceIdRef.current }, remainderProps), children));
 }

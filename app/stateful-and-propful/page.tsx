@@ -18,7 +18,7 @@ export default function Page() {
 
   const [initialClicks, setInitialClicks] = useState(0);
   const [componentBorderColor, setComponentBorderColor] = useState("Red");
-  const [editMode, setEditMode] = useState<boolean>(true);
+  const [editMode, setEditMode] = useState<boolean>(false);
 
   return (
     <>

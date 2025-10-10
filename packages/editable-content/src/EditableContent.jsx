@@ -14,6 +14,7 @@ function EditableContent({ className, disableNewLines }) {
     // on initial render
     (0, react_1.useEffect)(() => {
         console.log(process.env.NODE_ENV);
+        console.log("hello I should be alive");
         if (contentRef.current) {
             // populate div with html and update state
             contentRef.current.innerHTML = dehydratedHTML;
@@ -24,6 +25,7 @@ function EditableContent({ className, disableNewLines }) {
             }
             else
                 resetPortalContainers();
+            console.log("before setContentRefCurrentInnerHTML in EditableContent");
             setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
             setInitialRendersAchieved((initialRendersAchieved) => initialRendersAchieved + 1);
         }

@@ -37,6 +37,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
         contentRef.current = newRef;
     }
     (0, react_1.useEffect)(function () {
+        console.log("before getDehydratedHTML");
         getDehydratedHTML(setDehydratedHTML);
     }, [contentRefCurrentInnerHTML]);
     /**
@@ -47,6 +48,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
      * @param callback
      */
     function getDehydratedHTML(callback) {
+        console.log("getDehydratedHTML");
         const parsedHTMLBody = (typeof window !== "undefined") ?
             new DOMParser().parseFromString(contentRefCurrentInnerHTML, "text/html").body :
             null;
@@ -286,6 +288,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
                     }
                 }
             }
+            console.log(text);
             const clone = (0, react_1.cloneElement)(component, Object.assign(Object.assign(Object.assign({}, props), additionalProps), componentInitialProps), text);
             const portal = (0, react_dom_1.createPortal)(clone, targetDiv, props["key"] || null);
             return [...previousPortals, portal];

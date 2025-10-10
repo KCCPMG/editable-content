@@ -1,4 +1,4 @@
-import { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement, useEffect } from "react";
+import React, { useContext, createContext, useRef, useState, SetStateAction, Dispatch, MutableRefObject, ReactPortal, ReactNode, ReactElement, cloneElement, isValidElement, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { v4 as uuidv4 } from 'uuid';
 import { EXCLUDE_FROM_DEHYDRATED, PORTAL_CONTAINER_ID_PREFIX } from "./utils/constants";
@@ -68,9 +68,7 @@ export type EditableContentContextType = {
 export const EditableContentContext = createContext<EditableContentContextType | null>(null);
 
 
-export function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHTML, initialProps }: EditableContentContextProviderProps) {
-
-  
+export function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHTML, initialProps }: EditableContentContextProviderProps) {  
   
   const contentRef = useRef<null | HTMLDivElement>(null);
   const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = useState<string>("");
@@ -99,8 +97,8 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
     contentRef.current = newRef;
   }
 
-
   useEffect(function () {
+    console.log("before getDehydratedHTML")
     getDehydratedHTML(setDehydratedHTML);
   }, [contentRefCurrentInnerHTML])
 
@@ -112,6 +110,8 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
    * @param callback 
    */
   function getDehydratedHTML(callback: (dehydrated: string) => void) {
+
+    console.log("getDehydratedHTML");
 
     const parsedHTMLBody = (typeof window !== "undefined") ?
       new DOMParser().parseFromString(contentRefCurrentInnerHTML, "text/html").body :
@@ -392,6 +392,8 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
           }
         }
       }
+
+      console.log(text);
 
       const clone = cloneElement(component, { ...props, ...additionalProps, ...componentInitialProps }, text);
       const portal = createPortal(clone, targetDiv, props["key"] || null);

@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useEditableContentContext } from "./EditableContentContext";
 import { moveSelection, resetSelectionToTextNodes, resetSelectionToUsableText, extendSelection, extendWordSelection } from "./utils/selection_movements";
 import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getAllTextNodes } from "./utils/checks";
@@ -37,6 +37,7 @@ export default function EditableContent({ className, disableNewLines }: ContentP
   useEffect(() => {
 
     console.log(process.env.NODE_ENV);
+    console.log("hello I should be alive");
 
     if (contentRef.current) {
 
@@ -49,6 +50,8 @@ export default function EditableContent({ className, disableNewLines }: ContentP
         reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
       }
       else resetPortalContainers();
+
+      console.log("before setContentRefCurrentInnerHTML in EditableContent")
 
       setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
       setInitialRendersAchieved((initialRendersAchieved) => initialRendersAchieved + 1)

@@ -1,5 +1,5 @@
 import { Button, ButtonOwnProps } from "@mui/material";
-import { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, ReactNode, ReactPortal, useCallback, useEffect,  useRef,  useState } from "react";
+import React, { isValidElement, JSXElementConstructor, MutableRefObject, ReactElement, ReactNode, ReactPortal, useCallback, useEffect,  useRef,  useState } from "react";
 import { WrapperArgs } from "./types";
 import { useEditableContentContext } from "./EditableContentContext";
 import { renderToString } from "react-dom/server";

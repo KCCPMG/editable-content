@@ -1,51 +1,63 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
     }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EditableContentContext = void 0;
 exports.EditableContentContextProvider = EditableContentContextProvider;
 exports.useEditableContentContext = useEditableContentContext;
-var react_1 = require("react");
-var react_dom_1 = require("react-dom");
-var uuid_1 = require("uuid");
-var constants_1 = require("./utils/constants");
-var checks_1 = require("./utils/checks");
-var dom_operations_1 = require("./utils/dom_operations");
-var selection_movements_1 = require("./utils/selection_movements");
+const react_1 = __importStar(require("react"));
+const react_dom_1 = require("react-dom");
+const uuid_1 = require("uuid");
+const constants_1 = require("./utils/constants");
+const checks_1 = require("./utils/checks");
+const dom_operations_1 = require("./utils/dom_operations");
+const selection_movements_1 = require("./utils/selection_movements");
 exports.EditableContentContext = (0, react_1.createContext)(null);
-function EditableContentContextProvider(_a) {
-    var children = _a.children, keyAndWrapperObjs = _a.keyAndWrapperObjs, initialHTML = _a.initialHTML, initialProps = _a.initialProps;
-    var contentRef = (0, react_1.useRef)(null);
-    var _b = (0, react_1.useState)(""), contentRefCurrentInnerHTML = _b[0], setContentRefCurrentInnerHTML = _b[1];
-    var _c = (0, react_1.useState)(""), selectionToString = _c[0], setSelectionToString = _c[1];
-    var _d = (0, react_1.useState)(null), selectionAnchorNode = _d[0], setSelectionAnchorNode = _d[1];
-    var _e = (0, react_1.useState)(null), selectionAnchorOffset = _e[0], setSelectionAnchorOffset = _e[1];
-    var _f = (0, react_1.useState)(null), selectionFocusNode = _f[0], setSelectionFocusNode = _f[1];
-    var _g = (0, react_1.useState)(null), selectionFocusOffset = _g[0], setSelectionFocusOffset = _g[1];
-    var _h = (0, react_1.useState)(false), hasSelection = _h[0], setHasSelection = _h[1];
-    var _j = (0, react_1.useState)([]), portals = _j[0], setPortals = _j[1];
-    var _k = (0, react_1.useState)(null), divToSetSelectionTo = _k[0], setDivToSetSelectionTo = _k[1];
-    var _l = (0, react_1.useState)(initialHTML || ""), dehydratedHTML = _l[0], setDehydratedHTML = _l[1];
-    var _m = (0, react_1.useState)(false), buttonUpdateTrigger = _m[0], setButtonUpdateTrigger = _m[1];
-    var contextInstanceIdRef = (0, react_1.useRef)((0, uuid_1.v4)());
+function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHTML, initialProps }) {
+    const contentRef = (0, react_1.useRef)(null);
+    const [contentRefCurrentInnerHTML, setContentRefCurrentInnerHTML] = (0, react_1.useState)("");
+    const [selectionToString, setSelectionToString] = (0, react_1.useState)("");
+    const [selectionAnchorNode, setSelectionAnchorNode] = (0, react_1.useState)(null);
+    const [selectionAnchorOffset, setSelectionAnchorOffset] = (0, react_1.useState)(null);
+    const [selectionFocusNode, setSelectionFocusNode] = (0, react_1.useState)(null);
+    const [selectionFocusOffset, setSelectionFocusOffset] = (0, react_1.useState)(null);
+    const [hasSelection, setHasSelection] = (0, react_1.useState)(false);
+    const [portals, setPortals] = (0, react_1.useState)([]);
+    const [divToSetSelectionTo, setDivToSetSelectionTo] = (0, react_1.useState)(null);
+    const [dehydratedHTML, setDehydratedHTML] = (0, react_1.useState)(initialHTML || "");
+    const [buttonUpdateTrigger, setButtonUpdateTrigger] = (0, react_1.useState)(false);
+    const contextInstanceIdRef = (0, react_1.useRef)((0, uuid_1.v4)());
     function triggerButtonUpdate() {
         setButtonUpdateTrigger(!buttonUpdateTrigger);
     }
@@ -58,6 +70,7 @@ function EditableContentContextProvider(_a) {
         contentRef.current = newRef;
     }
     (0, react_1.useEffect)(function () {
+        console.log("before getDehydratedHTML");
         getDehydratedHTML(setDehydratedHTML);
     }, [contentRefCurrentInnerHTML]);
     /**
@@ -68,29 +81,26 @@ function EditableContentContextProvider(_a) {
      * @param callback
      */
     function getDehydratedHTML(callback) {
-        var parsedHTMLBody = (typeof window !== "undefined") ?
+        console.log("getDehydratedHTML");
+        const parsedHTMLBody = (typeof window !== "undefined") ?
             new DOMParser().parseFromString(contentRefCurrentInnerHTML, "text/html").body :
             null;
         if (!parsedHTMLBody)
             return;
         // remove all tags marked for exclusion
-        var tagsToIgnore = Array.from(parsedHTMLBody.querySelectorAll("[".concat(constants_1.EXCLUDE_FROM_DEHYDRATED, "]")));
-        tagsToIgnore.forEach(function (tti) { return tti.remove(); });
-        var divs = Array.from(parsedHTMLBody.querySelectorAll("div[data-button-key]"));
-        var _loop_1 = function (div) {
-            var divRange = new Range();
+        const tagsToIgnore = Array.from(parsedHTMLBody.querySelectorAll(`[${constants_1.EXCLUDE_FROM_DEHYDRATED}]`));
+        tagsToIgnore.forEach(tti => tti.remove());
+        const divs = Array.from(parsedHTMLBody.querySelectorAll("div[data-button-key]"));
+        for (let div of divs) {
+            const divRange = new Range();
             divRange.setStart(div, 0);
             divRange.setEnd(div, div.childNodes.length);
-            var textNodes = (0, checks_1.getRangeChildNodes)(divRange, parsedHTMLBody)
-                .filter(function (cn) { return cn.nodeType === Node.TEXT_NODE; });
+            const textNodes = (0, checks_1.getRangeChildNodes)(divRange, parsedHTMLBody)
+                .filter(cn => cn.nodeType === Node.TEXT_NODE);
             divRange.extractContents();
-            textNodes.forEach(function (tn) {
+            textNodes.forEach(tn => {
                 divRange.insertNode(tn);
             });
-        };
-        for (var _i = 0, divs_1 = divs; _i < divs_1.length; _i++) {
-            var div = divs_1[_i];
-            _loop_1(div);
         }
         return callback(parsedHTMLBody.innerHTML);
     }
@@ -101,35 +111,38 @@ function EditableContentContextProvider(_a) {
      * @param updateObj
      */
     function updatePortalProps(updateObj) {
-        var portalClones = [];
-        var portalIds = Object.keys(updateObj); // ids of portals to update only
+        const portalClones = [];
+        const portalIds = Object.keys(updateObj); // ids of portals to update only
         if (portalIds.length === 0)
             return; // prevent unnecessary setPortals especially during dev re-render
-        return setPortals(function (previousPortals) {
-            portalIds.forEach(function (portalId) {
+        return setPortals(previousPortals => {
+            portalIds.forEach(portalId => {
                 var _a;
-                var foundPortalIndex = previousPortals.findIndex(function (portal) { return portal.key === portalId; });
+                const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
                 if (foundPortalIndex < 0)
                     return;
-                var container = (_a = contentRef.current) === null || _a === void 0 ? void 0 : _a.querySelector("#portal-container-".concat(portalId));
+                const container = (_a = contentRef.current) === null || _a === void 0 ? void 0 : _a.querySelector(`#portal-container-${portalId}`);
                 if (!container)
                     return;
-                var foundPortal = previousPortals[foundPortalIndex];
+                const foundPortal = previousPortals[foundPortalIndex];
                 if (!foundPortal)
                     return;
-                var targetComponent = foundPortal.children;
+                const targetComponent = foundPortal.children;
                 if (!(0, react_1.isValidElement)(targetComponent))
                     return;
                 // else proceed
-                var props = Object.assign({}, targetComponent.props, updateObj[portalId]);
-                var clone = (0, react_1.cloneElement)(targetComponent, props, targetComponent.props.children);
-                var clonedPortal = (0, react_dom_1.createPortal)(clone, container, portalId);
+                const props = Object.assign({}, targetComponent.props, updateObj[portalId]);
+                const clone = (0, react_1.cloneElement)(targetComponent, props, targetComponent.props.children);
+                const clonedPortal = (0, react_dom_1.createPortal)(clone, container, portalId);
                 portalClones.push(clonedPortal);
             });
             if (portalClones.length === 0)
                 return previousPortals; // second check to prevent bad setState
             // remove stale portals, replace with portalClones
-            return (__spreadArray(__spreadArray([], previousPortals.filter(function (portal) { return portal.key === null || !portalIds.includes(portal.key); }), true), portalClones, true));
+            return ([
+                ...previousPortals.filter(portal => portal.key === null || !portalIds.includes(portal.key)),
+                ...portalClones
+            ]);
         });
     }
     /**
@@ -138,27 +151,27 @@ function EditableContentContextProvider(_a) {
      * @returns
      */
     function resetPortalContainers() {
-        return setPortals(function (previousPortals) {
-            var portalClones = [];
+        return setPortals(previousPortals => {
+            const portalClones = [];
             previousPortals.forEach(function (portal) {
                 var _a;
-                var portalId = portal.key;
-                var container = (_a = contentRef.current) === null || _a === void 0 ? void 0 : _a.querySelector("#portal-container-".concat(portalId));
+                const portalId = portal.key;
+                const container = (_a = contentRef.current) === null || _a === void 0 ? void 0 : _a.querySelector(`#portal-container-${portalId}`);
                 if (!container)
                     return;
-                var children = container.innerHTML;
+                const children = container.innerHTML;
                 container.innerHTML = "";
-                var foundPortalIndex = previousPortals.findIndex(function (portal) { return portal.key === portalId; });
+                const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
                 if (foundPortalIndex < 0)
                     return;
-                var foundPortal = previousPortals[foundPortalIndex];
+                const foundPortal = previousPortals[foundPortalIndex];
                 if (!foundPortal)
                     return;
-                var targetComponent = foundPortal.children;
+                const targetComponent = foundPortal.children;
                 if (!(0, react_1.isValidElement)(targetComponent))
                     return;
-                var clone = (0, react_1.cloneElement)(targetComponent, targetComponent.props, children);
-                var clonedPortal = (0, react_dom_1.createPortal)(clone, container, portalId);
+                const clone = (0, react_1.cloneElement)(targetComponent, targetComponent.props, children);
+                const clonedPortal = (0, react_dom_1.createPortal)(clone, container, portalId);
                 portalClones.push(clonedPortal);
             });
             return portalClones;
@@ -169,16 +182,15 @@ function EditableContentContextProvider(_a) {
      * @returns PortalProps
      */
     function getAllPortalProps() {
-        return Object.assign.apply(Object, __spreadArray([{}], portals.map(function (portal) {
-            var _a;
-            var targetComponent = portal.children;
+        return Object.assign({}, ...portals.map(portal => {
+            const targetComponent = portal.children;
             if (!(0, react_1.isValidElement)(targetComponent))
                 return null;
-            var key = portal.key;
+            const key = portal.key;
             if (!key)
                 return null;
-            return _a = {}, _a[key] = targetComponent.props, _a;
-        }), false));
+            return { [key]: targetComponent.props };
+        }));
     }
     /**
      * Update state related to selection to reflect the
@@ -186,7 +198,7 @@ function EditableContentContextProvider(_a) {
      */
     function updateSelection() {
         resetScroll();
-        var gotSelection = window.getSelection();
+        const gotSelection = window.getSelection();
         // if selection is within contentRef.current or IS contentRef.current
         if (gotSelection &&
             contentRef.current &&
@@ -215,10 +227,10 @@ function EditableContentContextProvider(_a) {
          */
         var _a, _b;
         if (contentRef.current) {
-            var textNodes = (0, checks_1.getAllTextNodes)([contentRef.current]);
+            const textNodes = (0, checks_1.getAllTextNodes)([contentRef.current]);
             (0, dom_operations_1.resetTextNodesCushions)(textNodes);
-            var badTextNodes = (0, checks_1.identifyBadTextNodes)(textNodes, contentRef.current);
-            badTextNodes.forEach(function (btn) { return btn.remove(); });
+            const badTextNodes = (0, checks_1.identifyBadTextNodes)(textNodes, contentRef.current);
+            badTextNodes.forEach(btn => btn.remove());
             (0, dom_operations_1.deleteEmptyElements)(contentRef.current);
         }
         if (hasSelection) {
@@ -239,13 +251,13 @@ function EditableContentContextProvider(_a) {
     function resetScroll() {
         var _a;
         // initialize
-        var range = (_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.getRangeAt(0);
-        var selectionDirection = (0, checks_1.getSelectionDirection)(window.getSelection());
+        const range = (_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.getRangeAt(0);
+        const selectionDirection = (0, checks_1.getSelectionDirection)(window.getSelection());
         if (!range || !contentRef.current)
             return;
-        var rangeRect = range.getBoundingClientRect();
-        var containerRect = contentRef.current.getBoundingClientRect();
-        var comparisonRange = range.cloneRange();
+        const rangeRect = range.getBoundingClientRect();
+        const containerRect = contentRef.current.getBoundingClientRect();
+        const comparisonRange = range.cloneRange();
         if (selectionDirection === "backward")
             comparisonRange.collapse(true);
         else
@@ -261,18 +273,18 @@ function EditableContentContextProvider(_a) {
             // range is above current lc scroll window
             if (rangeRect.top < containerRect.top) {
                 // targetOffset is distance between rangeRect and where it should be
-                var targetOffset = containerRect.top - rangeRect.top;
+                const targetOffset = containerRect.top - rangeRect.top;
                 contentRef.current.scroll(0, contentRef.current.scrollTop - targetOffset);
             }
             // range is below current lc scroll window
             else if ((rangeRect.top + rangeRect.height) >= (containerRect.top + containerRect.height)) {
                 // targetOffset is distance between rangeRect and where it should be
-                var targetOffset = (rangeRect.top + rangeRect.height) - (containerRect.top + containerRect.height);
+                const targetOffset = (rangeRect.top + rangeRect.height) - (containerRect.top + containerRect.height);
                 contentRef.current.scroll(0, contentRef.current.scrollTop + targetOffset);
             }
         }
         // horizontal reset scroll
-        var comparisonRangeRect = comparisonRange.getBoundingClientRect();
+        const comparisonRangeRect = comparisonRange.getBoundingClientRect();
         if (comparisonRangeRect.left < containerRect.left) {
             contentRef.current.scrollBy(comparisonRangeRect.left - containerRect.left, 0);
         }
@@ -290,29 +302,29 @@ function EditableContentContextProvider(_a) {
      * @param targetDiv
      */
     function cloneElementIntoPortal(component, props, text, targetDiv) {
-        var portalId = props["key"];
-        var additionalProps = {
+        const portalId = props["key"];
+        const additionalProps = {
             portalId: portalId,
             "data-unbreakable": "",
             getContext: useEditableContentContext
         };
-        setPortals(function (previousPortals) {
-            var priorIndex = previousPortals.findIndex(function (p) { return p.key === portalId; });
-            var componentInitialProps = {};
+        setPortals(previousPortals => {
+            const priorIndex = previousPortals.findIndex(p => p.key === portalId);
+            const componentInitialProps = {};
             if (priorIndex >= 0) {
                 previousPortals.splice(priorIndex, 1);
             }
             else {
                 if (initialProps && initialProps[portalId]) {
-                    for (var _i = 0, _a = Object.entries(initialProps[portalId]); _i < _a.length; _i++) {
-                        var _b = _a[_i], k = _b[0], v = _b[1];
+                    for (let [k, v] of Object.entries(initialProps[portalId])) {
                         componentInitialProps[k] = v;
                     }
                 }
             }
-            var clone = (0, react_1.cloneElement)(component, __assign(__assign(__assign({}, props), additionalProps), componentInitialProps), text);
-            var portal = (0, react_dom_1.createPortal)(clone, targetDiv, props["key"] || null);
-            return __spreadArray(__spreadArray([], previousPortals, true), [portal], false);
+            console.log(text);
+            const clone = (0, react_1.cloneElement)(component, Object.assign(Object.assign(Object.assign({}, props), additionalProps), componentInitialProps), text);
+            const portal = (0, react_dom_1.createPortal)(clone, targetDiv, props["key"] || null);
+            return [...previousPortals, portal];
         });
     }
     /**
@@ -323,19 +335,19 @@ function EditableContentContextProvider(_a) {
      */
     function createContentPortal(component, buttonKey) {
         var _a;
-        var uuid = (0, uuid_1.v4)();
-        var id = constants_1.PORTAL_CONTAINER_ID_PREFIX + uuid;
-        var newDiv = document.createElement("div");
+        const uuid = (0, uuid_1.v4)();
+        const id = constants_1.PORTAL_CONTAINER_ID_PREFIX + uuid;
+        const newDiv = document.createElement("div");
         newDiv.setAttribute('id', id);
         newDiv.setAttribute('data-button-key', buttonKey);
         newDiv.style.display = "inline";
-        var selection = window.getSelection();
+        const selection = window.getSelection();
         if (!selection)
             return;
-        var range = selection.getRangeAt(0);
+        const range = selection.getRangeAt(0);
         // expanding assignment to allow insertion of other logic if need be
-        var text = (function () {
-            var rangeToString = range.toString();
+        const text = (function () {
+            const rangeToString = range.toString();
             if (rangeToString.length > 0) {
                 return rangeToString;
             }
@@ -346,7 +358,7 @@ function EditableContentContextProvider(_a) {
         range === null || range === void 0 ? void 0 : range.extractContents();
         range.insertNode(newDiv);
         setDivToSetSelectionTo(newDiv);
-        var foundNewDiv = (_a = contentRef === null || contentRef === void 0 ? void 0 : contentRef.current) === null || _a === void 0 ? void 0 : _a.querySelector("#".concat(id));
+        const foundNewDiv = (_a = contentRef === null || contentRef === void 0 ? void 0 : contentRef.current) === null || _a === void 0 ? void 0 : _a.querySelector(`#${id}`);
         if (!foundNewDiv)
             return;
         // currently only handling range text, not nested elements
@@ -365,27 +377,27 @@ function EditableContentContextProvider(_a) {
      * @param containingDiv
      */
     function appendPortalToDiv(containingDiv) {
-        var key = containingDiv.getAttribute("data-button-key");
-        var containingDivId = containingDiv.getAttribute('id');
+        const key = containingDiv.getAttribute("data-button-key");
+        const containingDivId = containingDiv.getAttribute('id');
         if (!containingDivId)
             return;
-        var uuid = containingDivId.split(constants_1.PORTAL_CONTAINER_ID_PREFIX)[1];
+        const uuid = containingDivId.split(constants_1.PORTAL_CONTAINER_ID_PREFIX)[1];
         if (!uuid || uuid.length === 0)
             return;
         if (!key)
             return;
-        var contentRange = new Range();
+        const contentRange = new Range();
         contentRange.setStart(containingDiv, 0);
         contentRange.setEnd(containingDiv, containingDiv.childNodes.length);
-        var text = contentRange.toString();
-        var content = contentRange.extractContents(); // content currently unused
+        const text = contentRange.toString();
+        const content = contentRange.extractContents(); // content currently unused
         // find correct wrapper button
-        var foundKeyAndWrapperObj = keyAndWrapperObjs.find(function (obj) { return obj.dataKey === key; });
+        const foundKeyAndWrapperObj = keyAndWrapperObjs.find(obj => obj.dataKey === key);
         if (!foundKeyAndWrapperObj)
             return;
         if (!(0, checks_1.getIsReactComponent)(foundKeyAndWrapperObj.wrapper))
             return;
-        var component = foundKeyAndWrapperObj.wrapper;
+        const component = foundKeyAndWrapperObj.wrapper;
         cloneElementIntoPortal(component, { key: uuid, 'data-bk': key }, text, containingDiv);
     }
     /**
@@ -393,52 +405,50 @@ function EditableContentContextProvider(_a) {
      * @param key
      */
     function removePortal(key) {
-        var portalsCopy = __spreadArray([], portals, true);
-        var targetIndex = portalsCopy.findIndex(function (p) { return p.key === key; });
+        const portalsCopy = [...portals];
+        const targetIndex = portalsCopy.findIndex(p => p.key === key);
         portalsCopy.splice(targetIndex, 1);
         setPortals(portalsCopy);
     }
-    return (<exports.EditableContentContext.Provider value={{
-            contextInstanceIdRef: contextInstanceIdRef,
-            contentRef: contentRef,
-            contentRefCurrentInnerHTML: contentRefCurrentInnerHTML,
-            setContentRefCurrentInnerHTML: setContentRefCurrentInnerHTML,
-            selectionToString: selectionToString,
-            setSelectionToString: setSelectionToString,
-            selectionAnchorNode: selectionAnchorNode,
-            setSelectionAnchorNode: setSelectionAnchorNode,
-            selectionAnchorOffset: selectionAnchorOffset,
-            setSelectionAnchorOffset: setSelectionAnchorOffset,
-            selectionFocusNode: selectionFocusNode,
-            setSelectionFocusNode: setSelectionFocusNode,
-            selectionFocusOffset: selectionFocusOffset,
-            setSelectionFocusOffset: setSelectionFocusOffset,
-            hasSelection: hasSelection,
-            setHasSelection: setHasSelection,
-            portals: portals,
-            setPortals: setPortals,
-            divToSetSelectionTo: divToSetSelectionTo,
-            setDivToSetSelectionTo: setDivToSetSelectionTo,
-            getDehydratedHTML: getDehydratedHTML,
-            updatePortalProps: updatePortalProps,
-            getAllPortalProps: getAllPortalProps,
-            keyAndWrapperObjs: keyAndWrapperObjs,
-            updateContent: updateContent,
-            createContentPortal: createContentPortal,
-            appendPortalToDiv: appendPortalToDiv,
-            removePortal: removePortal,
-            updateSelection: updateSelection,
-            dehydratedHTML: dehydratedHTML,
-            resetPortalContainers: resetPortalContainers,
-            assignContentRef: assignContentRef,
-            buttonUpdateTrigger: buttonUpdateTrigger,
-            triggerButtonUpdate: triggerButtonUpdate
-        }}>
-      {children}
-    </exports.EditableContentContext.Provider>);
+    return (react_1.default.createElement(exports.EditableContentContext.Provider, { value: {
+            contextInstanceIdRef,
+            contentRef,
+            contentRefCurrentInnerHTML,
+            setContentRefCurrentInnerHTML,
+            selectionToString,
+            setSelectionToString,
+            selectionAnchorNode,
+            setSelectionAnchorNode,
+            selectionAnchorOffset,
+            setSelectionAnchorOffset,
+            selectionFocusNode,
+            setSelectionFocusNode,
+            selectionFocusOffset,
+            setSelectionFocusOffset,
+            hasSelection,
+            setHasSelection,
+            portals,
+            setPortals,
+            divToSetSelectionTo,
+            setDivToSetSelectionTo,
+            getDehydratedHTML,
+            updatePortalProps,
+            getAllPortalProps,
+            keyAndWrapperObjs,
+            updateContent,
+            createContentPortal,
+            appendPortalToDiv,
+            removePortal,
+            updateSelection,
+            dehydratedHTML,
+            resetPortalContainers,
+            assignContentRef,
+            buttonUpdateTrigger,
+            triggerButtonUpdate
+        } }, children));
 }
 function useEditableContentContext() {
-    var context = (0, react_1.useContext)(exports.EditableContentContext);
+    const context = (0, react_1.useContext)(exports.EditableContentContext);
     if (!context) {
         throw new Error("useEditableContentContext must be in EditableContentContextProvider");
     }
