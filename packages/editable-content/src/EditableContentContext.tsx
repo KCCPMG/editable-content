@@ -111,6 +111,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
    */
   function prepareDehydratedHTML(callback: (dehydrated: string) => void) {
 
+    // create manipulable copy of contentRefCurrentInnerHTML
     const parsedHTMLBody = (typeof window !== "undefined") ?
       new DOMParser().parseFromString(contentRefCurrentInnerHTML, "text/html").body :
       null;
@@ -127,11 +128,11 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
     }
 
     // console.log("safe to 128");
-    const divs = Array.from(parsedHTMLBody.querySelectorAll("div[data-button-key]"));
+    const portalDivs = Array.from(parsedHTMLBody.querySelectorAll("div[data-button-key]"));
 
-    console.log("number of react portal divs:", divs.length)
+    console.log("number of react portal divs:", portalDivs.length)
     // console.log("safe to 132");
-    for (let div of divs) {
+    for (let div of portalDivs) {
       const divRange = new Range();
       divRange.setStart(div, 0);
       divRange.setEnd(div, div.childNodes.length);

@@ -65,7 +65,7 @@ export default function EditableContent({ className, disableNewLines }: ContentP
 
       console.log("before setContentRefCurrentInnerHTML in EditableContent")
 
-      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+      // setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
       setInitialRendersAchieved((initialRendersAchieved) => initialRendersAchieved + 1)
     }
 

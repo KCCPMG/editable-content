@@ -69,7 +69,7 @@ function EditableContent({ className, disableNewLines }) {
             else
                 resetPortalContainers();
             console.log("before setContentRefCurrentInnerHTML in EditableContent");
-            setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+            // setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
             setInitialRendersAchieved((initialRendersAchieved) => initialRendersAchieved + 1);
         }
         // assign event listeners
