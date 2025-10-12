@@ -154,7 +154,9 @@ export default function ButtonAndContentContainer(
             margin: '4px'
           }}
         />   
-        <Button variant="text" onClick={() => setEditMode(false)}>
+        <Button variant="text" onClick={
+          () => setEditMode(false)
+        }>
           Render Text
         </Button>
       </Box>

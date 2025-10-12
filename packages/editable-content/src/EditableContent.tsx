@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useEditableContentContext } from "./EditableContentContext";
 import { moveSelection, resetSelectionToTextNodes, resetSelectionToUsableText, extendSelection, extendWordSelection } from "./utils/selection_movements";
 import { selectionIsDescendentOfNode, selectionHasTextNodes, isValidTextEndpoint, getAllTextNodes } from "./utils/checks";
@@ -31,15 +31,27 @@ export default function EditableContent({ className, disableNewLines }: ContentP
 
   const [safeToUpdateInUseEffect, setSafeToUpdateInUseEffect] = useState<boolean>(false);
   const [initialRendersAchieved, setInitialRendersAchieved] = useState<number>(0);
+  const editableContentRef = useRef<null | HTMLDivElement>(null);
 
 
   // on initial render
   useEffect(() => {
 
     console.log(process.env.NODE_ENV);
-    console.log("hello I should be alive");
 
-    if (contentRef.current) {
+
+    if (editableContentRef.current) {
+      if (!contentRef.current || contentRef.current != editableContentRef.current) {
+        assignContentRef(editableContentRef.current);
+      }
+    }
+    // if (!contentRef.current || contentRef.current != editableContentRef.current) {
+    //   if (editableContentRef.current) {
+    //     assignContentRef(editableContentRef.current);
+    //   }
+    // }
+
+    if (contentRef.current && (contentRef.current == editableContentRef.current)) {
 
       // populate div with html and update state
       contentRef.current.innerHTML = dehydratedHTML;
@@ -74,8 +86,18 @@ export default function EditableContent({ className, disableNewLines }: ContentP
     // teardown
     return () => {
       // remove selection listener, clear contentRef for reassignment
-      document.removeEventListener('selectionchange', handleSelectionChange);
-      contentRef.current = null;
+      try {
+        document.removeEventListener('selectionchange', handleSelectionChange);
+      } catch(err) {
+        console.log("selection change handler error", err);
+      }
+      // contentRef.current = null;
+      try {
+        console.log("\nteardown");
+        assignContentRef(null);
+      } catch(err) {
+        console.log("assignContentRef error:", err);
+      }
     }
 
   }, [contentRef])
@@ -98,21 +120,28 @@ export default function EditableContent({ className, disableNewLines }: ContentP
   useEffect(() => {
 
     // clean up divs which no longer contain a portal
-    if (!contentRef.current) return;
+    // if (!contentRef.current) return;
+    if (contentRef.current && (contentRef.current == editableContentRef.current)) {
 
-    // only update content if initial render useEffect has completed
-    if (safeToUpdateInUseEffect) updateContent();
-
-    // collect and delete portal divs marked for deletion
-    const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
-
-    toDelete.forEach(td => promoteChildrenOfNode(td));
-    if (hasSelection) {
-      console.log("reset selection in portals useEffect");
-      resetSelectionToTextNodes();
+      // only update content if initial render useEffect has completed
+      if (safeToUpdateInUseEffect) {
+        // console.log("updating content", contentRef.current && (contentRef.current == editableContentRef.current));
+        // updateContent();
+      }
+  
+      // collect and delete portal divs marked for deletion
+      const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
+  
+      // console.log(`attempting to delete ${toDelete.length} portal divs`)
+      toDelete.forEach(td => promoteChildrenOfNode(td));
+      if (hasSelection) {
+        console.log("reset selection in portals useEffect");
+        resetSelectionToTextNodes();
+      }
     }
 
   }, [portals])
+
 
   // on divToSetSelectionTo change
   useEffect(() => {
@@ -131,7 +160,7 @@ export default function EditableContent({ className, disableNewLines }: ContentP
    * run on initial render to unlock future runs of updateContent on portals 
    * changes but to prevent it from running right away
    */
-  useEffect(function () {
+  useEffect(() =>  {
     setSafeToUpdateInUseEffect(true);
   }, [])
 
@@ -173,7 +202,7 @@ export default function EditableContent({ className, disableNewLines }: ContentP
     <>
       <div
         contentEditable
-        ref={assignContentRef}
+        ref={editableContentRef}
         className={className}
         spellCheck={false}
         // style={{ whiteSpace: "pre" }}

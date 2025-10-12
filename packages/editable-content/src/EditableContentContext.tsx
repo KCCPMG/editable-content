@@ -48,7 +48,7 @@ export type EditableContentContextType = {
   setPortals: Dispatch<SetStateAction<Array<ReactPortal>>>,
   divToSetSelectionTo: HTMLElement | null,
   setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>,
-  getDehydratedHTML: (callback: (dehydrated: string) => void) => void,
+  // prepareDehydratedHTML: (callback: (dehydrated: string) => void) => void,
   updatePortalProps: (updateObj: PortalProps) => void,
   getAllPortalProps: () => PortalProps,
   keyAndWrapperObjs: Array<KeyAndWrapperObj>,
@@ -59,7 +59,7 @@ export type EditableContentContextType = {
   updateSelection: () => void,
   dehydratedHTML: string,
   resetPortalContainers: () => void,
-  assignContentRef: (newRef: HTMLDivElement) => void
+  assignContentRef: (newRef: null | HTMLDivElement) => void
   buttonUpdateTrigger: boolean,
   triggerButtonUpdate: () => void
 }
@@ -93,13 +93,13 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
    * in resetting ref on component render
    * @param newRef 
    */
-  function assignContentRef(newRef: HTMLDivElement) {
+  function assignContentRef(newRef: null | HTMLDivElement) {
     contentRef.current = newRef;
   }
 
   useEffect(function () {
-    console.log("before getDehydratedHTML")
-    getDehydratedHTML(setDehydratedHTML);
+    console.log("contentRefCurrentInnerHTML changing:", contentRefCurrentInnerHTML)
+    prepareDehydratedHTML(setDehydratedHTML);
   }, [contentRefCurrentInnerHTML])
 
   /**
@@ -109,9 +109,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
    * dehydrated html to callback.
    * @param callback 
    */
-  function getDehydratedHTML(callback: (dehydrated: string) => void) {
-
-    console.log("getDehydratedHTML");
+  function prepareDehydratedHTML(callback: (dehydrated: string) => void) {
 
     const parsedHTMLBody = (typeof window !== "undefined") ?
       new DOMParser().parseFromString(contentRefCurrentInnerHTML, "text/html").body :
@@ -121,10 +119,18 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
 
     // remove all tags marked for exclusion
     const tagsToIgnore = Array.from(parsedHTMLBody.querySelectorAll(`[${EXCLUDE_FROM_DEHYDRATED}]`));
-    tagsToIgnore.forEach(tti => tti.remove());
+    try {
+      tagsToIgnore.forEach(tti => tti.remove());
+    } catch(err) {
+      console.log("PROBLEM:");
+      console.log(err);
+    }
 
+    // console.log("safe to 128");
     const divs = Array.from(parsedHTMLBody.querySelectorAll("div[data-button-key]"));
 
+    console.log("number of react portal divs:", divs.length)
+    // console.log("safe to 132");
     for (let div of divs) {
       const divRange = new Range();
       divRange.setStart(div, 0);
@@ -138,6 +144,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
       });
     }
 
+    // console.log("safe to 146");
     return callback(parsedHTMLBody.innerHTML);
   }
 
@@ -515,7 +522,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
       setPortals,
       divToSetSelectionTo,
       setDivToSetSelectionTo,
-      getDehydratedHTML,
+      // prepareDehydratedHTML,
       updatePortalProps,
       getAllPortalProps,
       keyAndWrapperObjs,

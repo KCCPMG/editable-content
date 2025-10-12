@@ -1,6 +1,6 @@
 "use client"
 import React from "react";
-import { RenderedContent } from "editable-content";
+import { EditableContent, RenderedContent } from "editable-content";
 import { Paper, Typography, Button } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 
@@ -25,9 +25,10 @@ export default function RenderedContentContainer(
         paddingRight: '10px'
       }}
     >
-      <Typography variant="h5">Rendered Content</Typography>
+      <Typography variant="h5">Rendered Just Checking Content</Typography>
       <hr/>
-      <RenderedContent />
+      {/* <RenderedContent /> */}
+      <EditableContent />
       <hr/>
       <Button onClick={() => setEditMode(true)}>
         Edit Text

@@ -70,8 +70,8 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
         contentRef.current = newRef;
     }
     (0, react_1.useEffect)(function () {
-        console.log("before getDehydratedHTML");
-        getDehydratedHTML(setDehydratedHTML);
+        console.log("contentRefCurrentInnerHTML changing:", contentRefCurrentInnerHTML);
+        prepareDehydratedHTML(setDehydratedHTML);
     }, [contentRefCurrentInnerHTML]);
     /**
      * Create DOMParser from current html of contentRef.current, remove
@@ -80,8 +80,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
      * dehydrated html to callback.
      * @param callback
      */
-    function getDehydratedHTML(callback) {
-        console.log("getDehydratedHTML");
+    function prepareDehydratedHTML(callback) {
         const parsedHTMLBody = (typeof window !== "undefined") ?
             new DOMParser().parseFromString(contentRefCurrentInnerHTML, "text/html").body :
             null;
@@ -89,8 +88,17 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
             return;
         // remove all tags marked for exclusion
         const tagsToIgnore = Array.from(parsedHTMLBody.querySelectorAll(`[${constants_1.EXCLUDE_FROM_DEHYDRATED}]`));
-        tagsToIgnore.forEach(tti => tti.remove());
+        try {
+            tagsToIgnore.forEach(tti => tti.remove());
+        }
+        catch (err) {
+            console.log("PROBLEM:");
+            console.log(err);
+        }
+        // console.log("safe to 128");
         const divs = Array.from(parsedHTMLBody.querySelectorAll("div[data-button-key]"));
+        console.log("number of react portal divs:", divs.length);
+        // console.log("safe to 132");
         for (let div of divs) {
             const divRange = new Range();
             divRange.setStart(div, 0);
@@ -102,6 +110,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
                 divRange.insertNode(tn);
             });
         }
+        // console.log("safe to 146");
         return callback(parsedHTMLBody.innerHTML);
     }
     /**
@@ -431,7 +440,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
             setPortals,
             divToSetSelectionTo,
             setDivToSetSelectionTo,
-            getDehydratedHTML,
+            // prepareDehydratedHTML,
             updatePortalProps,
             getAllPortalProps,
             keyAndWrapperObjs,
