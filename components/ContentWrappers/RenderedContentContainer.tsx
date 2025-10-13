@@ -25,7 +25,7 @@ export default function RenderedContentContainer(
         paddingRight: '10px'
       }}
     >
-      <Typography variant="h5">Rendered Just Checking Content</Typography>
+      <Typography variant="h5">Rendered Content</Typography>
       <hr/>
       {/* <RenderedContent /> */}
       <EditableContent />

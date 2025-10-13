@@ -45,32 +45,26 @@ function EditableContent({ className, disableNewLines }) {
     const [safeToUpdateInUseEffect, setSafeToUpdateInUseEffect] = (0, react_1.useState)(false);
     const [initialRendersAchieved, setInitialRendersAchieved] = (0, react_1.useState)(0);
     const editableContentRef = (0, react_1.useRef)(null);
+    /**
+     * run on initial render to unlock future runs of updateContent on portals
+     * changes but to prevent it from running right away
+     */
+    // useEffect(() =>  {
+    //   setSafeToUpdateInUseEffect(true);
+    // }, [])
     // on initial render
     (0, react_1.useEffect)(() => {
-        console.log(process.env.NODE_ENV);
         if (editableContentRef.current) {
-            if (!contentRef.current || contentRef.current != editableContentRef.current) {
+            // assign contentRef if not assigned
+            if (!contentRef.current || (contentRef.current != editableContentRef.current)) {
                 assignContentRef(editableContentRef.current);
             }
-        }
-        // if (!contentRef.current || contentRef.current != editableContentRef.current) {
-        //   if (editableContentRef.current) {
-        //     assignContentRef(editableContentRef.current);
-        //   }
-        // }
-        if (contentRef.current && (contentRef.current == editableContentRef.current)) {
-            // populate div with html and update state
-            contentRef.current.innerHTML = dehydratedHTML;
-            // identify portal divs, load react portals
-            const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
-            if (portals.length === 0) {
-                reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd));
+            // contentRef.current is editableContentRef
+            if (contentRef.current == editableContentRef.current) {
+                // populate div with html and update state
+                contentRef.current.innerHTML = dehydratedHTML;
+                setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
             }
-            else
-                resetPortalContainers();
-            console.log("before setContentRefCurrentInnerHTML in EditableContent");
-            // setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
-            setInitialRendersAchieved((initialRendersAchieved) => initialRendersAchieved + 1);
         }
         // assign event listeners
         document.addEventListener('selectionchange', (e) => {
@@ -84,6 +78,7 @@ function EditableContent({ className, disableNewLines }) {
                 handleSelectionChange();
             }
         });
+        setInitialRendersAchieved((initialRendersAchieved) => initialRendersAchieved + 1);
         // teardown
         return () => {
             // remove selection listener, clear contentRef for reassignment
@@ -102,7 +97,8 @@ function EditableContent({ className, disableNewLines }) {
                 console.log("assignContentRef error:", err);
             }
         };
-    }, [contentRef]);
+    }, []);
+    // on change to initialRendersAchieved
     (0, react_1.useEffect)(() => {
         if (process.env.NODE_ENV === "development") {
             if (initialRendersAchieved >= 2) {
@@ -115,21 +111,100 @@ function EditableContent({ className, disableNewLines }) {
             }
         }
     }, [initialRendersAchieved]);
+    // on safeToUpdateInUseEffect
+    (0, react_1.useEffect)(() => {
+        if (safeToUpdateInUseEffect) {
+            console.log("now safeToUpdateInUseEffect");
+            if (editableContentRef.current &&
+                (contentRef.current == editableContentRef.current)) {
+                console.log("refs correctly assigned");
+                console.log("portals.length:", portals.length);
+                if (portals.length === 0) {
+                    const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
+                    console.log("reactContainerDivs.length", reactContainerDivs.length);
+                    reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd));
+                }
+                else
+                    resetPortalContainers();
+                // updateContent was here, but will delete empty elements
+            }
+        }
+    }, [safeToUpdateInUseEffect]);
+    // on initial render
+    // useEffect(() => {
+    //   console.log(process.env.NODE_ENV);
+    //   if (editableContentRef.current) {
+    //     if (!contentRef.current || contentRef.current != editableContentRef.current) {
+    //       assignContentRef(editableContentRef.current);
+    //     }
+    //   }
+    //   // if (!contentRef.current || contentRef.current != editableContentRef.current) {
+    //   //   if (editableContentRef.current) {
+    //   //     assignContentRef(editableContentRef.current);
+    //   //   }
+    //   // }
+    //   if (contentRef.current && (contentRef.current == editableContentRef.current)) {
+    //     // populate div with html and update state
+    //     contentRef.current.innerHTML = dehydratedHTML;
+    //     // identify portal divs, load react portals
+    //     const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]")) as Array<HTMLDivElement>;
+    //     if (portals.length === 0) {
+    //       reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd as HTMLDivElement));
+    //     }
+    //     // else if (safeToUpdateInUseEffect) resetPortalContainers();
+    //     console.log("before setContentRefCurrentInnerHTML in EditableContent")
+    //     // setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+    //     setInitialRendersAchieved((initialRendersAchieved) => initialRendersAchieved + 1)
+    //   }
+    //   // assign event listeners
+    //   document.addEventListener('selectionchange', (e) => {
+    //     const selection = window.getSelection();
+    //     if (!selection ||
+    //       !contentRef.current ||
+    //       !selectionIsDescendentOfNode(selection, contentRef.current)
+    //     ) {
+    //       updateSelection();
+    //     }
+    //     else {
+    //       handleSelectionChange();
+    //     }
+    //   })
+    //   // teardown
+    //   return () => {
+    //     // remove selection listener, clear contentRef for reassignment
+    //     try {
+    //       document.removeEventListener('selectionchange', handleSelectionChange);
+    //     } catch(err) {
+    //       console.log("selection change handler error", err);
+    //     }
+    //     // contentRef.current = null;
+    //     try {
+    //       console.log("\nteardown");
+    //       assignContentRef(null);
+    //     } catch(err) {
+    //       console.log("assignContentRef error:", err);
+    //     }
+    //   }
+    // }, [])
     // on portal change
     (0, react_1.useEffect)(() => {
         var _a;
+        console.log("portals.length", portals.length);
         // clean up divs which no longer contain a portal
         // if (!contentRef.current) return;
-        if (contentRef.current && (contentRef.current == editableContentRef.current)) {
+        if (contentRef.current &&
+            (contentRef.current == editableContentRef.current) &&
+            safeToUpdateInUseEffect) {
             // only update content if initial render useEffect has completed
-            if (safeToUpdateInUseEffect) {
-                // console.log("updating content", contentRef.current && (contentRef.current == editableContentRef.current));
-                // updateContent();
-            }
+            // if (safeToUpdateInUseEffect) {
+            // console.log("updating content", contentRef.current && (contentRef.current == editableContentRef.current));
+            updateContent();
+            // }
             // collect and delete portal divs marked for deletion
             const toDelete = Array.from((_a = contentRef.current) === null || _a === void 0 ? void 0 : _a.querySelectorAll("[data-mark-for-deletion]"));
+            console.log("divs marked for deletion", toDelete.length);
             // console.log(`attempting to delete ${toDelete.length} portal divs`)
-            toDelete.forEach(td => (0, dom_operations_1.promoteChildrenOfNode)(td));
+            // toDelete.forEach(td => promoteChildrenOfNode(td));
             if (hasSelection) {
                 console.log("reset selection in portals useEffect");
                 (0, selection_movements_1.resetSelectionToTextNodes)();
@@ -148,13 +223,6 @@ function EditableContent({ className, disableNewLines }) {
             }
         }
     }, [divToSetSelectionTo]);
-    /**
-     * run on initial render to unlock future runs of updateContent on portals
-     * changes but to prevent it from running right away
-     */
-    (0, react_1.useEffect)(() => {
-        setSafeToUpdateInUseEffect(true);
-    }, []);
     function handleSelectionChange() {
         const selection = window.getSelection();
         if (selection && contentRef.current) {
