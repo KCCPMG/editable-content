@@ -450,7 +450,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
             setPortals,
             divToSetSelectionTo,
             setDivToSetSelectionTo,
-            // prepareDehydratedHTML,
+            prepareDehydratedHTML,
             updatePortalProps,
             getAllPortalProps,
             keyAndWrapperObjs,

@@ -48,7 +48,7 @@ declare global {
     setPortals?: any;
     divToSetSelectionTo?: any;
     setDivToSetSelectionTo?: any;
-    getDehydratedHTML?: any;
+    prepareDehydratedHTML?: any;
     updatePortalProps?: any;
     getAllPortalProps?: any;
     keyAndWrapperObjs?: any;
