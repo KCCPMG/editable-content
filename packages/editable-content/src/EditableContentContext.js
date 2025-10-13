@@ -58,6 +58,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
     const [dehydratedHTML, setDehydratedHTML] = (0, react_1.useState)(initialHTML || "");
     const [buttonUpdateTrigger, setButtonUpdateTrigger] = (0, react_1.useState)(false);
     const contextInstanceIdRef = (0, react_1.useRef)((0, uuid_1.v4)());
+    const portalsResetting = (0, react_1.useRef)(false);
     function triggerButtonUpdate() {
         setButtonUpdateTrigger(!buttonUpdateTrigger);
     }
@@ -70,9 +71,12 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
         contentRef.current = newRef;
     }
     (0, react_1.useEffect)(function () {
-        console.log("contentRefCurrentInnerHTML changing:", contentRefCurrentInnerHTML);
+        // console.log("contentRefCurrentInnerHTML changing:", contentRefCurrentInnerHTML)
         prepareDehydratedHTML(setDehydratedHTML);
     }, [contentRefCurrentInnerHTML]);
+    (0, react_1.useEffect)(function () {
+        portalsResetting.current = false;
+    }, [portals]);
     /**
      * Create DOMParser from current html of contentRef.current, remove
      * all tags which are marked for exclusion, find divs which house
@@ -156,11 +160,16 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
         });
     }
     /**
-     * Updates portals state by extracting children from the div which will house the portal,
-     * then passing those children to the portal
+     * Updates portals state by extracting children from the div
+     * which will house the portal, then passing those children to
+     * the portal
      * @returns
      */
     function resetPortalContainers() {
+        if (portalsResetting.current === true)
+            return;
+        else
+            portalsResetting.current = true;
         return setPortals(previousPortals => {
             const portalClones = [];
             previousPortals.forEach(function (portal) {
@@ -331,7 +340,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
                     }
                 }
             }
-            console.log(text);
+            // console.log(text);
             const clone = (0, react_1.cloneElement)(component, Object.assign(Object.assign(Object.assign({}, props), additionalProps), componentInitialProps), text);
             const portal = (0, react_dom_1.createPortal)(clone, targetDiv, props["key"] || null);
             return [...previousPortals, portal];

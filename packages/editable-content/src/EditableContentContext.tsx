@@ -83,6 +83,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
   const [dehydratedHTML, setDehydratedHTML] = useState<string>(initialHTML || "")
   const [buttonUpdateTrigger, setButtonUpdateTrigger] = useState<boolean>(false);
   const contextInstanceIdRef = useRef<string>(uuidv4());
+  const portalsResetting = useRef<boolean>(false);
   
   function triggerButtonUpdate() {
     setButtonUpdateTrigger(!buttonUpdateTrigger)
@@ -98,9 +99,13 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
   }
 
   useEffect(function () {
-    console.log("contentRefCurrentInnerHTML changing:", contentRefCurrentInnerHTML)
+    // console.log("contentRefCurrentInnerHTML changing:", contentRefCurrentInnerHTML)
     prepareDehydratedHTML(setDehydratedHTML);
   }, [contentRefCurrentInnerHTML])
+
+  useEffect(function() {
+    portalsResetting.current = false;
+  }, [portals])
 
   /**
    * Create DOMParser from current html of contentRef.current, remove
@@ -198,11 +203,16 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
 
 
   /**
-   * Updates portals state by extracting children from the div which will house the portal,
-   * then passing those children to the portal
+   * Updates portals state by extracting children from the div 
+   * which will house the portal, then passing those children to
+   * the portal
    * @returns 
    */
   function resetPortalContainers() {
+
+    if (portalsResetting.current === true) return;
+    else portalsResetting.current = true;
+
     return setPortals(previousPortals => {
 
       const portalClones: Array<ReactPortal> = [];
@@ -401,7 +411,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
         }
       }
 
-      console.log(text);
+      // console.log(text);
 
       const clone = cloneElement(component, { ...props, ...additionalProps, ...componentInitialProps }, text);
       const portal = createPortal(clone, targetDiv, props["key"] || null);
