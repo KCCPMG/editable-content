@@ -128,15 +128,11 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
     try {
       tagsToIgnore.forEach(tti => tti.remove());
     } catch(err) {
-      console.log("PROBLEM:");
       console.log(err);
     }
 
-    // console.log("safe to 128");
     const portalDivs = Array.from(parsedHTMLBody.querySelectorAll("div[data-button-key]"));
 
-    console.log("number of react portal divs:", portalDivs.length)
-    // console.log("safe to 132");
     for (let div of portalDivs) {
       const divRange = new Range();
       divRange.setStart(div, 0);
@@ -150,7 +146,6 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
       });
     }
 
-    // console.log("safe to 146");
     return callback(parsedHTMLBody.innerHTML);
   }
 
@@ -410,8 +405,6 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
           }
         }
       }
-
-      // console.log(text);
 
       const clone = cloneElement(component, { ...props, ...additionalProps, ...componentInitialProps }, text);
       const portal = createPortal(clone, targetDiv, props["key"] || null);

@@ -96,7 +96,6 @@ export default function EditableContent({ className, disableNewLines }: ContentP
         console.log("selection change handler error", err);
       }
       try {
-        console.log("\nteardown");
         assignContentRef(null);
       } catch(err) {
         console.log("assignContentRef error:", err);
@@ -178,7 +177,7 @@ export default function EditableContent({ className, disableNewLines }: ContentP
       toDelete.forEach(td => promoteChildrenOfNode(td));
       
       updateContent(); // cleans up, sets contentRefInnerHTML
-      
+
       if (hasSelection) {
         resetSelectionToTextNodes();
       }

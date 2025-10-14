@@ -78,7 +78,6 @@ function RenderedContent({ className }) {
         // teardown
         return () => {
             try {
-                console.log("\nteardown");
                 assignContentRef(null);
             }
             catch (err) {

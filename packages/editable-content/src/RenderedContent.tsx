@@ -64,7 +64,6 @@ export default function RenderedContent({className}: ContentProps) {
     // teardown
     return () => {
       try {
-        console.log("\nteardown");
         assignContentRef(null);
       } catch(err) {
         console.log("assignContentRef error:", err);
@@ -158,7 +157,6 @@ export default function RenderedContent({className}: ContentProps) {
         ref={renderedContentRef}
         className={className}
         spellCheck={false}
-        // style={{ whiteSpace: "pre-wrap" }}
       >
       </div>
       {portals}

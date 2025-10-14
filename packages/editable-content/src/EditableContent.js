@@ -99,7 +99,6 @@ function EditableContent({ className, disableNewLines }) {
                 console.log("selection change handler error", err);
             }
             try {
-                console.log("\nteardown");
                 assignContentRef(null);
             }
             catch (err) {
