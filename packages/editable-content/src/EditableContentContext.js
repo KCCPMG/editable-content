@@ -173,7 +173,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
                 const container = (_a = contentRef.current) === null || _a === void 0 ? void 0 : _a.querySelector(`#portal-container-${portalId}`);
                 if (!container)
                     return;
-                const children = container.innerHTML;
+                const childText = container.textContent;
                 container.innerHTML = "";
                 const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
                 if (foundPortalIndex < 0)
@@ -184,7 +184,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
                 const targetComponent = foundPortal.children;
                 if (!(0, react_1.isValidElement)(targetComponent))
                     return;
-                const clone = (0, react_1.cloneElement)(targetComponent, targetComponent.props, children);
+                const clone = (0, react_1.cloneElement)(targetComponent, targetComponent.props, childText);
                 const clonedPortal = (0, react_dom_1.createPortal)(clone, container, portalId);
                 portalClones.push(clonedPortal);
             });

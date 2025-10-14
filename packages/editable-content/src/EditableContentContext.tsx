@@ -217,7 +217,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
         const container = contentRef.current?.querySelector(`#portal-container-${portalId}`);
         if (!container) return;
 
-        const children = container.innerHTML;
+        const childText = container.textContent;
         container.innerHTML = "";
 
         const foundPortalIndex = previousPortals.findIndex(portal => portal.key === portalId);
@@ -229,7 +229,7 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
         const targetComponent = foundPortal.children;
         if (!isValidElement(targetComponent)) return;
 
-        const clone = cloneElement(targetComponent, targetComponent.props, children);
+        const clone = cloneElement(targetComponent, targetComponent.props, childText);
         const clonedPortal = createPortal(clone, container, portalId);
         portalClones.push(clonedPortal);
 
