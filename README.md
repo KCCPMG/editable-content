@@ -215,6 +215,15 @@ There are elements which you can assign the "unbreakable" attribute to, which ge
   - If a selection is fully inside of an unbreakable element, toggling the unbreakable button will remove the entire unbreakable element, promoting the contained text. If a selection is at the end of an unbreakable element, the unbreakable element will exist as is and the cursor going forward will not be part of that element.
 
 
+## Known Issues
+
+- Undo
+  - Undoing (Ctrl+Z / Cmd+Z) does not work as desired as virtually all keyboard inputs invoke e.preventDefault, which among other things, prevents those inputs from being added to the browser's undo cache.
+  - In order to address this, it will likely be necessary to create a separate cache relative to each instance of EditableContent or EditableContentContextProvider
+- `data-context-id` assignment error in development mode
+  - Upon loading in dev mode, an error is generated: ``Warning: Prop `data-context-id` did not match. Server: "some-uuid-value" Client: "some-other-uuid-value".`` It is unclear why this error is occurring, but it does not happen in the build mode
+  - Additionally unknown at the time is why clicking a button does not set the `hasSelection` state to false, given that the `data-context-id` does not match the `contextInstanceIdRef.current` in strict/development mode, and this should result in a call to `setHasSelection(false)`.
+
 
 # Outline
 

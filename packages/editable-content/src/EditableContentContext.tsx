@@ -82,8 +82,11 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
   const [divToSetSelectionTo, setDivToSetSelectionTo] = useState<HTMLElement | null>(null)
   const [dehydratedHTML, setDehydratedHTML] = useState<string>(initialHTML || "")
   const [buttonUpdateTrigger, setButtonUpdateTrigger] = useState<boolean>(false);
-  const contextInstanceIdRef = useRef<string>(uuidv4());
+  const [stableUUID] = useState(uuidv4());
+  const contextInstanceIdRef = useRef<string>(stableUUID);
   const portalsResetting = useRef<boolean>(false);
+
+  
   
   function triggerButtonUpdate() {
     setButtonUpdateTrigger(!buttonUpdateTrigger)

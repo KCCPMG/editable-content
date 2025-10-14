@@ -57,7 +57,8 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
     const [divToSetSelectionTo, setDivToSetSelectionTo] = (0, react_1.useState)(null);
     const [dehydratedHTML, setDehydratedHTML] = (0, react_1.useState)(initialHTML || "");
     const [buttonUpdateTrigger, setButtonUpdateTrigger] = (0, react_1.useState)(false);
-    const contextInstanceIdRef = (0, react_1.useRef)((0, uuid_1.v4)());
+    const [stableUUID] = (0, react_1.useState)((0, uuid_1.v4)());
+    const contextInstanceIdRef = (0, react_1.useRef)(stableUUID);
     const portalsResetting = (0, react_1.useRef)(false);
     function triggerButtonUpdate() {
         setButtonUpdateTrigger(!buttonUpdateTrigger);
