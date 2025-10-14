@@ -173,11 +173,11 @@ export default function EditableContent({ className, disableNewLines }: ContentP
       safeToUpdateInUseEffect
     ) {
 
-      updateContent(); // cleans up, sets contentRefInnerHTML, 
-  
       // collect and delete portal divs marked for deletion
       const toDelete = Array.from(contentRef.current?.querySelectorAll("[data-mark-for-deletion]"));
       toDelete.forEach(td => promoteChildrenOfNode(td));
+      
+      updateContent(); // cleans up, sets contentRefInnerHTML
       
       if (hasSelection) {
         resetSelectionToTextNodes();

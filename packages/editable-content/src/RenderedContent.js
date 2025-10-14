@@ -39,36 +39,116 @@ const react_1 = __importStar(require("react"));
 const EditableContentContext_1 = require("./EditableContentContext");
 const dom_operations_1 = require("./utils/dom_operations");
 function RenderedContent({ className }) {
-    const { contentRef, setHasSelection, portals, appendPortalToDiv, dehydratedHTML, resetPortalContainers, assignContentRef } = (0, EditableContentContext_1.useEditableContentContext)();
-    // on initial render - populate portal containers without deleting for being empty
-    (0, react_1.useLayoutEffect)(() => {
-        setHasSelection(false);
-        if (contentRef.current) {
-            // populate with dehydratedHTML
-            contentRef.current.innerHTML = dehydratedHTML;
-            // identify portal divs, load react portals
-            const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
-            if (portals.length === 0) {
-                reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd));
+    const { contentRef, setHasSelection, portals, appendPortalToDiv, dehydratedHTML, resetPortalContainers, assignContentRef, updateContent } = (0, EditableContentContext_1.useEditableContentContext)();
+    const [safeToUpdateInUseEffect, setSafeToUpdateInUseEffect] = (0, react_1.useState)(false);
+    const [initialRendersAchieved, setInitialRendersAchieved] = (0, react_1.useState)(0);
+    const renderedContentRef = (0, react_1.useRef)(null);
+    /**
+     * On initial render only
+     * Assigns editableContentRef.current to
+     * contentRef.current if they are not already
+     * the same (this safely works across both renders
+     * in development mode). Once the assignment
+     * has been made, populates the contentRef.current's
+     * innerHTML with the dehydratedHTML, and then
+     * calls setContentRefCurrentInnerHTML. Note that
+     * this does *not* call updateContent, which contains
+     * cleanup logic that would cause deletion of react
+     * portal divs during their initial population. This
+     * also adds the selectionchange event handler, updates
+     * the initialRenders achieved state for determining if
+     * it is safe to execute post-render logic, and returns
+     * the teardown logic of assigning null to contentRef and
+     * removing the selectionchange handler.
+     */
+    (0, react_1.useEffect)(() => {
+        if (renderedContentRef.current) {
+            // assign contentRef if not assigned
+            if (!contentRef.current || (contentRef.current != renderedContentRef.current)) {
+                assignContentRef(renderedContentRef.current);
             }
-            else
-                resetPortalContainers();
+            // contentRef.current is editableContentRef
+            if (contentRef.current == renderedContentRef.current) {
+                // populate div with html and update state
+                contentRef.current.innerHTML = dehydratedHTML;
+                // setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+            }
         }
+        setInitialRendersAchieved((initialRendersAchieved) => initialRendersAchieved + 1);
         // teardown
         return () => {
-            contentRef.current = null; // clear contentRef to be reassigned
+            try {
+                console.log("\nteardown");
+                assignContentRef(null);
+            }
+            catch (err) {
+                console.log("assignContentRef error:", err);
+            }
         };
-    }, [contentRef]);
-    // on portal change
+    }, []);
+    /**
+     * On change to initialRendersAchieved
+     * If initial renders have been achieved, (2
+     * for development, 1 for production), then
+     * setSafeToUpdateInUseEffect(true)
+     */
+    (0, react_1.useEffect)(() => {
+        if (process.env.NODE_ENV === "development") {
+            if (initialRendersAchieved >= 2) {
+                setSafeToUpdateInUseEffect(true);
+            }
+        }
+        else {
+            if (initialRendersAchieved >= 1) {
+                setSafeToUpdateInUseEffect(true);
+            }
+        }
+    }, [initialRendersAchieved]);
+    /**
+     * On change to safeToUpdateInUseEffect
+     * If safeToUpdateInUseEffect, and contentRef
+     * has been successfully assigned to
+     * editableContentRef, populate react divs,
+     * either by creating the react portals if
+     * they do not exist, or by resetting them if
+     * they do.
+     */
+    (0, react_1.useEffect)(() => {
+        if (safeToUpdateInUseEffect) {
+            if (renderedContentRef.current &&
+                (contentRef.current == renderedContentRef.current)) {
+                if (portals.length === 0) {
+                    const reactContainerDivs = Array.from(contentRef.current.querySelectorAll("div [data-button-key]"));
+                    reactContainerDivs.forEach(rcd => appendPortalToDiv(rcd));
+                }
+                else {
+                    resetPortalContainers();
+                }
+            }
+        }
+    }, [safeToUpdateInUseEffect]);
+    /**
+     * On portals change
+     * Only runs after refs assigned and initial renders
+     * complete: calls updateContent to run clean up
+     * and setContentRefInnerHTML to reflect changes
+     * made to dom by react portals, deletes react divs for
+     * portals which have been deleted, and then makes sure
+     * selection is on text nodes.
+     */
     (0, react_1.useEffect)(() => {
         var _a;
-        if (!contentRef.current)
-            return;
-        // clean up divs which no longer contain a portal
-        const toDelete = Array.from((_a = contentRef.current) === null || _a === void 0 ? void 0 : _a.querySelectorAll("[data-mark-for-deletion]"));
-        toDelete.forEach(td => (0, dom_operations_1.promoteChildrenOfNode)(td));
+        // do *not* run until refs assigned, initial render complete
+        if (contentRef.current &&
+            (contentRef.current == renderedContentRef.current) &&
+            safeToUpdateInUseEffect) {
+            // collect and delete portal divs marked for deletion
+            const toDelete = Array.from((_a = contentRef.current) === null || _a === void 0 ? void 0 : _a.querySelectorAll("[data-mark-for-deletion]"));
+            toDelete.forEach(td => (0, dom_operations_1.promoteChildrenOfNode)(td));
+            updateContent(); // cleans up, sets contentRefInnerHTML
+        }
     }, [portals]);
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement("div", { ref: assignContentRef, className: className, spellCheck: false }),
+        react_1.default.createElement("div", { ref: renderedContentRef, className: className, spellCheck: false }),
         portals));
 }

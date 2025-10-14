@@ -163,16 +163,21 @@ function EditableContent({ className, disableNewLines }) {
         if (contentRef.current &&
             (contentRef.current == editableContentRef.current) &&
             safeToUpdateInUseEffect) {
-            updateContent(); // cleans up, sets contentRefInnerHTML, 
             // collect and delete portal divs marked for deletion
             const toDelete = Array.from((_a = contentRef.current) === null || _a === void 0 ? void 0 : _a.querySelectorAll("[data-mark-for-deletion]"));
             toDelete.forEach(td => (0, dom_operations_1.promoteChildrenOfNode)(td));
+            updateContent(); // cleans up, sets contentRefInnerHTML
             if (hasSelection) {
                 (0, selection_movements_1.resetSelectionToTextNodes)();
             }
         }
     }, [portals]);
-    // on divToSetSelectionTo change
+    /**
+     * on divToSetSelectionTo change
+     * If there is a div which should have the
+     * selection, set selection to text within
+     * the div.
+     */
     (0, react_1.useEffect)(() => {
         var _a;
         // once react portal has rendered, set selection to text within, clear divToSetSelectionTo

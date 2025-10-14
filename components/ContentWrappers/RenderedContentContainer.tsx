@@ -27,8 +27,7 @@ export default function RenderedContentContainer(
     >
       <Typography variant="h5">Rendered Content</Typography>
       <hr/>
-      {/* <RenderedContent /> */}
-      <EditableContent />
+      <RenderedContent />
       <hr/>
       <Button onClick={() => setEditMode(true)}>
         Edit Text
