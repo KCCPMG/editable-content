@@ -48,15 +48,22 @@ export default function RootLayout({
               widthInPixels={sideBarWidthInPixels} 
               headBarHeightInPixels={headBarHeightInPixels}
             />
-            <Box 
-              component="main"
+            <Box             
               sx={{
                 marginLeft: `${sideBarWidthInPixels}px`,
                 marginTop: `${headBarHeightInPixels}px`,
                 padding: "40px"
               }}
             >
-              {children}
+              <Box
+                component="main"
+                sx={{
+                  maxWidth: '1000px',
+                  margin: 'auto',
+                }}
+              >
+                {children}
+              </Box>
             </Box>
           </Box>
         </ThemeProvider>

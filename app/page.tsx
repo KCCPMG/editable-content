@@ -48,12 +48,7 @@ export default function Page() {
 
 
   return (
-    <main
-      style={{
-        maxWidth: '1000px',
-        margin: 'auto'
-      }}
-    >
+    <>
       <Typography variant="h2">Editable-Content</Typography>
       <p>
         Welcome to the <strong>Editable-Content</strong> demo! This tool is designed to give developers the ability to create rich-text editors which include React Components as elements.
@@ -316,6 +311,6 @@ export default function Page() {
         <AllPropsDisplay show={false} />
       </EditableContentContextProvider>
       <NextPageLink href="/stateful-and-propful" />
-    </main>
+    </>
   );
 }
