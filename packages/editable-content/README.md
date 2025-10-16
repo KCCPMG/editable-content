@@ -40,7 +40,7 @@ As a part of the rendering process, there are several props which will be passed
 
 - `portalId`: the id of the portal to which the wrapper will be appended
 - `getContext`: a function which will safely return the result of `useEditableContentContext`. 
-  - **IMPORTANT:** Do NOT call `useEditableContentContext` in the body of your wrapper. Because wrappers are passed as props to the `EditableContentContextProvider`, they do not *initially* render as descendants of `EditableContentContextProvider`, and as such, this will cause an error. Call `getContext` instead.
+  - **IMPORTANT:** Do NOT call `useEditableContentContext` in the body of your wrapper. Because wrappers are passed as props to the `EditableContentContextProvider`, they do not *initially* render as descendants of `EditableContentContextProvider`, and as such, this will cause an error. Call `getContext` instead. (For more on this issue, see "A Note On Contexts Used By Wrappers" below)
 - `children`: ReactNode, standard use of children in a React context
 
 When declaring the PropTypes for your wrappers, make sure that any of these values which you wish to access are declared as optional. Inside the component, make sure that any access of these props is conditional. When declaring your PropTypes, you should include the following:
@@ -65,7 +65,8 @@ When you 'unwrap' text from a React component, the process that is happening is 
 - The user decides they are done with the text, so they click a button which removes the `EditableContent` instance and replaces it with a `RenderedContent` instance. The React component's text is removed, the component is destroyed, and then the component is re-rendered in the `RenderedContent` instance. However, because the component is rendering the text 'NAME' as a precedent to the text that it will receive, the full text of the component will now be 'NAME: NAME: Alan Turing'
 
 -OR-
-- If instead of rendering the text, the user instead decides they made a mistake and click the 'NAME' button again to remove the decoration, the React component will be removed, and the text 'NAME: Alan Turing' will then be rendered as plain text in its place.
+
+- If instead of rendering the text, the user instead decides they made a mistake and click the 'NAME' button again to remove the decoration, the React component will be removed, but the text 'NAME: Alan Turing' will then be rendered as plain text in its place.
 
 This is obviously undesired behavior, but the `EditableContentContextProvider` can check for content which it should not "count" when it is removing a React component. The solution is that any html element which contains content which should not be factored in should be given the 'data-exclude-from-dehydrated' attribute. This is also exported from `utils/constants` as `EXCLUDE_FROM_DEHYDRATED`. Here is an example from the `PropfulBox` component in the demo site's "Propful Only" example:
 
@@ -87,45 +88,60 @@ return (
 In this example, the clickCount is increased from clicking on the box and is rendered dynamically, but rendering the text or unwrapping the text from the React component will *not* cause the clickCount to be rendered as text.
 
 
-#### A Note on Contexts used by wrappers
+#### A Note On Contexts Used By Wrappers
 
-When a wrapper is passed to the `keyAndWrapperObjs` array it is initially called as a function at that level, meaning it will not have access to any context initially. In order to use context, you can do one of two things. The first of which is to make all calls to context safe by using conditional logic, as below: 
+When a wrapper is passed to the `keyAndWrapperObjs` array it is initially called as a function at that level, meaning it will not have initially have access to any context which is a descendent of the `EditableContentContextWrapper`. 
 
-`const { localAccessToContextNumberVariable=0 } = useContext(parentContext);`
-
-***Note - check on this***
-The second possible solution is to wrap your EditableContentContextProvider in another function which itself references the context consumer in its body and passes that context to your component as a prop.
+For example: 
 
 ```
-export function ContextAssignmentWrapper() {
-
-  const consumedContext = useContext(HigherContext);
-
-  return (
-    <EditableContentContextProvider
-      keyAndWrapperObjs={[
-        {
-          dataKey: "context-access-wrapper"
-          wrapper: <MyCustomContextDependentWrapper contextAsProp={consumedContext}>
-        }
-      ]}
-    >
-      <EditTextButton dataKey="context-access-wrapper">
-        Context Access Wrapper
-      </EditTextButton>
-      <EditableContent />
-      
-    </EditableContentContextProvider>
-  )
+function MyWrapper() {
+  const { myContextValue } = useContext(MyContext)
 }
+
+<EditableContentContextProvider
+  keyAndWrapperObjs={[
+    dataKey: "my-wrapper",
+    wrapper: <MyWrapper />
+  ]}
+>
+  <MyContextProvider>
+    <EditableContent />
+  </MyContextProvider>
+</EditableContentContextProvider>
 ```
 
-Now that there is a functional component which accesses the context inside of its body and can pass that context as a prop, we can simply do:
+This will fail, because even though `MyWrapper` will only truly be rendered to the DOM within the `EditableContent`, which itself is within `MyContextProvider`, the initial call of the function is *outside* the scope of `MyContextProvider`
+
+In order to use context, you can do one of two things. The first of which is to make all calls to context safe by using default destructuring logic, as below: 
 
 ```
-<HigherContextProvider>
-  <ContextAssignmentWrapper />
-</HigherContextProvider>
+function MyWrapper() {
+  const { myContextValue = 0 } = useContext(MyContext)
+}
+
+```
+
+The second possible option is to simply change the order in which the context providers render, so that `MyWrapper` is called within the scope of `MyContextProvider` from the beginning:
+
+```
+function MyWrapper() {
+  const { myContextValue } = useContext(MyContext)
+}
+
+<MyContextProvider>
+  <EditableContentContextProvider
+    keyAndWrapperObjs={[
+      dataKey: "my-wrapper",
+      wrapper: <MyWrapper />
+    ]}
+  >
+    <EditTextButton dataKey="my-wrapper">
+      MW
+    </EditTextButton>
+    <EditableContent />
+  </EditableContentContextProvider>
+</MyContextProvider>
 ```
 
 
