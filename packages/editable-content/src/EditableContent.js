@@ -41,7 +41,7 @@ const selection_movements_1 = require("./utils/selection_movements");
 const checks_1 = require("./utils/checks");
 const dom_operations_1 = require("./utils/dom_operations");
 function EditableContent({ className, disableNewLines }) {
-    const { contextInstanceIdRef, contentRef, setContentRefCurrentInnerHTML, hasSelection, setHasSelection, portals, setPortals, divToSetSelectionTo, setDivToSetSelectionTo, appendPortalToDiv, updateSelection, updateContent, dehydratedHTML, resetPortalContainers, assignContentRef } = (0, EditableContentContext_1.useEditableContentContext)();
+    const { contextInstanceIdRef, contentRef, setContentRefCurrentInnerHTML, hasSelection, setHasSelection, portals, divToSetSelectionTo, setDivToSetSelectionTo, appendPortalToDiv, updateSelection, updateContent, dehydratedHTML, resetPortalContainers, assignContentRef } = (0, EditableContentContext_1.useEditableContentContext)();
     const [safeToUpdateInUseEffect, setSafeToUpdateInUseEffect] = (0, react_1.useState)(false);
     const [initialRendersAchieved, setInitialRendersAchieved] = (0, react_1.useState)(0);
     const editableContentRef = (0, react_1.useRef)(null);

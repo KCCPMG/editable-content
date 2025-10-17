@@ -18,7 +18,6 @@ export default function EditableContent({ className, disableNewLines }: ContentP
     hasSelection,
     setHasSelection,
     portals,
-    setPortals,
     divToSetSelectionTo,
     setDivToSetSelectionTo,
     appendPortalToDiv,
