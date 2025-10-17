@@ -148,58 +148,110 @@ function MyWrapper() {
 
 ### useEditableContentContext
 
-useEditableContentContext is a simple custom hook which exposes the context at work in the EditableContentContextProvider component, and is the same hook which is used by the EditableContent component itself. The following are the properties which can be extracted from `useEditableContentContext()`
+`useEditableContentContext` is a simple custom hook which exposes the context at work in the EditableContentContextProvider component, and is the same hook which is used by the EditableContent component itself. If `useEditableContentContext` is not found at the time that it is called, it will throw an error. For that reason, it must not be used in your wrappers (as per "A Note on Contexts Used By Wrappers" above). However, this context can be consumed within your wrappers by using the `getContext` function.
 
-  - contentRef: MutableRefObject<HTMLDivElement | null>
-    - The contentRef is a ref object which in this case is assigned to the contenteditable div at the heart of EditableContent. It is inadvisable to do anything with this, as it may adversely affect the functionality of the component
-  - contentRefCurrentInnerHTML: string
-    - Stringified HTML representing the content of the contenteditable div, and should update on all changes.
-  - setContentRefCurrentInnerHTML: Dispatch<SetStateAction<string>>
-    - The setter for contentRefCurrentInnerHTML and can be accessed directly, but is also called by EditableComponent on normal changes to the content of 
-  - selectionToString: string
-    - If the window's selection is inside of the contentRef, this is the textContent (no markup) of the selection
-  - setSelectionToString: Dispatch<SetStateAction<string>>
-    - The setter for selectionToString, which is called when a selection is made within the contentRef
-  - selectionAnchorNode: Node | null
-    - When the selection is within the contentRef, this is the selection's anchor node. This is primarily used internally to trigger state updates when the selection changes.
-  - setSelectionAnchorNode: Dispatch<SetStateAction<Node | null>>
-    - Setter for the selection anchor node
-  - selectionAnchorOffset: number | null
-    - When the selection is within the contentRef, this is the selection's anchor offset. This is primarily used internally to trigger state updates when the selection changes.
-  - setSelectionAnchorOffset: Dispatch<SetStateAction<number | null>>
-    - Setter for the selection anchor offset
-  - selectionFocusNode: Node | null 
-    - When the selection is within the contentRef, this is the selection's focus node. This is primarily used internally to trigger state updates when the selection changes.
-  - setSelectionFocusNode: Dispatch<SetStateAction<Node | null>>
-    - Setter for the selection focus node
-  - selectionFocusOffset: number | null
-    - When the selection is within the contentRef, this is the selection's focus offset. This is primarily used internally to trigger state updates when the selection changes.
-  - setSelectionFocusOffset: Dispatch<SetStateAction<number | null>>
-    - Setter for the selection focus offset
-  - hasSelection: boolean,
-    - A boolean representing if the window's selection is within the contentRef
-  - setHasSelection: Dispatch<SetStateAction<boolean>>
-    - The setter for hasSelection, which is called when the the contentRef's focus and blur events fire
-  - portals: Array<ReactPortal>
-    - This is the array of ReactPortals which are appended to specific divs in the contentRef. These portals are directly rendered into the contentRef, and each portal has a key which is the unique id of this portal   
-  - setPortals: Dispatch<SetStateAction<Array<ReactPortal>>>
-    - This is the setter for portals and is called within the EditableContent component
-  - portalsState: {[key: string]: any}
-    - This is an object that represents the individual state of each ReactPortal component rendered into the contentRef. This is a copy of that state, which is to say that it is downstream of those ReactPortals and the ReactPortals do not listen to this object. This is a means of being able to access the state for to perform other operations on or with for other parts in your app. In this object, the key represents the unique id which is assigned to the portal, so that portals and their state can be matched.
-  - setPortalsState: Dispatch<SetStateAction<{[key: string]: any}>>
-    - The setter for portalsState, which is called within EditableContent when ReactPortals are created or destroyed
-  - mustReportState: {[key: string]: boolean} 
-    - deprecated
-  - setMustReportState: Dispatch<SetStateAction<{[key: string]: any}>>
-    - deprecated
-  - divToSetSelectionTo: HTMLElement | null
-    - This is a div used in the internal logic for creating content portals
-  - setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>
-    - The setter for divToSetSelectionTo, used internally and generally not necessary for you to use.
-  - getDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void
-    - This is a helper function which is designed specifically for the developer to call. This prop takes a function that you will define, which will be passed the dehydratedHTML as an argument. The dehydratedHTML is the HTML of the contentRef with all of the ReactPortals removed and only the containing div and the textContent remaining. This is a means of being able to save the content that is created in EditableContent, as the dehydratedHTML can be passed as a prop to EditableContent, and assuming the `editTextButtons` are the same, the same hydrated React will be rendered.  
-  - updatePortalProps: 
+Additionally, there may be other components you may wish to use within the scope of `EditableContentContextProvider` for the purposes of viewing or extracting data from the Provider. For example, you may wish to extract the dehydratedHTML for the purposes of processing, saving to a database, sending in an API request, etc.
 
+The following are the properties which can be extracted from `useEditableContentContext`
+
+- contextInstanceIdRef: MutableRefObject\<string>
+  - This is a ref, the current value of which is a unique string which ties together the Provider with EditTextButtons and EditableContent to keep the `hasSelection` state from being set to false when an `EditTextButton` is clicked corresponding to that Provider. Note that there are known issues with this in strict mode/development NODE_ENV, see "Known Issues" below. 
+- contentRef: MutableRefObject<HTMLDivElement | null>
+  - The contentRef is a ref object which corresponds to the `EditableContent` or `RenderedContent` div which is being rendered to the DOM. This assignment is handled automatically by those components, and is one of several reasons why only one instance of `EditableContent` or `RenderedContent` should ever be rendered per `EditableContentContextProvider` at a time.
+- contentRefCurrentInnerHTML: string
+  - Stringified HTML representing the content of the `EditableContent` or `RenderedContent` div, and should update on all changes.
+- setContentRefCurrentInnerHTML: Dispatch<SetStateAction<string>>
+  - The setter for contentRefCurrentInnerHTML and can be accessed directly, but is also called by `EditableContent` or `RenderedContent` naturally as the HTML is changed (by user input or hydration of React components).
+- selectionToString: string
+  - If the window's selection is inside of the contentRef, this is the textContent (no markup) of the selection.
+- setSelectionToString: Dispatch<SetStateAction<string>>
+  - The setter for selectionToString, which is called when a selection is made within the `EditableContent` div.
+- selectionAnchorNode: Node | null
+  - When the selection is within the `EditableContent` div, this is the selection's anchor node. This is primarily used internally to trigger state updates when the selection changes.
+- setSelectionAnchorNode: Dispatch<SetStateAction<Node | null>>
+  - Setter for the selection anchor node, called automatically by a 'selectionchange' handler assigned to the document when `EditableContent` is rendered.
+- selectionAnchorOffset: number | null
+  - When the selection is within the `EditableContent` div, this is the selection's anchor offset. This is primarily used internally to trigger state updates when the selection changes.
+- setSelectionAnchorOffset: Dispatch<SetStateAction<number | null>>
+  - Setter for the selection anchor offset, called automatically by a 'selectionchange' handler assigned to the document when `EditableContent` is rendered.
+- selectionFocusNode: Node | null 
+  - When the selection is within the `EditableContent` div, this is the selection's focus node. This is primarily used internally to trigger state updates when the selection changes.
+- setSelectionFocusNode: Dispatch<SetStateAction<Node | null>>
+  - Setter for the selection focus node, called automatically by a 'selectionchange' handler assigned to the document when `EditableContent` is rendered.
+- selectionFocusOffset: number | null
+  - When the selection is within the `EditableContent` div, this is the selection's focus offset. This is primarily used internally to trigger state updates when the selection changes.
+- setSelectionFocusOffset: Dispatch<SetStateAction<number | null>>
+  - When the selection is within the `EditableContent` div, this is the selection's focus offset. This is primarily used internally to trigger state updates when the selection changes.
+- hasSelection: boolean,
+  - A boolean representing if the window's selection is within the `EditableContent` div.
+- setHasSelection: Dispatch<SetStateAction<boolean>>
+  - The setter for hasSelection, which is called when the the contentRef's focus and blur events fire.
+- portals: Array<ReactPortal>
+  - This is the array of ReactPortals which are appended to specific divs in the contentRef. These ReactPortals are directly rendered into the contentRef, and each portal has a key (referred to as the portalId) which is the unique id of the portal.
+- setPortals: Dispatch<SetStateAction<Array<ReactPortal>>>
+  - This is the setter for portals and is called directly only in `EditableContentContextProvider`, but is also called in other functions which are included in `EditableContentContext`.
+- divToSetSelectionTo: HTMLElement | null
+  - This is a div within the `EditableContent` div that should be selected by `window.getSelection()` and represents a div which has a portal appended to it.
+- setDivToSetSelectionTo: Dispatch<SetStateAction<HTMLElement | null>>
+  - The setter for `divToSetSelectionTo` which is called inside of the `createContentPortal` function in `EditableContentContextProvider`.
+- prepareDehydratedHTML: (callback: (dehydratedHTML: string) => void) => void
+  - This is a helper function which takes the `contentRefCurrentInnerHTML` and converts it into dehydrated html (all html from added by React component renders removed), and then passes the dehydrated html to a callback taken as an argument. Internally, this is used to keep `dehydratedHTML` up to date by calling `prepareDehydratedHTML(setDehydratedHTML)` whenever the `contentRefCurrentInnerHTML` is changed. Generally, using `dehydratedHTML` directly will likely suit your purposes. 
+- updatePortalProps: (updateObj: PortalProps) => void
+  - This is a function for updating one or more props passed to the portals rendered in `EditableContent` or `RenderedContent`. The function takes an `updateObj` of which each key corresponds to a portalId, and the value is an object of props with new values. Each specified portalId will have its portal in `portals` replaced with a clone of itself with the new values for any prop(s) specified. Portals which are not specified with a portalId will not be changed, and portals which are being changed do not need all props to be specified, the only changes that will be made will be the ones to explicitly included props.
+- getAllPortalProps: () => PortalProps
+  - Goes through the portals state and returns an object where the key is the portalId of a portal and the value is an object containing all props.
+- keyAndWrapperObjs: Array<KeyAndWrapperObj>
+  - This is the same as the prop which is passed to `EditableContentContextProvider`.
+- updateContent: () => void
+  - A function for re-formatting `contentRef.current` the div to keep it consistent with regard to text nodes, cleaning up empty elements, resetting the selection, passing the re-formatted HTML to `setContentRefCurrentInnerHTML`, and then re-establishing focus on `contentRef.current`.
+- createContentPortal: (component: ReactElement, buttonKey: string) => string | undefined
+  - A function which creates a portalId, a div which will house a ReactPortal, a ReactPortal for the passed in component, and extracts any selected text to be passed as a child to the component. 
+- appendPortalToDiv: (containingDiv: HTMLDivElement) => void
+  - A function which creates a React component and the ReactPortal which it will belong to, extracts the text from the containingDiv and passes it to the component, and attaches the ReactPortal to the containingDiv.
+- removePortal: (key: string) => void
+  - Given a key, finds the portal with that portalId and removes it from portals.
+- updateSelection: () => void
+  - Resets the scroll of the `contentRef.current` div, gets the current selection, and if it is within `contentRef.current`, resets all of the state related to the selection.
+- dehydratedHTML: string
+  - The inner HTML of `contentRef.current` stripped of all content which is marked as needing to be excluded from dehydrated, as well as all non-text nodes within a portal containing div. This is effectively the HTML with all React markup removed.
+- resetPortalContainers: () => void
+  - This function resets the portals by extracting the text from the portal containing divs, passing it to the cloned components and reestablishing the portals with their containing divs. This is used in both `EditableContent` and `RenderedContent` to hydrate with React when the portals state is already populated.
+- assignContentRef: (newRef: null | HTMLDivElement) => void
+  - This function assigns `contentRef.current` to the div which belongs to either `EditableContent` or `RenderedContent`.
+- buttonUpdateTrigger: boolean
+  - A boolean that is triggered when a button is clicked, simply to force the `EditableContentContext` to update its state. This may be removed in later updates.
+- triggerButtonUpdate: () => void
+  - Flips the value of `buttonUpdateTrigger` to force a state update. This may be removed in later updates.
+
+
+## EditableContent
+
+`EditableContent` is the component which houses the actual 'contenteditable' div. It takes only two props, both of which are optional:
+
+- className: string
+  - The className which will be passed to the div for any desired CSS styling. This is especially useful for determining scroll behavior.
+- disableNewLines: boolean
+  - If disableNewLines is true, pressing 'Enter' will prevent the default behavior of creating a `<br/>` element to add a new line in the div. This is useful for creating `<input>`-like fields which do not extend beyond one line.
+
+The `EditableContent` component does not require anything beyond these props and being placed within the scope of a `EditableContentContextProvider`. Selection changes, portal hydration, etc. are handled internally. 
+
+### A Note on EditableContent Rendering
+
+`EditableContent` makes significant usage of `useEffect` to populate and update its text content, the selection, and React components. Because of the logic which operates directly on the DOM, 'strict mode' double-renders can cause DOM-modifying logic to restart before it's finished and functionally delete content. To counter this, there is a check within `EditableContent` to look at `process.env.NODE_ENV`, and if it is set to "development", the order of `useEffect` operations is altered to allow for the initial render to completely finish (both calls) before resuming the `useEffect` logic related to portals.
+
+## RenderedContent
+
+`RenderedContent` is effectively a pared-down version of `EditableContent`, because it renders the same way but has no logic for keyboard inputs or selection changes. It takes only one prop, which is optional:
+
+- className: string
+  - The className which will be passed to the div for any desired CSS styling. This is especially useful for determining scroll behavior.
+
+`RenderedContent` is affected by the same logic as `EditableContent` when it comes to renders, see "A Note on EditableContent Rendering" above.
+
+## EditTextButton
+
+`EditTextButton`
+ 
 ### EditableContent
 
 EditableContent is the root component from which everything else flows. EditableContent takes four props: 
