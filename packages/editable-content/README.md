@@ -300,38 +300,15 @@ The `EditTextButton`, in addition to the props below, accepts any props from Mat
   - A function which will fire when the `EditTextButton` is clicked to make text deselected. This function is not passed any argument.
 
 
-
 ## Browser Behavior and Text
+
+By default, browsers take certain actions in managing spaces and cursor placement, sometimes creating undesirable behavior. For example, typing in a given element, unwrapping the element, and then hitting the space bar would give the user an expectation of continuing to write in plain text from that point. However, Chrome will prevent this, because this would mean a new Text Node beginning with a space, which Chrome assumes is wrong, and so Chrome would extend the wrapper element over the cursor that the user just tried to break out of the previous wrapper.
+
+As a result, a great deal of default behavior in using a contenteditable div has been overridden here.
+
+- Pressing the spacebar will create a non-breaking space rather than a traditional space.
+- Elements are padded with zero-width spaces so that the first and last character of text inside of any given element should both be zero-width spaces. These are being constantly managed by the processes involved in wrapping, unwrapping, and cleaning up text. Accordingly, these should not require any action from you in terms of getting these components to work correctly, but may require attention depending on how the actual content will be used in other parts of your application.
  
-### EditableContent
-
-EditableContent is the root component from which everything else flows. EditableContent takes four props: 
-
-  - initialHTML: string
-    - This is the initial HTML that will populate the contenteditable div at creation.
-  - editTextButtons: Array<MUIButtonEditableContentButtonProps | HTMLButtonEditableContentButtonProps>
-    - Each object added here will render a MaterialUI Button or an HTML button. If you wish to use an MUI Button, set "isMUIButton" to true. If you set "isMUIButton" to false or do not include it, an HTML button will be rendered. 
-    - Each object has several required properties:
-      - dataKey: string
-        - A unique string which will serve as the key for the rendered button as well as a way of retrieving text which has been put into a wrapper by that button (not yet implemented)
-      - child: ReactNode
-        - A single child which will be rendered as the child of the button. This is usually going to be an icon or a short string demonstrating what clicking the button will do to the selection
-      - wrapperArgs: WrapperArgs
-        - wrapperArgs is an object which must have a specified "element", which is a string corresponding to the type of element being created (i.e. "span", "i", "strong", etc.) A classList or id can also be included but are not necessary
-      - selectCallback: a callback function that will be run when clicking the button to wrap a section of text. This callback will not receive any arguments, but there is nothing in the flow between the button click to the point of calling the callback will change the value of window.getSelection(). This can be helpful for performing operations which will need to provide other information to the wrapper element. For example, a common use case would be adding a dialog which will give the user the opportunity to type in what url will be used for the href property of an anchor tag. It is recommended that when an operation such as this concludes, the logic should *reset the selection* to what it was at the time of the button click, but the execution of this as well as the decision to do so is at your discretion.
-      - deselectCallback: The same as selectCallback but when the button click leads to a text unwrap operation rather than a wrap.
-      - Beyond this, all properties that you pass will be treated as props for an MUI Button (if isMUIButton is true) or an HTML Button, and the TypeScript allowed properties will reflect that decision. The one exception to this is the "variant" prop, which is not accepted, but is replaced with the "selectedVariant" and "deselectedVariant" props.
-
-
-#### Unbreakable Elements
-
-There are elements which you can assign the "unbreakable" attribute to, which generally means that those elements are not to be affected by other selections and de-selections but are rather distinct blocks. Here are the basic rules:
-
-
-  - If a selection is created which covers all or part of an unbreakable element in addition to other text outside of the unbreakable element, the wrap operation will not affect the unbreakable element or any of its contents
-  - An unbreakable element cannot be created over or within other elements- if there are any nodes in the range which are not text nodes, the option to create an unbreakable element is removed. 
-  - If a selection is fully inside of an unbreakable element, toggling the unbreakable button will remove the entire unbreakable element, promoting the contained text. If a selection is at the end of an unbreakable element, the unbreakable element will exist as is and the cursor going forward will not be part of that element.
-
 
 ## Known Issues
 
