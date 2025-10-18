@@ -250,7 +250,58 @@ The `EditableContent` component does not require anything beyond these props and
 
 ## EditTextButton
 
-`EditTextButton`
+`EditTextButton` is the control used for wrapping and unwrapping selected text. Before getting into the component logic, it's important to understand how these buttons behave.
+
+### Basic Rules for EditTextButton behavior
+
+- Each `EditTextButton` keeps track of the ReactElement wrapper to which it is assigned. 
+
+- Each `EditTextButton` keep track of a query which corresponds to the ReactElement, the most significant part of which is the `data-bk` attribute.
+
+- If *all* of the text in a selection is a descendant of one or more elements which match the query, the text is considered selected. If *none or only some of the text* in a selection matches the query, the text is not considered selected.
+
+- If the text is considered selected, the button will appear to be clicked. If the text is not considered selected, the button will not appear clicked.
+
+- If the focus is outside of the `EditableContent` or the selected text may not be clicked (for example it is inside of an unbreakable element), the button will be **disabled**.
+
+- If a button is not clicked, clicking it will first remove all elements matching the query in the selection, then will wrap the entire selection in a newly created element.
+
+- If a button is already clicked, clicking it will break up the surrounding element such that the selection will no longer be a part of an element which matches the query.
+
+### Special Rules for Unbreakable elements
+
+If an element is unbreakable, either because it is specifically declared as being unbreakable or it is a React component, the button will have slightly different behavior in some scenarios.
+
+- No other element can exist within an unbreakable element, meaning that if the selection is within an unbreakable element, every `EditTextButton` will be disabled, except for the one pertaining to that element. This also means that if the selection includes *any* element in whole or in part, the `EditTextButton` for an unbreakable component will be disabled.
+
+- If a selection is partially in an unbreakable element and partially outside of it, the `EditTextButton` for the unbreakable element will also be disabled.
+
+- If a selection is inside of an unbreakable element, clicking the `EditTextButton` will **make the entire wrapper disappear**, and in the case of a React component, will delete the component and remove it from `portals`. The one exception to this is below.
+
+- If a selection is inside of an unbreakable element and the cursor is collapsed and at the end of the text inside of the element, clicking the button will not affect the wrapper, but will move the cursor to the next available space after the wrapper. This is meant to intuitively follow as best as possible clicking a button to start a text style, then after finishing typing what should be in that style, "turning the style off" and continuing normally.
+
+### EditTextButton props
+
+The `EditTextButton`, in addition to the props below, accepts any props from MaterialUI's `ButtonOwnProps` (except for 'color'), as well as any props from `React.ComponentPropsWithoutRef<'button'>`. Here are the additional explicit props:
+
+- isMUIButton: boolean
+  - If this is set to true, `EditTextButton` will render as its base an MUI `Button` component instead of a plain `<button>`.
+- dataKey: string
+  - This is the key which must be the same as in one of the objects in the `KeyAndWrapperObj` which is passed as a prop to `EditableContentContextProvider`. This key is responsible for telling `EditTextButton` which wrapper it is responsible for assigning/removing.
+- children?: ReactNode
+  - The children of the button, ideally short text or an icon.
+- selectedVariant?: ButtonOwnProps["variant"]
+  - An optional prop for use if `isMUIButton` is set to true. This will be the MUI variant the button takes on when the button is selected.
+- deselectedVariant?: ButtonOwnProps["variant"]
+  - An optional prop for use if `isMUIButton` is set to true. This will be the MUI variant the button takes on when the button is deselected.
+- selectCallback?: htmlSelectCallback | reactSelectCallback
+  - A function which will fire when the `EditTextButton` is clicked to become selected, to which the wrapper will be passed. If the wrapper is a React component, the portalId will be the second parameter passed to the function.
+- deselectCallback?: () => void | undefined
+  - A function which will fire when the `EditTextButton` is clicked to make text deselected. This function is not passed any argument.
+
+
+
+## Browser Behavior and Text
  
 ### EditableContent
 
@@ -292,23 +343,3 @@ There are elements which you can assign the "unbreakable" attribute to, which ge
   - Additionally unknown at the time is why clicking a button does not set the `hasSelection` state to false, given that the `data-context-id` does not match the `contextInstanceIdRef.current` in strict/development mode, and this should result in a call to `setHasSelection(false)`.
 
 
-# Outline
-
-The goal of this is to create a rich text editor which will have the following
-
-- a div which is contenteditable
-- a row of buttons which contain the text decoration controls
-
-## Just cursor
-
-- When the cursor is in plain text
-  - None of the buttons appear clicked
-  - Clicking a button will wrap the cursor in the appropriate element
-
-- When the cursor is in decorated text
-  - The button(s) corresponding to that decoration will appear clicked
-  - Clicking a button will break the decoration so that the cursor is in between the decorative tags
-
-## Selection
-
-...tbd
