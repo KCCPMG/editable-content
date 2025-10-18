@@ -282,7 +282,7 @@ If an element is unbreakable, either because it is specifically declared as bein
 
 ### EditTextButton props
 
-The `EditTextButton`, in addition to the props below, accepts any props from MaterialUI's `ButtonOwnProps` (except for 'color'), as well as any props from `React.ComponentPropsWithoutRef<'button'>`. Here are the additional explicit props:
+The `EditTextButton`, in addition to the props below, accepts any props from MaterialUI's `ButtonOwnProps` (except for 'color'), as well as any props from `React.ComponentPropsWithoutRef<'button'>`. All of these props will be passed automatically to the Button/button. Here are the additional explicit props:
 
 - isMUIButton: boolean
   - If this is set to true, `EditTextButton` will render as its base an MUI `Button` component instead of a plain `<button>`.
