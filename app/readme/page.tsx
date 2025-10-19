@@ -1,3 +1,4 @@
+import NextPageLink from "@/components/LayoutComponents/NextPageLink";
 import Contents from "./Contents";
 import ReadmeContent from "./ReadmeContent";
 
@@ -9,6 +10,7 @@ export default function Page() {
       <h3>Contents</h3>
       <Contents />
       <ReadmeContent />
+      <NextPageLink href="/" text="Back to Main Demo" />
     </>
   )
 }
