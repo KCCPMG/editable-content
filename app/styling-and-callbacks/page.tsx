@@ -1,13 +1,13 @@
 "use client"
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import { Box, Button, Typography } from "@mui/material";
-import { EditableContentContextProvider } from "editable-content";
+import { EditableContentContextProvider } from "@kccpmg/editable-content";
 import StatefulBox from "@/components/Wrappers/StatefulBox";
 import MultiLevelBox from "@/components/Wrappers/MultilLevelBox";
 import UnderlineColor from "@/components/Wrappers/UnderlineColor";
 import EditableLink from "@/components/Wrappers/EditableLink"
 import { useState } from "react";
-import { RenderedContent } from "editable-content";
+import { RenderedContent } from "@kccpmg/editable-content";
 import { EditableLinkDialogContextProvider, useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
 import { ContextMenuContextProvider } from "@/context/ContextMenuContext";
 import LinkEditTextButton from "@/components/ButtonsAndUI/LinkEditTextButton";
