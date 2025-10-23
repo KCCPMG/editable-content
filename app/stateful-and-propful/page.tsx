@@ -1,5 +1,5 @@
 "use client"
-import { EditableContentContextProvider, useEditableContentContext, EditableContent, EditTextButton, RenderedContent } from "editable-content"
+import { EditableContentContextProvider, useEditableContentContext, EditableContent, EditTextButton, RenderedContent } from "@kccpmg/editable-content";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import StatefulAndPropfulBox from "@/components/Wrappers/StatefulAndPropfulBox";
 import StatefulBox from "@/components/Wrappers/StatefulBox";
