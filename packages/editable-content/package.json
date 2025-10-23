@@ -1,6 +1,6 @@
 {
-  "name": "editable-content",
-  "version": "0.1.0",
+  "name": "@kccpmg/editable-content",
+  "version": "0.1.1",
   "description": "React-compatible contenteditable divs",
   "main": "src/index.js",
   "files": [
@@ -12,6 +12,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "typescript": "^5.9.2"
