@@ -1,4 +1,4 @@
-import { useEditableContentContext } from "editable-content";
+import { useEditableContentContext } from "@kccpmg/editable-content";
 import DisplayContainer from "./DisplayContainer";
 import { Table, TableRow, TableBody, TableCell, TableContainer} from "@mui/material";
 

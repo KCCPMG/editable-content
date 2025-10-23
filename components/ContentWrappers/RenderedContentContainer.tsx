@@ -1,6 +1,6 @@
 "use client"
 import React from "react";
-import { EditableContent, RenderedContent } from "editable-content";
+import { EditableContent, RenderedContent } from "@kccpmg/editable-content";
 import { Paper, Typography, Button } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 

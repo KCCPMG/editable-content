@@ -1,5 +1,5 @@
 import { Box, Button, Divider, Typography } from "@mui/material";
-import { EditableContent, EditTextButton } from "editable-content";
+import { EditableContent, EditTextButton } from "@kccpmg/editable-content";
 import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import ClearButton from "@/components/ButtonsAndUI/ClearButton";

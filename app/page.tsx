@@ -1,6 +1,6 @@
 "use client"
 import theme from "@/theme";
-import { EditableContentContextProvider, EditableContent, EditTextButton, RenderedContent } from "editable-content";
+import { EditableContentContextProvider, EditableContent, EditTextButton, RenderedContent } from "@kccpmg/editable-content";
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import { useState, useEffect } from "react";
 import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Container, Typography, Paper } from "@mui/material";

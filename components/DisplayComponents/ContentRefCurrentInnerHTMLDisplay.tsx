@@ -1,4 +1,4 @@
-import { useEditableContentContext } from "@/packages/editable-content/src/EditableContentContext"
+import { useEditableContentContext } from "@kccpmg/editable-content";
 import DisplayContainer from "./DisplayContainer";
 
 
