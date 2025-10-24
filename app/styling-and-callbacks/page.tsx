@@ -118,7 +118,7 @@ export default function Page() {
           </EditableLinkDialogContextProvider>
         </EditableContentContextProvider>
       </ContextMenuContextProvider>
-      <NextPageLink href="/readme" text="README" />
+      <NextPageLink href="/documentation" text="Documentation" />
     </>
   )
 
