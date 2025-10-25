@@ -7,7 +7,7 @@ import Content from "./Content";
 
 export default async function Page() {
 
-  const file_path = path.join(process.cwd(), "node_modules/@kccpmg/editable-content/readme.md")
+  const file_path = path.join(process.cwd(), "documentation.md")
   const content = fs.readFileSync(file_path);
   const stringified = content.toString();
 
