@@ -1,4 +1,4 @@
-import { EditableContent, RenderedContent } from "editable-content";
+import { EditableContent, RenderedContent } from "@kccpmg/editable-content";
 import styles from "./EditableTextField.module.css";
 
 type EditableTextFieldProps = {

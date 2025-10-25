@@ -4,7 +4,7 @@ import { useState } from "react";
 import PropfulBox from "@/components/Wrappers/PropfulBox";
 import StatefulBox from "@/components/Wrappers/StatefulBox";
 import IncreaseColorButton from "./IncreaseColorButton";
-import { EditableContent, EditTextButton, RenderedContent } from "editable-content";
+import { EditableContent, EditTextButton, RenderedContent } from "@kccpmg/editable-content";
 import { Container, Button, Box, Typography } from "@mui/material";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import NextPageLink from "@/components/LayoutComponents/NextPageLink";

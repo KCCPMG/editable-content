@@ -8,7 +8,6 @@ export default function Content({stringified}: {stringified: string}) {
 
   return (
     <ReactMarkdown
-      children={stringified}
       components={{
         code(props) {
           const { children, node, ...rest } = props;
@@ -53,7 +52,9 @@ export default function Content({stringified}: {stringified: string}) {
                 </pre>
               )
             } else return (
-              <pre {...rest} children={children} />
+              <pre {...rest}>
+                {children}
+              </pre>
             )
           }
         },
@@ -122,6 +123,8 @@ export default function Content({stringified}: {stringified: string}) {
           }
         }
       }}
-    />
+    >
+      {stringified}
+    </ReactMarkdown>
   )
 }

@@ -1,5 +1,5 @@
 import { useEditableLinkDialogContext } from "@/context/EditableLinkDialogContext";
-import { EditTextButton } from "editable-content";
+import { EditTextButton } from "@kccpmg/editable-content";
 import { ReactNode, useEffect } from "react";
 
 

@@ -1,5 +1,5 @@
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
-import { EditableContentContext, EditableContent, EditTextButton, RenderedContent } from "editable-content"; 
+import { EditableContentContext, EditableContent, EditTextButton, RenderedContent } from "@kccpmg/editable-content"; 
 import { FormatBold, FormatItalic } from "@mui/icons-material";
 import { Box, Button, Container } from "@mui/material";
 import IncreaseColorButton from "./IncreaseColorButton";
