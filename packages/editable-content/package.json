@@ -1,6 +1,6 @@
 {
   "name": "@kccpmg/editable-content",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "React-compatible contenteditable divs",
   "main": "src/index.js",
   "repository": {
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@mui/material": "^7.1.0",
+    "@emotion/styled": "^11.14.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
