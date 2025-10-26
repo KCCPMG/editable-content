@@ -1,10 +1,18 @@
 {
   "name": "@kccpmg/editable-content",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "React-compatible contenteditable divs",
   "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KCCPMG/editable-content.git"
+  },
   "files": [
     "./src"
+  ],
+  "keywords": [
+    "editable-content",
+    "contenteditable"
   ],
   "exports": {
     ".": "./src/index.js",
@@ -14,11 +22,18 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@mui/material": "^7.1.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
     "typescript": "^5.9.2"
   },
   "author": "Connor Wales",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KCCPMG/editable-content/issues"
+  },
+  "homepage": "https://editable-content.vercel.app/"
 }
+
+
