@@ -1,4 +1,22 @@
-# editable-content
+- [Introduction](#introduction)
+- [Getting Started](#getting-started)
+- [EditableContentContextProvider](#editablecontentcontextprovider)
+  - [Populating Wrappers](#populating-wrappers)
+  - [Defining Your Own React Component Wrappers](#defining-your-own-react-component-wrappers)
+    - [Marking Content for Exclusion](#marking-content-for-exclusion)
+    - [A Note On Contexts Used By Wrappers](#a-note-on-contexts-used-by-wrappers)
+  - [useEditableContentContext](#useeditablecontentcontext)
+- [EditableContent](#editablecontent)
+  - [A Note on EditableContent Rendering](#a-note-on-editablecontent-rendering)
+- [RenderedContent](#renderedcontent)
+- [EditTextButton](#edittextbutton)
+  - [Basic Rules for EditTextButton Behavior](#basic-rules-for-edittextbutton-behavior)
+  - [Special Rules for Unbreakable Elements](#special-rules-for-unbreakable-elements)
+  - [EditTextButton Props](#edittextbutton-props)
+- [Browser Behavior and Text](#browser-behavior-and-text)
+- [Known Issues](#known-issues)
+
+## Introduction
 
 editable-content is a collection of components and context to give developers the ability to create limited rich-text editors, including React components to wrap text. At a high level, there are four basic components:
 
@@ -9,7 +27,14 @@ editable-content is a collection of components and context to give developers th
 
 Only one `EditableContent` or `RenderedContent` should be rendered at a time per instance of `EditableContentContextProvider`.
 
-Installation:
+
+
+
+
+
+## Getting Started
+
+To view the package on npm, visit [https://www.npmjs.com/package/@kccpmg/editable-content](https://www.npmjs.com/package/@kccpmg/editable-content). To install:
 
 ```
 npm install @kccpmg/editable-content
@@ -28,12 +53,12 @@ function EditableContentExample() {
       wrapper: <strong></strong>
     }
   ];
-  
+
   return (
     <EditableContentContextProvider keyAndWrapperObjs={keyAndWrapperObjs}>
       {editing ? (
         <>
-          <EditTextButton isMUIButton={false} dataKey="strong" >
+          <EditTextButton dataKey="strong">
             B
           </EditTextButton>
           <EditableContent />
@@ -47,7 +72,6 @@ function EditableContentExample() {
 
 ```
 
-How to use:
 
 ## EditableContentContextProvider
 
@@ -57,7 +81,7 @@ The `EditableContentContextProvider` *must* be rendered as an ancestor to the Ed
 - `keyAndWrapperObjs`: An array of type `KeyAndWrapperObj`, which are the options for a user to wrap their text with. See "Defining Your Own React Component Wrappers" below
 - `initialHTML`: (optional) string, which will be the HTML which initially populates an `EditableContent` or `RenderedContent` instance 
 
-### Populating wrappers
+### Populating Wrappers
 
 A `KeyAndWrapperObj` is an object to be defined which will correspond to a text wrapper 
 To make a wrapper available to your provider, it must be passed to the EditableContentContext in the prop `keyAndWrapperObjs`. This prop takes an array of objects, each of which represents a wrapper and has two key/value pairs:
@@ -289,7 +313,7 @@ The `EditableContent` component does not require anything beyond these props and
 
 `EditTextButton` is the control used for wrapping and unwrapping selected text. Before getting into the component logic, it's important to understand how these buttons behave.
 
-### Basic Rules for EditTextButton behavior
+### Basic Rules for EditTextButton Behavior
 
 - Each `EditTextButton` keeps track of the ReactElement wrapper to which it is assigned. 
 
@@ -305,7 +329,7 @@ The `EditableContent` component does not require anything beyond these props and
 
 - If a button is already clicked, clicking it will break up the surrounding element such that the selection will no longer be a part of an element which matches the query.
 
-### Special Rules for Unbreakable elements
+### Special Rules for Unbreakable Elements
 
 If an element is unbreakable, either because it is specifically declared as being unbreakable or it is a React component, the button will have slightly different behavior in some scenarios.
 
@@ -317,16 +341,20 @@ If an element is unbreakable, either because it is specifically declared as bein
 
 - If a selection is inside of an unbreakable element and the cursor is collapsed and at the end of the text inside of the element, clicking the button will not affect the wrapper, but will move the cursor to the next available space after the wrapper. This is meant to intuitively follow as best as possible clicking a button to start a text style, then after finishing typing what should be in that style, "turning the style off" and continuing normally.
 
-### EditTextButton props
+### EditTextButton Props
 
 The `EditTextButton`, in addition to the props below, accepts any props from MaterialUI's `ButtonOwnProps` (except for 'color'), as well as any props from `React.ComponentPropsWithoutRef<'button'>`. All of these props will be passed automatically to the Button/button. Here are the additional explicit props:
 
-- isMUIButton: boolean
+- isMUIButton?: boolean
   - If this is set to true, `EditTextButton` will render as its base an MUI `Button` component instead of a plain `<button>`.
 - dataKey: string
   - This is the key which must be the same as in one of the objects in the `KeyAndWrapperObj` which is passed as a prop to `EditableContentContextProvider`. This key is responsible for telling `EditTextButton` which wrapper it is responsible for assigning/removing.
 - children?: ReactNode
   - The children of the button, ideally short text or an icon.
+-  selectedClassName?: string
+  - An optional prop which will add this string to the className if the button is selected.
+-  deselectedClassName?: string
+  - An optional prop which will add this string to the className if the button is deselected.
 - selectedVariant?: ButtonOwnProps["variant"]
   - An optional prop for use if `isMUIButton` is set to true. This will be the MUI variant the button takes on when the button is selected.
 - deselectedVariant?: ButtonOwnProps["variant"]

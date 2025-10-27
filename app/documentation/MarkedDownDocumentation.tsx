@@ -2,9 +2,10 @@
 import ReactMarkdown from "react-markdown";
 import GithubSlugger from 'github-slugger';
 
-export default function Content({stringified}: {stringified: string}) {
+export default function MarkedDownDocumentation({stringified}: {stringified: string}) {
 
   const slugger = new GithubSlugger(); 
+  slugger.reset();
 
   return (
     <ReactMarkdown
@@ -62,7 +63,13 @@ export default function Content({stringified}: {stringified: string}) {
           const {children, node, ...rest} = props;
           if (children && typeof children === "string") {
             return (
-              <h1 id={slugger.slug(children)} {...rest}>
+              <h1 
+                id={slugger.slug(children)} 
+                style={{
+                  scrollMarginTop: '90px'
+                }}
+                {...rest}
+              >
                 {children}
               </h1>
             )
@@ -78,7 +85,13 @@ export default function Content({stringified}: {stringified: string}) {
           const {children, node, ...rest} = props;
           if (children && typeof children === "string") {
             return (
-              <h2 id={slugger.slug(children)} {...rest}>
+              <h2 
+                id={slugger.slug(children)} 
+                style={{
+                  scrollMarginTop: '90px'
+                }}
+                {...rest}
+              >
                 {children}
               </h2>
             )
@@ -94,7 +107,13 @@ export default function Content({stringified}: {stringified: string}) {
           const {children, node, ...rest} = props;
           if (children && typeof children === "string") {
             return (
-              <h3 id={slugger.slug(children)} {...rest}>
+              <h3 
+                id={slugger.slug(children)} 
+                style={{
+                  scrollMarginTop: '90px'
+                }}
+                {...rest}
+              >
                 {children}
               </h3>
             )
@@ -110,7 +129,13 @@ export default function Content({stringified}: {stringified: string}) {
           const {children, node, ...rest} = props;
           if (children && typeof children === "string") {
             return (
-              <h4 id={slugger.slug(children)} {...rest}>
+              <h4 
+                id={slugger.slug(children)} 
+                style={{
+                  scrollMarginTop: '90px'
+                }}
+                {...rest}
+              >
                 {children}
               </h4>
             )

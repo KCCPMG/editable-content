@@ -1,8 +1,7 @@
 import NextPageLink from "@/components/LayoutComponents/NextPageLink";
-import Contents from "./Contents";
 import path from "path";
 import fs from "fs";
-import Content from "./Content";
+import MarkedDownDocumentation from "./MarkedDownDocumentation";
 
 
 export default async function Page() {
@@ -14,10 +13,8 @@ export default async function Page() {
 
   return (
     <>
-      <h1>README</h1>
-      <h3>Contents</h3>
-      <Contents />
-      <Content stringified={stringified} />
+      <h1>Documentation</h1>
+      <MarkedDownDocumentation stringified={stringified} />
       <NextPageLink href="/" text="Back to Main Demo" />
     </>
   )
