@@ -26,7 +26,7 @@ export default function HeadBar({heightInPixels}: HeadBarProps) {
           component="div" 
           color="primary"
         >
-          Editable
+          editable
         </Typography>
         <Image 
           alt="editable-content logo"
@@ -40,7 +40,7 @@ export default function HeadBar({heightInPixels}: HeadBarProps) {
           component="div" 
           color="primary"
         >
-          Content
+          content
         </Typography>
       </Toolbar>
     </AppBar>
