@@ -344,8 +344,9 @@ export default function EditableContent({ className, disableNewLines }: ContentP
               ) &&
               !e.metaKey
             ) {
-              e.preventDefault();
-              extendWordSelection(selection, contentRef.current, "left");
+              // pass, appears to be working with default
+              // e.preventDefault();
+              // extendWordSelection(selection, contentRef.current, "left");
             }
           }
 
@@ -375,8 +376,9 @@ export default function EditableContent({ className, disableNewLines }: ContentP
               ) &&
               !e.metaKey
             ) {
-              e.preventDefault();
-              extendWordSelection(selection, contentRef.current, "right");
+              // pass, appears to be working with default
+              // e.preventDefault();
+              // extendWordSelection(selection, contentRef.current, "right");
             }
           }
 

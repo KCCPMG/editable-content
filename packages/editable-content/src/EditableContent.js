@@ -295,8 +295,9 @@ function EditableContent({ className, disableNewLines }) {
                         (e.altKey ||
                             e.ctrlKey) &&
                         !e.metaKey) {
-                        e.preventDefault();
-                        (0, selection_movements_1.extendWordSelection)(selection, contentRef.current, "left");
+                        // pass, appears to be working with default
+                        // e.preventDefault();
+                        // extendWordSelection(selection, contentRef.current, "left");
                     }
                 }
                 if (e.code === "ArrowRight") {
@@ -318,8 +319,9 @@ function EditableContent({ className, disableNewLines }) {
                         (e.altKey ||
                             e.ctrlKey) &&
                         !e.metaKey) {
-                        e.preventDefault();
-                        (0, selection_movements_1.extendWordSelection)(selection, contentRef.current, "right");
+                        // pass, appears to be working with default
+                        // e.preventDefault();
+                        // extendWordSelection(selection, contentRef.current, "right");
                     }
                 }
                 if (e.code === "Delete") {
