@@ -1,29 +1,17 @@
 "use client"
-import theme from "@/theme";
-import { EditableContentContextProvider, EditableContent, EditTextButton, RenderedContent } from "@kccpmg/editable-content";
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import { useState, useEffect } from "react";
-import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Container, Typography, Paper } from "@mui/material";
+import { EditableContentContextProvider } from "@kccpmg/editable-content";
+import { useState } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Container, Typography } from "@mui/material";
 import MultiLevelBox from "@/components/Wrappers/MultilLevelBox";
 import UnderlineColor from "@/components/Wrappers/UnderlineColor";
-import { FormatItalic, FormatUnderlined } from "@mui/icons-material";
 import StatefulBox from "@/components/Wrappers/StatefulBox";
-import GetDehydratedHTMLButton from "@/components/ButtonsAndUI/GetDehydratedHTMLButton";
-import ClearButton from "@/components/ButtonsAndUI/ClearButton";
-import { renderToString } from "react-dom/server";
-import ContentRefCurrentInnerHTMLDisplay from "@/components/DisplayComponents/ContentRefCurrentInnerHTMLDisplay";
 import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import SelectionDisplay from "@/components/DisplayComponents/SelectionDisplay";
-import Link from "next/link";
 import NextPageLink from "@/components/LayoutComponents/NextPageLink";
-import SampleReactButtonProp from "@/components/Wrappers/SampleReactButton";
 import SampleReactButton from "@/components/Wrappers/SampleReactButton";
 import DehydratedHTMLDisplay from "@/components/DisplayComponents/DehydratedHTMLDisplay";
 import ButtonAndContentContainer from "@/components/ContentWrappers/ButtonAndContentContainer";
 import RenderedContentContainer from "@/components/ContentWrappers/RenderedContentContainer";
-// import { selectionIsDescendentOfNode, selectionIsCoveredBy, selectionHasTextNodes, getSelectionChildNodes, selectionContainsOnlyText, getButtonStatus, getRangeLowestAncestorElement, getRangeChildNodes, getAncestorNode, getNextPosition, identifyBadTextNodes } from "@/packages/editable-content/src/utils/checks";
-// import { wrapInElement, generateQuery, createWrapper, unwrapSelectionFromQuery, promoteChildrenOfNode, deleteEmptyElements } from "@/packages/editable-content/src/utils/dom_operations";
-// import { resetSelectionToTextNodes, moveSelection } from "@/packages/editable-content/src/utils/selection_movements";
 import ContextWindowExposure from "@/components/ContextWindowExposure";
 
 
@@ -42,10 +30,6 @@ export default function Page() {
   const [editMode, setEditMode] = useState<boolean>(true)
 
   const [underlineColor, setUnderlineColor] = useState("red");
-
-
-  // utilities in window
-
 
   return (
     <>
