@@ -17,7 +17,7 @@ export default function IncreaseColorButton({componentBorderColor, setComponentB
   // on componentBorderColor change, updatePortalProps
   useEffect(function() {
     if (!contentRef.current) return;
-    const divs = Array.from(contentRef.current.querySelectorAll("div[data-button-key='propful-only"));
+    const divs = Array.from(contentRef.current.querySelectorAll("div[data-button-key='propful-only']"));
     const keys = divs.map(div => div.getAttribute('id')?.split("portal-container-")[1]);
 
     const updateObj = Object.assign({}, ...keys.map(key => {
