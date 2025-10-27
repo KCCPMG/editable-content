@@ -240,7 +240,7 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
          * Get all text nodes in contentRef.current, make sure
          * that they begin and end with a zero width space
          */
-        var _a, _b;
+        var _a;
         if (contentRef.current) {
             const textNodes = (0, checks_1.getAllTextNodes)([contentRef.current]);
             (0, dom_operations_1.resetTextNodesCushions)(textNodes);
@@ -252,7 +252,6 @@ function EditableContentContextProvider({ children, keyAndWrapperObjs, initialHT
             (0, selection_movements_1.resetSelectionToTextNodes)();
         }
         setContentRefCurrentInnerHTML(((_a = contentRef === null || contentRef === void 0 ? void 0 : contentRef.current) === null || _a === void 0 ? void 0 : _a.innerHTML) || "");
-        (_b = contentRef.current) === null || _b === void 0 ? void 0 : _b.focus();
     }
     // TODO: rework vertical logic to comprehensive approach based on focus node/offset
     /**

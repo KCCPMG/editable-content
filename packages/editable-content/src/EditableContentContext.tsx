@@ -313,7 +313,6 @@ export function EditableContentContextProvider({ children, keyAndWrapperObjs, in
       resetSelectionToTextNodes();
     }
     setContentRefCurrentInnerHTML(contentRef?.current?.innerHTML || "");
-    contentRef.current?.focus();
   }
 
 
