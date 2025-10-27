@@ -350,8 +350,8 @@ function EditTextButton(_a) {
         return;
     return (isMUIButton ?
         react_1.default.createElement(material_1.Button, Object.assign({ className: selected ?
-                ((className || "") + (selectedClassName || "")).trim() :
-                ((className || "") + (deselectedClassName || "")).trim(), disabled: !enabled, onMouseDown: () => {
+                ((className || "") + " " + (selectedClassName || "")).trim() :
+                ((className || "") + " " + (deselectedClassName || "")).trim(), disabled: !enabled, onMouseDown: () => {
                 // prevent !hasSelection from blocking button's ability to click
                 setBeingClicked(true);
             }, onClick: (e) => {
@@ -361,8 +361,8 @@ function EditTextButton(_a) {
                 (selectedVariant || "contained") :
                 (deselectedVariant || "outlined"), "data-context-id": contextInstanceIdRef.current }, remainderProps), children) :
         react_1.default.createElement("button", Object.assign({ className: selected ?
-                ((className || "") + (selectedClassName || "")).trim() :
-                ((className || "") + (deselectedClassName || "")).trim(), disabled: !enabled, onMouseDown: () => {
+                ((className || "") + " " + (selectedClassName || "")).trim() :
+                ((className || "") + " " + (deselectedClassName || "")).trim(), disabled: !enabled, onMouseDown: () => {
                 // prevent !hasSelection from blocking button's ability to click
                 setBeingClicked(true);
             }, onClick: () => { handleEditTextButtonClick(portals, selected); }, "data-context-id": contextInstanceIdRef.current }, remainderProps), children));

@@ -1,6 +1,6 @@
 {
   "name": "@kccpmg/editable-content",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "React-compatible contenteditable divs",
   "main": "src/index.js",
   "repository": {

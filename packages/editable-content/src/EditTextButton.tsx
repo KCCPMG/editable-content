@@ -417,8 +417,8 @@ export default function EditTextButton({
       <Button
         className={
           selected ? 
-          ((className || "") + (selectedClassName || "")).trim() :
-          ((className || "") + (deselectedClassName || "")).trim() 
+          ((className || "") + " " + (selectedClassName || "")).trim() :
+          ((className || "") + " " + (deselectedClassName || "")).trim() 
         }
         disabled={!enabled}
         onMouseDown={() => {
@@ -442,8 +442,8 @@ export default function EditTextButton({
       <button
         className={
           selected ? 
-          ((className || "") + (selectedClassName || "")).trim() :
-          ((className || "") + (deselectedClassName || "")).trim() 
+          ((className || "") + " " + (selectedClassName || "")).trim() :
+          ((className || "") + " " + (deselectedClassName || "")).trim() 
         }
         disabled={!enabled}
         onMouseDown={() => {
