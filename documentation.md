@@ -18,25 +18,32 @@ npm install @kccpmg/editable-content
 Basic Example:
 
 ```
-const editing = useState<boolean>(true);
+function EditableContentExample() {
 
-const keyAndWrapperObjs = [
-  {
-    dataKey="strong",
-    wrapper=<strong></strong>
-  }
-]
+  const editing = useState<boolean>(true);
 
-<EditableContentContextProvider>
-  { editing? (
-      <>
-        <EditTextButton dataKey="strong" />
-        <EditableContent />
-      </>
-    ) : 
-    <RenderedContent />
-  }
-</EditableContentContextProvider>
+  const keyAndWrapperObjs = [
+    {
+      dataKey: "strong",
+      wrapper: <strong></strong>
+    }
+  ];
+  
+  return (
+    <EditableContentContextProvider keyAndWrapperObjs={keyAndWrapperObjs}>
+      {editing ? (
+        <>
+          <EditTextButton isMUIButton={false} dataKey="strong" >
+            B
+          </EditTextButton>
+          <EditableContent />
+        </>
+      ) :
+        <RenderedContent />
+      }
+    </EditableContentContextProvider>
+  )
+}
 
 ```
 
@@ -348,5 +355,6 @@ As a result, a great deal of default behavior in using a contenteditable div has
 - `data-context-id` assignment error in development mode
   - Upon loading in dev mode, an error is generated: ``Warning: Prop `data-context-id` did not match. Server: "some-uuid-value" Client: "some-other-uuid-value".`` It is unclear why this error is occurring, but it does not happen in the build mode
   - Additionally unknown at the time is why clicking a button does not set the `hasSelection` state to false, given that the `data-context-id` does not match the `contextInstanceIdRef.current` in strict/development mode, and this should result in a call to `setHasSelection(false)`.
+- This package includes @mui/material and @emotion/styled as dependencies to enable MUIbuttons, this may be changed in the future to either a conditional import or the MUI-enabled EditTextButton removed and placed in a new package.
 
 

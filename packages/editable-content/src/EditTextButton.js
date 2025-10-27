@@ -104,7 +104,7 @@ function reactNodeToElement(reactNode) {
 }
 function EditTextButton(_a) {
     var _b;
-    var { isMUIButton, dataKey, children, selectedVariant, deselectedVariant, selectCallback, deselectCallback } = _a, remainderProps = __rest(_a, ["isMUIButton", "dataKey", "children", "selectedVariant", "deselectedVariant", "selectCallback", "deselectCallback"]);
+    var { isMUIButton, dataKey, children, className, selectedClassName, deselectedClassName, selectedVariant, deselectedVariant, selectCallback, deselectCallback } = _a, remainderProps = __rest(_a, ["isMUIButton", "dataKey", "children", "className", "selectedClassName", "deselectedClassName", "selectedVariant", "deselectedVariant", "selectCallback", "deselectCallback"]);
     const { contextInstanceIdRef, hasSelection, selectionAnchorNode, selectionAnchorOffset, selectionFocusNode, selectionFocusOffset, keyAndWrapperObjs, contentRef, updateContent, createContentPortal, portals, removePortal, buttonUpdateTrigger, triggerButtonUpdate } = (0, EditableContentContext_1.useEditableContentContext)();
     const [selected, setSelected] = (0, react_1.useState)(false);
     const [enabled, setEnabled] = (0, react_1.useState)(false);
@@ -349,7 +349,9 @@ function EditTextButton(_a) {
     if (!wrapperRef.current)
         return;
     return (isMUIButton ?
-        react_1.default.createElement(material_1.Button, Object.assign({ disabled: !enabled, onMouseDown: () => {
+        react_1.default.createElement(material_1.Button, Object.assign({ className: selected ?
+                ((className || "") + (selectedClassName || "")).trim() :
+                ((className || "") + (deselectedClassName || "")).trim(), disabled: !enabled, onMouseDown: () => {
                 // prevent !hasSelection from blocking button's ability to click
                 setBeingClicked(true);
             }, onClick: (e) => {
@@ -358,7 +360,9 @@ function EditTextButton(_a) {
             }, variant: selected ?
                 (selectedVariant || "contained") :
                 (deselectedVariant || "outlined"), "data-context-id": contextInstanceIdRef.current }, remainderProps), children) :
-        react_1.default.createElement("button", Object.assign({ disabled: !enabled, onMouseDown: () => {
+        react_1.default.createElement("button", Object.assign({ className: selected ?
+                ((className || "") + (selectedClassName || "")).trim() :
+                ((className || "") + (deselectedClassName || "")).trim(), disabled: !enabled, onMouseDown: () => {
                 // prevent !hasSelection from blocking button's ability to click
                 setBeingClicked(true);
             }, onClick: () => { handleEditTextButtonClick(portals, selected); }, "data-context-id": contextInstanceIdRef.current }, remainderProps), children));

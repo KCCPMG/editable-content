@@ -73,9 +73,11 @@ type reactSelectCallback = (wrapper: ReactElement<any, string | JSXElementConstr
 // "color", even when not named, causes type conflict from WrapperArgs
 type EditTextButtonProps = Omit<ButtonOwnProps, "color">
   & React.ComponentPropsWithoutRef<'button'> & {
-    isMUIButton: boolean,
+    isMUIButton?: boolean,
     dataKey: string,
     children?: ReactNode,
+    selectedClassName?: string,
+    deselectedClassName?: string,
     selectedVariant?: ButtonOwnProps["variant"],
     deselectedVariant?: ButtonOwnProps["variant"],
     selectCallback?: htmlSelectCallback | reactSelectCallback,
@@ -86,6 +88,9 @@ export default function EditTextButton({
   isMUIButton,
   dataKey,
   children,
+  className,
+  selectedClassName,
+  deselectedClassName,
   selectedVariant,
   deselectedVariant,
   selectCallback,
@@ -410,6 +415,11 @@ export default function EditTextButton({
   return (
     isMUIButton ?
       <Button
+        className={
+          selected ? 
+          ((className || "") + (selectedClassName || "")).trim() :
+          ((className || "") + (deselectedClassName || "")).trim() 
+        }
         disabled={!enabled}
         onMouseDown={() => {
           // prevent !hasSelection from blocking button's ability to click
@@ -430,6 +440,11 @@ export default function EditTextButton({
         {children}
       </Button> :
       <button
+        className={
+          selected ? 
+          ((className || "") + (selectedClassName || "")).trim() :
+          ((className || "") + (deselectedClassName || "")).trim() 
+        }
         disabled={!enabled}
         onMouseDown={() => {
           // prevent !hasSelection from blocking button's ability to click

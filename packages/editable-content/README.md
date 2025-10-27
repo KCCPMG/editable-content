@@ -1,7 +1,6 @@
+# editable-content
 
-# EditableContent
-
-EditableContent is a collection of components and context to give developers the ability to create limited rich-text editors, including React components to wrap text. At a high level, there are four basic components:
+editable-content is a collection of components and context to give developers the ability to create limited rich-text editors, including React components to wrap text. At a high level, there are four basic components:
 
 - An `EditableContentContextProvider`, which must be an ancestor to the other components.
 - An `EditableContent` component in which a user can write, delete, and edit text
@@ -9,6 +8,37 @@ EditableContent is a collection of components and context to give developers the
 - A `RenderedContent` component, which is a non-editable version of `EditableContent`
 
 Only one `EditableContent` or `RenderedContent` should be rendered at a time per instance of `EditableContentContextProvider`.
+
+Installation:
+
+```
+npm install @kccpmg/editable-content
+```
+
+Basic Example:
+
+```
+const editing = useState<boolean>(true);
+
+const keyAndWrapperObjs = [
+  {
+    dataKey="strong",
+    wrapper=<strong></strong>
+  }
+]
+
+<EditableContentContextProvider>
+  { editing? (
+      <>
+        <EditTextButton dataKey="strong" />
+        <EditableContent />
+      </>
+    ) : 
+    <RenderedContent />
+  }
+</EditableContentContextProvider>
+
+```
 
 How to use:
 
