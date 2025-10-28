@@ -3,12 +3,8 @@ import { EditableContentContextProvider } from "@/packages/editable-content/src/
 import { useState } from "react";
 import PropfulBox from "@/components/Wrappers/PropfulBox";
 import StatefulBox from "@/components/Wrappers/StatefulBox";
-import IncreaseColorButton from "./IncreaseColorButton";
-import { EditableContent, EditTextButton, RenderedContent } from "@kccpmg/editable-content";
-import { Container, Button, Box, Typography } from "@mui/material";
-import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
+import { Typography } from "@mui/material";
 import NextPageLink from "@/components/LayoutComponents/NextPageLink";
-import { FormatBold, FormatItalic } from "@mui/icons-material";
 import { EditModeContextProvider } from "@/context/EditModeContext";
 import PropfulOnlyContent from "./PropfulOnlyContent";
 
@@ -32,7 +28,7 @@ export default function Page() {
     <main>
       <Typography variant="h2">Propful Only Components</Typography>
       <p>
-        Since state does not persist across renders (and is difficult to get out of the component itself), the solution is to rely on props. In comparison to the last example, there are two examples here: <strong>Propful Box</strong> and <strong>Stateful Box</strong>.
+        Because state does not persist across renders (and is difficult to get out of the component itself), the solution is to rely on props. In comparison to the last example, there are two examples here: <strong>Propful Box</strong> and <strong>Stateful Box</strong>.
       </p>
       <p>
         The text that is already wrapped here is in a <strong>Propful Box</strong>. You can create more of these or create a <strong>Stateful Box</strong> for comparison. What you will see with the <strong>Propful Box</strong> is that in addition to the color persisting as it did in the previous example, the number of clicks will also persist when going back and forth between <strong>Edit Text</strong> and <strong>Render Text</strong>. You can also see the props that are passed to all elements by expanding the <strong>All Props</strong> display container at the bottom of the page. This display uses the <code>getAllPortalProps</code> function which is passed through the <code>EditableContentContext</code> and allows developers to extract props to save for future hydration.
