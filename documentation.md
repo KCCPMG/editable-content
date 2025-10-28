@@ -82,6 +82,8 @@ The `EditableContentContextProvider` *must* be rendered as an ancestor to the Ed
   
 - `initialHTML`: (optional) string, which will be the HTML which initially populates an `EditableContent` or `RenderedContent` instance 
 
+- `initialProps`: (optional) object of which each key corresponds to a portalId, and the value is an object of props with new values. For an example of this object, see `updatePortalProps` in the `useEditableContentContext` section. When a portal is first created, its React component will populate with props from this object if there is a corresponding portalId that contains props to pass in.
+
 ### Populating Wrappers
 
 A `KeyAndWrapperObj` is an object to be defined which will correspond to a text wrapper 
