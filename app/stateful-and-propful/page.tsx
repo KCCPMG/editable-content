@@ -35,15 +35,15 @@ export default function Page() {
       </p>
       <p>
         However, as you go back and forth between the text being rendered and the text being edited, you will see that the click count is not being preserved in the same way. The prior click count will remain, but a new click count will also appear as 0. For example, if you click the Stateful Only component 7 times, the component will read as &ldquo;7 Stateful Only Component&rdquo;. Clicking the &ldquo;Render Text Button&rdquo; will then change this to &ldquo;0 7 Stateful Only Component&rdquo;. There are two separate things happening here:
-        <ul>
-          <li>
-            The re-rendering of the component will cause it to reinitialize its click count state as 0, which it will then display at the beginning of the component.
-          </li>
-          <li>
-            The previous click count of &ldquo;7&rdquo; is absorbed into the text that is being rendered.
-          </li>
-        </ul>
       </p>
+      <ul>
+        <li>
+          The re-rendering of the component will cause it to reinitialize its click count state as 0, which it will then display at the beginning of the component.
+        </li>
+        <li>
+          The previous click count of &ldquo;7&rdquo; is absorbed into the text that is being rendered.
+        </li>
+      </ul>
       <p>
         What this illustrates is that components are re-rendered by switching. This destroys the state, but props are preserved at a higher level. The next example will show a better way of managing this situation with a stable click count.
       </p>
