@@ -1,7 +1,10 @@
-import { useState, ReactNode } from "react"
+import { useState, ReactNode, useEffect } from "react"
 import { Box } from "@mui/material";
+import { EditableContentContextType } from "@/packages/editable-content/src";
 
 type StatefulAndPropfulBoxProps = {
+  portalId?: string,
+  getContext?: () => EditableContentContextType
   initialClicks: number,
   borderC: string,
   children?: ReactNode,
@@ -9,7 +12,7 @@ type StatefulAndPropfulBoxProps = {
 }
 
 export default function StatefulAndPropfulBox(
-  {initialClicks, borderC, children, ...rest}: StatefulAndPropfulBoxProps) 
+  {portalId, getContext, initialClicks, borderC, children, ...rest}: StatefulAndPropfulBoxProps) 
 {
 
   const [clickCount, setClickCount] = useState(initialClicks);
@@ -17,6 +20,17 @@ export default function StatefulAndPropfulBox(
   function increaseClicks() {
     setClickCount(clickCount + 1);
   }
+
+  const { 
+    setContentRefCurrentInnerHTML,
+    contentRef
+  } = getContext ? getContext() : {};
+
+  useEffect(() => {
+    if (setContentRefCurrentInnerHTML && contentRef?.current) {
+      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+    }
+  },[clickCount] )
 
   return (
     <Box       

@@ -5,8 +5,6 @@ import { EditableContentContextType } from "@/packages/editable-content/src/Edit
 
 type StatefulBoxProps = {
   children?: React.ReactNode,
-  reportState?: (stateObj: {[key: string]: any} ) => void,
-  mustReportState?: boolean,
   portalId?: string,
   getContext?: () => EditableContentContextType
   [key: string]: any,
@@ -14,18 +12,22 @@ type StatefulBoxProps = {
 
 
 export default function StatefulBox(
-  {children, reportState, mustReportState, portalId, getContext, ...rest}: StatefulBoxProps) 
+  {children, portalId, getContext, ...rest}: StatefulBoxProps) 
 {
   const [clicks, setClicks] = useState<number>(0);
 
-  useEffect(() => {
-    if (reportState) reportState({clicks});
-    console.log("clicks: ", clicks);
-  }, [clicks])
+  const { 
+    updateContent,
+    setContentRefCurrentInnerHTML,
+    contentRef
+  } = getContext ? getContext() : {};
 
   useEffect(() => {
-    if (mustReportState && reportState) reportState({clicks})
-  }, [mustReportState])
+    // if (updateContent) updateContent();
+    if (setContentRefCurrentInnerHTML && contentRef?.current) {
+      setContentRefCurrentInnerHTML(contentRef.current.innerHTML);
+    }
+  },[clicks])
 
   return (
     <Box>
@@ -33,7 +35,6 @@ export default function StatefulBox(
         // onFocus={()=>{console.log("focus on SC")}}
         // onBlur={()=>{console.log("focus out SC")}}
         onClick={()=>{
-          console.log("click SC")
           setClicks(clicks + 1);
         }}
         tabIndex={-1}
