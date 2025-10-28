@@ -8,6 +8,8 @@ import AllPropsDisplay from "@/components/DisplayComponents/AllPropsDisplay";
 import ContentRefCurrentInnerHTMLDisplay from "@/components/DisplayComponents/ContentRefCurrentInnerHTMLDisplay";
 import SelectionDisplay from "@/components/DisplayComponents/SelectionDisplay";
 import NextPageLink from "@/components/LayoutComponents/NextPageLink";
+import { EditModeContextProvider } from "@/context/EditModeContext";
+import StatefulAndPropfulContent from "./StatefulAndPropfulContent";
 
 const initialHTML = `​Normal ​Text<br>
 <div id=\"portal-container-3dbccd2a-6a07-460b-b2d2-fff8ba8e0595\" data-button-key=\"stateful-and-propful\" style=\"display: inline;\">First Stateful ​and ​Propful ​Component</div>
@@ -53,64 +55,26 @@ export default function Page() {
       <p>
         <strong>Note:</strong> When switching back and forth, the previous count will still show, meaning more and more numbers will appear. This gives you a record of what the previous state was, but also demonstrates why it is not a good idea to render additional text in your wrappers.
       </p>
-      <EditableContentContextProvider
-        initialHTML={initialHTML}
-        keyAndWrapperObjs={[
-          {
-            dataKey: "stateful-and-propful",
-            wrapper: <StatefulAndPropfulBox 
-              initialClicks={initialClicks}
-              borderC={componentBorderColor} 
-            />
-          }, 
-          {
-            dataKey: "stateful-component",
-            wrapper: <StatefulBox />
-          }
-        ]}
-      >
-        <Box>
-          <Box>
-            <h4>Change Props For All Components</h4>
-            <IncreaseColorButton 
-              componentBorderColor={componentBorderColor} 
-              setComponentBorderColor={setComponentBorderColor} 
-            />
-            {/* <IncreaseClicksButton 
-              initialClicks={initialClicks}
-              setInitialClicks={setInitialClicks}
-            /> */}
-          </Box>
-          {editMode && 
-            <Box>
-              <h4>Edit Text Buttons</h4>
-              <Box>
-                <EditTextButton
-                  isMUIButton={true}
-                  dataKey="stateful-and-propful"
-                >
-                  Stateful and Propful
-                </EditTextButton>
-                <EditTextButton
-                  isMUIButton={true}
-                  dataKey="stateful-component"
-                >
-                  Stateful Only
-                </EditTextButton>          
-              </Box>
-            </Box>
-          }
-        </Box>
-        {
-          editMode ?
-            <EditableContent className="default-editable-content"/> :
-            <RenderedContent className="default-rendered-content" />
-        }
-        <Button variant="outlined" onClick={() => setEditMode(!editMode)}>
-          {editMode ? "Render Text" : "Edit Text"}
-        </Button>
-        <AllPropsDisplay show={false} />
-      </EditableContentContextProvider>
+      <EditModeContextProvider initialEditMode={true}>
+        <EditableContentContextProvider
+          initialHTML={initialHTML}
+          keyAndWrapperObjs={[
+            {
+              dataKey: "stateful-and-propful",
+              wrapper: <StatefulAndPropfulBox 
+                initialClicks={initialClicks}
+                borderC={componentBorderColor} 
+              />
+            }, 
+            {
+              dataKey: "stateful-component",
+              wrapper: <StatefulBox />
+            }
+          ]}
+        >
+          <StatefulAndPropfulContent />
+        </EditableContentContextProvider>
+      </EditModeContextProvider>
       <NextPageLink href="/propful-only" />
     </>
   )
