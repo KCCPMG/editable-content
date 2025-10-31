@@ -1,41 +1,61 @@
 "use client"
-import { Drawer, Link, List, ListItem } from "@mui/material";
+import { Drawer, Link, List, ListItem, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material";
+import { useEffect, useState } from "react";
+import MenuIcon from '@mui/icons-material/Menu';
 
 type SideBarProps = {
   widthInPixels: number,
   headBarHeightInPixels: number,
 }
 
-export default function SideBar({widthInPixels, headBarHeightInPixels}: SideBarProps) {
+export default function SideBar({ widthInPixels, headBarHeightInPixels }: SideBarProps) {
 
   const theme = useTheme();
 
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
+
+  useEffect(() => {
+    console.log(isMobile);
+  }, [isMobile])
+
   return (
-    <Drawer 
-      variant="permanent"
-      anchor="left"
-      sx={{
-        width: `${widthInPixels}px`,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          backgroundColor: theme.palette.primary.light,
+    <>
+      {
+        (isMobile && !showMobileMenu) && 
+        <MenuIcon 
+          onClick={() => setShowMobileMenu(true)}
+        />
+      }
+      <Drawer
+        variant={isMobile ? "temporary" : "permanent"}
+        open={!isMobile || showMobileMenu}
+        onClose={() => { setShowMobileMenu(false) }}
+        anchor="left"
+        sx={{
           width: `${widthInPixels}px`,
-          boxSizing: 'border-box',
-          position: 'fixed',
-          top: `${headBarHeightInPixels}px`,
-          height: `calc(100% = ${headBarHeightInPixels}px`,
-        }
-      }}
-    >
-      <List>
-        <LinkItem href="/" text="Main Demo" />
-        <LinkItem href="/stateful-and-propful" text="Stateful and Propful Components"/>
-        <LinkItem href="/propful-only" text="Propful Only Components"/>
-        <LinkItem href="/styling-and-callbacks" text="Styling and Callbacks" />
-        <LinkItem href="/documentation" text="Documentation" />
-      </List>
-    </Drawer>
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            backgroundColor: theme.palette.primary.light,
+            width: `${widthInPixels}px`,
+            boxSizing: 'border-box',
+            position: 'fixed',
+            top: `${headBarHeightInPixels}px`,
+            height: `calc(100% = ${headBarHeightInPixels}px`,
+          }
+        }}
+      >
+        <List>
+          <LinkItem href="/" text="Main Demo" />
+          <LinkItem href="/stateful-and-propful" text="Stateful and Propful Components" />
+          <LinkItem href="/propful-only" text="Propful Only Components" />
+          <LinkItem href="/styling-and-callbacks" text="Styling and Callbacks" />
+          <LinkItem href="/documentation" text="Documentation" />
+        </List>
+      </Drawer>
+    </>
   )
 }
 
@@ -46,10 +66,10 @@ type LinkItemProps = {
 }
 
 
-function LinkItem({href, text}: LinkItemProps) {
+function LinkItem({ href, text }: LinkItemProps) {
   return (
     <ListItem>
-      <Link 
+      <Link
         href={href}
         sx={{
           color: "white",
