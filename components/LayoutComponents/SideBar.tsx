@@ -7,15 +7,20 @@ import MenuIcon from '@mui/icons-material/Menu';
 type SideBarProps = {
   widthInPixels: number,
   headBarHeightInPixels: number,
+  isMobile: boolean,
+  showMobileMenu: boolean,
+  hideMobileMenu: () => void
 }
 
-export default function SideBar({ widthInPixels, headBarHeightInPixels }: SideBarProps) {
+export default function SideBar(
+  { widthInPixels, headBarHeightInPixels, isMobile, showMobileMenu, hideMobileMenu }: SideBarProps
+) {
 
   const theme = useTheme();
 
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
 
-  const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
+  
 
   useEffect(() => {
     console.log(isMobile);
@@ -24,16 +29,17 @@ export default function SideBar({ widthInPixels, headBarHeightInPixels }: SideBa
   return (
     <>
       {
-        (isMobile && !showMobileMenu) && 
-        <MenuIcon 
-          onClick={() => setShowMobileMenu(true)}
-        />
+        // (isMobile && !showMobileMenu) && 
+        // <MenuIcon 
+        //   onClick={() => setShowMobileMenu(true)}
+        // />
       }
       <Drawer
         variant={isMobile ? "temporary" : "permanent"}
         open={!isMobile || showMobileMenu}
-        onClose={() => { setShowMobileMenu(false) }}
+        onClose={() => { hideMobileMenu }}
         anchor="left"
+        transitionDuration={1000}
         sx={{
           width: `${widthInPixels}px`,
           flexShrink: 0,
