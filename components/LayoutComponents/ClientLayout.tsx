@@ -8,33 +8,40 @@ import { useState } from "react";
 
 
 const sideBarWidthInPixels=200;
-const headBarHeightInPixels=70;
+// const headBarHeightInPixels=70;
 
 export default function ClientLayout({children}: React.PropsWithChildren) {
 
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
+  const [menuIsShowing, setMenuIsShowing] = useState<boolean>(false);
 
-  const hideMobileMenu = () => setShowMobileMenu(false);
+  const showMenu = () => setMenuIsShowing(true);
+  const hideMenu = () => setMenuIsShowing(false);
 
   console.log(theme.breakpoints.down('sm'));
 
+  const headBarHeightInPixels= isMobile ? 35 : 70;
+
   return (
     <>
-      <HeadBar heightInPixels={headBarHeightInPixels} />
+      <HeadBar 
+        isMobile={isMobile} 
+        showMenu={showMenu}
+        heightInPixels={headBarHeightInPixels} 
+      />
       <Box sx={{ marginTop: `${headBarHeightInPixels}px` }}>
         <SideBar
           widthInPixels={sideBarWidthInPixels}
           headBarHeightInPixels={headBarHeightInPixels}
           isMobile={isMobile}
-          showMobileMenu={showMobileMenu}
-          hideMobileMenu={hideMobileMenu}
+          menuIsShowing={menuIsShowing}
+          hideMenu={hideMenu}
         />
         <Box
           sx={{
-            marginLeft: `${sideBarWidthInPixels}px`,
+            marginLeft: isMobile ? 0 : `${sideBarWidthInPixels}px`,
             marginTop: `${headBarHeightInPixels}px`,
-            padding: "40px"
+            padding: 5
           }}
         >
           <Box

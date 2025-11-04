@@ -4,14 +4,18 @@ import Image from "next/image";
 
 
 type HeadBarProps = {
-  heightInPixels: number
+  heightInPixels: number,
+  isMobile: boolean,
+  showMenu: () => void
 }
 
 
-export default function HeadBar({heightInPixels}: HeadBarProps) {
+export default function HeadBar(
+  { heightInPixels, isMobile, showMenu }: HeadBarProps
+) {
 
   return (
-    <AppBar 
+    <AppBar
       position="fixed"
       sx={{
         color: "primary.light",
@@ -20,10 +24,22 @@ export default function HeadBar({heightInPixels}: HeadBarProps) {
         display: 'flex'
       }}
     >
-      <Toolbar>
-        <IconButton edge="start">
-          <MenuIcon />
-        </IconButton>
+      <Toolbar 
+        sx={{
+          height: `${heightInPixels}px`,
+          alignItems: "start"
+        }}
+      >
+        {
+          isMobile &&
+          <IconButton
+            onClick={showMenu}
+            edge="start"
+            // size="large"
+          >
+            <MenuIcon />
+          </IconButton>
+        }
         <Box
           sx={{
             height: heightInPixels,
@@ -33,27 +49,27 @@ export default function HeadBar({heightInPixels}: HeadBarProps) {
             alignItems: "center"
           }}
         >
-        <Typography 
-          variant="h3" 
-          component="div" 
-          color="primary"
-        >
-          editable
-        </Typography>
-        <Image 
-          // natural proportions: 5x3
-          alt="editable-content logo"
-          src="/editable-content-logo.png"
-          width={(heightInPixels * 20 / 7 )}
-          height={(heightInPixels * 12 / 7 )}
-        />
-        <Typography 
-          variant="h3" 
-          component="div" 
-          color="primary"
-        >
-          content
-        </Typography>
+          <Typography
+            variant={isMobile ? "h5" : "h3"}
+            component="div"
+            color="primary"
+          >
+            editable
+          </Typography>
+          <Image
+            // natural proportions: 5x3
+            alt="editable-content logo"
+            src="/editable-content-logo.png"
+            width={(heightInPixels * 20 / 7)}
+            height={(heightInPixels * 12 / 7)}
+          />
+          <Typography
+            variant={isMobile ? "h5" : "h3"}
+            component="div"
+            color="primary"
+          >
+            content
+          </Typography>
         </Box>
       </Toolbar>
     </AppBar>

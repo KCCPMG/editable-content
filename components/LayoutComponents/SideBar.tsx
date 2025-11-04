@@ -8,12 +8,12 @@ type SideBarProps = {
   widthInPixels: number,
   headBarHeightInPixels: number,
   isMobile: boolean,
-  showMobileMenu: boolean,
-  hideMobileMenu: () => void
+  menuIsShowing: boolean,
+  hideMenu: () => void
 }
 
 export default function SideBar(
-  { widthInPixels, headBarHeightInPixels, isMobile, showMobileMenu, hideMobileMenu }: SideBarProps
+  { widthInPixels, headBarHeightInPixels, isMobile, menuIsShowing, hideMenu }: SideBarProps
 ) {
 
   const theme = useTheme();
@@ -26,10 +26,10 @@ export default function SideBar(
     <>
       <Drawer
         variant={isMobile ? "temporary" : "permanent"}
-        open={!isMobile || showMobileMenu}
-        onClose={() => { hideMobileMenu }}
+        open={!isMobile || menuIsShowing}
+        onClose={hideMenu}
         anchor="left"
-        transitionDuration={1000}
+        transitionDuration={500}
         sx={{
           width: `${widthInPixels}px`,
           flexShrink: 0,
