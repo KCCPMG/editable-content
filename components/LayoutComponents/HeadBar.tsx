@@ -1,4 +1,5 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
+import MenuIcon from '@mui/icons-material/Menu';
 import Image from "next/image";
 
 
@@ -16,11 +17,22 @@ export default function HeadBar({heightInPixels}: HeadBarProps) {
         color: "primary.light",
         bgcolor: "white",
         height: `${heightInPixels}px`,
-        display: 'flex',
-        alignItems: 'center'
+        display: 'flex'
       }}
     >
       <Toolbar>
+        <IconButton edge="start">
+          <MenuIcon />
+        </IconButton>
+        <Box
+          sx={{
+            height: heightInPixels,
+            flexGrow: 1,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
         <Typography 
           variant="h3" 
           component="div" 
@@ -29,11 +41,11 @@ export default function HeadBar({heightInPixels}: HeadBarProps) {
           editable
         </Typography>
         <Image 
+          // natural proportions: 5x3
           alt="editable-content logo"
           src="/editable-content-logo.png"
-          width={200}
-          height={120}
-        
+          width={(heightInPixels * 20 / 7 )}
+          height={(heightInPixels * 12 / 7 )}
         />
         <Typography 
           variant="h3" 
@@ -42,6 +54,7 @@ export default function HeadBar({heightInPixels}: HeadBarProps) {
         >
           content
         </Typography>
+        </Box>
       </Toolbar>
     </AppBar>
   );

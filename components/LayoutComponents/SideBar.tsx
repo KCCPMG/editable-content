@@ -18,22 +18,12 @@ export default function SideBar(
 
   const theme = useTheme();
 
-  
-
-  
-
   useEffect(() => {
     console.log(isMobile);
   }, [isMobile])
 
   return (
     <>
-      {
-        // (isMobile && !showMobileMenu) && 
-        // <MenuIcon 
-        //   onClick={() => setShowMobileMenu(true)}
-        // />
-      }
       <Drawer
         variant={isMobile ? "temporary" : "permanent"}
         open={!isMobile || showMobileMenu}
