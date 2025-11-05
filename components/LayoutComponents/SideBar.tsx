@@ -18,9 +18,7 @@ export default function SideBar(
 
   const theme = useTheme();
 
-  useEffect(() => {
-    console.log(isMobile);
-  }, [isMobile])
+
 
   return (
     <>
