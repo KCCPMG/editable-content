@@ -7,6 +7,7 @@ import SideBar from "@/components/LayoutComponents/SideBar";
 import HeadBar from "@/components/LayoutComponents/HeadBar";
 import { useState } from "react";
 import ClientLayout from "@/components/LayoutComponents/ClientLayout";
+import { headers } from "next/headers";
 
 
 const montserrat = Montserrat({
@@ -29,12 +30,17 @@ export const metadata: Metadata = {
 
 
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   
+  const reqHeaders = await headers();
+
+  for (let pair of reqHeaders.entries()) {
+    console.log(pair);
+  }
 
   return (
     <html lang="en" className={`${montserrat.variable} ${roboto.variable}`}>
