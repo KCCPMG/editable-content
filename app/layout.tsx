@@ -97,7 +97,7 @@ export default async function RootLayout({
       <body>
         <ThemeProvider theme={theme}>
           <ClientLayout 
-            // assumeIsMobile={assumeIsMobile}
+            assumeIsMobile={assumeIsMobile}
           >
             {children}
           </ClientLayout>

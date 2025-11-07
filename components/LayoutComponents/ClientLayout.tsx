@@ -10,7 +10,12 @@ import { useState, useEffect, useLayoutEffect, useRef } from "react";
 const sideBarWidthInPixels=200;
 // const headBarHeightInPixels=70;
 
-export default function ClientLayout({children}: React.PropsWithChildren) {
+
+type ClientLayoutProps = {
+  assumeIsMobile?: boolean
+} & React.PropsWithChildren;
+
+export default function ClientLayout({assumeIsMobile, children}: ClientLayoutProps) {
 
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [menuIsShowing, setMenuIsShowing] = useState<boolean>(false);
@@ -35,7 +40,7 @@ export default function ClientLayout({children}: React.PropsWithChildren) {
 
 
   const safeToUseMediaQueryRef = useRef<boolean>(false);
-  const initialIsMobileRef = useRef<boolean>(false);
+  const initialIsMobileRef = useRef<boolean>(assumeIsMobile || false);
 
   useLayoutEffect(() => {
     if (!safeToUseMediaQueryRef.current) {
