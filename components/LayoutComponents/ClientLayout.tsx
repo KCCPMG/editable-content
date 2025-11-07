@@ -69,30 +69,46 @@ export default function ClientLayout({children}: React.PropsWithChildren) {
         showMenu={showMenu}
         heightInPixels={headBarHeightInPixels} 
       />
-      <Box sx={{ marginTop: `${headBarHeightInPixels}px` }}>
+      <Box 
+        sx={{ 
+          display: "flex",
+          width: "100%"
+        }}
+      >
         <SideBar
           widthInPixels={sideBarWidthInPixels}
           headBarHeightInPixels={headBarHeightInPixels}
           isMobile={safeIsMobile}
           menuIsShowing={menuIsShowing}
           hideMenu={hideMenu}
-        />
+          />
         <Box
+          component="main"
+          p={5}
           sx={{
-            marginLeft: safeIsMobile ? 0 : `${sideBarWidthInPixels}px`,
+            // marginLeft: safeIsMobile ? 0 : `${sideBarWidthInPixels}px`,
+            width: `calc(100% - ${safeIsMobile ? 0 : sideBarWidthInPixels}px)`,
+            boxSizing: "border-box",
+            // display: "flex",
+            // flexGrow: 1,
+            // width: '100%',
             marginTop: `${headBarHeightInPixels}px`,
-            padding: 5
+            // padding: 5
           }}
         >
-          <Box
+          {/* <Box
             component="main"
             sx={{
-              maxWidth: '1000px',
+              // maxWidth: '1000px',
+              // display: "flex",
+              // flexWrap: "wrap",
+              // flexGrow: 1,
+              // flexDirection: "column",
               margin: 'auto',
             }}
-          >
+          > */}
             {children}
-          </Box>
+          {/* </Box> */}
         </Box>
       </Box>
     </>
