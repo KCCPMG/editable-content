@@ -57,7 +57,9 @@ function EditableContentExample() {
     <EditableContentContextProvider keyAndWrapperObjs={keyAndWrapperObjs}>
       {editing ? (
         <>
-          <EditTextButton dataKey="strong">
+          <EditTextButton 
+            dataKey="strong"
+          >
             B
           </EditTextButton>
           <EditableContent />
@@ -286,11 +288,12 @@ The following are the properties which can be extracted from `useEditableContent
   ```
   {
     'some-portal-id': {
-      'first-prop-to-update': newPropValue,
-      'second-prop-to-update': newPropValue
+      'prop-1-to-update': newValue1,
+      'prop-2-to-update': newValue2
     },
     'other-portal-id': {
-      'first-prop-to-update': newPropValue
+      'prop-1-to-update': newValue1,
+      'prop-2-to-update': newValue3
     }
   }
   ```  
@@ -309,16 +312,22 @@ The following are the properties which can be extracted from `useEditableContent
       );
 
     const keys = divs
-      .map(div => div.getAttribute('id')?
-      .split("portal-container-")[1]);
+      .map(div => div
+        .getAttribute('id')
+        ?.split("portal-container-")[1]
+      );
 
     const updateObj = Object.assign(
       {}, 
       ...keys.map(key => {
-        if (typeof key != "string") return {};
+        if (typeof key != "string") {
+          return {};
+        }
         // else
         return {
-          [key]: {borderC: componentBorderColor}
+          [key]: {
+            borderC: componentBorderColor
+          }
         };
       })
     );
