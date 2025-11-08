@@ -17,11 +17,18 @@ type ClientLayoutProps = {
 
 export default function ClientLayout({assumeIsMobile, children}: ClientLayoutProps) {
 
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [isMobile, setIsMobile] = useState<boolean>(assumeIsMobile || false);
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
   const [menuIsShowing, setMenuIsShowing] = useState<boolean>(false);
 
   const showMenu = () => setMenuIsShowing(true);
   const hideMenu = () => setMenuIsShowing(false);
+
+
+  useLayoutEffect(() => {
+    if (isSmall) setIsMobile(true);
+    else setIsMobile(false);
+  }, [isSmall])
 
   // console.log(window.innerWidth, window.innerWidth <=599.95 );
   // console.log("theme.breakpoints.down('sm')", theme.breakpoints.down('sm'));
@@ -39,38 +46,40 @@ export default function ClientLayout({assumeIsMobile, children}: ClientLayoutPro
   // }, [isMobile])
 
 
-  const safeToUseMediaQueryRef = useRef<boolean>(false);
-  const initialIsMobileRef = useRef<boolean>(assumeIsMobile || false);
+  // new stuff below
 
-  useLayoutEffect(() => {
-    if (!safeToUseMediaQueryRef.current) {
-      console.log("not safeToUseMediaQueryRef");
-      if (typeof window != 'undefined') {
-        console.log("window is not undefined")
-        initialIsMobileRef.current = window.innerWidth <= 599.95;
-        console.log("initialIsMobileRef.current", initialIsMobileRef.current);
-        if (initialIsMobileRef.current === isMobile) {
-          safeToUseMediaQueryRef.current = true;
-        }
-      } 
-      else console.log("window is undefined")
-    } 
-    else console.log("safeToUseMediaQueryRef")
-  }, [isMobile])
+  // const safeToUseMediaQueryRef = useRef<boolean>(false);
+  // const initialIsMobileRef = useRef<boolean>(assumeIsMobile || false);
+
+  // useLayoutEffect(() => {
+  //   if (!safeToUseMediaQueryRef.current) {
+  //     console.log("not safeToUseMediaQueryRef");
+  //     if (typeof window != 'undefined') {
+  //       console.log("window is not undefined")
+  //       initialIsMobileRef.current = window.innerWidth <= 599.95;
+  //       console.log("initialIsMobileRef.current", initialIsMobileRef.current);
+  //       if (initialIsMobileRef.current === isMobile) {
+  //         safeToUseMediaQueryRef.current = true;
+  //       }
+  //     } 
+  //     else console.log("window is undefined")
+  //   } 
+  //   else console.log("safeToUseMediaQueryRef")
+  // }, [isMobile])
 
 
-  const safeIsMobile = safeToUseMediaQueryRef.current ? 
-    isMobile : 
-    initialIsMobileRef.current;
+  // const safeIsMobile = safeToUseMediaQueryRef.current ? 
+  //   isMobile : 
+  //   initialIsMobileRef.current;
 
-  console.log({safeIsMobile});
+  // console.log({safeIsMobile});
 
-  const headBarHeightInPixels = safeIsMobile ? 35 : 70;
+  const headBarHeightInPixels = isMobile ? 35 : 70;
 
   return (
     <>
       <HeadBar 
-        isMobile={safeIsMobile} 
+        isMobile={isMobile} 
         showMenu={showMenu}
         heightInPixels={headBarHeightInPixels} 
       />
@@ -83,7 +92,7 @@ export default function ClientLayout({assumeIsMobile, children}: ClientLayoutPro
         <SideBar
           widthInPixels={sideBarWidthInPixels}
           headBarHeightInPixels={headBarHeightInPixels}
-          isMobile={safeIsMobile}
+          isMobile={isMobile}
           menuIsShowing={menuIsShowing}
           hideMenu={hideMenu}
           />
@@ -92,7 +101,7 @@ export default function ClientLayout({assumeIsMobile, children}: ClientLayoutPro
           p={5}
           sx={{
             // marginLeft: safeIsMobile ? 0 : `${sideBarWidthInPixels}px`,
-            width: `calc(100% - ${safeIsMobile ? 0 : sideBarWidthInPixels}px)`,
+            width: `calc(100% - ${isMobile ? 0 : sideBarWidthInPixels}px)`,
             boxSizing: "border-box",
             // display: "flex",
             // flexGrow: 1,
