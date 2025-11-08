@@ -65,7 +65,7 @@ export default function ClientLayout({assumeIsMobile, children}: ClientLayoutPro
 
   console.log({safeIsMobile});
 
-  const headBarHeightInPixels = isMobile ? 35 : 70;
+  const headBarHeightInPixels = safeIsMobile ? 35 : 70;
 
   return (
     <>
