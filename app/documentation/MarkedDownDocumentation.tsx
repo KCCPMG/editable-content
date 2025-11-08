@@ -45,7 +45,8 @@ export default function MarkedDownDocumentation({stringified}: {stringified: str
                 <pre
                   style={{
                     padding: "6px",
-                    backgroundColor: "#EEE"
+                    backgroundColor: "#EEE",
+                    whiteSpace: "pre-wrap"
                   }}
                   {...rest}
                 >

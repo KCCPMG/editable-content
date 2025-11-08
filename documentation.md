@@ -158,7 +158,9 @@ For example:
 
 ```
 function MyWrapper() {
-  const { myContextValue } = useContext(MyContext)
+  const { myValue } = useContext(MyContext);
+
+  // return (...)
 }
 
 <EditableContentContextProvider
@@ -179,7 +181,9 @@ In order to use context, you can do one of two things. The first of which is to 
 
 ```
 function MyWrapper() {
-  const { myContextValue = 0 } = useContext(MyContext)
+  const { myValue = 0 } = useContext(MyContext);
+
+  // return (...)
 }
 
 ```
@@ -188,7 +192,9 @@ The second option is to simply change the order in which the context providers r
 
 ```
 function MyWrapper() {
-  const { myContextValue } = useContext(MyContext)
+  const { myValue } = useContext(MyContext);
+
+  // return (...)
 }
 
 <MyContextProvider>
@@ -290,17 +296,32 @@ The following are the properties which can be extracted from `useEditableContent
   ```  
   - Each specified portalId will have its portal in `portals` replaced with a clone of itself with the new values for any prop(s) specified. Portals which are not specified with a portalId will not be changed, and portals which are being changed do not need all props to be specified, the only changes that will be made will be the ones to explicitly included props. From the demo, here's an example of changing the props for all portals which the `data-button-key`/`dataKey` of 'propful-only':
   ```
-  // on componentBorderColor change, updatePortalProps
+  // on componentBorderColor 
+  // change, updatePortalProps
   useEffect(function() {
     if (!contentRef.current) return;
-    const divs = Array.from(contentRef.current.querySelectorAll("div[data-button-key='propful-only']"));
-    const keys = divs.map(div => div.getAttribute('id')?.split("portal-container-")[1]);
+    const divs = Array
+      .from(contentRef
+        .current
+        .querySelectorAll(
+          "div[data-button-key='propful-only']"
+        )
+      );
 
-    const updateObj = Object.assign({}, ...keys.map(key => {
-      if (typeof key != "string") return {};
-      // else
-      return {[key]: {borderC: componentBorderColor}}
-    }))
+    const keys = divs
+      .map(div => div.getAttribute('id')?
+      .split("portal-container-")[1]);
+
+    const updateObj = Object.assign(
+      {}, 
+      ...keys.map(key => {
+        if (typeof key != "string") return {};
+        // else
+        return {
+          [key]: {borderC: componentBorderColor}
+        };
+      })
+    );
 
     updatePortalProps(updateObj);
   }, [componentBorderColor])
