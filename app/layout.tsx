@@ -42,28 +42,6 @@ function getSystemInformation(userAgentStr: string) {
   return userAgentStr.slice(parentheticalOpening, parentheticalClosing+1);
 }
 
-function timeFunctions(testString: string) {
-  const getSystemInformationStartTime = performance.now();
-  const getSIString = getSystemInformation(testString);
-  const getSystemInformationEndTime = performance.now();
-  
-  const regExStartTime = performance.now();
-  const reMatch = testString.match(/\(.*?\)/)
-  const matchedPattern = reMatch ? reMatch[0] : "";
-  const regExEndTime = performance.now();
-
-  console.log(
-    "getSystemInformation:", 
-    getSIString,
-    getSystemInformationEndTime-getSystemInformationStartTime,
-    "\nregEx:", 
-    matchedPattern,
-    regExEndTime-regExStartTime
-  );
-
-}
-
-
 
 export default async function RootLayout({
   children,
@@ -76,9 +54,6 @@ export default async function RootLayout({
   const userAgent = reqHeaders.get('user-agent');
   const systemInformation = userAgent ? getSystemInformation(userAgent).toLowerCase() : "";
 
-
-  console.log(systemInformation);
-
   let assumeIsMobile = false;
 
   for (let mobileOS of mobileOSs) {
@@ -87,10 +62,6 @@ export default async function RootLayout({
       break;
     }
   }
-
-  // for (let pair of reqHeaders.entries()) {
-  //   console.log(pair);
-  // }
 
   return (
     <html lang="en" className={`${montserrat.variable} ${roboto.variable}`}>
