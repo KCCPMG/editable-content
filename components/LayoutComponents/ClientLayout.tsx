@@ -1,10 +1,9 @@
 "use client"
-
 import { Box, useMediaQuery } from "@mui/material"
 import HeadBar from "./HeadBar"
 import SideBar from "./SideBar"
 import theme from "@/theme";
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useLayoutEffect } from "react";
 
 
 const sideBarWidthInPixels = 200;

@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import theme from "@/theme";
-import { Box, ThemeProvider, useMediaQuery } from "@mui/material";
+import { ThemeProvider } from "@mui/material";
 import { Montserrat, Roboto } from 'next/font/google';
-import SideBar from "@/components/LayoutComponents/SideBar";
-import HeadBar from "@/components/LayoutComponents/HeadBar";
-import { useState } from "react";
 import ClientLayout from "@/components/LayoutComponents/ClientLayout";
 import { headers } from "next/headers";
 
