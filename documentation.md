@@ -167,8 +167,10 @@ function MyWrapper() {
 
 <EditableContentContextProvider
   keyAndWrapperObjs={[
-    dataKey: "my-wrapper",
-    wrapper: <MyWrapper />
+    {
+      dataKey: "my-wrapper",
+      wrapper: <MyWrapper />
+    }
   ]}
 >
   <MyContextProvider>
@@ -202,8 +204,10 @@ function MyWrapper() {
 <MyContextProvider>
   <EditableContentContextProvider
     keyAndWrapperObjs={[
-      dataKey: "my-wrapper",
-      wrapper: <MyWrapper />
+      {
+        dataKey: "my-wrapper",
+        wrapper: <MyWrapper />
+      }
     ]}
   >
     <EditableContent />
